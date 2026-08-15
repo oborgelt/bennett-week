@@ -84,7 +84,7 @@ Grades stay seed/TEST until a real feed exists.
 
 Wholesome only. Try tapping the banner band, the little clarinet, and a shy tennis ball. Eggs never show an unearned trophy.
 
-**Egg game:** FEED EGGS — drag or tap eggs into the mouth. The voice keeps saying six eggs. Then the 80-pack, then 40, then 41 — you win. Then egg butt. Unlocks when parents award **Wrong number of eggs**, or when Bennett finds the banner-band secret. Then **🥚 Play** shows in the HUD and on that trophy. Locked players only see a “keep going” screen — not the catalog.
+**Egg game:** FEED EGGS — drag or tap eggs into the mouth. The voice keeps saying six eggs. Then the 80-pack, then 40, then 41 — you win. Nude egg, the company says it’s not allowed, game shuts down. Unlocks when parents award **Wrong number of eggs**, or when Bennett finds the banner-band secret. Then **🥚 Play** shows in the HUD and on that trophy. Locked players only see a “keep going” screen — not the catalog.
 
 ## Files
 
@@ -114,4 +114,4 @@ Parents assign a teammate on a streak, then award that streak. Bennett only sees
 4. Bennett opens **Characters**. Locked Ace is a silhouette. After the award he can play the clip and see the talent / tag line. A new unlock plays Ace’s clip once as the celebration.
 5. After 3 character unlocks, both sides see **Story unlocked — comic coming**. No comic pages yet — Orin is generating those in Imagine.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **26**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **27**.

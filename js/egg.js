@@ -101,8 +101,8 @@
           <path class="eater-line" d="M64 118 h32" />
         </g>
         <g class="eater-butt">
-          <ellipse cx="62" cy="124" rx="18" ry="20" />
-          <ellipse cx="98" cy="124" rx="18" ry="20" />
+          <circle class="eater-eye" cx="58" cy="128" r="16" />
+          <circle class="eater-eye" cx="102" cy="128" r="16" />
         </g>
         <path class="eater-foot" d="M52 176 v20 h-22" />
         <path class="eater-foot" d="M108 176 v20 h22" />
@@ -174,8 +174,12 @@
         <div class="feed-popup win" id="win-pop" hidden>
           ${titlebar(true)}
           <p id="win-text">41 EGGS</p>
-          <p class="butt-line" id="win-sub">YOU WIN.</p>
-          <button type="button" class="feed-again" id="play-again">Play again</button>
+          <p class="butt-line" id="win-sub">egg butt.</p>
+        </div>
+        <div class="company-warn" id="company-warn" hidden>
+          <p class="company-who">THE COMPANY</p>
+          <p>This content is not allowed.</p>
+          <p>Closing FEED EGGS.</p>
         </div>
       </div>`;
     fillPile();
@@ -196,10 +200,55 @@
   }
 
   function hidePops() {
-    ["count-pop", "warn-pop", "buy-pop", "win-pop"].forEach((id) => {
+    ["count-pop", "warn-pop", "buy-pop", "win-pop", "company-warn"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.hidden = true;
     });
+  }
+
+  function speakThen(text, done) {
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      done();
+    };
+    try {
+      if (!window.speechSynthesis) {
+        setTimeout(finish, 1800);
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.82;
+      u.pitch = 0.5;
+      u.onend = finish;
+      u.onerror = finish;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+      setTimeout(finish, 3200);
+    } catch (_) {
+      setTimeout(finish, 1800);
+    }
+  }
+
+  function alarm() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      const ctx = alarm._ctx || new Ctx();
+      alarm._ctx = ctx;
+      for (let i = 0; i < 6; i += 1) {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "square";
+        o.frequency.setValueAtTime(i % 2 ? 880 : 620, ctx.currentTime + i * 0.12);
+        g.gain.setValueAtTime(0.055, ctx.currentTime + i * 0.12);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.1);
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start(ctx.currentTime + i * 0.12);
+        o.stop(ctx.currentTime + i * 0.12 + 0.11);
+      }
+    } catch (_) {}
   }
 
   function showCount(label, line) {
@@ -284,20 +333,34 @@
     won = true;
     busy = true;
     hidePops();
+    setFace("butt");
     const pop = document.getElementById("win-pop");
     document.getElementById("win-text").textContent = "41 EGGS";
-    document.getElementById("win-sub").textContent = "YOU WIN.";
+    document.getElementById("win-sub").textContent = "egg butt.";
     pop.hidden = false;
-    speak("41 eggs. You win.");
+    Game.addBananas(2);
+    hud();
     slinky();
-    setTimeout(() => {
-      setFace("butt");
-      document.getElementById("win-sub").textContent = "egg butt.";
-      Game.confetti();
-      Game.addBananas(2);
-      hud();
-      Game.toast("egg butt. +2 bananas");
-    }, 900);
+    speakThen("you are looking at a nude egg", companyShutdown);
+  }
+
+  function companyShutdown() {
+    const warn = document.getElementById("company-warn");
+    const win = document.getElementById("win-pop");
+    if (win) win.hidden = true;
+    if (warn) warn.hidden = false;
+    alarm();
+    setTimeout(killGame, 1100);
+  }
+
+  function killGame() {
+    try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (_) {}
+    const office = document.getElementById("office");
+    office.innerHTML = `
+      <div class="feed-dead" role="alert">
+        <p>FEED EGGS was closed by the company.</p>
+        <a class="btn primary" href="index.html">Back to this week</a>
+      </div>`;
   }
 
   function buyPack() {
@@ -403,8 +466,6 @@
       e.preventDefault();
       buyPack();
     });
-
-    document.getElementById("play-again").addEventListener("click", renderPlay);
   }
 
   function renderLocked() {
