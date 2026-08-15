@@ -25,6 +25,7 @@
     renderAchievements();
     renderCharacters();
     fillRewardSelect();
+    fillRewardContent();
     hud();
     Game.toast("Saved on this device. Export JSON to share with the other parent.");
   }
@@ -75,6 +76,9 @@
     if (unlock.type === "character") {
       return "Character · " + Game.characterLabel(findChar(unlock.id), unlock.id);
     }
+    if (unlock.type === "content") {
+      return "Content · " + (unlock.label || unlock.id);
+    }
     return (unlock.type || "unlock") + " · " + (unlock.label || unlock.id);
   }
 
@@ -82,10 +86,20 @@
     const sel = document.getElementById("reward-media");
     if (!sel) return;
     const items = characterId
-      ? Game.libraryFor(library, characterId, false)
-      : [];
+      ? Game.libraryForAttach(library, characterId)
+      : Game.contentLibraryItems(library);
     sel.innerHTML = [`<option value="">None</option>`].concat(
-      items.map((item) => `<option value="${Game.esc(item.id)}">${Game.esc(item.label)}</option>`)
+      items.map((item) => `<option value="${Game.esc(item.id)}">${Game.esc(item.label)} · ${Game.esc(Game.libraryKindLabel(item))}</option>`)
+    ).join("");
+    sel.value = selected || "";
+  }
+
+  function fillRewardContent(selected) {
+    const sel = document.getElementById("reward-content");
+    if (!sel) return;
+    const items = Game.contentLibraryItems(library);
+    sel.innerHTML = [`<option value="">None</option>`].concat(
+      items.map((item) => `<option value="${Game.esc(item.id)}">${Game.esc(item.label)} · ${Game.esc(Game.libraryKindLabel(item))}</option>`)
     ).join("");
     sel.value = selected || "";
   }
@@ -96,16 +110,31 @@
     sel.innerHTML = [`<option value="">None</option>`].concat(
       (pack.achievements || []).map((ach) => `<option value="${Game.esc(ach.id)}">${Game.esc(ach.title || ach.id)}</option>`)
     ).join("");
+    fillAttachWeek();
+  }
+
+  function fillAttachWeek() {
+    const group = document.getElementById("attach-week-group");
+    if (!group || !week) return;
+    const rows = []
+      .concat((week.work || []).map((w) => ({ id: w.id, label: "Work · " + (w.title || w.id) })))
+      .concat((week.events || []).map((e) => ({ id: e.id, label: "Event · " + (e.title || e.id) })));
+    group.innerHTML = rows.map((row) => `<option value="${Game.esc(row.id)}">${Game.esc(row.label)}</option>`).join("");
   }
 
   function syncRewardTypeUi() {
     const type = (document.getElementById("reward-type") || {}).value || "";
     const charSel = document.getElementById("reward-character");
     const gearRow = document.getElementById("reward-gear-row");
+    const contentRow = document.getElementById("reward-content-row");
+    const mediaSel = document.getElementById("reward-media");
     if (charSel) charSel.closest("label").hidden = type !== "character";
-    if (gearRow) gearRow.hidden = type === "" || type === "character";
+    if (gearRow) gearRow.hidden = type === "" || type === "character" || type === "content";
+    if (contentRow) contentRow.hidden = type !== "content";
+    if (mediaSel) mediaSel.closest("label").hidden = type === "content";
     const charId = type === "character" ? (charSel && charSel.value) : "";
-    fillRewardMedia(charId, document.getElementById("reward-media").value);
+    fillRewardMedia(charId, mediaSel ? mediaSel.value : "");
+    fillRewardContent(document.getElementById("reward-content") ? document.getElementById("reward-content").value : "");
   }
 
   function fillTargets() {
@@ -388,6 +417,11 @@
         if (result.freshGear && result.grantedUnlock) {
           Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for the story.");
         }
+        if (result.freshContent && result.grantedUnlock) {
+          const item = Game.libraryItem(library, result.grantedUnlock.id);
+          Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for Bennett.");
+          if (item) Game.playContentReward(item);
+        }
       } else {
         Game.toast("Already awarded on this device.");
       }
@@ -475,16 +509,30 @@
     }
     const ch = findChar(selectedCharId);
     box.hidden = false;
-    document.getElementById("char-lib-title").textContent = (ch ? Game.characterLabel(ch) : selectedCharId) + " library";
+    const funMode = selectedCharId === "fun";
+    document.getElementById("char-lib-title").textContent = funMode
+      ? "Fun / Sounds"
+      : ((ch ? Game.characterLabel(ch) : selectedCharId) + " library");
+    const lead = document.getElementById("char-lib-lead");
+    if (lead) {
+      lead.textContent = funMode
+        ? "Meme-style sounds and links. Attach one to a streak to unlock it for Bennett, or to a story / week beat."
+        : "Assets for this teammate, plus Fun sounds. Attach one to a streak reward or a story / week beat.";
+    }
     const items = Game.libraryFor(library, selectedCharId, false);
-    const crew = Game.libraryFor(library, "crew", false);
+    const fun = funMode ? [] : Game.libraryFor(library, "fun", false);
+    const crew = funMode ? [] : Game.libraryFor(library, "crew", false);
+    const showFun = fun.length ? `
+      <h3 class="lib-sub">Fun / Sounds</h3>
+      <div class="lib-grid">${fun.map((item) => libPickCard(item, false)).join("")}</div>
+    ` : "";
     const showCrew = crew.length ? `
       <h3 class="lib-sub">Crew (team story beats)</h3>
       <div class="lib-grid">${crew.map((item) => libPickCard(item, true)).join("")}</div>
     ` : "";
     grid.innerHTML = (items.length
       ? items.map((item) => libPickCard(item, false)).join("")
-      : `<p class="empty">No files tagged to this teammate yet. Add them on Admin.</p>`) + showCrew;
+      : `<p class="empty">${funMode ? "No Fun sounds yet. Add audio or a link on Admin." : "No files tagged to this teammate yet. Add them on Admin."}</p>`) + showFun + showCrew;
     box.querySelectorAll("[data-pick-lib]").forEach((b) => {
       b.addEventListener("click", () => {
         selectedLibId = b.dataset.pickLib;
@@ -495,17 +543,13 @@
   }
 
   function libPickCard(item, crew) {
-    const thumb = Game.libraryThumb(item);
-    const media = item.kind === "video"
-      ? `<video class="lib-thumb" src="${Game.esc(item.path)}" poster="${Game.esc(item.poster || thumb)}" preload="metadata" muted playsinline></video>`
-      : `<img class="lib-thumb" src="${Game.esc(item.path)}" alt="">`;
     return `
       <article class="lib-card ${selectedLibId === item.id ? "selected" : ""} ${crew ? "crew" : ""}">
         <button type="button" class="lib-media" data-pick-lib="${Game.esc(item.id)}">
-          ${media}
+          ${Game.libraryThumbHtml(item)}
         </button>
-        <h3>${Game.esc(item.label)}</h3>
-        <p>${item.kind === "video" ? "Video" : "Still"} · ${Game.esc(item.character)}</p>
+        <h3>${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.label)}</h3>
+        <p>${Game.esc(Game.libraryKindLabel(item))} · ${Game.esc(item.character)}</p>
       </article>`;
   }
 
@@ -625,8 +669,9 @@
     const unlock = Game.rewardUnlockOf(ach);
     document.getElementById("reward-type").value = unlock ? unlock.type : "";
     fillRewardSelect(unlock && unlock.type === "character" ? unlock.id : (ach.rewardCharacter || ""));
-    document.getElementById("reward-unlock-id").value = unlock && unlock.type !== "character" ? unlock.id : "";
-    document.getElementById("reward-unlock-label").value = unlock && unlock.type !== "character" ? (unlock.label || "") : "";
+    document.getElementById("reward-unlock-id").value = unlock && unlock.type !== "character" && unlock.type !== "content" ? unlock.id : "";
+    document.getElementById("reward-unlock-label").value = unlock && unlock.type !== "character" && unlock.type !== "content" ? (unlock.label || "") : "";
+    fillRewardContent(unlock && unlock.type === "content" ? unlock.id : "");
     fillRewardMedia(document.getElementById("reward-character").value, ach.rewardMedia || "");
     syncRewardTypeUi();
   }
@@ -664,14 +709,22 @@
     if (rewardType === "character" && rewardCharacter) {
       next.rewardCharacter = rewardCharacter;
       next.rewardUnlock = { type: "character", id: rewardCharacter, label: Game.characterLabel(findChar(rewardCharacter), rewardCharacter) };
+    } else if (rewardType === "content") {
+      const item = Game.libraryItem(library, document.getElementById("reward-content").value);
+      if (item) {
+        next.rewardUnlock = { type: "content", id: item.id, label: item.label };
+        next.rewardMedia = item.id;
+      }
     } else if (rewardType && rewardType !== "character") {
       const id = document.getElementById("reward-unlock-id").value.trim() || slug(document.getElementById("reward-unlock-label").value || rewardType);
       const label = document.getElementById("reward-unlock-label").value.trim() || id;
       next.rewardUnlock = { type: rewardType, id, label };
     }
-    const media = document.getElementById("reward-media").value || "";
-    if (media) next.rewardMedia = media;
-    else delete next.rewardMedia;
+    if (rewardType !== "content") {
+      const media = document.getElementById("reward-media").value || "";
+      if (media) next.rewardMedia = media;
+      else delete next.rewardMedia;
+    }
     return next;
   }
 
@@ -701,6 +754,7 @@
     family = Game.normalizeFamily(family);
     hud();
     fillRewardSelect("");
+    fillRewardContent("");
 
     document.getElementById("icon").innerHTML = ICONS.map((i) => `<option value="${i}">${i}</option>`).join("");
     fillTargets();
@@ -782,6 +836,15 @@
 
     document.getElementById("reward-type").addEventListener("change", syncRewardTypeUi);
     document.getElementById("reward-character").addEventListener("change", syncRewardTypeUi);
+    const pickFun = document.getElementById("pick-fun");
+    if (pickFun) {
+      pickFun.addEventListener("click", () => {
+        selectedCharId = "fun";
+        selectedLibId = null;
+        renderCharacters();
+        renderCharLibrary();
+      });
+    }
     document.getElementById("add-ingredient").addEventListener("click", () => {
       const text = (document.getElementById("new-ingredient").value || "").trim();
       if (!text) {
@@ -814,8 +877,12 @@
       }
       if (streakId) {
         const ach = pack.achievements.find((a) => a.id === streakId);
+        const item = Game.libraryItem(library, selectedLibId);
         if (ach) {
           ach.rewardMedia = selectedLibId;
+          if (item && (item.kind === "audio" || item.kind === "link" || item.character === "fun")) {
+            ach.rewardUnlock = { type: "content", id: item.id, label: item.label };
+          }
           Game.saveMomDraft(pack);
         }
       }
@@ -848,6 +915,7 @@
           library = Game.getMomLibrary() || library;
           week = Game.applyWeekOverlay(baseWeek, family);
           fillRewardSelect("");
+          fillRewardContent("");
           renderAchievements();
           renderCharacters();
           renderCharLibrary();
@@ -881,6 +949,7 @@
       week = Game.applyWeekOverlay(baseWeek, family);
       selectedCharId = null;
       fillRewardSelect("");
+      fillRewardContent("");
       renderAchievements();
       renderCharacters();
       renderCharLibrary();

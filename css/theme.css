@@ -2131,6 +2131,32 @@ body.crew-page {
   object-fit: contain;
 }
 
+audio.lib-play {
+  width: 100%;
+  max-height: none;
+  margin: 8px 0;
+}
+
+.lib-audio-ph,
+.lib-link-ph,
+.lib-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+  font-size: 1.8rem;
+  background: #0a1c1e;
+}
+
+.lib-embed {
+  display: block;
+  width: 100%;
+  min-height: 200px;
+  border: 0;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
 .lib-play-badge {
   position: absolute;
   right: 8px;
@@ -2155,8 +2181,55 @@ body.crew-page {
   word-break: break-all;
 }
 
+.sounds,
 .loadout {
   margin-top: 18px;
+}
+
+.sounds h2 {
+  font-size: 1rem;
+  margin: 0 0 6px;
+}
+
+.sounds p {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin: 0 0 10px;
+}
+
+.sound-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sound-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.sound-card.ready {
+  border-color: rgba(198, 224, 58, 0.45);
+}
+
+.sound-card.locked {
+  border-style: dashed;
+}
+
+.sound-thumb {
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.sound-card h3 { margin: 0 0 8px; font-size: 1rem; }
+
+.story-sound {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
 }
 
 .loadout-grid {
@@ -2394,6 +2467,7 @@ body.admin-page {
 @media (min-width: 720px) {
   .lib-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
   .loadout-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .sound-grid { grid-template-columns: 1fr 1fr 1fr; }
   .story-art img,
   .story-art video { max-height: 480px; }
 }

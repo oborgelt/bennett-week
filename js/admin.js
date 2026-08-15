@@ -3,8 +3,17 @@
     { id: "ace", title: "Ace" },
     { id: "riff", title: "Riff" },
     { id: "scorch", title: "Scorch" },
-    { id: "crew", title: "Crew" }
+    { id: "crew", title: "Crew" },
+    { id: "fun", title: "Fun / Sounds" }
   ];
+
+  const GROUP_BLURB = {
+    ace: "Locker clip and stills for this teammate.",
+    riff: "Locker clip and stills for this teammate.",
+    scorch: "Locker clip and stills for this teammate.",
+    crew: "Ace + Riff + Scorch together. Comic stills and the adventure clip.",
+    fun: "Meme-style unlocks and sounds. Award a streak so Bennett can play them later."
+  };
 
   let pack = null;
   let family = null;
@@ -32,21 +41,27 @@
 
   function closeSheet() {
     const sheet = document.getElementById("sheet");
-    const video = sheet.querySelector("video");
-    if (video) {
-      try { video.pause(); } catch (_) {}
-    }
+    sheet.querySelectorAll("video, audio").forEach((media) => {
+      try { media.pause(); } catch (_) {}
+    });
     sheet.classList.remove("open");
   }
 
   function previewItem(item) {
-    const media = item.kind === "video"
-      ? `<video class="lib-play" src="${Game.esc(item.path)}" poster="${Game.esc(item.poster || "")}" controls playsinline></video>`
-      : `<img class="lib-play" src="${Game.esc(item.path)}" alt="">`;
+    const src = Game.librarySrc(item);
+    const where = item.synth
+      ? "Generated beep (Web Audio) — no file in the repo"
+      : (src || item.path || item.url || "No path or URL");
     openSheet(item.label || "Preview", `
-      <p class="empty">${Game.esc(item.path)}</p>
-      ${media}
+      <p class="empty">${Game.esc(where)}</p>
+      ${Game.libraryPlayerHtml(item)}
     `);
+    const sheet = document.getElementById("sheet-body");
+    sheet.querySelectorAll("[data-play-lib]").forEach((b) => {
+      b.addEventListener("click", () => {
+        Game.playLibraryItem(item);
+      });
+    });
   }
 
   function tagSelect(item) {
@@ -57,18 +72,19 @@
   }
 
   function cardHtml(item) {
-    const thumb = Game.libraryThumb(item);
-    const media = item.kind === "video"
-      ? `<video class="lib-thumb" src="${Game.esc(item.path)}" poster="${Game.esc(item.poster || thumb)}" preload="metadata" muted playsinline></video>`
-      : `<img class="lib-thumb" src="${Game.esc(item.path)}" alt="">`;
+    const src = Game.librarySrc(item);
+    const detail = item.synth ? "Generated beep" : (src || item.path || item.url || "—");
+    const badge = item.kind === "video" || item.kind === "audio"
+      ? '<span class="lib-play-badge">Play</span>'
+      : item.kind === "link" ? '<span class="lib-play-badge">Open</span>' : "";
     return `
       <article class="lib-card">
         <button type="button" class="lib-media" data-preview="${Game.esc(item.id)}" aria-label="Preview ${Game.esc(item.label)}">
-          ${media}
-          ${item.kind === "video" ? '<span class="lib-play-badge">Play</span>' : ""}
+          ${Game.libraryThumbHtml(item)}
+          ${badge}
         </button>
         <h3>${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.label)}</h3>
-        <p>${Game.esc(item.path)}</p>
+        <p>${Game.esc(Game.libraryKindLabel(item))} · ${Game.esc(detail)}</p>
         <label>Tag
           <select data-tag="${Game.esc(item.id)}">${tagSelect(item)}</select>
         </label>
@@ -89,7 +105,7 @@
       return `
         <section class="lib-group">
           <h2>${Game.esc(g.title)}</h2>
-          <p>${g.id === "crew" ? "Ace + Riff + Scorch together. Comic stills and the adventure clip." : "Locker clip and stills for this teammate."}</p>
+          <p>${Game.esc(GROUP_BLURB[g.id] || "")}</p>
           ${body}
         </section>`;
     }).join("");
@@ -161,23 +177,36 @@
     document.getElementById("add-lib").addEventListener("click", () => {
       const label = document.getElementById("lib-label").value.trim();
       const path = document.getElementById("lib-path").value.trim();
-      if (!path) {
-        Game.toast("Add a path first.");
+      const url = document.getElementById("lib-url").value.trim();
+      const kind = document.getElementById("lib-kind").value;
+      if (!path && !url) {
+        Game.toast("Add a path or a URL first.");
         return;
       }
-      library.items.push(Game.normalizeLibrary({
+      if (url && url !== "#" && !Game.isSafeHttpUrl(url)) {
+        Game.toast("URL needs to be http or https.");
+        return;
+      }
+      const added = Game.normalizeLibrary({
         items: [{
           id: Game.uid("lib"),
-          label: label || path.split("/").pop(),
+          label: label || (path || url).split("/").pop(),
           path,
+          url,
           poster: document.getElementById("lib-poster").value.trim(),
-          kind: document.getElementById("lib-kind").value,
+          kind,
           character: document.getElementById("lib-character").value,
           test: true
         }]
-      }).items[0]);
+      }).items[0];
+      if (!added) {
+        Game.toast("Could not add that item.");
+        return;
+      }
+      library.items.push(added);
       document.getElementById("lib-label").value = "";
       document.getElementById("lib-path").value = "";
+      document.getElementById("lib-url").value = "";
       document.getElementById("lib-poster").value = "";
       persistLib();
     });

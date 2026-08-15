@@ -12,12 +12,15 @@
     characterSeen: "bw-character-seen",
     library: "bw-mom-library",
     gear: "bw-gear-unlocks",
+    content: "bw-content-unlocks",
+    contentSeen: "bw-content-seen",
     ask: "bw-ask-thread",
     opened: "bw-opened",
     opens: "bw-opens"
   };
 
-  const LIBRARY_GROUPS = ["ace", "riff", "scorch", "crew"];
+  const LIBRARY_GROUPS = ["ace", "riff", "scorch", "crew", "fun"];
+  const LIBRARY_KINDS = ["image", "video", "audio", "link"];
 
   const KHAN = [
     { id: "ela", label: "Khan Academy — ELA", url: "https://www.khanacademy.org/ela" },
@@ -262,6 +265,7 @@
       streaks: {},
       characterUnlocks: {},
       gearUnlocks: {},
+      contentUnlocks: {},
       story: emptyStory(),
       overlay: emptyOverlay()
     };
@@ -288,6 +292,7 @@
       streaks: f.streaks && typeof f.streaks === "object" && !Array.isArray(f.streaks) ? f.streaks : {},
       characterUnlocks: asUnlockMap(f.characterUnlocks),
       gearUnlocks: asUnlockMap(f.gearUnlocks),
+      contentUnlocks: asUnlockMap(f.contentUnlocks),
       story: normalizeStory(f.story),
       overlay: normalizeOverlay(f.overlay)
     };
@@ -718,27 +723,92 @@
         { id: "crew-hero", label: "Crew hero lineup", path: "img/library/crew-hero.jpg", kind: "image", character: "crew" },
         { id: "crew-run", label: "Crew run", path: "img/library/crew-run.jpg", kind: "image", character: "crew" },
         { id: "crew-burst", label: "Crew burst", path: "img/library/crew-burst.jpg", kind: "image", character: "crew" },
-        { id: "crew-adventure", label: "Crew adventure clip", path: "img/library/crew-adventure.mp4", poster: "img/library/crew-hero.jpg", kind: "video", character: "crew" }
+        { id: "crew-adventure", label: "Crew adventure clip", path: "img/library/crew-adventure.mp4", poster: "img/library/crew-hero.jpg", kind: "video", character: "crew" },
+        { id: "banana-honk", label: "Banana honk", kind: "audio", character: "fun", synth: "honk", test: true }
       ]
     };
   }
 
-  function inferKind(path, kind) {
-    if (kind === "video" || kind === "image") return kind;
-    return /\.(mp4|webm|mov)(\?|$)/i.test(path || "") ? "video" : "image";
+  function isSafeHttpUrl(value) {
+    try {
+      const u = new URL(String(value || ""));
+      return u.protocol === "https:" || u.protocol === "http:";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function isLocalLibraryPath(value) {
+    const s = String(value || "").trim();
+    if (!s || s === "#") return false;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(s) || s.startsWith("//")) return false;
+    return !s.includes("..");
+  }
+
+  function inferKind(path, url, kind) {
+    if (LIBRARY_KINDS.indexOf(kind) >= 0) return kind;
+    const src = String(url || path || "");
+    if (/\.(mp3|wav|ogg|m4a|aac)(\?|$)/i.test(src)) return "audio";
+    if (/\.(mp4|webm|mov)(\?|$)/i.test(src)) return "video";
+    if (src === "#" || /^https?:\/\//i.test(src)) return "link";
+    return "image";
+  }
+
+  function youtubeId(url) {
+    try {
+      const u = new URL(String(url || ""));
+      const host = u.hostname.replace(/^www\./, "").toLowerCase();
+      if (host === "youtu.be") return (u.pathname.replace(/^\//, "").split("/")[0] || "").trim();
+      if (host === "youtube.com" || host === "m.youtube.com" || host === "youtube-nocookie.com") {
+        if (u.searchParams.get("v")) return String(u.searchParams.get("v")).trim();
+        const m = u.pathname.match(/\/(?:embed|shorts)\/([^/?]+)/);
+        return m ? m[1] : "";
+      }
+    } catch (_) {}
+    return "";
+  }
+
+  function youtubeEmbedSrc(url) {
+    const id = youtubeId(url);
+    if (!id || !/^[A-Za-z0-9_-]{6,}$/.test(id)) return "";
+    return "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(id);
+  }
+
+  function librarySrc(item) {
+    if (!item) return "";
+    const url = String(item.url || "").trim();
+    const path = String(item.path || "").trim();
+    if (url === "#") return "#";
+    if (url && isSafeHttpUrl(url)) return url;
+    if (path && (isLocalLibraryPath(path) || isSafeHttpUrl(path))) return path;
+    return "";
+  }
+
+  function libraryKindLabel(item) {
+    if (!item) return "";
+    if (item.kind === "audio") return item.synth ? "Sound" : "Audio";
+    if (item.kind === "link") return youtubeId(item.url || item.path) ? "YouTube" : "Link";
+    if (item.kind === "video") return "Video";
+    return "Still";
   }
 
   function normalizeLibraryItem(item, i) {
     const src = item && typeof item === "object" ? item : {};
     const path = String(src.path || "").trim();
+    const url = String(src.url || "").trim();
+    const synth = String(src.synth || "").trim();
     const character = LIBRARY_GROUPS.indexOf(src.character) >= 0 ? src.character : "crew";
+    const kind = inferKind(path, url, src.kind);
+    const labelFallback = (path || url).split("/").pop() || (synth ? "Sound" : "Untitled");
     return {
       id: String(src.id || "").trim() || ("lib-" + (i + 1)),
-      label: String(src.label || "").trim() || path.split("/").pop() || "Untitled",
+      label: String(src.label || "").trim() || labelFallback,
       path,
+      url,
       poster: String(src.poster || "").trim(),
-      kind: inferKind(path, src.kind),
+      kind,
       character,
+      synth,
       test: !!src.test
     };
   }
@@ -746,7 +816,7 @@
   function normalizeLibrary(raw) {
     const src = raw && typeof raw === "object" ? raw : {};
     const list = Array.isArray(src.items) ? src.items : [];
-    return { items: list.map(normalizeLibraryItem).filter((item) => item.path) };
+    return { items: list.map(normalizeLibraryItem).filter((item) => item.path || item.url || item.synth) };
   }
 
   function usingMomLibrary() {
@@ -777,17 +847,73 @@
     return ((lib && lib.items) || []).find((item) => item.id === id) || null;
   }
 
-  function libraryFor(lib, character, includeCrew) {
+  function libraryFor(lib, character, includeCrew, includeFun) {
     return ((lib && lib.items) || []).filter((item) => {
       if (item.character === character) return true;
-      return !!(includeCrew && item.character === "crew");
+      if (includeCrew && item.character === "crew") return true;
+      return !!(includeFun && item.character === "fun");
+    });
+  }
+
+  function libraryForAttach(lib, character) {
+    return libraryFor(lib, character, false, character !== "fun");
+  }
+
+  function contentLibraryItems(lib) {
+    return ((lib && lib.items) || []).filter((item) => {
+      return item.kind === "audio" || item.kind === "link" || item.character === "fun";
     });
   }
 
   function libraryThumb(item) {
     if (!item) return "";
     if (item.kind === "video") return item.poster || "";
-    return item.path || "";
+    if (item.kind === "image") return item.path || item.url || "";
+    return "";
+  }
+
+  function libraryThumbHtml(item, cls) {
+    const klass = cls || "lib-thumb";
+    if (!item) return `<div class="${klass} lib-ph" aria-hidden="true">?</div>`;
+    if (item.kind === "video") {
+      const src = librarySrc(item);
+      return `<video class="${klass}" src="${esc(src)}" poster="${esc(item.poster || "")}" preload="metadata" muted playsinline></video>`;
+    }
+    if (item.kind === "image") {
+      const src = librarySrc(item);
+      return src ? `<img class="${klass}" src="${esc(src)}" alt="">` : `<div class="${klass} lib-ph" aria-hidden="true">🖼</div>`;
+    }
+    if (item.kind === "audio") {
+      return `<div class="${klass} lib-audio-ph" aria-hidden="true">🔊</div>`;
+    }
+    return `<div class="${klass} lib-link-ph" aria-hidden="true">🔗</div>`;
+  }
+
+  function libraryPlayerHtml(item) {
+    if (!item) return `<p class="empty">Nothing to play.</p>`;
+    const src = librarySrc(item);
+    if (item.kind === "video") {
+      return `<video class="lib-play" src="${esc(src)}" poster="${esc(item.poster || "")}" controls playsinline></video>`;
+    }
+    if (item.kind === "image") {
+      return src ? `<img class="lib-play" src="${esc(src)}" alt="">` : `<p class="empty">No image path.</p>`;
+    }
+    if (item.kind === "audio") {
+      if (item.synth) {
+        return `<p class="empty">Generated beep — no file in the repo.</p><button type="button" class="btn primary" data-play-lib="${esc(item.id)}">Play</button>`;
+      }
+      return src
+        ? `<audio class="lib-play" src="${esc(src)}" controls preload="metadata"></audio>`
+        : `<p class="empty">Add a path or URL to preview audio.</p>`;
+    }
+    const embed = youtubeEmbedSrc(item.url || item.path || src);
+    const open = src && src !== "#"
+      ? `<a class="btn primary" href="${esc(src)}" target="_blank" rel="noopener">Open</a>`
+      : `<p class="empty">No URL yet.</p>`;
+    const frame = embed
+      ? `<iframe class="lib-embed" src="${esc(embed)}" title="${esc(item.label || "YouTube")}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+      : "";
+    return `${open}${frame}`;
   }
 
   function bananasOf(ach) {
@@ -875,9 +1001,218 @@
     });
   }
 
+  function getContentUnlocks() {
+    return asUnlockMap(read(KEYS.content, {}));
+  }
+
+  function saveContentUnlocks(map) {
+    write(KEYS.content, asUnlockMap(map));
+  }
+
+  function mergeContentUnlocks(extra) {
+    const next = Object.assign({}, getContentUnlocks(), asUnlockMap(extra));
+    saveContentUnlocks(next);
+    return next;
+  }
+
+  function alreadyUnlockedContent(id) {
+    return !!(id && getContentUnlocks()[id]);
+  }
+
+  function markContentUnlocked(unlock) {
+    if (!unlock || !unlock.id) return false;
+    const all = getContentUnlocks();
+    if (all[unlock.id]) return false;
+    all[unlock.id] = {
+      type: "content",
+      id: unlock.id,
+      label: unlock.label || unlock.id,
+      at: nowIso()
+    };
+    saveContentUnlocks(all);
+    return true;
+  }
+
+  function revokeContentUnlock(id) {
+    if (!id) return false;
+    const all = getContentUnlocks();
+    if (!all[id]) return false;
+    delete all[id];
+    saveContentUnlocks(all);
+    return true;
+  }
+
+  function unlockedContent(lib) {
+    const map = getContentUnlocks();
+    return Object.keys(map).map((id) => {
+      const row = map[id] && typeof map[id] === "object" ? map[id] : { id };
+      const item = libraryItem(lib, id);
+      return {
+        type: "content",
+        id,
+        label: (item && item.label) || row.label || id,
+        at: row.at || row,
+        item: item
+      };
+    });
+  }
+
+  function lockedContentCount(lib) {
+    return contentLibraryItems(lib).filter((item) => !alreadyUnlockedContent(item.id)).length;
+  }
+
+  function getContentSeen() {
+    return asUnlockMap(read(KEYS.contentSeen, {}));
+  }
+
+  function markContentSeen(id) {
+    if (!id) return;
+    const seen = getContentSeen();
+    seen[id] = Date.now();
+    write(KEYS.contentSeen, seen);
+  }
+
+  function pendingContentCelebrations(lib) {
+    const seen = getContentSeen();
+    return unlockedContent(lib).filter((row) => !seen[row.id]);
+  }
+
+  function applyFamilyContentUnlocks(family) {
+    const next = normalizeFamily(family);
+    mergeContentUnlocks(next.contentUnlocks);
+    return next;
+  }
+
+  function grantContent(family, unlock) {
+    const next = normalizeFamily(family);
+    if (!unlock || !unlock.id) return { family: next, fresh: false };
+    const fresh = markContentUnlocked(unlock);
+    if (!next.contentUnlocks[unlock.id]) {
+      next.contentUnlocks[unlock.id] = Object.assign({ at: nowIso() }, unlock);
+      saveFamily(next);
+    } else if (fresh) {
+      saveFamily(next);
+    }
+    return { family: next, fresh };
+  }
+
+  function otherAwardGrantsContent(pack, family, contentId, exceptId) {
+    return (pack.achievements || []).some((ach) => {
+      if (!ach || ach.id === exceptId) return false;
+      const unlock = rewardUnlockOf(ach);
+      if (!unlock || unlock.type !== "content" || unlock.id !== contentId) return false;
+      return !!(family.streaks[ach.id] && family.streaks[ach.id].awarded) || alreadyUnlocked(ach.id);
+    });
+  }
+
+  function canPlayLibraryItem(item, preview) {
+    if (!item) return false;
+    if (preview) return true;
+    if (item.kind !== "audio" && item.kind !== "link" && item.character !== "fun") return true;
+    return alreadyUnlockedContent(item.id);
+  }
+
+  function attachedLibraryItem(family, lib, key) {
+    const id = family && family.story && family.story.attachments && key
+      ? family.story.attachments[key]
+      : "";
+    return id ? libraryItem(lib, id) : null;
+  }
+
+  function playSynth(name) {
+    if (name === "honk" || !name) {
+      honk();
+      return true;
+    }
+    honk();
+    return true;
+  }
+
+  function playLibraryItem(item) {
+    if (!item) return false;
+    if (item.synth) return playSynth(item.synth);
+    const src = librarySrc(item);
+    if (item.kind === "audio" && src && src !== "#") {
+      try {
+        const audio = new Audio(src);
+        audio.play();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  function closeContentCelebrate() {
+    const layer = document.getElementById("content-celebrate");
+    if (!layer) return;
+    const media = layer.querySelector("audio, video");
+    if (media) {
+      try { media.pause(); } catch (_) {}
+    }
+    layer.classList.remove("open");
+  }
+
+  function playContentReward(item) {
+    if (!item) return false;
+    let layer = document.getElementById("content-celebrate");
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.id = "content-celebrate";
+      layer.className = "char-celebrate";
+      document.body.appendChild(layer);
+    }
+    const src = librarySrc(item);
+    const bits = [];
+    if (item.kind === "audio" && !item.synth && src && src !== "#") {
+      bits.push(`<audio class="lib-play" src="${esc(src)}" controls preload="metadata"></audio>`);
+    }
+    if (item.kind === "link" && src && src !== "#") {
+      bits.push(`<a class="btn" href="${esc(src)}" target="_blank" rel="noopener">Open</a>`);
+      const embed = youtubeEmbedSrc(item.url || item.path || src);
+      if (embed) {
+        bits.push(`<iframe class="lib-embed" src="${esc(embed)}" title="${esc(item.label || "YouTube")}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
+      }
+    }
+    layer.innerHTML = `
+      <div class="char-celebrate-panel" role="dialog" aria-labelledby="content-celebrate-title">
+        <p class="char-celebrate-kicker">New unlock</p>
+        <h2 id="content-celebrate-title">${esc(item.label || "Sound")} unlocked!</h2>
+        ${bits.join("")}
+        <button type="button" class="btn primary" id="content-play-reward">Play reward</button>
+        <button type="button" class="btn" id="content-celebrate-close">Nice</button>
+      </div>`;
+    layer.classList.add("open");
+    const close = () => closeContentCelebrate();
+    document.getElementById("content-play-reward").addEventListener("click", () => {
+      if (!playLibraryItem(item) && item.kind === "link" && src && src !== "#") {
+        window.open(src, "_blank", "noopener");
+      }
+    });
+    document.getElementById("content-celebrate-close").addEventListener("click", close);
+    layer.onclick = (e) => {
+      if (e.target === layer) close();
+    };
+    markContentSeen(item.id);
+    confetti();
+    return true;
+  }
+
+  function maybePlayContentCelebration(lib) {
+    const pending = pendingContentCelebrations(lib);
+    if (!pending.length) return false;
+    const first = pending[0];
+    if (first.item) playContentReward(first.item);
+    else markContentSeen(first.id);
+    pending.slice(1).forEach((row) => markContentSeen(row.id));
+    return true;
+  }
+
   function hasUnlock(require) {
     if (!require || !require.type || !require.id) return true;
     if (require.type === "character") return alreadyUnlockedCharacter(require.id);
+    if (require.type === "content") return alreadyUnlockedContent(require.id);
     return alreadyUnlockedGear(require.id);
   }
 
@@ -1033,6 +1368,7 @@
     const next = normalizeFamily(family);
     mergeCharacterUnlocks(next.characterUnlocks);
     applyFamilyGearUnlocks(next);
+    applyFamilyContentUnlocks(next);
     return next;
   }
 
@@ -1221,17 +1557,22 @@
     });
     let freshCharacter = false;
     let freshGear = false;
+    let freshContent = false;
     if (granted) {
       const grant = grantCharacter(next, granted);
       freshCharacter = grant.fresh;
       Object.assign(next, grant.family);
     }
-    if (unlock && unlock.type !== "character") {
+    if (unlock && unlock.type === "content") {
+      const grant = grantContent(next, unlock);
+      freshContent = grant.fresh;
+      Object.assign(next, grant.family);
+    } else if (unlock && unlock.type !== "character") {
       const grant = grantGear(next, unlock);
       freshGear = grant.fresh;
       Object.assign(next, grant.family);
     }
-    if (!granted && !(unlock && unlock.type !== "character")) {
+    if (!granted && !(unlock && unlock.type && unlock.type !== "character")) {
       saveFamily(next);
     }
     return {
@@ -1240,7 +1581,8 @@
       grantedCharacter: granted || "",
       grantedUnlock: unlock,
       freshCharacter,
-      freshGear
+      freshGear,
+      freshContent
     };
   }
 
@@ -1262,13 +1604,19 @@
     next.streaks[id] = Object.assign({}, st, { awarded: false });
     let revokedCharacter = false;
     let revokedGear = false;
+    let revokedContent = false;
     if (granted && !otherAwardGrantsCharacter(pack, next, granted, id)) {
       revokedCharacter = revokeCharacterUnlock(granted);
       if (next.characterUnlocks[granted]) {
         delete next.characterUnlocks[granted];
       }
     }
-    if (unlock && unlock.type !== "character" && unlock.id && !otherAwardGrantsGear(pack, next, unlock.id, id)) {
+    if (unlock && unlock.type === "content" && unlock.id && !otherAwardGrantsContent(pack, next, unlock.id, id)) {
+      revokedContent = revokeContentUnlock(unlock.id);
+      if (next.contentUnlocks[unlock.id]) {
+        delete next.contentUnlocks[unlock.id];
+      }
+    } else if (unlock && unlock.type !== "character" && unlock.id && !otherAwardGrantsGear(pack, next, unlock.id, id)) {
       revokedGear = revokeGearUnlock(unlock.id);
       if (next.gearUnlocks[unlock.id]) {
         delete next.gearUnlocks[unlock.id];
@@ -1278,7 +1626,7 @@
     if (was && ach) {
       write(KEYS.bananas, Math.max(0, getBananas() - bananasOf(ach)));
     }
-    return { family: next, revoked: was, achievement: ach || null, revokedCharacter, revokedGear };
+    return { family: next, revoked: was, achievement: ach || null, revokedCharacter, revokedGear, revokedContent };
   }
 
   function recordEgg(egg) {
@@ -1358,8 +1706,9 @@
     const game = ach.unlocksGame === "egg" ? " · Egg game unlocked" : "";
     const unlock = rewardUnlockOf(ach);
     const mate = unlock && unlock.type === "character" ? " · teammate unlocked" : "";
-    const gear = unlock && unlock.type !== "character" ? " · " + (unlock.label || unlock.type) + " unlocked" : "";
-    toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game + mate + gear);
+    const content = unlock && unlock.type === "content" ? " · sound unlocked" : "";
+    const gear = unlock && unlock.type !== "character" && unlock.type !== "content" ? " · " + (unlock.label || unlock.type) + " unlocked" : "";
+    toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game + mate + content + gear);
     confetti();
   }
 
@@ -1447,13 +1796,15 @@
     const familyNext = normalizeFamily(family);
     familyNext.characterUnlocks = Object.assign({}, familyNext.characterUnlocks, getCharacterUnlocks());
     familyNext.gearUnlocks = Object.assign({}, familyNext.gearUnlocks, getGearUnlocks());
+    familyNext.contentUnlocks = Object.assign({}, familyNext.contentUnlocks, getContentUnlocks());
     return {
-      version: 5,
+      version: 6,
       currency: currency(pack),
       achievements: pack.achievements || [],
       characters,
       characterUnlocks: getCharacterUnlocks(),
       gearUnlocks: getGearUnlocks(),
+      contentUnlocks: getContentUnlocks(),
       library: normalizeLibrary(library || getMomLibrary() || defaultLibrary()),
       askThread: getAskThread(),
       family: familyNext,
@@ -1500,6 +1851,14 @@
     if (obj.gearUnlocks || (obj.family && obj.family.gearUnlocks)) {
       saveGearUnlocks(importedGear);
     }
+    const importedContent = Object.assign(
+      {},
+      asUnlockMap(obj.contentUnlocks),
+      asUnlockMap(obj.family && obj.family.contentUnlocks)
+    );
+    if (obj.contentUnlocks || (obj.family && obj.family.contentUnlocks)) {
+      saveContentUnlocks(importedContent);
+    }
     return pack;
   }
 
@@ -1539,8 +1898,18 @@
     normalizeLibrary,
     libraryItem,
     libraryFor,
+    libraryForAttach,
     libraryThumb,
+    libraryThumbHtml,
+    libraryPlayerHtml,
+    librarySrc,
+    libraryKindLabel,
+    contentLibraryItems,
+    isSafeHttpUrl,
+    youtubeId,
+    youtubeEmbedSrc,
     LIBRARY_GROUPS,
+    LIBRARY_KINDS,
     getFamilyDraft,
     saveFamily,
     clearFamilyDraft,
@@ -1618,12 +1987,24 @@
     applyFamilyCharacterUnlocks,
     grantCharacter,
     grantGear,
+    grantContent,
     bananasOf,
     rewardUnlockOf,
     rewardCharacterId,
     getGearUnlocks,
     alreadyUnlockedGear,
     unlockedGear,
+    getContentUnlocks,
+    alreadyUnlockedContent,
+    unlockedContent,
+    lockedContentCount,
+    canPlayLibraryItem,
+    attachedLibraryItem,
+    playLibraryItem,
+    playSynth,
+    playContentReward,
+    maybePlayContentCelebration,
+    markContentSeen,
     hasUnlock,
     getAskThread,
     saveAskThread,

@@ -7,6 +7,7 @@
   let pack = null;
   let roster = null;
   let family = null;
+  let library = null;
   let viewedEvents = {};
   let pickedTrophy = null;
   let trackBound = false;
@@ -182,12 +183,28 @@
     return parent.map(noteBubble).join("") + kid.map(noteBubble).join("");
   }
 
+  function itemSound(targetId) {
+    const item = Game.attachedLibraryItem(family, library, targetId);
+    if (!item || !Game.canPlayLibraryItem(item)) return "";
+    if (item.kind === "link") {
+      const src = Game.librarySrc(item);
+      return src && src !== "#"
+        ? `<button type="button" class="mini" data-open-lib="${Game.esc(item.id)}">Open</button>`
+        : "";
+    }
+    if (item.kind === "audio" || item.character === "fun") {
+      return `<button type="button" class="mini" data-play-lib="${Game.esc(item.id)}">Play sound</button>`;
+    }
+    return "";
+  }
+
   function itemTools(targetType, targetId, help) {
     const kind = targetType === "event" ? "event" : "work";
     return `
       <div class="item-tools">
         <button type="button" class="mini" data-ask="${targetType}:${Game.esc(targetId)}">Ask</button>
         ${help ? `<button type="button" class="mini" data-help="${Game.esc(targetId)}">A little help</button>` : ""}
+        ${itemSound(targetId)}
         ${Game.entryButtons(kind + ":" + targetId, kind + ":" + targetId)}
       </div>
       ${itemNotes(targetType, targetId)}`;
@@ -364,6 +381,19 @@
     track.querySelectorAll("[data-help]").forEach((btn) => {
       btn.addEventListener("click", () => openHelp(btn.dataset.help));
     });
+    track.querySelectorAll("[data-play-lib]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = Game.libraryItem(library, btn.dataset.playLib);
+        if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
+      });
+    });
+    track.querySelectorAll("[data-open-lib]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = Game.libraryItem(library, btn.dataset.openLib);
+        const src = item && Game.librarySrc(item);
+        if (src && src !== "#") window.open(src, "_blank", "noopener");
+      });
+    });
     track.querySelectorAll("[data-edit]").forEach((btn) => {
       btn.addEventListener("click", () => openEdit(btn.dataset.edit));
     });
@@ -489,6 +519,14 @@
     persistTrophyOrder(ids);
   }
 
+  function contentPlay(ach) {
+    const unlock = Game.rewardUnlockOf(ach);
+    if (!unlock || unlock.type !== "content") return "";
+    const item = Game.libraryItem(library, unlock.id);
+    if (!item || !Game.canPlayLibraryItem(item)) return "";
+    return `<button type="button" class="tiny primary" data-play-content="${Game.esc(item.id)}">Play reward</button>`;
+  }
+
   function renderShelf() {
     const grid = document.getElementById("trophy-grid");
     const cur = Game.currency(pack);
@@ -505,6 +543,7 @@
         <p class="prize">${Game.esc(ach.incentive || "")}${ach.reward ? " · +" + ach.reward + " " + cur.name : ""}</p>
         <div class="trophy-tools">
           ${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}
+          ${contentPlay(ach)}
           <button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button>
           <button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button>
         </div>
@@ -537,6 +576,13 @@
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         openEdit(btn.dataset.edit);
+      });
+    });
+    grid.querySelectorAll("[data-play-content]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const item = Game.libraryItem(library, btn.dataset.playContent);
+        if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
       });
     });
     grid.querySelectorAll("[data-undo-trophy]").forEach((btn) => {
@@ -956,6 +1002,7 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    library = await Game.loadLibrary();
     syncWeek();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
       document.getElementById("draft-flag").hidden = false;
@@ -968,7 +1015,11 @@
     hud();
     goTo(0, true);
     runUnlocks();
-    if (roster) Game.maybePlayUnlockCelebration(roster);
+    if (roster && !Game.maybePlayUnlockCelebration(roster)) {
+      Game.maybePlayContentCelebration(library);
+    } else if (!roster) {
+      Game.maybePlayContentCelebration(library);
+    }
   }
 
   boot();
