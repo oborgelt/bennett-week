@@ -12,7 +12,88 @@
   let seed = null;
   let viewedEvents = {};
   let pickedTrophy = null;
+  let trophyZone = "";
+  let trophyManage = false;
+  let trophyStillsReady = false;
   let trackBound = false;
+
+  const TROPHY_ZONES = {
+    pedestal: {
+      id: "pedestal",
+      label: "Pedestal",
+      hint: "Newest unlock",
+      still: "img/library/trophy-pedestal.jpg",
+      origin: "50% 58%",
+      hot: { l: "38%", t: "42%", w: "24%", h: "36%" }
+    },
+    window: {
+      id: "window",
+      label: "Window",
+      hint: "Crew",
+      still: "img/library/trophy-window.jpg",
+      origin: "16% 46%",
+      hot: { l: "2%", t: "28%", w: "22%", h: "48%" }
+    },
+    cubbies: {
+      id: "cubbies",
+      label: "Cubbies",
+      hint: "Awards",
+      still: "img/library/trophy-cubbies.jpg",
+      origin: "24% 30%",
+      hot: { l: "8%", t: "8%", w: "24%", h: "24%" }
+    },
+    pegboard: {
+      id: "pegboard",
+      label: "Pegboard",
+      hint: "Tools",
+      still: "img/library/trophy-pegboard.jpg",
+      origin: "70% 48%",
+      hot: { l: "62%", t: "22%", w: "20%", h: "50%" }
+    },
+    lockers: {
+      id: "lockers",
+      label: "Lockers",
+      hint: "Gear",
+      still: "img/library/trophy-lockers.jpg",
+      origin: "88% 50%",
+      hot: { l: "82%", t: "18%", w: "16%", h: "58%" }
+    }
+  };
+  const TROPHY_ZONE_ORDER = ["window", "cubbies", "pedestal", "pegboard", "lockers"];
+  const PEGBOARD_IDS = ["angle-finder", "field-kit", "daily-pick", "notebook-holding"];
+  const LOCKER_IDS = ["unplugged-strap", "first-serve"];
+  const WINDOW_SLOTS = {
+    ace: { l: "7%", t: "10%", w: "16%", h: "30%" },
+    riff: { l: "25%", t: "8%", w: "18%", h: "28%" },
+    scorch: { l: "46%", t: "10%", w: "20%", h: "30%" },
+    deuce: { l: "30%", t: "46%", w: "13%", h: "40%" },
+    fuzz: { l: "54%", t: "50%", w: "16%", h: "30%" }
+  };
+  const PEGBOARD_SLOTS = {
+    "angle-finder": { l: "14%", t: "8%", w: "18%", h: "26%" },
+    "field-kit": { l: "38%", t: "34%", w: "20%", h: "28%" },
+    "daily-pick": { l: "12%", t: "58%", w: "20%", h: "28%" },
+    "notebook-holding": { l: "56%", t: "58%", w: "20%", h: "28%" }
+  };
+  const LOCKER_SLOTS = {
+    "unplugged-strap": { l: "22%", t: "34%", w: "20%", h: "28%" },
+    "first-serve": { l: "46%", t: "8%", w: "20%", h: "24%" }
+  };
+  const CUBBY_SLOTS = [
+    { l: "4%", t: "6%", w: "16%", h: "24%" },
+    { l: "22%", t: "6%", w: "16%", h: "24%" },
+    { l: "40%", t: "6%", w: "16%", h: "24%" },
+    { l: "58%", t: "6%", w: "16%", h: "24%" },
+    { l: "4%", t: "36%", w: "16%", h: "26%" },
+    { l: "24%", t: "34%", w: "18%", h: "28%" },
+    { l: "46%", t: "36%", w: "20%", h: "26%" },
+    { l: "4%", t: "68%", w: "14%", h: "26%" },
+    { l: "22%", t: "68%", w: "16%", h: "26%" },
+    { l: "40%", t: "68%", w: "16%", h: "26%" },
+    { l: "58%", t: "68%", w: "16%", h: "26%" },
+    { l: "74%", t: "68%", w: "16%", h: "26%" }
+  ];
+  const PEDESTAL_SLOT = { l: "36%", t: "38%", w: "28%", h: "42%" };
 
   function parseLocal(iso) {
     const [d, t] = iso.split("T");
@@ -603,8 +684,99 @@
     return Game.iconFor(ach.icon);
   }
 
-  function renderShelf() {
+  function unlockAt(id) {
+    const raw = Game.getUnlocks()[id];
+    if (typeof raw === "number") return raw;
+    if (raw && typeof raw === "object") {
+      const at = Date.parse(raw.at || raw.date || "");
+      if (!Number.isNaN(at)) return at;
+    }
+    return 0;
+  }
+
+  function homeZoneOf(ach) {
+    const unlock = Game.rewardUnlockOf(ach);
+    if (unlock && unlock.type === "character") return "window";
+    if (unlock && PEGBOARD_IDS.indexOf(unlock.id) >= 0) return "pegboard";
+    if (unlock && (unlock.type === "outfit" || unlock.type === "ability" || LOCKER_IDS.indexOf(unlock.id) >= 0)) {
+      return "lockers";
+    }
+    return "cubbies";
+  }
+
+  function featuredTrophy(earned) {
+    if (!earned.length) return null;
+    return [...earned].sort((a, b) => unlockAt(b.id) - unlockAt(a.id))[0];
+  }
+
+  function trophiesForZone(zoneId, earned) {
+    if (zoneId === "pedestal") {
+      const featured = featuredTrophy(earned);
+      return featured ? [featured] : [];
+    }
+    return earned.filter((ach) => homeZoneOf(ach) === zoneId);
+  }
+
+  function slotBox(zoneId, ach, index) {
+    const unlock = Game.rewardUnlockOf(ach);
+    const id = unlock && unlock.id ? unlock.id : "";
+    if (zoneId === "pedestal") return PEDESTAL_SLOT;
+    if (zoneId === "window") return WINDOW_SLOTS[id] || CUBBY_SLOTS[index % CUBBY_SLOTS.length];
+    if (zoneId === "pegboard") return PEGBOARD_SLOTS[id] || CUBBY_SLOTS[index % CUBBY_SLOTS.length];
+    if (zoneId === "lockers") return LOCKER_SLOTS[id] || CUBBY_SLOTS[(index + 4) % CUBBY_SLOTS.length];
+    return CUBBY_SLOTS[index % CUBBY_SLOTS.length];
+  }
+
+  function preloadTrophyStills() {
+    if (trophyStillsReady) return;
+    trophyStillsReady = true;
+    Object.keys(TROPHY_ZONES).forEach((id) => {
+      const img = new Image();
+      img.src = TROPHY_ZONES[id].still;
+    });
+  }
+
+  function boxStyle(box) {
+    return `left:${box.l};top:${box.t};width:${box.w};height:${box.h}`;
+  }
+
+  function bindTrophyTools(root) {
+    root.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openEdit(btn.dataset.edit);
+      });
+    });
+    root.querySelectorAll("[data-play-content]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const item = Game.libraryItem(library, btn.dataset.playContent);
+        if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
+      });
+    });
+    root.querySelectorAll("[data-undo-trophy]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const result = Game.revokeAchievement(pack, family, btn.dataset.undoTrophy);
+        family = result.family;
+        Game.toast("Award undone. That trophy is gone from the room.");
+        hud();
+        renderShelf();
+      });
+    });
+  }
+
+  function trophyTools(ach) {
+    return `
+      ${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}
+      ${contentPlay(ach)}
+      <button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button>
+      <button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button>`;
+  }
+
+  function renderTrophyManage() {
     const grid = document.getElementById("trophy-grid");
+    if (!grid) return;
     const cur = Game.currency(pack);
     const earned = orderedTrophies();
     grid.classList.toggle("is-empty", !earned.length);
@@ -617,13 +789,8 @@
         <img src="${Game.esc(trophyArt(ach))}" alt="">
         <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</h3>
         <p class="how">${Game.esc(ach.description || ach.how || "")}</p>
-        <p class="prize">${Game.esc(ach.incentive || "")}${ach.reward ? " · +" + ach.reward + " " + cur.name : ""}</p>
-        <div class="trophy-tools">
-          ${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}
-          ${contentPlay(ach)}
-          <button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button>
-          <button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button>
-        </div>
+        <p class="prize">${Game.esc(ach.incentive || "")}${typeof ach.reward === "number" ? " · +" + ach.reward + " " + cur.name : ""}</p>
+        <div class="trophy-tools">${trophyTools(ach)}</div>
       </article>`).join("");
 
     grid.querySelectorAll(".trophy").forEach((el) => {
@@ -649,29 +816,161 @@
         }
       });
     });
-    grid.querySelectorAll("[data-edit]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+    bindTrophyTools(grid);
+  }
+
+  function renderTrophyChrome() {
+    const room = document.getElementById("trophy-room");
+    const tag = document.getElementById("shelf-tag");
+    const back = document.getElementById("shelf-back");
+    const manageBtn = document.getElementById("shelf-manage");
+    const manage = document.getElementById("trophy-manage");
+    const close = document.getElementById("trophy-close");
+    const zone = trophyZone ? TROPHY_ZONES[trophyZone] : null;
+    if (room) {
+      room.dataset.view = trophyZone || "wide";
+      room.classList.toggle("is-zoomed", !!trophyZone);
+      if (zone) room.style.setProperty("--zoom-origin", zone.origin);
+    }
+    if (back) back.hidden = !trophyZone;
+    if (manage) manage.hidden = !trophyManage;
+    if (manageBtn) manageBtn.setAttribute("aria-pressed", trophyManage ? "true" : "false");
+    if (close) close.setAttribute("aria-hidden", trophyZone ? "false" : "true");
+    if (tag) {
+      if (trophyManage) {
+        tag.innerHTML = "Drag to rearrange. Edit or undo an award.";
+      } else if (zone) {
+        tag.innerHTML = `${Game.esc(zone.label)} · ${Game.esc(zone.hint)}. Tap the room to step back.`;
+      } else {
+        tag.innerHTML = `Tap a wall to walk up. Only trophies you have earned. <a class="crew-inline" href="characters.html">Meet your teammates →</a>`;
+      }
+    }
+  }
+
+  function renderTrophyHotspots(earned) {
+    const host = document.getElementById("trophy-hotspots");
+    const rail = document.getElementById("trophy-rail");
+    if (!host || !rail) return;
+    host.innerHTML = TROPHY_ZONE_ORDER.map((id) => {
+      const zone = TROPHY_ZONES[id];
+      const loot = trophiesForZone(id, earned).length > 0;
+      return `<button type="button" class="trophy-hotspot${loot ? " has-loot" : ""}" data-zone="${id}" style="${boxStyle(zone.hot)}" aria-label="${Game.esc(zone.label)} — ${Game.esc(zone.hint)}"></button>`;
+    }).join("");
+    rail.innerHTML = TROPHY_ZONE_ORDER.map((id) => {
+      const zone = TROPHY_ZONES[id];
+      const loot = trophiesForZone(id, earned).length > 0;
+      const on = trophyZone === id;
+      return `<button type="button" class="${on ? "is-on" : ""}${loot ? " has-loot" : ""}" data-zone="${id}">${Game.esc(zone.label)}</button>`;
+    }).join("");
+    const go = (e) => {
+      const btn = e.target.closest("[data-zone]");
+      if (btn) enterTrophyZone(btn.dataset.zone);
+    };
+    host.onclick = go;
+    rail.onclick = go;
+  }
+
+  function renderTrophySlots(earned) {
+    const slots = document.getElementById("trophy-slots");
+    const still = document.getElementById("trophy-close-still");
+    const wash = document.getElementById("trophy-close-wash");
+    if (!slots || !still) return;
+    const zone = trophyZone ? TROPHY_ZONES[trophyZone] : null;
+    if (!zone) {
+      slots.innerHTML = "";
+      return;
+    }
+    still.src = zone.still;
+    still.alt = zone.label;
+    if (wash) wash.style.setProperty("--close-still", `url("${zone.still}")`);
+    const items = trophiesForZone(trophyZone, earned);
+    slots.innerHTML = items.map((ach, i) => {
+      const box = slotBox(trophyZone, ach, i);
+      const kind = trophyKind(ach);
+      const extra = trophyZone === "pedestal" ? " trophy-pedestal" : "";
+      return `<article class="trophy-object trophy-${kind}${extra}" data-id="${Game.esc(ach.id)}" style="${boxStyle(box)}">
+        <img src="${Game.esc(trophyArt(ach))}" alt="">
+        <span class="trophy-name">${Game.esc(ach.title)}</span>
+      </article>`;
+    }).join("");
+    slots.querySelectorAll(".trophy-object").forEach((el) => {
+      let hold = 0;
+      const openTools = (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        openEdit(btn.dataset.edit);
+        slots.querySelectorAll(".trophy-pop").forEach((p) => p.remove());
+        const ach = earned.find((row) => row.id === el.dataset.id);
+        if (!ach) return;
+        const pop = document.createElement("div");
+        pop.className = "trophy-pop";
+        pop.innerHTML = trophyTools(ach);
+        el.appendChild(pop);
+        el.classList.add("is-open");
+        bindTrophyTools(pop);
+      };
+      el.addEventListener("click", (e) => {
+        if (e.target.closest(".trophy-pop")) return;
+        const open = el.classList.contains("is-open");
+        slots.querySelectorAll(".trophy-object").forEach((other) => {
+          other.classList.remove("is-open");
+          const pop = other.querySelector(".trophy-pop");
+          if (pop) pop.remove();
+        });
+        if (!open) el.classList.add("is-open");
       });
-    });
-    grid.querySelectorAll("[data-play-content]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const item = Game.libraryItem(library, btn.dataset.playContent);
-        if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
+      el.addEventListener("pointerdown", () => {
+        hold = window.setTimeout(() => openTools({ preventDefault() {}, stopPropagation() {} }), 480);
       });
-    });
-    grid.querySelectorAll("[data-undo-trophy]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const result = Game.revokeAchievement(pack, family, btn.dataset.undoTrophy);
-        family = result.family;
-        Game.toast("Award undone. That trophy is gone from the room.");
-        hud();
-        renderShelf();
+      ["pointerup", "pointerleave", "pointercancel"].forEach((name) => {
+        el.addEventListener(name, () => window.clearTimeout(hold));
       });
+      el.addEventListener("contextmenu", openTools);
     });
+  }
+
+  function renderTrophyRoom() {
+    const earned = orderedTrophies();
+    const empty = document.getElementById("trophy-empty");
+    if (empty) {
+      const show = !earned.length && !trophyZone;
+      empty.hidden = !show;
+      if (show) {
+        empty.innerHTML = `No trophies yet — keep the streak going. <a class="crew-inline" href="characters.html">Characters stay locked until you earn them.</a>`;
+      }
+    }
+    renderTrophyChrome();
+    renderTrophyHotspots(earned);
+    renderTrophySlots(earned);
+  }
+
+  function enterTrophyZone(id) {
+    if (!TROPHY_ZONES[id] || trophyZone === id) return;
+    trophyZone = id;
+    trophyManage = false;
+    renderTrophyRoom();
+  }
+
+  function leaveTrophyZone() {
+    if (!trophyZone) return;
+    trophyZone = "";
+    renderTrophyRoom();
+  }
+
+  function setTrophyManage(on) {
+    trophyManage = !!on;
+    if (trophyManage) pickedTrophy = null;
+    renderShelf();
+  }
+
+  function resetTrophyView() {
+    trophyZone = "";
+    trophyManage = false;
+    pickedTrophy = null;
+  }
+
+  function renderShelf() {
+    renderTrophyManage();
+    renderTrophyRoom();
   }
 
   function openSheet(title, html) {
@@ -1057,16 +1356,57 @@
 
   function bindShelf() {
     const shelf = document.getElementById("shelf");
+    const stage = document.getElementById("trophy-stage");
+    function closeShelf() {
+      resetTrophyView();
+      renderTrophyChrome();
+      shelf.classList.remove("open");
+    }
     function openShelf() {
-      pickedTrophy = null;
+      resetTrophyView();
+      preloadTrophyStills();
       renderShelf();
       shelf.classList.add("open");
     }
     document.getElementById("trophies").addEventListener("click", openShelf);
     if (location.hash === "#trophies") openShelf();
-    document.getElementById("close-shelf").addEventListener("click", () => shelf.classList.remove("open"));
+    document.getElementById("close-shelf").addEventListener("click", closeShelf);
+    document.getElementById("shelf-back").addEventListener("click", (e) => {
+      e.stopPropagation();
+      leaveTrophyZone();
+    });
+    document.getElementById("shelf-manage").addEventListener("click", (e) => {
+      e.stopPropagation();
+      setTrophyManage(!trophyManage);
+    });
     shelf.addEventListener("click", (e) => {
-      if (e.target === shelf) shelf.classList.remove("open");
+      if (e.target === shelf) closeShelf();
+    });
+    stage.addEventListener("click", (e) => {
+      if (!trophyZone || trophyManage) return;
+      if (e.target.closest(".trophy-object") || e.target.closest(".trophy-hotspot") || e.target.closest(".trophy-rail")) return;
+      leaveTrophyZone();
+    });
+    let swipe = null;
+    stage.addEventListener("touchstart", (e) => {
+      if (!trophyZone || trophyManage || !e.changedTouches[0]) return;
+      swipe = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    }, { passive: true });
+    stage.addEventListener("touchend", (e) => {
+      if (!swipe || !e.changedTouches[0]) return;
+      const dx = e.changedTouches[0].clientX - swipe.x;
+      const dy = e.changedTouches[0].clientY - swipe.y;
+      swipe = null;
+      if (dy > 64 && Math.abs(dy) > Math.abs(dx)) leaveTrophyZone();
+      else if (dx > 64 && Math.abs(dx) > Math.abs(dy)) leaveTrophyZone();
+    }, { passive: true });
+    document.addEventListener("keydown", (e) => {
+      if (!shelf.classList.contains("open") || typing()) return;
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      if (trophyManage) setTrophyManage(false);
+      else if (trophyZone) leaveTrophyZone();
+      else closeShelf();
     });
     document.getElementById("close-sheet").addEventListener("click", closeSheet);
     document.getElementById("sheet").addEventListener("click", (e) => {
@@ -1080,6 +1420,11 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    const preview = Game.maybeAutoPreviewAll(pack, family);
+    family = preview.family;
+    if (preview.ran) {
+      Game.toast("Parent preview: all rewards unlocked on this device.");
+    }
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);
     baseSeed = await Game.loadProgress();

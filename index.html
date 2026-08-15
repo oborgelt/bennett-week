@@ -65,15 +65,39 @@
   <button type="button" class="hidden-ball" id="hidden-ball" aria-label="Hidden tennis ball"></button>
 
   <div class="shelf" id="shelf">
-    <div class="shelf-panel trophy-room" role="dialog" aria-labelledby="shelf-title">
+    <div class="shelf-panel trophy-room" id="trophy-room" role="dialog" aria-labelledby="shelf-title" data-view="wide">
       <div class="shelf-head">
         <div>
           <h2 id="shelf-title">Trophy room</h2>
-          <p>Only trophies you have earned. Drag or tap to rearrange. <a class="crew-inline" href="characters.html">Meet your teammates →</a></p>
+          <p id="shelf-tag">Tap a wall to walk up. Only trophies you have earned. <a class="crew-inline" href="characters.html">Meet your teammates →</a></p>
         </div>
-        <button type="button" class="close-shelf" id="close-shelf" aria-label="Close">✕</button>
+        <div class="shelf-actions">
+          <button type="button" class="shelf-back" id="shelf-back" hidden aria-label="Back to the room">←</button>
+          <button type="button" class="shelf-manage" id="shelf-manage" aria-pressed="false">Manage</button>
+          <button type="button" class="close-shelf" id="close-shelf" aria-label="Close">✕</button>
+        </div>
       </div>
-      <div class="trophy-grid" id="trophy-grid"></div>
+      <div class="trophy-stage" id="trophy-stage">
+        <div class="trophy-view trophy-wide" id="trophy-wide">
+          <div class="trophy-wash" aria-hidden="true"></div>
+          <div class="trophy-frame">
+            <img class="trophy-still" src="img/library/trophy-room.jpg" alt="Jungle treehouse trophy room">
+            <div class="trophy-hotspots" id="trophy-hotspots"></div>
+          </div>
+          <p class="trophy-empty" id="trophy-empty" hidden></p>
+        </div>
+        <div class="trophy-view trophy-close" id="trophy-close" aria-hidden="true">
+          <div class="trophy-wash" id="trophy-close-wash" aria-hidden="true"></div>
+          <div class="trophy-frame">
+            <img class="trophy-still" id="trophy-close-still" alt="">
+            <div class="trophy-slots" id="trophy-slots"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="trophy-rail" id="trophy-rail" aria-label="Room sections"></nav>
+      <div class="trophy-manage" id="trophy-manage" hidden>
+        <div class="trophy-grid" id="trophy-grid"></div>
+      </div>
     </div>
   </div>
 

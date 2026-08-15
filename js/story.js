@@ -178,6 +178,7 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    family = Game.maybeAutoPreviewAll(pack, family).family;
     library = await Game.loadLibrary();
     story = await Game.loadStory();
     const bananas = document.getElementById("bananas");

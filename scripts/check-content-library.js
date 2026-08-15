@@ -373,6 +373,37 @@ const revoked = Game.revokeAchievement(pack, family, "test-fun-honk");
 assert(revoked.revokedContent, "undo award should lock the sound again");
 assert(!Game.alreadyUnlockedContent("honk"), "content should be locked after undo");
 
+assert(/Unlock all rewards \(preview\)/.test(parentHtml), "parent desk should offer Unlock all rewards (preview)");
+assert(/Lock them back/.test(parentHtml), "parent desk should offer Lock them back");
+assert(/preview-unlock-all/.test(parentHtml) && /preview-lock-back/.test(parentHtml), "preview buttons need ids");
+const weekJs = fs.readFileSync(path.join(root, "js/week.js"), "utf8");
+const weekHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
+["trophy-room.jpg", "trophy-pedestal.jpg", "trophy-cubbies.jpg", "trophy-pegboard.jpg", "trophy-lockers.jpg", "trophy-window.jpg"].forEach((name) => {
+  const pathName = "img/library/" + name;
+  assert(weekJs.includes(pathName) || weekHtml.includes(pathName) || themeCss.includes(pathName), "trophy room should use " + name);
+});
+const crewJs = fs.readFileSync(path.join(root, "js/characters.js"), "utf8");
+assert(crewJs.includes("gearThumbHtml") && crewJs.includes("alreadyUnlockedGear"), "loadout should use real gear stills when unlocked");
+
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+localStorage.removeItem("bw-family");
+const previewFamily = Game.emptyFamily();
+const auto = Game.maybeAutoPreviewAll(pack, previewFamily);
+assert(auto.ran, "first load with no crew/gear should auto-preview once");
+assert(Game.alreadyUnlockedCharacter("ace") && Game.alreadyUnlockedCharacter("fuzz"), "preview should unlock the crew");
+assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("unplugged-strap") && Game.alreadyUnlockedGear("first-serve"), "preview should unlock gear");
+assert(Game.alreadyUnlocked("straight-as-3w") && Game.alreadyUnlocked("hidden-banana"), "preview should award the other streaks");
+assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "auto-preview should set bw-preview-all");
+const locked = Game.revokeAllPreview(pack, auto.family);
+assert(!Game.alreadyUnlockedCharacter("ace") && !Game.alreadyUnlockedGear("angle-finder"), "Lock them back should revoke preview awards");
+assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "lock-back must keep the flag so auto-preview does not re-fire");
+const again = Game.maybeAutoPreviewAll(pack, locked.family);
+assert(!again.ran, "auto-preview must not run again after lock-back");
+assert(!Game.alreadyUnlockedCharacter("ace"), "crew stays locked until a parent unlocks preview again");
+const manual = Game.awardAllPreview(pack, locked.family);
+assert(manual.awarded > 0 && Game.alreadyUnlockedCharacter("deuce") && Game.alreadyUnlockedGear("daily-pick"), "parent Unlock all should award through awardStreak again");
+
 (async () => {
   const beep = new File([new Uint8Array([82, 73, 70, 70, 0, 0, 0, 0])], "TEST-beep.wav", { type: "audio/wav" });
   const added = await Game.addDeviceLibraryFile({ items: norm.items.slice() }, beep, { test: true });
