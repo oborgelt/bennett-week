@@ -159,6 +159,50 @@
       "bananas": 10,
       "reward": { "type": "ability", "id": "first-serve", "label": "First Serve" },
       "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-angle-finder",
+      "title": "Angle Finder",
+      "description": "Award this to unlock the Angle Finder tool for Geometry / Deuce. Loading the site does not auto-unlock.",
+      "how": "Parents award this when they want Bennett to get Deuce's geometry tool.",
+      "incentive": "Unlocks a story tool",
+      "icon": "tennis",
+      "reward": 10,
+      "rewardUnlock": { "type": "tool", "id": "angle-finder", "label": "Angle Finder" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-field-kit",
+      "title": "Field Kit",
+      "description": "Award this to unlock the Field Kit tool for Chemistry / Scorch. Loading the site does not auto-unlock.",
+      "how": "Parents award this when they want Bennett to get Scorch's chemistry kit.",
+      "incentive": "Unlocks a story tool",
+      "icon": "clarinet",
+      "reward": 10,
+      "rewardUnlock": { "type": "tool", "id": "field-kit", "label": "Field Kit" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-unplugged-strap",
+      "title": "Unplugged Strap",
+      "description": "Award this to unlock the Unplugged Strap for Fuzz. Loading the site does not auto-unlock.",
+      "how": "Parents award this when they want Bennett to get Fuzz's outfit.",
+      "incentive": "Unlocks a story outfit",
+      "icon": "guitar",
+      "reward": 10,
+      "rewardUnlock": { "type": "outfit", "id": "unplugged-strap", "label": "Unplugged Strap" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-daily-pick",
+      "title": "Daily Pick",
+      "description": "Award this to unlock the Daily Pick tool for Riff. Loading the site does not auto-unlock.",
+      "how": "Parents award this when they want Bennett to get Riff's practice pick.",
+      "incentive": "Unlocks a story tool",
+      "icon": "guitar",
+      "reward": 10,
+      "rewardUnlock": { "type": "tool", "id": "daily-pick", "label": "Daily Pick" },
+      "streak": { "target": 1, "unit": "time" }
     }
   ]
 }

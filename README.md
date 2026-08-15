@@ -27,8 +27,8 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 ## Parent desk (Mom and Orin)
 
 1. Open `parent.html` (or tap **Parent desk** in the HUD — same **This week / Progress / Characters / Parent desk** chips as the other screens). Old `mom.html` links redirect here. Quiet **Admin** is on the parent desk only — not on Bennett’s main HUD.
-2. Add / edit / delete **streak** achievements: title, how to count, incentive, bananas, target (e.g. 3 weeks), and a **Reward unlock** (character, tool, weapon, ability, or **content** — a library sound or link).
-3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. If that streak grants a character, gear, or a library item, Bennett unlocks it. Award **Meet Ace / Meet Riff / Meet Scorch / Meet Deuce / Meet Fuzz** (TEST) to unlock a teammate. Award **Notebook of Holding** or **First Serve** (TEST) for story tools / abilities. Award **Banana honk** (TEST) for a Fun sound. Award **Wrong number of eggs** (or let him find the banner-band secret) to unlock the office egg game. Bennett never sees the catalog or locked tile names.
+2. Add / edit / delete **streak** achievements: title, how to count, incentive, bananas, target (e.g. 3 weeks), and a **Reward unlock** (character, tool, weapon, ability, outfit, or **content** — a library sound or link).
+3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. If that streak grants a character, gear, or a library item, Bennett unlocks it. Award **Meet Ace / Meet Riff / Meet Scorch / Meet Deuce / Meet Fuzz** (TEST) to unlock a teammate. Award **Angle Finder**, **Field Kit**, **Unplugged Strap**, or **Daily Pick** (TEST) for teammate gear. Award **Notebook of Holding** or **First Serve** (TEST) for story tools / abilities. Award **Wrong number of eggs** (or let him find the banner-band secret) to unlock the office egg game. Bennett never sees the catalog or locked tile names.
 4. Inbox: Bennett’s questions and check-ins. Reply with a note on that item. **Ask AI mentor** shows what he asked the Socratic mentor.
 5. Add reflection prompts (how class / teachers felt — celebrate and catch early warnings, not a psych eval).
 6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file (asks, notes, reflections, streaks, awarded trophies, character unlocks, gear unlocks, **content unlocks**, library tags including audio/links, **device-dropped files** under 2 MB each, story ingredients, Ask AI thread, which streak grants which unlock, Done/Started, week/progress overlays, and parent-added classes). Week.json is not rewritten in the browser — edits and deletes live in that overlay. **Download achievements.json** / **Download characters.json** to drop catalogs into the repo. **Undo award** on a streak takes the trophy out of Bennett’s room and locks that reward again if nothing else granted it.
@@ -41,9 +41,9 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 Open `admin.html` from the parent desk **Admin** chip. **Locker refs** opens the five locker stills for Imagine.
 
 - Library kinds: **image**, **video**, **audio**, **link** (YouTube / any https URL).
-- Grouped **Ace / Riff / Scorch / Deuce / Fuzz / Crew / Fun / Sounds**.
+- Grouped **Ace / Riff / Scorch / Deuce / Fuzz / Gear / Crew / Fun / Sounds**. Gear stills also sit on the matching teammate shelf.
 - Preview stills, play videos, play audio (`<audio controls>`), and open links (YouTube can embed).
-- Seed: locker clips stay on their character. Comic files stay **Crew**. TEST **Banana honk** is a Fun sound generated in the browser — no third-party audio file.
+- Seed: locker clips stay on their character. Comic files stay **Crew**. Gear stills (`angle-finder`, `field-kit`, `unplugged-strap`, `daily-pick`, `notebook-holding`, `first-serve`) stay on the teammate plus the Gear group. Do not re-upload those PNGs.
 - **Drop or choose files** on Admin (mp3 / wav / ogg / m4a, plus image / video). Label and kind come from the filename. Default tag is Fun / Sounds. The file stays on this device (IndexedDB) — nothing is written into `img/library` or git.
 - Path / URL add is still there as an advanced row for `file://` / Pages links. No upload server.
 - **Story ingredients** box: topics to fold into the comic (TEST: “finish what you start”, “ask before you’re sunk”) plus an optional parent “include in story” note.
@@ -135,8 +135,8 @@ Optional: `PORT`, `ANTHROPIC_MODEL` (default `claude-sonnet-4-0`).
 
 Anything labeled **TEST** is look-and-feel filler, not a real family rule or a real assignment.
 
-- Seed streaks in `achievements.json` are `"test": true` (straight A’s, no-late, flash cards, five-day start, asked before due, **Meet Ace / Riff / Scorch / Deuce / Fuzz**, **Notebook of Holding**, **First Serve**, **Banana honk**). Incentives are examples only. Characters, gear, and sounds do not unlock until a parent taps Award.
-- `reward` may be bananas (a number) or `{ "type": "character"|"tool"|"weapon"|"ability"|"content", "id", "label" }`. Content `id` is a library item. Banana count can also live in `bananas` when `reward` is an object. `rewardCharacter` still works.
+- Seed streaks in `achievements.json` are TEST look-and-feel (straight A’s, no-late, flash cards, five-day start, asked before due, **Meet Ace / Riff / Scorch / Deuce / Fuzz**, **Angle Finder**, **Field Kit**, **Unplugged Strap**, **Daily Pick**, **Notebook of Holding**, **First Serve**). Incentives are examples only. Characters, gear, and sounds do not unlock until a parent taps Award.
+- `reward` may be bananas (a number) or `{ "type": "character"|"tool"|"weapon"|"ability"|"outfit"|"content", "id", "label" }`. Content `id` is a library item. Banana count can also live in `bananas` when `reward` is an object. `rewardCharacter` still works. Gear stills use `slot` on the library item (`tool` / `outfit` / `ability`).
 - Seed notes / questions / reflections in `family.json` are TEST so the inbox and cards are not empty. Story ingredients TEST: “finish what you start”, “ask before you’re sunk”.
 - `week.json` may include one fake calendar row titled `TEST: …`. Real seed items from v1 stay (parenting time, Mon band, English names, comic strips, Forms & Fees, spiral notebook, chemistry absence note on 8/14).
 - Progress grades in `progress.json` are TEST seed (English overall + the three real English items + one TEST quiz). Band’s overall grade is TEST. The other six S1 ParentVUE classes ship with empty `items` and **no grade**. Not a gradebook. Do not invent homework or extra class names (no PE / Algebra / History / Spanish). The roster is ParentVUE S1 2026-27, not a guessed four-class list.
@@ -192,7 +192,7 @@ Wholesome only. Try tapping the banner band, the little clarinet, and a shy tenn
 - `serve.py` — static server + `/api/tutor` + `/api/ask`
 - `img/` — banner, day art, badge, jungle wallpaper
 - `img/characters/` — Ace / Riff / Scorch / Deuce / Fuzz locker clips and posters (already on main; do not re-encode)
-- `img/library/` — crew comic stills + adventure clip (already on main; do not re-encode)
+- `img/library/` — crew comic stills + adventure clip + gear icons (already on main; do not re-encode or re-upload)
 - `css/theme.css`, `js/build.js`, `js/game.js`, `js/week.js`, `js/parent.js`, `js/characters.js`, `js/tutor.js`, `js/progress.js`, `js/egg.js`, `js/admin.js`, `js/story.js`, `js/ask.js`
 
 ## Characters (Ace, Riff, Scorch, Deuce, Fuzz)
@@ -200,12 +200,12 @@ Wholesome only. Try tapping the banner band, the little clarinet, and a shy tenn
 Parents assign a teammate (or a tool / ability) on a streak, then award that streak. Bennett only sees unlocked teammates and unlocked gear.
 
 1. Parent desk → **Characters**: Ace, Riff, Scorch, Deuce, and Fuzz are ready (play each clip). Tap one to see that library, or **Fun / Sounds**.
-2. Edit a streak → **Reward unlock** → character / tool / weapon / ability / content. TEST streaks **Meet Ace**, **Meet Riff**, **Meet Scorch**, **Meet Deuce**, **Meet Fuzz**, **Notebook of Holding**, **First Serve**, **Banana honk** are already wired.
+2. Edit a streak → **Reward unlock** → character / tool / weapon / ability / outfit / content. TEST streaks **Meet Ace**, **Meet Riff**, **Meet Scorch**, **Meet Deuce**, **Meet Fuzz**, **Angle Finder**, **Field Kit**, **Unplugged Strap**, **Daily Pick**, **Notebook of Holding**, and **First Serve** are already wired.
 3. **Award** that streak. Nobody auto-unlocks on load. A content unlock shows **Play reward** (user gesture — audio does not autoplay). Export the family pack so the other parent gets unlocks.
-4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / abilities only. **Sounds** shows earned audio / links; locked names stay **???**.
+4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / outfits / abilities with the gear PNG. Locked gear stays **???**. **Sounds** shows earned audio / links; locked names stay **???**.
 5. After 3 character unlocks, **Story** is available — a choose-your-own-adventure, not a toast. An attached unlocked sound can play on a story or week beat.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **41**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **43**.
 
 ## Locker refs (Orin)
 

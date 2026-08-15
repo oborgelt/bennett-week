@@ -21,6 +21,7 @@
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "crew", "fun"];
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
+  const GEAR_SLOTS = ["tool", "weapon", "ability", "outfit"];
   const SOUND_CUES = [
     { id: "egg-win", label: "Egg game — 41 eggs win" },
     { id: "egg-closed", label: "Egg game — company shutdown" },
@@ -881,7 +882,13 @@
         { id: "crew-hero", label: "Crew hero lineup", path: "img/library/crew-hero.jpg", kind: "image", character: "crew" },
         { id: "crew-run", label: "Crew run", path: "img/library/crew-run.jpg", kind: "image", character: "crew" },
         { id: "crew-burst", label: "Crew burst", path: "img/library/crew-burst.jpg", kind: "image", character: "crew" },
-        { id: "crew-adventure", label: "Crew adventure clip", path: "img/library/crew-adventure.mp4", poster: "img/library/crew-hero.jpg", kind: "video", character: "crew" }
+        { id: "crew-adventure", label: "Crew adventure clip", path: "img/library/crew-adventure.mp4", poster: "img/library/crew-hero.jpg", kind: "video", character: "crew" },
+        { id: "angle-finder", label: "Angle Finder", path: "img/library/angle-finder.png", poster: "img/library/angle-finder.png", kind: "image", character: "deuce", slot: "tool" },
+        { id: "field-kit", label: "Field Kit", path: "img/library/field-kit.png", poster: "img/library/field-kit.png", kind: "image", character: "scorch", slot: "tool" },
+        { id: "unplugged-strap", label: "Unplugged Strap", path: "img/library/unplugged-strap.png", poster: "img/library/unplugged-strap.png", kind: "image", character: "fuzz", slot: "outfit" },
+        { id: "daily-pick", label: "Daily Pick", path: "img/library/daily-pick.png", poster: "img/library/daily-pick.png", kind: "image", character: "riff", slot: "tool" },
+        { id: "notebook-holding", label: "Notebook of Holding", path: "img/library/notebook-holding.png", poster: "img/library/notebook-holding.png", kind: "image", character: "ace", slot: "tool" },
+        { id: "first-serve", label: "First Serve", path: "img/library/first-serve.png", poster: "img/library/first-serve.png", kind: "image", character: "ace", slot: "ability" }
       ]
     };
   }
@@ -1271,6 +1278,7 @@
     const mime = String(src.mime || "").trim();
     const character = LIBRARY_GROUPS.indexOf(src.character) >= 0 ? src.character : (device ? "fun" : "crew");
     const kind = inferKind(path || filename, url, src.kind);
+    const slot = GEAR_SLOTS.indexOf(String(src.slot || "").trim()) >= 0 ? String(src.slot).trim() : "";
     const labelFallback = filename || (path || url).split("/").pop() || (synth ? "Sound" : (device ? "Sound" : "Untitled"));
     return {
       id: String(src.id || "").trim() || ("lib-" + (i + 1)),
@@ -1280,6 +1288,7 @@
       poster: stripStoredSrc(src.poster),
       kind,
       character,
+      slot,
       synth,
       device,
       filename,
@@ -1487,6 +1496,22 @@
         at: row.at || row
       };
     });
+  }
+
+  function gearLibraryItems(lib) {
+    return ((lib && lib.items) || []).filter((item) => item && item.slot && GEAR_SLOTS.indexOf(item.slot) >= 0);
+  }
+
+  function gearLibraryItem(lib, id) {
+    if (!id) return null;
+    const item = libraryItem(lib, id);
+    return item && item.slot && GEAR_SLOTS.indexOf(item.slot) >= 0 ? item : null;
+  }
+
+  function gearThumbHtml(lib, id, cls) {
+    const item = libraryItem(lib, id) || gearLibraryItem(lib, id);
+    if (!item) return "";
+    return libraryThumbHtml(item, cls || "lib-thumb");
   }
 
   function getContentUnlocks() {
@@ -3036,6 +3061,10 @@
     getGearUnlocks,
     alreadyUnlockedGear,
     unlockedGear,
+    gearLibraryItems,
+    gearLibraryItem,
+    gearThumbHtml,
+    GEAR_SLOTS,
     getContentUnlocks,
     alreadyUnlockedContent,
     unlockedContent,

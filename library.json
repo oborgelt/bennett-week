@@ -103,6 +103,60 @@
       "poster": "img/library/crew-hero.jpg",
       "kind": "video",
       "character": "crew"
+    },
+    {
+      "id": "angle-finder",
+      "label": "Angle Finder",
+      "path": "img/library/angle-finder.png",
+      "poster": "img/library/angle-finder.png",
+      "kind": "image",
+      "character": "deuce",
+      "slot": "tool"
+    },
+    {
+      "id": "field-kit",
+      "label": "Field Kit",
+      "path": "img/library/field-kit.png",
+      "poster": "img/library/field-kit.png",
+      "kind": "image",
+      "character": "scorch",
+      "slot": "tool"
+    },
+    {
+      "id": "unplugged-strap",
+      "label": "Unplugged Strap",
+      "path": "img/library/unplugged-strap.png",
+      "poster": "img/library/unplugged-strap.png",
+      "kind": "image",
+      "character": "fuzz",
+      "slot": "outfit"
+    },
+    {
+      "id": "daily-pick",
+      "label": "Daily Pick",
+      "path": "img/library/daily-pick.png",
+      "poster": "img/library/daily-pick.png",
+      "kind": "image",
+      "character": "riff",
+      "slot": "tool"
+    },
+    {
+      "id": "notebook-holding",
+      "label": "Notebook of Holding",
+      "path": "img/library/notebook-holding.png",
+      "poster": "img/library/notebook-holding.png",
+      "kind": "image",
+      "character": "ace",
+      "slot": "tool"
+    },
+    {
+      "id": "first-serve",
+      "label": "First Serve",
+      "path": "img/library/first-serve.png",
+      "poster": "img/library/first-serve.png",
+      "kind": "image",
+      "character": "ace",
+      "slot": "ability"
     }
   ]
 }
