@@ -84,13 +84,13 @@ Grades stay seed/TEST until a real feed exists.
 
 Wholesome only. Try tapping the banner band, the little clarinet, and a shy tennis ball. Eggs never show an unearned trophy.
 
-**Egg game:** a dumb office recreation (boss talking, drag eggs to a basket, “THAT’S NOT THE RIGHT NUMBER OF EGGS,” then egg butt). Unlocks when parents award **Wrong number of eggs**, or when Bennett finds the banner-band secret. Then **🥚 Play** shows in the HUD and on that trophy. Locked players only see a “keep going” screen — not the catalog.
+**Egg game:** FEED EGGS — drag eggs from the bowl into the big egg’s mouth. The count is wrong on purpose. Run out and it asks if you want an 80 pack. Then egg butt. Unlocks when parents award **Wrong number of eggs**, or when Bennett finds the banner-band secret. Then **🥚 Play** shows in the HUD and on that trophy. Locked players only see a “keep going” screen — not the catalog.
 
 ## Files
 
 - `index.html` — week lobby (embeds JSON fallbacks so `file://` still works)
 - `characters.html` — Bennett’s teammate room (locked silhouettes until awarded)
-- `egg.html` — office egg game (locked until the trophy)
+- `egg.html` — FEED EGGS (locked until the trophy)
 - `progress.html` — activity + class dashboard
 - `parent.html` — parent desk
 - `mom.html` — redirect to `parent.html`
@@ -114,4 +114,4 @@ Parents assign a teammate on a streak, then award that streak. Bennett only sees
 4. Bennett opens **Characters**. Locked Ace is a silhouette. After the award he can play the clip and see the talent / tag line. A new unlock plays Ace’s clip once as the celebration.
 5. After 3 character unlocks, both sides see **Story unlocked — comic coming**. No comic pages yet — Orin is generating those in Imagine.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **24**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **25**.

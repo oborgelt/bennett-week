@@ -1,246 +1,356 @@
 (function () {
-  const BOSS = [
-    "So if we take the Q3 piece and just… slide it.",
-    "I need you looking at me for this part.",
-    "The Henderson thing is really the whole meeting.",
-    "Are you writing this down?",
-    "Tim. Tim. The eggs can wait.",
-    "We are not putting eggs in the deck.",
-    "I’m going to keep talking until you look up.",
-    "This is a two-minute conversation if you stop."
-  ];
-  const TIM = [
-    "Yep. Totally.",
-    "One second I almost have it.",
-    "I’m listening. I’m listening.",
-    "That’s not the right number…",
-    "I know. I KNOW."
+  const START_EGGS = 6;
+  const PACK = 80;
+  const LIES = [6, 6, 40, 41, 6, 25, 40, 80, 41, 7];
+  const SPOTS = [
+    { left: "10%", top: "40%" },
+    { left: "36%", top: "48%" },
+    { left: "58%", top: "38%" },
+    { left: "20%", top: "16%" },
+    { left: "46%", top: "14%" },
+    { left: "32%", top: "-4%" },
+    { left: "6%", top: "18%" },
+    { left: "62%", top: "8%" }
   ];
 
   let pack = null;
-  let need = 3;
-  let fails = 0;
-  let won = false;
+  let left = START_EGGS;
+  let fed = 0;
   let dragging = null;
   let dragOffset = { x: 0, y: 0 };
+  let busy = false;
+  let bought = false;
+  let won = false;
 
   function hud() {
-    document.getElementById("bananas").textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
+    const el = document.getElementById("bananas");
+    if (el) el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
   }
 
-  function talk(id, lines) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = lines[Math.floor(Math.random() * lines.length)];
-  }
-
-  function beep(bad) {
+  function beep(kind) {
     try {
       const Ctx = window.AudioContext || window.webkitAudioContext;
       const ctx = beep._ctx || new Ctx();
       beep._ctx = ctx;
       const o = ctx.createOscillator();
       const g = ctx.createGain();
-      o.type = bad ? "square" : "triangle";
-      o.frequency.setValueAtTime(bad ? 140 : 520, ctx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(bad ? 80 : 720, ctx.currentTime + 0.18);
-      g.gain.setValueAtTime(0.06, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+      o.type = kind === "warn" ? "square" : "triangle";
+      const f = kind === "eat" ? 180 : kind === "ok" ? 520 : 140;
+      o.frequency.setValueAtTime(f, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(kind === "ok" ? 720 : 90, ctx.currentTime + 0.16);
+      g.gain.setValueAtTime(0.05, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
-      o.stop(ctx.currentTime + 0.3);
+      o.stop(ctx.currentTime + 0.24);
     } catch (_) {}
   }
 
-  function eggHtml(id, butt) {
-    return `
-      <button type="button" class="egg${butt ? " is-butt" : ""}" data-egg="${id}" aria-label="${butt ? "Egg butt" : "Egg"}">
-        <span class="egg-shell">
-          <span class="egg-face" aria-hidden="true">
-            <i></i><i></i>
-            <b></b>
-          </span>
-          <span class="egg-butt" aria-hidden="true">
-            <em></em><em></em>
-          </span>
-        </span>
-      </button>`;
+  function speakCount(n) {
+    try {
+      if (!window.speechSynthesis) return;
+      const words = {
+        6: "Six eggs.",
+        7: "Seven eggs.",
+        25: "Twenty five eggs.",
+        40: "Forty eggs.",
+        41: "Forty one eggs.",
+        80: "Eighty eggs."
+      };
+      const u = new SpeechSynthesisUtterance(words[n] || (n + " eggs."));
+      u.rate = 0.82;
+      u.pitch = 0.55;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    } catch (_) {}
   }
 
-  function countBasket() {
-    return document.getElementById("egg-basket").querySelectorAll("[data-egg]").length;
+  function titlebar(thin) {
+    return `<div class="feed-titlebar${thin ? " thin" : ""}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>`;
+  }
+
+  function eaterSvg() {
+    return `
+      <svg class="eater-svg" viewBox="0 0 160 210" aria-hidden="true">
+        <ellipse class="eater-body" cx="80" cy="86" rx="58" ry="76" />
+        <g class="eater-face-open">
+          <circle class="eater-eye" cx="56" cy="64" r="8" />
+          <circle class="eater-eye" cx="104" cy="64" r="8" />
+          <circle class="eater-pupil" cx="58" cy="66" r="2.6" />
+          <circle class="eater-pupil" cx="106" cy="66" r="2.6" />
+          <circle class="eater-mouth" cx="80" cy="118" r="30" />
+        </g>
+        <g class="eater-face-chew">
+          <path class="eater-squint" d="M46 58 L64 70 L46 82" />
+          <path class="eater-squint" d="M114 58 L96 70 L114 82" />
+          <path class="eater-line" d="M64 118 h32" />
+        </g>
+        <g class="eater-butt">
+          <ellipse cx="62" cy="124" rx="18" ry="20" />
+          <ellipse cx="98" cy="124" rx="18" ry="20" />
+        </g>
+        <path class="eater-foot" d="M52 176 v20 h-22" />
+        <path class="eater-foot" d="M108 176 v20 h22" />
+      </svg>
+      <button type="button" class="mouth-hit" id="mouth-hit" aria-label="Feed mouth"></button>`;
+  }
+
+  function bowlSvg() {
+    return `
+      <svg class="bowl-svg" viewBox="0 0 180 118" aria-hidden="true">
+        <defs>
+          <clipPath id="bowl-clip">
+            <path d="M14 24 h152 l-18 82 h-116 z" />
+          </clipPath>
+        </defs>
+        <path class="bowl-body" d="M14 24 h152 l-18 82 h-116 z" />
+        <g clip-path="url(#bowl-clip)">
+          <path class="bowl-stripe" d="M8 42 h164" />
+          <path class="bowl-stripe" d="M12 60 h156" />
+          <path class="bowl-stripe" d="M18 78 h144" />
+          <path class="bowl-stripe" d="M26 96 h128" />
+        </g>
+      </svg>`;
+  }
+
+  function smallEgg(id) {
+    return `<button type="button" class="nugget" data-egg="${id}" aria-label="Egg">
+      <svg viewBox="0 0 36 46" aria-hidden="true">
+        <ellipse cx="18" cy="23" rx="14" ry="18" />
+      </svg>
+    </button>`;
   }
 
   function renderPlay() {
-    const office = document.getElementById("office");
-    office.innerHTML = `
-      <aside class="boss-col">
-        <div class="boss" aria-hidden="true">
-          <div class="boss-head"></div>
-          <div class="boss-body"></div>
-        </div>
-        <div class="speech" id="boss-talk">${Game.esc(BOSS[0])}</div>
-        <p class="tim-line" id="tim-talk">${Game.esc(TIM[0])}</p>
-      </aside>
-      <section class="crt" aria-label="Office computer">
-        <div class="crt-bezel">
-          <div class="win95">
-            <div class="win95-bar">
-              <span>eggbasket.exe</span>
-              <span class="win95-x">×</span>
-            </div>
-            <div class="win95-body">
-              <p class="egg-goal">Put <strong id="egg-need">${need}</strong> eggs in the basket.</p>
-              <div class="egg-stage">
-                <div class="egg-table" id="egg-table"></div>
-                <div class="egg-basket" id="egg-basket">
-                  <span class="basket-label">basket</span>
-                </div>
-              </div>
-              <div class="egg-actions">
-                <button type="button" class="act" id="egg-ok">That’s the eggs</button>
-                <span class="egg-count" id="egg-count">Eggs: 0</span>
-              </div>
-              <p class="egg-msg" id="egg-msg" role="status"></p>
-            </div>
+    left = START_EGGS;
+    fed = 0;
+    bought = false;
+    busy = false;
+    won = false;
+    dragging = null;
+    document.getElementById("office").innerHTML = `
+      <div class="feed-window" id="feed" aria-label="FEED EGGS">
+        ${titlebar(false)}
+        <h1 class="feed-title">FEED EGGS</h1>
+        <div class="feed-stage" id="stage">
+          <div class="eater" id="eater">${eaterSvg()}</div>
+          <div class="bowl-wrap">
+            <div class="bowl" id="bowl">${bowlSvg()}<div class="nugget-pile" id="pile"></div></div>
           </div>
         </div>
-      </section>`;
-    spawnEggs(6);
-    bindDrag();
-    document.getElementById("egg-ok").addEventListener("click", submitEggs);
-    setInterval(() => talk("boss-talk", BOSS), 4200);
+        <div class="feed-popup count" id="count-pop" hidden>
+          ${titlebar(true)}
+          <p id="count-text">6 EGGS</p>
+        </div>
+        <div class="feed-popup warn" id="warn-pop" hidden>
+          ${titlebar(true)}
+          <div class="warn-tri" aria-label="Warning">!</div>
+        </div>
+        <div class="feed-popup buy" id="buy-pop" hidden>
+          ${titlebar(true)}
+          <form id="buy-form">
+            <p>Dude, you ran out of eggs.</p>
+            <p>Would you like to buy</p>
+            <p>an 80 pack of eggs?</p>
+            <input id="buy-input" maxlength="24" autocomplete="off" enterkeyhint="go" aria-label="Answer">
+          </form>
+        </div>
+        <div class="feed-popup win" id="win-pop" hidden>
+          ${titlebar(true)}
+          <p class="butt-line">egg butt.</p>
+          <button type="button" class="feed-again" id="play-again">Play again</button>
+        </div>
+      </div>`;
+    fillPile();
+    bindPlay();
+    showCount(START_EGGS, false);
   }
 
-  function spawnEggs(n) {
-    const table = document.getElementById("egg-table");
-    table.innerHTML = "";
-    for (let i = 0; i < n; i += 1) {
-      table.insertAdjacentHTML("beforeend", eggHtml("e" + i, false));
+  function fillPile() {
+    const pile = document.getElementById("pile");
+    if (!pile) return;
+    pile.innerHTML = "";
+    const show = Math.min(Math.max(left, 0), SPOTS.length);
+    for (let i = 0; i < show; i += 1) {
+      pile.insertAdjacentHTML("beforeend", smallEgg("e" + i));
+      const el = pile.lastElementChild;
+      el.style.left = SPOTS[i].left;
+      el.style.top = SPOTS[i].top;
     }
-    updateCount();
   }
 
-  function updateCount() {
-    const n = countBasket();
-    const el = document.getElementById("egg-count");
-    if (el) el.textContent = "Eggs: " + n;
+  function hidePops() {
+    ["count-pop", "warn-pop", "buy-pop", "win-pop"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+  }
+
+  function liedCount() {
+    if (fed <= 0) return START_EGGS;
+    return LIES[Math.min(fed - 1, LIES.length - 1)];
+  }
+
+  function showCount(n, talk) {
+    const pop = document.getElementById("count-pop");
+    if (!pop || won) return;
+    hidePops();
+    document.getElementById("count-text").textContent = n + " EGGS";
+    pop.hidden = false;
+    if (talk) speakCount(n);
+    clearTimeout(showCount._t);
+    showCount._t = setTimeout(() => {
+      if (!won && document.getElementById("buy-pop") && document.getElementById("buy-pop").hidden) {
+        pop.hidden = true;
+      }
+    }, 1200);
+  }
+
+  function showWarn() {
+    if (won) return;
+    hidePops();
+    const pop = document.getElementById("warn-pop");
+    pop.hidden = false;
+    beep("warn");
+    setTimeout(() => { if (pop) pop.hidden = true; }, 900);
+  }
+
+  function setFace(mode) {
+    const eater = document.getElementById("eater");
+    if (!eater) return;
+    eater.classList.remove("chew", "butt");
+    if (mode) eater.classList.add(mode);
   }
 
   function pointIn(el, x, y) {
+    if (!el) return false;
     const r = el.getBoundingClientRect();
-    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    const pad = 22;
+    return x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad;
   }
 
-  function bindDrag() {
-    const office = document.getElementById("office");
-    office.addEventListener("pointerdown", (e) => {
+  function eat() {
+    busy = true;
+    setFace("chew");
+    left = Math.max(0, left - 1);
+    fed += 1;
+    fillPile();
+    const n = liedCount();
+    showCount(n, true);
+    beep("eat");
+    setTimeout(() => {
+      setFace("");
+      busy = false;
+      if (won) return;
+      if (left <= 0 && !bought) {
+        hidePops();
+        document.getElementById("buy-pop").hidden = false;
+        const input = document.getElementById("buy-input");
+        input.value = "";
+        input.focus();
+      } else if (bought && fed >= START_EGGS + 2) {
+        revealButt();
+      }
+    }, 420);
+  }
+
+  function revealButt() {
+    won = true;
+    busy = true;
+    setFace("butt");
+    hidePops();
+    document.getElementById("win-pop").hidden = false;
+    Game.confetti();
+    Game.addBananas(2);
+    hud();
+    beep("ok");
+    Game.toast("egg butt. +2 bananas");
+  }
+
+  function buyPack() {
+    bought = true;
+    left = PACK;
+    hidePops();
+    fillPile();
+    showCount(PACK, true);
+    beep("ok");
+  }
+
+  function trailAt(x, y) {
+    const t = document.createElement("span");
+    t.className = "egg-trail";
+    t.style.left = (x - 12) + "px";
+    t.style.top = (y - 16) + "px";
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 160);
+  }
+
+  function releaseEgg(e) {
+    if (!dragging) return;
+    const egg = dragging;
+    const mouth = document.getElementById("mouth-hit");
+    const hit = pointIn(mouth, e.clientX, e.clientY);
+    egg.classList.remove("flying", "near");
+    egg.style.position = "";
+    egg.style.left = "";
+    egg.style.top = "";
+    egg.style.zIndex = "";
+    dragging = null;
+    if (hit && !busy && !won) eat();
+    else {
+      fillPile();
+      if (fed > 0 && !won) showWarn();
+    }
+  }
+
+  function bindPlay() {
+    const feed = document.getElementById("feed");
+
+    feed.addEventListener("pointerdown", (e) => {
       const egg = e.target.closest("[data-egg]");
-      if (!egg || won) return;
+      if (!egg || busy || won) return;
+      if (!document.getElementById("buy-pop").hidden) return;
       e.preventDefault();
       dragging = egg;
-      egg.classList.add("dragging");
-      egg.setPointerCapture(e.pointerId);
+      egg.classList.add("flying");
+      try { egg.setPointerCapture(e.pointerId); } catch (_) {}
       const r = egg.getBoundingClientRect();
       dragOffset.x = e.clientX - r.left;
       dragOffset.y = e.clientY - r.top;
       egg.style.position = "fixed";
       egg.style.left = r.left + "px";
       egg.style.top = r.top + "px";
-      egg.style.zIndex = "40";
+      egg.style.zIndex = "50";
     });
-    office.addEventListener("pointermove", (e) => {
+
+    feed.addEventListener("pointermove", (e) => {
       if (!dragging) return;
-      dragging.style.left = (e.clientX - dragOffset.x) + "px";
-      dragging.style.top = (e.clientY - dragOffset.y) + "px";
+      const x = e.clientX - dragOffset.x;
+      const y = e.clientY - dragOffset.y;
+      dragging.style.left = x + "px";
+      dragging.style.top = y + "px";
+      dragging.classList.toggle("near", pointIn(document.getElementById("mouth-hit"), e.clientX, e.clientY));
+      if (e.movementX || e.movementY) trailAt(e.clientX, e.clientY);
     });
-    office.addEventListener("pointerup", (e) => {
-      if (!dragging) return;
-      const egg = dragging;
-      const basket = document.getElementById("egg-basket");
-      const table = document.getElementById("egg-table");
-      egg.classList.remove("dragging");
-      egg.style.position = "";
-      egg.style.left = "";
-      egg.style.top = "";
-      egg.style.zIndex = "";
-      if (pointIn(basket, e.clientX, e.clientY)) basket.appendChild(egg);
-      else table.appendChild(egg);
-      dragging = null;
-      updateCount();
+
+    feed.addEventListener("pointerup", releaseEgg);
+    feed.addEventListener("pointercancel", releaseEgg);
+
+    document.getElementById("buy-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      buyPack();
     });
-  }
 
-  function yell(text) {
-    const msg = document.getElementById("egg-msg");
-    msg.textContent = text;
-    msg.classList.add("yell");
-    document.querySelector(".crt-bezel").classList.add("shake");
-    setTimeout(() => document.querySelector(".crt-bezel").classList.remove("shake"), 400);
-    talk("tim-talk", ["That’s not the right number of eggs.", "I KNOW that’s not the right number of eggs.", "Why is it never the right number."]);
-    beep(true);
-  }
-
-  function revealButt() {
-    won = true;
-    const basket = document.getElementById("egg-basket");
-    let egg = basket.querySelector("[data-egg]");
-    if (!egg) {
-      egg = document.querySelector("[data-egg]");
-      if (egg) basket.appendChild(egg);
-    }
-    if (egg) egg.classList.add("is-butt");
-    document.getElementById("egg-msg").textContent = "egg butt.";
-    document.getElementById("egg-msg").classList.remove("yell");
-    document.getElementById("egg-msg").classList.add("butt-line");
-    document.getElementById("boss-talk").textContent = "I… I’m going to come back.";
-    document.getElementById("tim-talk").textContent = "That’s an egg butt.";
-    document.getElementById("egg-ok").textContent = "Play again";
-    Game.confetti();
-    Game.addBananas(2);
-    hud();
-    beep(false);
-    Game.toast("egg butt. +2 bananas");
-  }
-
-  function submitEggs() {
-    if (won) {
-      won = false;
-      fails = 0;
-      need = 3;
-      renderPlay();
-      return;
-    }
-    const n = countBasket();
-    if (n === need && fails >= 1) {
-      revealButt();
-      return;
-    }
-    if (n === need && fails === 0) {
-      fails += 1;
-      need = n === 3 ? 4 : 3;
-      document.getElementById("egg-need").textContent = String(need);
-      yell("THAT’S NOT THE RIGHT NUMBER OF EGGS");
-      Game.toast("The goal just changed. Of course it did.");
-      return;
-    }
-    fails += 1;
-    yell("THAT’S NOT THE RIGHT NUMBER OF EGGS");
-    if (fails >= 3) {
-      setTimeout(revealButt, 900);
-    } else {
-      talk("boss-talk", ["I can wait. I cannot wait.", "Are those eggs.", "We are so behind."]);
-    }
+    document.getElementById("play-again").addEventListener("click", renderPlay);
   }
 
   function renderLocked() {
     document.getElementById("office").innerHTML = `
       <div class="egg-locked">
-        <div class="egg preview" aria-hidden="true"><span class="egg-shell"><span class="egg-face"><i></i><i></i><b></b></span></span></div>
+        <p class="feed-title">FEED EGGS</p>
         <h2>Still locked</h2>
-        <p>This dumb office game unlocks as a reward. A parent can award it from the desk, or keep poking secrets in the lobby.</p>
-        <p class="empty">Bennett never sees the locked catalog — only the game, once it’s earned.</p>
+        <p>This dumb game unlocks as a reward. A parent can award it from the desk, or keep poking secrets in the lobby.</p>
         <a class="btn primary" href="index.html">Back to this week</a>
       </div>`;
   }
