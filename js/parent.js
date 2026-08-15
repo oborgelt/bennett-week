@@ -449,6 +449,8 @@
           const item = Game.libraryItem(library, result.grantedUnlock.id);
           Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for Bennett.");
           if (item) Game.playContentReward(item);
+        } else {
+          Game.playSoundCue(family, library, "streak-award");
         }
       } else {
         Game.toast("Already awarded on this device.");

@@ -21,6 +21,11 @@
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "crew", "fun"];
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
+  const SOUND_CUES = [
+    { id: "egg-end", label: "1. Egg game ends (41 eggs)" },
+    { id: "egg-closed", label: "Egg game closed by the company" },
+    { id: "streak-award", label: "A streak is awarded" }
+  ];
   const PACK_BLOB_MAX = 2 * 1024 * 1024;
   const IDB_NAME = "bennett-week";
   const IDB_STORE = "library-blobs";
@@ -302,6 +307,7 @@
       characterUnlocks: {},
       gearUnlocks: {},
       contentUnlocks: {},
+      soundCues: {},
       story: emptyStory(),
       overlay: emptyOverlay()
     };
@@ -329,9 +335,20 @@
       characterUnlocks: asUnlockMap(f.characterUnlocks),
       gearUnlocks: asUnlockMap(f.gearUnlocks),
       contentUnlocks: asUnlockMap(f.contentUnlocks),
+      soundCues: asCueMap(f.soundCues),
       story: normalizeStory(f.story),
       overlay: normalizeOverlay(f.overlay)
     };
+  }
+
+  function asCueMap(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    const out = {};
+    Object.keys(value).forEach((id) => {
+      const v = String(value[id] || "").trim();
+      if (id && v) out[id] = v;
+    });
+    return out;
   }
 
   function slugId(text, fallback) {
@@ -848,6 +865,46 @@
     const pretty = base.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
     if (!pretty) return "Sound";
     return pretty.replace(/(^|\s)([a-z])/g, (_m, sp, c) => sp + c.toUpperCase());
+  }
+
+  function fileBasename(name) {
+    return String(name || "").replace(/^.*[\\/]/, "").trim();
+  }
+
+  const SKIP_DEVICE_SOUNDS = {
+    cumshot: 1,
+    jackoff: 1,
+    beahit: 1,
+    whothef: 1,
+    donthavebd: 1,
+    tunacan: 1,
+    quitfuckingwithem: 1,
+    gotabush: 1,
+    dfwmagain: 1
+  };
+
+  function isSkippedDeviceSound(name) {
+    const base = fileBasename(name).replace(/\.[^.]+$/, "").toLowerCase();
+    return !!SKIP_DEVICE_SOUNDS[base];
+  }
+
+  function labelsFromManifest(data) {
+    const list = Array.isArray(data)
+      ? data
+      : (data && Array.isArray(data.clips) ? data.clips : []);
+    const map = {};
+    list.forEach((item) => {
+      if (typeof item === "string") {
+        const base = fileBasename(item).toLowerCase();
+        if (base) map[base] = labelFromFilename(item);
+        return;
+      }
+      const file = fileBasename((item && (item.file || item.src || item.path)) || "");
+      if (!file) return;
+      const label = String((item && item.label) || "").trim() || labelFromFilename(file);
+      map[file.toLowerCase()] = label;
+    });
+    return map;
   }
 
   function stripStoredSrc(value) {
@@ -1498,14 +1555,70 @@
     return true;
   }
 
+  let activeLibraryAudio = null;
+  let lastLibraryItemId = "";
+
+  function stopLibraryAudio() {
+    if (!activeLibraryAudio) return;
+    try {
+      activeLibraryAudio.pause();
+      activeLibraryAudio.currentTime = 0;
+    } catch (_) {}
+  }
+
+  function primeLibraryAudio() {
+    if (!activeLibraryAudio) {
+      try { activeLibraryAudio = new Audio(); } catch (_) { return false; }
+    }
+    try {
+      if (activeLibraryAudio.paused) {
+        const p = activeLibraryAudio.play();
+        if (p && p.catch) p.catch(function () {});
+        activeLibraryAudio.pause();
+      }
+    } catch (_) {}
+    return true;
+  }
+
+  function waitForLibraryAudio(ms) {
+    return new Promise((resolve) => {
+      const a = activeLibraryAudio;
+      let settled = false;
+      const done = () => {
+        if (settled) return;
+        settled = true;
+        if (a) {
+          a.removeEventListener("ended", done);
+          a.removeEventListener("error", done);
+        }
+        resolve();
+      };
+      if (!a || a.paused || a.ended) {
+        resolve();
+        return;
+      }
+      a.addEventListener("ended", done);
+      a.addEventListener("error", done);
+      setTimeout(done, Math.max(400, Number(ms) || 20000));
+    });
+  }
+
   function playLibraryItem(item) {
     if (!item) return false;
-    if (item.synth) return playSynth(item.synth);
+    lastLibraryItemId = item.id || "";
+    if (item.synth) {
+      stopLibraryAudio();
+      return playSynth(item.synth);
+    }
     const playSrc = (src) => {
       if (item.kind === "audio" && src && src !== "#") {
         try {
-          const audio = new Audio(src);
-          audio.play();
+          primeLibraryAudio();
+          stopLibraryAudio();
+          if (!activeLibraryAudio) activeLibraryAudio = new Audio();
+          activeLibraryAudio.src = src;
+          const p = activeLibraryAudio.play();
+          if (p && p.catch) p.catch(function () {});
           return true;
         } catch (_) {
           return false;
@@ -1522,6 +1635,39 @@
       return true;
     }
     return false;
+  }
+
+  function audioLibraryItems(lib) {
+    return ((lib && lib.items) || []).filter((item) => item && (item.kind === "audio" || item.synth));
+  }
+
+  function playRandomLibraryItem(lib, exceptId) {
+    const items = audioLibraryItems(lib).filter((item) => item.id !== exceptId && item.id !== lastLibraryItemId);
+    const pool = items.length ? items : audioLibraryItems(lib);
+    if (!pool.length) return null;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    playLibraryItem(pick);
+    return pick;
+  }
+
+  function cueLibraryItem(family, lib, cueId) {
+    const id = family && family.soundCues && cueId ? family.soundCues[cueId] : "";
+    return id ? libraryItem(lib, id) : null;
+  }
+
+  function setSoundCue(family, cueId, itemId) {
+    const next = normalizeFamily(family);
+    const key = String(cueId || "").trim();
+    if (!key) return next;
+    const id = String(itemId || "").trim();
+    if (!id) delete next.soundCues[key];
+    else next.soundCues[key] = id;
+    saveFamily(next);
+    return next;
+  }
+
+  function playSoundCue(family, lib, cueId) {
+    return playLibraryItem(cueLibraryItem(family, lib, cueId));
   }
 
   function closeContentCelebrate() {
@@ -2416,6 +2562,9 @@
     inferKind,
     kindFromFile,
     labelFromFilename,
+    fileBasename,
+    isSkippedDeviceSound,
+    labelsFromManifest,
     addDeviceLibraryFile,
     putLibraryBlob,
     getLibraryBlob,
@@ -2532,6 +2681,15 @@
     canPlayLibraryItem,
     attachedLibraryItem,
     playLibraryItem,
+    stopLibraryAudio,
+    primeLibraryAudio,
+    waitForLibraryAudio,
+    playRandomLibraryItem,
+    audioLibraryItems,
+    SOUND_CUES,
+    cueLibraryItem,
+    setSoundCue,
+    playSoundCue,
     playSynth,
     playContentReward,
     maybePlayContentCelebration,

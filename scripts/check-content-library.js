@@ -174,6 +174,10 @@ assert(norm.items.some((item) => item.id === "banana-honk"), "normalizeLibrary d
 assert.strictEqual(Game.inferKind("img/library/foo.mp3", "", ""), "audio");
 assert.strictEqual(Game.labelFromFilename("my-cool_honk.mp3"), "My Cool Honk");
 assert.strictEqual(Game.labelFromFilename("TEST-beep.wav"), "TEST Beep");
+assert.strictEqual(Game.fileBasename("audio/holdthatdoor.mp3"), "holdthatdoor.mp3");
+assert.strictEqual(Game.labelsFromManifest([{ file: "holdthatdoor.mp3", label: "Hold that door" }])["holdthatdoor.mp3"], "Hold that door");
+assert(Game.isSkippedDeviceSound("jackoff.mp3"), "school-skip list should catch jackoff");
+assert(!Game.isSkippedDeviceSound("holdthatdoor.mp3"), "school-skip list should keep holdthatdoor");
 assert.strictEqual(Game.kindFromFile({ name: "clip.MP3", type: "" }), "audio");
 assert.strictEqual(Game.kindFromFile({ name: "pic.PNG", type: "image/png" }), "image");
 assert.strictEqual(Game.kindFromFile({ name: "movie.webm", type: "" }), "video");
@@ -215,6 +219,17 @@ const dirty = Game.normalizeLibrary({
 assert.strictEqual(dirty.items[0].url, "");
 assert.strictEqual(dirty.items[0].path, "");
 assert(dirty.items[0].device);
+
+assert(Game.emptyFamily().soundCues && typeof Game.emptyFamily().soundCues === "object");
+assert(Game.SOUND_CUES.some((c) => c.id === "egg-end"), "egg-end cue should exist");
+const cued = Game.setSoundCue(Game.emptyFamily(), "egg-end", "banana-honk");
+assert.strictEqual(cued.soundCues["egg-end"], "banana-honk");
+assert.strictEqual(Game.cueLibraryItem(cued, Game.normalizeLibrary(library), "egg-end").id, "banana-honk");
+assert.strictEqual(Game.playSoundCue(Game.emptyFamily(), Game.normalizeLibrary(library), "missing-cue"), false);
+assert(Game.audioLibraryItems(Game.normalizeLibrary(library)).some((item) => item.id === "banana-honk"));
+assert(Game.playRandomLibraryItem(Game.normalizeLibrary(library)), "random clip should pick an audio item");
+const cleared = Game.setSoundCue(cued, "egg-end", "");
+assert(!cleared.soundCues["egg-end"], "clearing a cue should drop it");
 
 const pack = {
   currency: achievements.currency,

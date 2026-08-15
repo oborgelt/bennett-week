@@ -16,8 +16,8 @@
         <p>Media library · sounds · links</p>
       </div>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 36</span>
-        <span>8/15, 1:53 PM</span>
+        <span>Build 37</span>
+        <span>8/15, 2:30 PM</span>
       </div>
     </div>
     <div class="hud-bar progress-hud">
@@ -38,6 +38,8 @@
     <p class="draft-flag" id="draft-flag" hidden>This device has a library or family draft. Export the family pack to share.</p>
     <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
       Drop audio you already have (mp3 / wav / ogg / m4a), or an image / video. Files stay <strong>on this device</strong> — not in the repo.
+      If you drop the whole <code>audio</code> folder and include <code>manifest.json</code>, labels stay as written.
+      Nine school-skip clips are left out automatically. Delete any more with <strong>Delete</strong> on the card.
       Default tag is <strong>Fun / Sounds</strong>. Retag anytime. Export the family pack so Mom can import the files.
       Do not re-encode the locker clips. Do not commit copyrighted soundboard rips.
     </p>
@@ -54,8 +56,12 @@
     <div class="lib-drop" id="lib-drop" tabindex="0" role="button" aria-label="Drop or choose audio, image, or video files">
       <input id="lib-files" type="file" accept="audio/*,image/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.mp4,.webm,.mov,.jpg,.jpeg,.png,.gif,.webp" multiple class="sr-only">
       <p class="lib-drop-lead">Drop a sound here</p>
-      <p class="lib-drop-hint">mp3, wav, ogg, m4a — or an image / video. Stays on this phone or laptop. Tagged Fun / Sounds unless you retag it.</p>
-      <button type="button" class="btn primary" id="lib-pick">Choose files</button>
+      <p class="lib-drop-hint">mp3, wav, ogg, m4a — or drop the whole audio folder (keep manifest.json). Stays on this phone or laptop. Tagged Fun / Sounds unless you retag it.</p>
+      <input id="lib-folder" type="file" webkitdirectory directory multiple class="sr-only">
+      <div class="parent-actions" style="margin-top:10px">
+        <button type="button" class="btn primary" id="lib-pick">Choose files</button>
+        <button type="button" class="btn" id="lib-pick-folder">Choose folder</button>
+      </div>
     </div>
     <details class="lib-advanced">
       <summary>Add by path or URL</summary>
@@ -119,6 +125,15 @@
       <button type="button" class="btn primary" id="save-story-note">Save include-in-story note</button>
     </div>
     <div id="ingredients"></div>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Play a sound when…</h2>
+    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
+      <strong>1. Egg game ends</strong> — clip that plays on the 41-eggs win screen.
+      After that speech, the company shutdown, and every other sound finishes, a <strong>random</strong> library clip plays.
+      You can also assign a streak award or Start on a week item.
+      Plays on this device. Export the family pack so Mom gets the same assignments.
+    </p>
+    <div id="sound-cues"></div>
 
     <div id="library-groups"></div>
   </div>

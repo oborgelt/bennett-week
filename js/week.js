@@ -421,6 +421,9 @@
     track.querySelectorAll("[data-act]").forEach((btn) => {
       btn.addEventListener("click", () => {
         Game.touchWork(btn.dataset.id, btn.dataset.act);
+        if (btn.dataset.act === "start") {
+          Game.playSoundCue(family, library, "work:" + btn.dataset.id);
+        }
         renderCards();
         goTo(dayIndex, true);
         hud();
@@ -1055,6 +1058,7 @@
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
     library = await Game.loadLibrary();
+    await Game.hydrateLibraryBlobs(library);
     baseSeed = await Game.loadProgress();
     syncWeek();
     renderStandingClasses();

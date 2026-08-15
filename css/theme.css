@@ -2205,6 +2205,55 @@ body.crew-page {
   margin: 16px 0 8px;
 }
 
+details.lib-group {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 4px 12px 12px;
+  background: rgba(14, 36, 38, 0.45);
+}
+
+.lib-group > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 1rem;
+  font-weight: 750;
+  padding: 10px 0 8px;
+}
+
+.lib-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lib-group > summary > span:first-child {
+  flex: 1 1 auto;
+}
+
+.lib-group > summary .fold-count {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.lib-group > summary::after {
+  content: "Hide";
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+
+.lib-group:not([open]) > summary::after {
+  content: "Show";
+}
+
+.lib-group:not([open]) {
+  padding-bottom: 4px;
+}
+
 .lib-group h2,
 .char-library h2,
 .loadout h2 {
@@ -2296,6 +2345,43 @@ body.crew-page {
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px;
+}
+
+.lib-card-play {
+  cursor: pointer;
+}
+
+.lib-card-play:hover {
+  border-color: rgba(198, 224, 58, 0.7);
+}
+
+.audio-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin: 16px 0 10px;
+}
+
+.audio-toolbar .btn {
+  width: 100%;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 14px 16px;
+}
+
+.audio-toolbar p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.fun-audio-panel {
+  margin: 0 0 16px;
+}
+
+.fun-audio-panel[hidden] {
+  display: none !important;
 }
 
 .lib-media {

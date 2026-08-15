@@ -13,6 +13,8 @@
   ];
 
   let pack = null;
+  let family = null;
+  let library = null;
   let fed = 0;
   let afterBuy = 0;
   let dragging = null;
@@ -351,8 +353,17 @@
     pop.hidden = false;
     Game.addBananas(2);
     hud();
-    slinky();
-    speakThen("you are looking at a nude egg", companyShutdown);
+    runWinSounds();
+  }
+
+  async function runWinSounds() {
+    Game.primeLibraryAudio();
+    const usedEnd = Game.playSoundCue(family, library, "egg-end");
+    if (!usedEnd) slinky();
+    await Game.waitForLibraryAudio(usedEnd ? 20000 : 1400);
+    speakThen("you are looking at a nude egg", () => {
+      companyShutdown();
+    });
   }
 
   function companyShutdown() {
@@ -360,8 +371,13 @@
     const win = document.getElementById("win-pop");
     if (win) win.hidden = true;
     if (warn) warn.hidden = false;
-    alarm();
-    setTimeout(killGame, 1100);
+    const usedClosed = Game.playSoundCue(family, library, "egg-closed");
+    if (!usedClosed) alarm();
+    const wait = usedClosed ? Game.waitForLibraryAudio(8000) : new Promise((resolve) => setTimeout(resolve, 1100));
+    wait.then(() => {
+      killGame();
+      Game.playRandomLibraryItem(library);
+    });
   }
 
   function killGame() {
@@ -448,6 +464,7 @@
       if (!egg || busy || won) return;
       if (!document.getElementById("buy-pop").hidden) return;
       e.preventDefault();
+      Game.primeLibraryAudio();
       dragging = egg;
       dragStart.x = e.clientX;
       dragStart.y = e.clientY;
@@ -491,6 +508,9 @@
 
   async function boot() {
     pack = await Game.loadAchievements();
+    family = await Game.loadFamily();
+    library = await Game.loadLibrary();
+    await Game.hydrateLibraryBlobs(library);
     hud();
     if (!Game.hasEggGame(pack)) {
       renderLocked();

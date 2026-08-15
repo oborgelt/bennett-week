@@ -19,6 +19,7 @@
   let family = null;
   let roster = null;
   let library = null;
+  let week = { work: [], events: [] };
 
   function persistLib() {
     Game.saveMomLibrary(library);
@@ -80,46 +81,57 @@
       : item.device
         ? ("On this device" + (item.filename ? " · " + item.filename : ""))
         : (src || item.path || item.url || "—");
-    const badge = item.kind === "video" || item.kind === "audio"
-      ? '<span class="lib-play-badge">Play</span>'
-      : item.kind === "link" ? '<span class="lib-play-badge">Open</span>' : "";
+    const audio = item.kind === "audio" || !!item.synth;
     return `
-      <article class="lib-card">
-        <button type="button" class="lib-media" data-preview="${Game.esc(item.id)}" aria-label="Preview ${Game.esc(item.label)}">
+      <article class="lib-card${audio ? " lib-card-play" : ""}" ${audio ? `data-play="${Game.esc(item.id)}"` : ""}>
+        <div class="lib-media" aria-hidden="true">
           ${Game.libraryThumbHtml(item)}
-          ${badge}
-        </button>
+          ${audio ? '<span class="lib-play-badge">Play</span>' : ""}
+        </div>
         <h3>${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.label)}</h3>
         <p>${Game.esc(Game.libraryKindLabel(item))} · ${Game.esc(detail)}</p>
         <label>Tag
           <select data-tag="${Game.esc(item.id)}">${tagSelect(item)}</select>
         </label>
         <div class="parent-actions">
-          <button type="button" class="tiny" data-preview="${Game.esc(item.id)}">Preview</button>
+          ${audio ? "" : `<button type="button" class="tiny" data-preview="${Game.esc(item.id)}">Preview</button>`}
           <button type="button" class="tiny danger" data-del-lib="${Game.esc(item.id)}">Delete</button>
         </div>
       </article>`;
   }
 
-  function renderLibrary() {
-    const host = document.getElementById("library-groups");
-    host.innerHTML = GROUPS.map((g) => {
-      const items = Game.libraryFor(library, g.id, false);
-      const body = items.length
-        ? `<div class="lib-grid">${items.map(cardHtml).join("")}</div>`
-        : `<p class="empty">No files tagged ${Game.esc(g.title)} yet.</p>`;
-      return `
-        <section class="lib-group">
-          <h2>${Game.esc(g.title)}</h2>
-          <p>${Game.esc(GROUP_BLURB[g.id] || "")}</p>
-          ${body}
-        </section>`;
-    }).join("");
+  function foldState() {
+    try {
+      return JSON.parse(localStorage.getItem("bw-lib-fold") || "{}") || {};
+    } catch (_) {
+      return {};
+    }
+  }
 
+  function saveFold(id, open) {
+    const map = foldState();
+    map[id] = !!open;
+    localStorage.setItem("bw-lib-fold", JSON.stringify(map));
+  }
+
+  function groupOpen(id, count) {
+    const map = foldState();
+    if (Object.prototype.hasOwnProperty.call(map, id)) return !!map[id];
+    return id !== "fun" || count <= 8;
+  }
+
+  function bindLibraryClicks(host) {
     host.querySelectorAll("[data-preview]").forEach((b) => {
       b.addEventListener("click", () => {
         const item = Game.libraryItem(library, b.dataset.preview);
         if (item) previewItem(item);
+      });
+    });
+    host.querySelectorAll("[data-play]").forEach((card) => {
+      card.addEventListener("click", (e) => {
+        if (e.target.closest("select, label, .tiny, button")) return;
+        const item = Game.libraryItem(library, card.dataset.play);
+        if (item) Game.playLibraryItem(item);
       });
     });
     host.querySelectorAll("[data-tag]").forEach((sel) => {
@@ -137,6 +149,147 @@
         library.items = library.items.filter((item) => item.id !== id);
         await Game.deleteLibraryBlob(id);
         persistLib();
+      });
+    });
+  }
+
+  function renderLibrary() {
+    const host = document.getElementById("library-groups");
+    const funItems = Game.libraryFor(library, "fun", false);
+    const funOpen = groupOpen("fun", funItems.length);
+    const others = GROUPS.filter((g) => g.id !== "fun").map((g) => {
+      const items = Game.libraryFor(library, g.id, false);
+      const open = groupOpen(g.id, items.length) ? " open" : "";
+      const count = items.length === 1 ? "1 file" : items.length + " files";
+      const body = items.length
+        ? `<div class="lib-grid">${items.map(cardHtml).join("")}</div>`
+        : `<p class="empty">No files tagged ${Game.esc(g.title)} yet.</p>`;
+      return `
+        <details class="lib-group" data-fold="${Game.esc(g.id)}"${open}>
+          <summary>
+            <span>${Game.esc(g.title)}</span>
+            <span class="fold-count">${Game.esc(count)}</span>
+          </summary>
+          <p>${Game.esc(GROUP_BLURB[g.id] || "")}</p>
+          ${body}
+        </details>`;
+    }).join("");
+    const funCount = funItems.length === 1 ? "1 audio file" : funItems.length + " audio files";
+    host.innerHTML = `
+      <div class="audio-toolbar">
+        <button type="button" class="btn primary" id="toggle-fun-audio" aria-expanded="${funOpen ? "true" : "false"}">
+          ${funOpen ? "Hide audio files" : "Show audio files"} · ${Game.esc(funCount)}
+        </button>
+        <p>Tap a card once to play. Hide parks the whole list.</p>
+      </div>
+      <div id="fun-audio-panel" class="fun-audio-panel"${funOpen ? "" : " hidden"}>
+        <div class="lib-grid">${funItems.map(cardHtml).join("")}</div>
+      </div>
+      ${others}`;
+
+    const toggle = document.getElementById("toggle-fun-audio");
+    const panel = document.getElementById("fun-audio-panel");
+    if (toggle && panel) {
+      toggle.addEventListener("click", () => {
+        const open = panel.hasAttribute("hidden");
+        panel.toggleAttribute("hidden", !open);
+        saveFold("fun", open);
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.textContent = (open ? "Hide audio files" : "Show audio files") + " · " + funCount;
+      });
+    }
+    host.querySelectorAll("details[data-fold]").forEach((el) => {
+      el.addEventListener("toggle", () => saveFold(el.dataset.fold, el.open));
+    });
+    bindLibraryClicks(host);
+    renderCues();
+  }
+
+  function audioOptions(selected) {
+    const items = ((library && library.items) || []).filter((item) => item.kind === "audio" || item.synth);
+    items.sort((a, b) => String(a.label || "").localeCompare(String(b.label || ""), undefined, { sensitivity: "base" }));
+    const opts = ['<option value="">None</option>'].concat(items.map((item) => {
+      const on = item.id === selected ? " selected" : "";
+      return `<option value="${Game.esc(item.id)}"${on}>${Game.esc(item.label)}</option>`;
+    }));
+    return opts.join("");
+  }
+
+  function cueRows() {
+    const rows = Game.SOUND_CUES.slice();
+    (week.work || []).forEach((w) => {
+      if (w && w.id) rows.push({ id: "work:" + w.id, label: "Start · " + w.title });
+    });
+    (week.events || []).forEach((e) => {
+      if (e && e.id) rows.push({ id: "event:" + e.id, label: "Event · " + e.title });
+    });
+    return rows;
+  }
+
+  function renderCues() {
+    const host = document.getElementById("sound-cues");
+    if (!host) return;
+    const cues = family.soundCues || {};
+    const rows = cueRows();
+    host.innerHTML = `
+      <div class="form-grid cue-assign">
+        <label>Moment
+          <select id="cue-event">${rows.map((row) => `<option value="${Game.esc(row.id)}">${Game.esc(row.label)}</option>`).join("")}</select>
+        </label>
+        <label>Sound
+          <select id="cue-sound">${audioOptions("")}</select>
+        </label>
+      </div>
+      <div class="parent-actions">
+        <button type="button" class="btn primary" id="cue-save">Assign sound</button>
+        <button type="button" class="tiny" id="cue-play">Play</button>
+      </div>
+      <div class="cue-list">${rows.filter((row) => cues[row.id]).map((row) => {
+        const item = Game.cueLibraryItem(family, library, row.id);
+        return `
+          <article class="ach-card">
+            <h3>${Game.esc(row.label)}</h3>
+            <p>${Game.esc(item ? item.label : "Missing file")}</p>
+            <div class="parent-actions">
+              <button type="button" class="tiny primary" data-cue-play="${Game.esc(row.id)}">Play</button>
+              <button type="button" class="tiny danger" data-cue-clear="${Game.esc(row.id)}">Clear</button>
+            </div>
+          </article>`;
+      }).join("") || `<p class="empty">No sounds assigned yet. Pick a moment, pick a clip, Assign sound.</p>`}</div>`;
+    const eventSel = document.getElementById("cue-event");
+    const soundSel = document.getElementById("cue-sound");
+    function syncSoundSelect() {
+      const current = (family.soundCues || {})[eventSel.value] || "";
+      soundSel.innerHTML = audioOptions(current);
+    }
+    eventSel.addEventListener("change", syncSoundSelect);
+    syncSoundSelect();
+    document.getElementById("cue-save").addEventListener("click", () => {
+      family = Game.setSoundCue(family, eventSel.value, soundSel.value);
+      document.getElementById("draft-flag").hidden = false;
+      renderCues();
+      Game.toast(soundSel.value ? "Assigned on this device. Export the family pack to share." : "Cleared that moment.");
+    });
+    document.getElementById("cue-play").addEventListener("click", () => {
+      const id = soundSel.value || (family.soundCues || {})[eventSel.value];
+      const item = Game.libraryItem(library, id);
+      if (!item) {
+        Game.toast("Pick a sound first.");
+        return;
+      }
+      Game.playLibraryItem(item);
+    });
+    host.querySelectorAll("[data-cue-play]").forEach((b) => {
+      b.addEventListener("click", () => {
+        if (!Game.playSoundCue(family, library, b.dataset.cuePlay)) Game.toast("That clip is missing.");
+      });
+    });
+    host.querySelectorAll("[data-cue-clear]").forEach((b) => {
+      b.addEventListener("click", () => {
+        family = Game.setSoundCue(family, b.dataset.cueClear, "");
+        document.getElementById("draft-flag").hidden = false;
+        renderCues();
+        Game.toast("Cleared.");
       });
     });
   }
@@ -171,6 +324,12 @@
     family = await Game.loadFamily();
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
+    try {
+      const seed = await fetch("week.json", { cache: "no-cache" }).then((r) => r.json());
+      week = Game.applyWeekOverlay(seed, family);
+    } catch (_) {
+      week = { work: [], events: [] };
+    }
     const bananas = document.getElementById("bananas");
     if (bananas) bananas.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
     const eggChip = document.getElementById("egg-chip");
@@ -185,28 +344,80 @@
     async function ingestFiles(fileList) {
       const files = Array.prototype.slice.call(fileList || []);
       if (!files.length) return;
-      let last = null;
-      let added = 0;
+      const labelMap = {};
+      const media = [];
       for (let i = 0; i < files.length; i += 1) {
         const file = files[i];
-        const result = await Game.addDeviceLibraryFile(library, file);
+        const base = Game.fileBasename(file.name || file.webkitRelativePath || "");
+        if (/^manifest\.json$/i.test(base)) {
+          try {
+            Object.assign(labelMap, Game.labelsFromManifest(JSON.parse(await file.text())));
+          } catch (_) {}
+          continue;
+        }
+        if (/^manifest\.js$/i.test(base) || /\.txt$/i.test(base)) continue;
+        media.push(file);
+      }
+      const have = {};
+      ((library && library.items) || []).forEach((item) => {
+        const name = String(item.filename || "").toLowerCase();
+        if (name) have[name] = true;
+      });
+      let last = null;
+      let added = 0;
+      let skippedSchool = 0;
+      let skippedDup = 0;
+      let skippedKind = 0;
+      for (let i = 0; i < media.length; i += 1) {
+        const file = media[i];
+        const base = Game.fileBasename(file.name || "");
+        if (Game.isSkippedDeviceSound(base)) {
+          skippedSchool += 1;
+          continue;
+        }
+        if (have[base.toLowerCase()]) {
+          skippedDup += 1;
+          continue;
+        }
+        const extras = {};
+        const mapped = labelMap[base.toLowerCase()];
+        if (mapped) extras.label = mapped;
+        const result = await Game.addDeviceLibraryFile(library, file, extras);
         if (!result.ok) {
-          Game.toast("Skip " + (file.name || "that file") + " — use mp3, wav, ogg, m4a, or an image/video.");
+          skippedKind += 1;
           continue;
         }
         library = result.library;
         last = result.item;
+        have[base.toLowerCase()] = true;
         added += 1;
       }
       document.getElementById("lib-files").value = "";
-      if (!added) return;
-      persistLib();
-      if (last) previewItem(last);
+      const folder = document.getElementById("lib-folder");
+      if (folder) folder.value = "";
+      if (!added && !skippedSchool && !skippedDup) {
+        if (skippedKind) Game.toast("Skip those — use mp3, wav, ogg, m4a, or an image/video.");
+        return;
+      }
+      Game.saveMomLibrary(library);
+      renderLibrary();
+      document.getElementById("draft-flag").hidden = false;
+      const bits = [];
+      if (added) bits.push(added + " added to Fun / Sounds");
+      if (skippedSchool) bits.push(skippedSchool + " left out for school");
+      if (skippedDup) bits.push(skippedDup + " already in the library");
+      Game.toast(bits.join(". ") + ".");
+      if (last && added === 1) {
+        if (last.kind === "audio" || last.synth) Game.playLibraryItem(last);
+        else previewItem(last);
+      }
     }
 
     const drop = document.getElementById("lib-drop");
     const picker = document.getElementById("lib-files");
+    const folderPicker = document.getElementById("lib-folder");
     const pickBtn = document.getElementById("lib-pick");
+    const pickFolderBtn = document.getElementById("lib-pick-folder");
     function openPicker() {
       picker.click();
     }
@@ -215,8 +426,17 @@
       e.stopPropagation();
       openPicker();
     });
+    if (pickFolderBtn && folderPicker) {
+      pickFolderBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        folderPicker.click();
+      });
+      folderPicker.addEventListener("change", () => ingestFiles(folderPicker.files));
+    }
     drop.addEventListener("click", (e) => {
       if (e.target === pickBtn || pickBtn.contains(e.target)) return;
+      if (pickFolderBtn && (e.target === pickFolderBtn || pickFolderBtn.contains(e.target))) return;
       openPicker();
     });
     drop.addEventListener("keydown", (e) => {
