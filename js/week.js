@@ -11,16 +11,19 @@
   let baseSeed = null;
   let seed = null;
   let viewedEvents = {};
-  let pickedTrophy = null;
   let trophyZone = "";
-  let trophyManage = false;
   let trophyStillsReady = false;
+  let trophyHintTimer = 0;
+  let trophyLookWide = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
+  let trophyLookClose = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
+  let trophyDrag = null;
+  let skipTrophyClick = false;
   let trackBound = false;
 
   const TROPHY_ZONES = {
     pedestal: {
       id: "pedestal",
-      label: "Pedestal",
+      label: "the pedestal",
       hint: "Newest unlock",
       still: "img/library/trophy-pedestal.jpg",
       origin: "50% 58%",
@@ -28,7 +31,7 @@
     },
     window: {
       id: "window",
-      label: "Window",
+      label: "the window wall",
       hint: "Crew",
       still: "img/library/trophy-window.jpg",
       origin: "16% 46%",
@@ -36,7 +39,7 @@
     },
     cubbies: {
       id: "cubbies",
-      label: "Cubbies",
+      label: "the cubbies",
       hint: "Awards",
       still: "img/library/trophy-cubbies.jpg",
       origin: "24% 30%",
@@ -44,7 +47,7 @@
     },
     pegboard: {
       id: "pegboard",
-      label: "Pegboard",
+      label: "the peg wall",
       hint: "Tools",
       still: "img/library/trophy-pegboard.jpg",
       origin: "70% 48%",
@@ -52,7 +55,7 @@
     },
     lockers: {
       id: "lockers",
-      label: "Lockers",
+      label: "the lockers",
       hint: "Gear",
       still: "img/library/trophy-lockers.jpg",
       origin: "88% 50%",
@@ -67,8 +70,8 @@
     riff: { l: "25%", t: "8%", w: "18%", h: "28%" },
     scorch: { l: "46%", t: "10%", w: "20%", h: "30%" },
     deuce: { l: "30%", t: "46%", w: "13%", h: "40%" },
-    fuzz: { l: "54%", t: "50%", w: "16%", h: "30%" },
-    bennett: { l: "41%", t: "42%", w: "14%", h: "50%" }
+    bennett: { l: "41%", t: "42%", w: "14%", h: "50%" },
+    fuzz: { l: "54%", t: "50%", w: "16%", h: "30%" }
   };
   const PEGBOARD_SLOTS = {
     "angle-finder": { l: "14%", t: "8%", w: "18%", h: "26%" },
@@ -641,42 +644,35 @@
     return out;
   }
 
-  function persistTrophyOrder(ids) {
-    Game.saveTrophyOrder(ids);
-    renderShelf();
-  }
-
-  function moveTrophy(fromId, toId) {
-    const ids = orderedTrophies().map((a) => a.id);
-    const from = ids.indexOf(fromId);
-    const to = ids.indexOf(toId);
-    if (from < 0 || to < 0 || from === to) return;
-    ids.splice(to, 0, ids.splice(from, 1)[0]);
-    persistTrophyOrder(ids);
-  }
-
   function contentPlay(ach) {
     const unlock = Game.rewardUnlockOf(ach);
     if (!unlock || unlock.type !== "content") return "";
     const item = Game.libraryItem(library, unlock.id);
     if (!item || !Game.canPlayLibraryItem(item)) return "";
-    return `<button type="button" class="tiny primary" data-play-content="${Game.esc(item.id)}">Play reward</button>`;
+    return `<a class="trophy-plaque-go" href="#" data-play-content="${Game.esc(item.id)}">Play</a>`;
+  }
+
+  function crewIdOf(ach) {
+    if (ach && ach.crewId) return ach.crewId;
+    const unlock = Game.rewardUnlockOf(ach);
+    return unlock && unlock.type === "character" ? unlock.id : "";
   }
 
   function trophyKind(ach) {
+    if (crewIdOf(ach)) return "character";
     const unlock = Game.rewardUnlockOf(ach);
-    if (unlock && unlock.type === "character") return "character";
     if (unlock && unlock.type && unlock.type !== "content") return "gear";
     return "badge";
   }
 
   function trophyArt(ach) {
-    const unlock = Game.rewardUnlockOf(ach);
-    if (unlock && unlock.type === "character") {
-      const ch = ((roster && roster.characters) || []).find((row) => row.id === unlock.id);
+    const crewId = crewIdOf(ach);
+    if (crewId) {
+      const ch = ((roster && roster.characters) || []).find((row) => row.id === crewId);
       if (ch && ch.poster) return ch.poster;
-      return "img/characters/" + unlock.id + ".jpg";
+      return "img/characters/" + crewId + ".jpg";
     }
+    const unlock = Game.rewardUnlockOf(ach);
     if (unlock && unlock.type && unlock.type !== "content") {
       const item = Game.libraryItem(library, unlock.id) || Game.gearLibraryItem(library, unlock.id);
       const src = item ? (Game.librarySrc(item) || Game.libraryThumb(item)) : "";
@@ -710,17 +706,33 @@
     return [...earned].sort((a, b) => unlockAt(b.id) - unlockAt(a.id))[0];
   }
 
+  function crewSlotItem(id) {
+    const ch = ((roster && roster.characters) || []).find((row) => row.id === id);
+    return {
+      id: "crew:" + id,
+      crewId: id,
+      title: ch ? ch.name : id,
+      description: ch ? (ch.tagline || ch.talent || "") : ""
+    };
+  }
+
   function trophiesForZone(zoneId, earned) {
     if (zoneId === "pedestal") {
       const featured = featuredTrophy(earned);
       return featured ? [featured] : [];
     }
-    return earned.filter((ach) => homeZoneOf(ach) === zoneId);
+    const items = earned.filter((ach) => homeZoneOf(ach) === zoneId);
+    if (zoneId !== "window") return items;
+    const seen = new Set(items.map(crewIdOf).filter(Boolean));
+    Object.keys(WINDOW_SLOTS).forEach((id) => {
+      if (seen.has(id) || !Game.alreadyUnlockedCharacter(id)) return;
+      items.push(crewSlotItem(id));
+    });
+    return items;
   }
 
   function slotBox(zoneId, ach, index) {
-    const unlock = Game.rewardUnlockOf(ach);
-    const id = unlock && unlock.id ? unlock.id : "";
+    const id = crewIdOf(ach) || (Game.rewardUnlockOf(ach) || {}).id || "";
     if (zoneId === "pedestal") return PEDESTAL_SLOT;
     if (zoneId === "window") return WINDOW_SLOTS[id] || CUBBY_SLOTS[index % CUBBY_SLOTS.length];
     if (zoneId === "pegboard") return PEGBOARD_SLOTS[id] || CUBBY_SLOTS[index % CUBBY_SLOTS.length];
@@ -741,140 +753,123 @@
     return `left:${box.l};top:${box.t};width:${box.w};height:${box.h}`;
   }
 
-  function bindTrophyTools(root) {
-    root.querySelectorAll("[data-edit]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openEdit(btn.dataset.edit);
-      });
-    });
+  function plaqueLine(ach) {
+    const text = (ach.description || ach.incentive || ach.how || "").trim();
+    if (!text) return "";
+    const stop = text.search(/[.!?](\s|$)/);
+    const cut = stop >= 0 ? text.slice(0, stop + 1) : text;
+    return cut.length > 90 ? cut.slice(0, 87) + "…" : cut;
+  }
+
+  function plaqueHtml(ach) {
+    const play = Game.gameHref(ach)
+      ? `<a class="trophy-plaque-go" href="${Game.esc(Game.gameHref(ach))}">Play</a>`
+      : contentPlay(ach);
+    return `<aside class="trophy-plaque">
+      <strong>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</strong>
+      ${plaqueLine(ach) ? `<span>${Game.esc(plaqueLine(ach))}</span>` : ""}
+      ${play}
+    </aside>`;
+  }
+
+  function bindPlaque(root) {
     root.querySelectorAll("[data-play-content]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
         const item = Game.libraryItem(library, btn.dataset.playContent);
         if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
       });
     });
-    root.querySelectorAll("[data-undo-trophy]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const result = Game.revokeAchievement(pack, family, btn.dataset.undoTrophy);
-        family = result.family;
-        Game.toast("Award undone. That trophy is gone from the room.");
-        hud();
-        renderShelf();
-      });
-    });
   }
 
-  function trophyTools(ach) {
-    return `
-      ${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}
-      ${contentPlay(ach)}
-      <button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button>
-      <button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button>`;
+  function clearTrophyPlaques() {
+    const slots = document.getElementById("trophy-slots");
+    if (!slots) return;
+    slots.querySelectorAll(".trophy-object").forEach((el) => el.classList.remove("is-open"));
+    slots.querySelectorAll(".trophy-plaque").forEach((p) => p.remove());
   }
 
-  function renderTrophyManage() {
-    const grid = document.getElementById("trophy-grid");
-    if (!grid) return;
-    const cur = Game.currency(pack);
-    const earned = orderedTrophies();
-    grid.classList.toggle("is-empty", !earned.length);
-    if (!earned.length) {
-      grid.innerHTML = `<p class="trophy-empty">No trophies yet — keep the streak going. <a class="crew-inline" href="characters.html">Characters stay locked until you earn them.</a></p>`;
-      return;
-    }
-    grid.innerHTML = earned.map((ach) => `
-      <article class="trophy trophy-${trophyKind(ach)}${pickedTrophy === ach.id ? " picked" : ""}" draggable="true" data-id="${Game.esc(ach.id)}">
-        <img src="${Game.esc(trophyArt(ach))}" alt="">
-        <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</h3>
-        <p class="how">${Game.esc(ach.description || ach.how || "")}</p>
-        <p class="prize">${Game.esc(ach.incentive || "")}${typeof ach.reward === "number" ? " · +" + ach.reward + " " + cur.name : ""}</p>
-        <div class="trophy-tools">${trophyTools(ach)}</div>
-      </article>`).join("");
+  function currentTrophyLook() {
+    return trophyZone ? trophyLookClose : trophyLookWide;
+  }
 
-    grid.querySelectorAll(".trophy").forEach((el) => {
-      el.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", el.dataset.id);
-        pickedTrophy = el.dataset.id;
-      });
-      el.addEventListener("dragover", (e) => e.preventDefault());
-      el.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const from = e.dataTransfer.getData("text/plain") || pickedTrophy;
-        moveTrophy(from, el.dataset.id);
-        pickedTrophy = null;
-      });
-      el.addEventListener("click", (e) => {
-        if (e.target.closest(".trophy-tools")) return;
-        if (pickedTrophy && pickedTrophy !== el.dataset.id) {
-          moveTrophy(pickedTrophy, el.dataset.id);
-          pickedTrophy = null;
-        } else {
-          pickedTrophy = pickedTrophy === el.dataset.id ? null : el.dataset.id;
-          renderShelf();
-        }
-      });
-    });
-    bindTrophyTools(grid);
+  function lookMetrics() {
+    const stage = document.getElementById("trophy-stage");
+    if (!stage) return { w: 0, h: 0, maxX: 0, maxY: 0 };
+    const sw = stage.clientWidth;
+    const sh = stage.clientHeight;
+    const pad = Game.prefersReducedMotion() ? 1.04 : 1.18;
+    const u = Math.max(sw / 16, sh / 9) * pad;
+    const w = 16 * u;
+    const h = 9 * u;
+    return {
+      w,
+      h,
+      maxX: Math.max(0, (w - sw) / 2),
+      maxY: Math.max(0, (h - sh) / 2)
+    };
+  }
+
+  function placeLookLayer(el, look, extraScale) {
+    if (!el) return;
+    const m = lookMetrics();
+    const gain = Game.prefersReducedMotion() ? 0 : 0.32;
+    let x = look.panX + look.mouseX * m.maxX * gain;
+    let y = look.panY + look.mouseY * m.maxY * gain;
+    x = Math.max(-m.maxX, Math.min(m.maxX, x));
+    y = Math.max(-m.maxY, Math.min(m.maxY, y));
+    look.panX = Math.max(-m.maxX, Math.min(m.maxX, look.panX));
+    look.panY = Math.max(-m.maxY, Math.min(m.maxY, look.panY));
+    el.style.width = m.w + "px";
+    el.style.height = m.h + "px";
+    el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${extraScale})`;
+  }
+
+  function applyTrophyLook() {
+    const room = document.getElementById("trophy-room");
+    const zoom = !!(room && room.classList.contains("is-zoomed"));
+    const reduced = Game.prefersReducedMotion();
+    placeLookLayer(document.getElementById("trophy-look-wide"), trophyLookWide, zoom && !reduced ? 1.72 : 1);
+    placeLookLayer(document.getElementById("trophy-look-close"), trophyLookClose, 1);
   }
 
   function renderTrophyChrome() {
     const room = document.getElementById("trophy-room");
-    const tag = document.getElementById("shelf-tag");
-    const back = document.getElementById("shelf-back");
-    const manageBtn = document.getElementById("shelf-manage");
-    const manage = document.getElementById("trophy-manage");
     const close = document.getElementById("trophy-close");
     const zone = trophyZone ? TROPHY_ZONES[trophyZone] : null;
     if (room) {
       room.dataset.view = trophyZone || "wide";
       room.classList.toggle("is-zoomed", !!trophyZone);
       if (zone) room.style.setProperty("--zoom-origin", zone.origin);
+      else room.style.removeProperty("--zoom-origin");
     }
-    if (back) back.hidden = !trophyZone;
-    if (manage) manage.hidden = !trophyManage;
-    if (manageBtn) manageBtn.setAttribute("aria-pressed", trophyManage ? "true" : "false");
     if (close) close.setAttribute("aria-hidden", trophyZone ? "false" : "true");
-    if (tag) {
-      if (trophyManage) {
-        tag.innerHTML = "Drag to rearrange. Edit or undo an award.";
-      } else if (zone) {
-        tag.innerHTML = `${Game.esc(zone.label)} · ${Game.esc(zone.hint)}. Tap the room to step back.`;
-      } else {
-        tag.innerHTML = `Tap a wall to walk up. Only trophies you have earned. <a class="crew-inline" href="characters.html">Meet your teammates →</a>`;
-      }
-    }
+    applyTrophyLook();
   }
 
   function renderTrophyHotspots(earned) {
     const host = document.getElementById("trophy-hotspots");
-    const rail = document.getElementById("trophy-rail");
-    if (!host || !rail) return;
+    if (!host) return;
     host.innerHTML = TROPHY_ZONE_ORDER.map((id) => {
       const zone = TROPHY_ZONES[id];
       const loot = trophiesForZone(id, earned).length > 0;
-      return `<button type="button" class="trophy-hotspot${loot ? " has-loot" : ""}" data-zone="${id}" style="${boxStyle(zone.hot)}" aria-label="${Game.esc(zone.label)} — ${Game.esc(zone.hint)}"></button>`;
+      return `<button type="button" class="trophy-hotspot${loot ? " has-loot" : ""}" data-zone="${id}" style="${boxStyle(zone.hot)}" aria-label="Walk up to ${Game.esc(zone.label)}">
+        <span class="trophy-whisper">${Game.esc(zone.label)}</span>
+      </button>`;
     }).join("");
-    rail.innerHTML = TROPHY_ZONE_ORDER.map((id) => {
-      const zone = TROPHY_ZONES[id];
-      const loot = trophiesForZone(id, earned).length > 0;
-      const on = trophyZone === id;
-      return `<button type="button" class="${on ? "is-on" : ""}${loot ? " has-loot" : ""}" data-zone="${id}">${Game.esc(zone.label)}</button>`;
-    }).join("");
-    const go = (e) => {
+    host.onclick = (e) => {
+      if (skipTrophyClick) return;
       const btn = e.target.closest("[data-zone]");
-      if (btn) enterTrophyZone(btn.dataset.zone);
+      if (!btn) return;
+      e.stopPropagation();
+      enterTrophyZone(btn.dataset.zone);
     };
-    host.onclick = go;
-    rail.onclick = go;
   }
 
   function renderTrophySlots(earned) {
     const slots = document.getElementById("trophy-slots");
     const still = document.getElementById("trophy-close-still");
-    const wash = document.getElementById("trophy-close-wash");
     if (!slots || !still) return;
     const zone = trophyZone ? TROPHY_ZONES[trophyZone] : null;
     if (!zone) {
@@ -883,94 +878,70 @@
     }
     still.src = zone.still;
     still.alt = zone.label;
-    if (wash) wash.style.setProperty("--close-still", `url("${zone.still}")`);
     const items = trophiesForZone(trophyZone, earned);
     slots.innerHTML = items.map((ach, i) => {
       const box = slotBox(trophyZone, ach, i);
       const kind = trophyKind(ach);
-      const extra = trophyZone === "pedestal" ? " trophy-pedestal" : "";
+      const slotId = crewIdOf(ach);
+      const extra = [
+        trophyZone === "pedestal" ? "trophy-pedestal" : "",
+        slotId === "bennett" ? "trophy-alcove" : ""
+      ].filter(Boolean).map((c) => " " + c).join("");
       return `<article class="trophy-object trophy-${kind}${extra}" data-id="${Game.esc(ach.id)}" style="${boxStyle(box)}">
         <img src="${Game.esc(trophyArt(ach))}" alt="">
-        <span class="trophy-name">${Game.esc(ach.title)}</span>
       </article>`;
     }).join("");
     slots.querySelectorAll(".trophy-object").forEach((el) => {
-      let hold = 0;
-      const openTools = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        slots.querySelectorAll(".trophy-pop").forEach((p) => p.remove());
-        const ach = earned.find((row) => row.id === el.dataset.id);
-        if (!ach) return;
-        const pop = document.createElement("div");
-        pop.className = "trophy-pop";
-        pop.innerHTML = trophyTools(ach);
-        el.appendChild(pop);
-        el.classList.add("is-open");
-        bindTrophyTools(pop);
-      };
       el.addEventListener("click", (e) => {
-        if (e.target.closest(".trophy-pop")) return;
+        if (skipTrophyClick) return;
+        if (e.target.closest(".trophy-plaque")) return;
+        e.stopPropagation();
         const open = el.classList.contains("is-open");
-        slots.querySelectorAll(".trophy-object").forEach((other) => {
-          other.classList.remove("is-open");
-          const pop = other.querySelector(".trophy-pop");
-          if (pop) pop.remove();
-        });
-        if (!open) el.classList.add("is-open");
+        clearTrophyPlaques();
+        if (open) return;
+        const ach = items.find((row) => row.id === el.dataset.id);
+        if (!ach) return;
+        el.insertAdjacentHTML("beforeend", plaqueHtml(ach));
+        el.classList.add("is-open");
+        bindPlaque(el);
       });
-      el.addEventListener("pointerdown", () => {
-        hold = window.setTimeout(() => openTools({ preventDefault() {}, stopPropagation() {} }), 480);
-      });
-      ["pointerup", "pointerleave", "pointercancel"].forEach((name) => {
-        el.addEventListener(name, () => window.clearTimeout(hold));
-      });
-      el.addEventListener("contextmenu", openTools);
     });
   }
 
   function renderTrophyRoom() {
-    const earned = orderedTrophies();
-    const empty = document.getElementById("trophy-empty");
-    if (empty) {
-      const show = !earned.length && !trophyZone;
-      empty.hidden = !show;
-      if (show) {
-        empty.innerHTML = `No trophies yet — keep the streak going. <a class="crew-inline" href="characters.html">Characters stay locked until you earn them.</a>`;
-      }
-    }
     renderTrophyChrome();
-    renderTrophyHotspots(earned);
-    renderTrophySlots(earned);
+    renderTrophyHotspots(orderedTrophies());
+    renderTrophySlots(orderedTrophies());
   }
 
   function enterTrophyZone(id) {
     if (!TROPHY_ZONES[id] || trophyZone === id) return;
     trophyZone = id;
-    trophyManage = false;
+    trophyLookClose = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
     renderTrophyRoom();
   }
 
   function leaveTrophyZone() {
     if (!trophyZone) return;
     trophyZone = "";
+    trophyLookClose = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
     renderTrophyRoom();
-  }
-
-  function setTrophyManage(on) {
-    trophyManage = !!on;
-    if (trophyManage) pickedTrophy = null;
-    renderShelf();
   }
 
   function resetTrophyView() {
     trophyZone = "";
-    trophyManage = false;
-    pickedTrophy = null;
+    trophyLookWide = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
+    trophyLookClose = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
+    trophyDrag = null;
+    const room = document.getElementById("trophy-room");
+    if (room) room.classList.remove("is-settled", "is-quiet", "is-zoomed");
+    if (trophyHintTimer) {
+      window.clearTimeout(trophyHintTimer);
+      trophyHintTimer = 0;
+    }
   }
 
   function renderShelf() {
-    renderTrophyManage();
     renderTrophyRoom();
   }
 
@@ -1358,54 +1329,111 @@
   function bindShelf() {
     const shelf = document.getElementById("shelf");
     const stage = document.getElementById("trophy-stage");
+    const door = document.getElementById("trophies");
     function closeShelf() {
       resetTrophyView();
       renderTrophyChrome();
       shelf.classList.remove("open");
+      document.body.classList.remove("in-treehouse");
+      if (door) door.focus();
     }
     function openShelf() {
       resetTrophyView();
       preloadTrophyStills();
       renderShelf();
+      document.body.classList.add("in-treehouse");
       shelf.classList.add("open");
+      applyTrophyLook();
+      const leave = document.getElementById("trophy-leave");
+      if (leave) leave.focus();
+      trophyHintTimer = window.setTimeout(() => {
+        const room = document.getElementById("trophy-room");
+        if (!room || !shelf.classList.contains("open")) return;
+        room.classList.add("is-settled");
+        if (Game.prefersReducedMotion()) {
+          room.classList.add("is-quiet");
+          return;
+        }
+        window.setTimeout(() => {
+          if (shelf.classList.contains("open")) room.classList.add("is-quiet");
+        }, 2600);
+      }, Game.prefersReducedMotion() ? 0 : 1200);
     }
-    document.getElementById("trophies").addEventListener("click", openShelf);
+    door.addEventListener("click", openShelf);
     if (location.hash === "#trophies") openShelf();
-    document.getElementById("close-shelf").addEventListener("click", closeShelf);
-    document.getElementById("shelf-back").addEventListener("click", (e) => {
+    document.getElementById("trophy-leave").addEventListener("click", (e) => {
       e.stopPropagation();
-      leaveTrophyZone();
+      closeShelf();
     });
-    document.getElementById("shelf-manage").addEventListener("click", (e) => {
-      e.stopPropagation();
-      setTrophyManage(!trophyManage);
+    stage.addEventListener("pointerdown", (e) => {
+      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque")) return;
+      skipTrophyClick = false;
+      trophyDrag = {
+        id: e.pointerId,
+        x: e.clientX,
+        y: e.clientY,
+        panX: currentTrophyLook().panX,
+        panY: currentTrophyLook().panY,
+        moved: false
+      };
+      try { stage.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     });
-    shelf.addEventListener("click", (e) => {
-      if (e.target === shelf) closeShelf();
+    stage.addEventListener("pointermove", (e) => {
+      if (trophyDrag && trophyDrag.id === e.pointerId) {
+        const dx = e.clientX - trophyDrag.x;
+        const dy = e.clientY - trophyDrag.y;
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          trophyDrag.moved = true;
+          skipTrophyClick = true;
+          stage.classList.add("is-dragging");
+        }
+        const look = currentTrophyLook();
+        look.panX = trophyDrag.panX + dx;
+        look.panY = trophyDrag.panY + dy;
+        look.mouseX = 0;
+        look.mouseY = 0;
+        applyTrophyLook();
+        return;
+      }
+      if (Game.prefersReducedMotion() || e.pointerType !== "mouse") return;
+      const r = stage.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const look = currentTrophyLook();
+      look.mouseX = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      look.mouseY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      applyTrophyLook();
     });
+    const endDrag = (e) => {
+      if (!trophyDrag || (e && trophyDrag.id !== e.pointerId)) return;
+      const drag = trophyDrag;
+      trophyDrag = null;
+      stage.classList.remove("is-dragging");
+      if (trophyZone && drag.moved) {
+        const dy = (e.clientY || drag.y) - drag.y;
+        const dx = (e.clientX || drag.x) - drag.x;
+        if (dy > 80 && Math.abs(dy) > Math.abs(dx) * 1.2) leaveTrophyZone();
+      }
+    };
+    stage.addEventListener("pointerup", endDrag);
+    stage.addEventListener("pointercancel", endDrag);
     stage.addEventListener("click", (e) => {
-      if (!trophyZone || trophyManage) return;
-      if (e.target.closest(".trophy-object") || e.target.closest(".trophy-hotspot") || e.target.closest(".trophy-rail")) return;
+      if (skipTrophyClick) return;
+      if (!trophyZone) return;
+      if (e.target.closest(".trophy-object") || e.target.closest(".trophy-leave") || e.target.closest(".trophy-hotspot")) return;
+      if (document.querySelector(".trophy-plaque")) {
+        clearTrophyPlaques();
+        return;
+      }
       leaveTrophyZone();
     });
-    let swipe = null;
-    stage.addEventListener("touchstart", (e) => {
-      if (!trophyZone || trophyManage || !e.changedTouches[0]) return;
-      swipe = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-    }, { passive: true });
-    stage.addEventListener("touchend", (e) => {
-      if (!swipe || !e.changedTouches[0]) return;
-      const dx = e.changedTouches[0].clientX - swipe.x;
-      const dy = e.changedTouches[0].clientY - swipe.y;
-      swipe = null;
-      if (dy > 64 && Math.abs(dy) > Math.abs(dx)) leaveTrophyZone();
-      else if (dx > 64 && Math.abs(dx) > Math.abs(dy)) leaveTrophyZone();
-    }, { passive: true });
+    window.addEventListener("resize", () => {
+      if (shelf.classList.contains("open")) applyTrophyLook();
+    });
     document.addEventListener("keydown", (e) => {
       if (!shelf.classList.contains("open") || typing()) return;
       if (e.key !== "Escape") return;
       e.preventDefault();
-      if (trophyManage) setTrophyManage(false);
+      if (document.querySelector(".trophy-plaque")) clearTrophyPlaques();
       else if (trophyZone) leaveTrophyZone();
       else closeShelf();
     });

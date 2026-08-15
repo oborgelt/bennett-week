@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
   <title>Jungle Jam · This week</title>
-  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/theme.css?v=45">
 </head>
 <body class="week-page">
   <div class="note-field" id="notes" aria-hidden="true"></div>
@@ -21,8 +21,8 @@
         <p>Olathe East · sophomore lobby</p>
       </div>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 43</span>
-        <span>8/15, 3:40 PM</span>
+        <span>Build 45</span>
+        <span>8/15, 6:10 PM</span>
       </div>
     </div>
     <div class="hud-bar">
@@ -65,39 +65,22 @@
   <button type="button" class="hidden-ball" id="hidden-ball" aria-label="Hidden tennis ball"></button>
 
   <div class="shelf" id="shelf">
-    <div class="shelf-panel trophy-room" id="trophy-room" role="dialog" aria-labelledby="shelf-title" data-view="wide">
-      <div class="shelf-head">
-        <div>
-          <h2 id="shelf-title">Trophy room</h2>
-          <p id="shelf-tag">Tap a wall to walk up. Only trophies you have earned. <a class="crew-inline" href="characters.html">Meet your teammates →</a></p>
-        </div>
-        <div class="shelf-actions">
-          <button type="button" class="shelf-back" id="shelf-back" hidden aria-label="Back to the room">←</button>
-          <button type="button" class="shelf-manage" id="shelf-manage" aria-pressed="false">Manage</button>
-          <button type="button" class="close-shelf" id="close-shelf" aria-label="Close">✕</button>
-        </div>
-      </div>
+    <div class="trophy-room" id="trophy-room" role="dialog" aria-modal="true" aria-label="Treehouse" data-view="wide">
       <div class="trophy-stage" id="trophy-stage">
         <div class="trophy-view trophy-wide" id="trophy-wide">
-          <div class="trophy-wash" aria-hidden="true"></div>
-          <div class="trophy-frame">
-            <img class="trophy-still" src="img/library/trophy-room.jpg" alt="Jungle treehouse trophy room">
+          <div class="trophy-look" id="trophy-look-wide">
+            <img class="trophy-still" src="img/library/trophy-room.jpg" alt="Inside the jungle treehouse">
             <div class="trophy-hotspots" id="trophy-hotspots"></div>
           </div>
-          <p class="trophy-empty" id="trophy-empty" hidden></p>
         </div>
         <div class="trophy-view trophy-close" id="trophy-close" aria-hidden="true">
-          <div class="trophy-wash" id="trophy-close-wash" aria-hidden="true"></div>
-          <div class="trophy-frame">
+          <div class="trophy-look" id="trophy-look-close">
             <img class="trophy-still" id="trophy-close-still" alt="">
             <div class="trophy-slots" id="trophy-slots"></div>
           </div>
         </div>
       </div>
-      <nav class="trophy-rail" id="trophy-rail" aria-label="Room sections"></nav>
-      <div class="trophy-manage" id="trophy-manage" hidden>
-        <div class="trophy-grid" id="trophy-grid"></div>
-      </div>
+      <button type="button" class="trophy-leave" id="trophy-leave" aria-label="Leave the treehouse">✕</button>
     </div>
   </div>
 
@@ -294,9 +277,9 @@
   "streaks": {}
 }
   </script>
-  <script src="js/build.js"></script>
-  <script src="js/game.js"></script>
-  <script src="js/tutor.js"></script>
-  <script src="js/week.js"></script>
+  <script src="js/build.js?v=45"></script>
+  <script src="js/game.js?v=45"></script>
+  <script src="js/tutor.js?v=45"></script>
+  <script src="js/week.js?v=45"></script>
 </body>
 </html>

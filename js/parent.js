@@ -12,6 +12,7 @@
   let editingCharId = null;
   let selectedCharId = null;
   let selectedLibId = null;
+  let pickedTrophy = null;
 
   function hud() {
     const el = document.getElementById("bananas");
@@ -24,6 +25,7 @@
   function persistAch() {
     Game.saveMomDraft(pack);
     renderAchievements();
+    renderTrophyOrder();
     renderCharacters();
     fillRewardSelect();
     fillRewardContent();
@@ -48,6 +50,7 @@
     renderIngredients();
     renderCues();
     renderAchievements();
+    renderTrophyOrder();
     renderCharacters();
     renderCharLibrary();
     renderClassRoster();
@@ -385,6 +388,90 @@
   function streakOf(ach) {
     const st = (family.streaks || {})[ach.id] || { count: 0, awarded: Game.alreadyUnlocked(ach.id) };
     return { count: Number(st.count) || 0, awarded: !!(st.awarded || Game.alreadyUnlocked(ach.id)) };
+  }
+
+  function trophyKind(ach) {
+    const unlock = Game.rewardUnlockOf(ach);
+    if (unlock && unlock.type === "character") return "character";
+    if (unlock && unlock.type && unlock.type !== "content") return "gear";
+    return "badge";
+  }
+
+  function trophyArt(ach) {
+    const unlock = Game.rewardUnlockOf(ach);
+    if (unlock && unlock.type === "character") {
+      const ch = ((roster && roster.characters) || []).find((row) => row.id === unlock.id);
+      if (ch && ch.poster) return ch.poster;
+      return "img/characters/" + unlock.id + ".jpg";
+    }
+    if (unlock && unlock.type && unlock.type !== "content") {
+      const item = Game.libraryItem(library, unlock.id) || Game.gearLibraryItem(library, unlock.id);
+      const src = item ? (Game.librarySrc(item) || Game.libraryThumb(item)) : "";
+      if (src) return src;
+    }
+    return Game.iconFor(ach.icon);
+  }
+
+  function orderedTrophies() {
+    const earned = (pack.achievements || []).filter((ach) => Game.alreadyUnlocked(ach.id));
+    const map = new Map(earned.map((a) => [a.id, a]));
+    const out = [];
+    Game.getTrophyOrder().forEach((id) => {
+      if (map.has(id)) {
+        out.push(map.get(id));
+        map.delete(id);
+      }
+    });
+    map.forEach((a) => out.push(a));
+    return out;
+  }
+
+  function moveTrophy(fromId, toId) {
+    const ids = orderedTrophies().map((a) => a.id);
+    const from = ids.indexOf(fromId);
+    const to = ids.indexOf(toId);
+    if (from < 0 || to < 0 || from === to) return;
+    ids.splice(to, 0, ids.splice(from, 1)[0]);
+    Game.saveTrophyOrder(ids);
+    renderTrophyOrder();
+  }
+
+  function renderTrophyOrder() {
+    const host = document.getElementById("trophy-order-list");
+    if (!host) return;
+    const earned = orderedTrophies();
+    host.classList.toggle("is-empty", !earned.length);
+    if (!earned.length) {
+      host.innerHTML = `<p class="empty">No awarded trophies yet. Award a streak, then drag to set the room order.</p>`;
+      return;
+    }
+    host.innerHTML = earned.map((ach) => `
+      <article class="trophy trophy-${trophyKind(ach)}${pickedTrophy === ach.id ? " picked" : ""}" draggable="true" data-id="${Game.esc(ach.id)}">
+        <img src="${Game.esc(trophyArt(ach))}" alt="">
+        <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</h3>
+      </article>`).join("");
+    host.querySelectorAll(".trophy").forEach((el) => {
+      el.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", el.dataset.id);
+        pickedTrophy = el.dataset.id;
+      });
+      el.addEventListener("dragover", (e) => e.preventDefault());
+      el.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const from = e.dataTransfer.getData("text/plain") || pickedTrophy;
+        moveTrophy(from, el.dataset.id);
+        pickedTrophy = null;
+      });
+      el.addEventListener("click", () => {
+        if (pickedTrophy && pickedTrophy !== el.dataset.id) {
+          moveTrophy(pickedTrophy, el.dataset.id);
+          pickedTrophy = null;
+        } else {
+          pickedTrophy = pickedTrophy === el.dataset.id ? null : el.dataset.id;
+          renderTrophyOrder();
+        }
+      });
+    });
   }
 
   function renderAchievements() {
@@ -1062,6 +1149,7 @@
     });
 
     renderAchievements();
+    renderTrophyOrder();
     renderCharacters();
     renderCharLibrary();
     renderInbox();
