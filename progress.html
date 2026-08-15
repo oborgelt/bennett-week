@@ -16,14 +16,19 @@
         <h1>Progress</h1>
         <p>Bennett’s activity · class dashboard</p>
       </div>
+      <div class="build-stamp" id="build-stamp">
+        <span>Build 23</span>
+        <span>8/15, 8:59 AM</span>
+      </div>
     </div>
     <div class="hud-bar progress-hud">
       <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
       <p class="progress-tagline">His opens, actions, and class grades — not the parent trophy catalog.</p>
       <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
         <a class="progress-chip on" href="progress.html" aria-current="page"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
-        <a class="week-chip" href="index.html">This week</a>
         <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
     </div>
   </header>
@@ -78,7 +83,8 @@
     {"id": "flash-cards-first", "title": "Flash-card first test", "test": true},
     {"id": "started-week-5", "title": "Five-day start", "test": true},
     {"id": "asked-before-due", "title": "Asked before it was due", "test": true},
-    {"id": "hidden-banana", "title": "Hidden banana", "test": true, "secret": true}
+    {"id": "hidden-banana", "title": "Hidden banana", "test": true, "secret": true, "unlocksGame": "egg"},
+    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "test": true, "unlocksGame": "egg"}
   ]
 }
   </script>
@@ -139,6 +145,7 @@
   ]
 }
   </script>
+  <script src="js/build.js"></script>
   <script src="js/game.js"></script>
   <script src="js/progress.js"></script>
 </body>

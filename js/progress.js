@@ -264,7 +264,7 @@
       ? eggs.map((e) => `<li>${Game.esc(e.name)}${e.at ? " · " + Game.esc(Game.fmtStamp(e.at)) : ""}</li>`).join("")
       : `<li class="empty">None found yet. The lobby has a few wholesome surprises.</li>`;
     const trophyList = trophies.length
-      ? trophies.map((ach) => `<li class="entry-row">${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)} <span class="entry-tools"><button type="button" class="mini" data-edit="trophy:${Game.esc(ach.id)}">Edit</button><button type="button" class="mini" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button></span></li>`).join("")
+      ? trophies.map((ach) => `<li class="entry-row">${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)} <span class="entry-tools">${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}<button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button><button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button></span></li>`).join("")
       : `<li class="empty">No trophies yet — keep the streak going.</li>`;
     return `
       <article class="stat-card finds-card">
@@ -517,6 +517,8 @@
     const opens = openSource();
     const totals = activityTotals(classes);
     document.getElementById("bananas").textContent = `${Game.currency(pack).emoji} ${totals.bananas}`;
+    const eggChip = document.getElementById("egg-chip");
+    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
     document.getElementById("stat-strip").innerHTML =
       renderOpens(opens) + renderActions(totals) + renderFinds(totals);
     document.getElementById("class-list").innerHTML = classes.map((cls, i) => renderClass(cls, i === 0)).join("");

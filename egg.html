@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#c4b89a">
+  <title>Bennett · Egg game</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="egg-page">
+  <header class="week-head">
+    <div class="banner-wrap">
+      <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
+      <div class="banner-title">
+        <h1>Egg game</h1>
+        <p>A very serious office tool</p>
+      </div>
+      <div class="build-stamp" id="build-stamp">
+        <span>Build 23</span>
+        <span>8/15, 8:59 AM</span>
+      </div>
+    </div>
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+      <p class="progress-tagline">Drag eggs. Ignore your boss. Get the number wrong.</p>
+      <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
+        <a class="progress-chip" href="progress.html"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="parent-chip" href="parent.html"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="egg-chip on" href="egg.html" aria-current="page">🥚 Play</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="office" id="office">
+    <p class="empty" id="egg-gate">Checking the lock…</p>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <script id="ach-seed" type="application/json">
+{
+  "currency": {"name": "bananas", "singular": "banana", "emoji": "🍌"},
+  "achievements": [
+    {"id": "hidden-banana", "title": "Hidden banana", "test": true, "secret": true, "unlocksGame": "egg", "unlock": {"type": "easter_egg", "egg": "banner-monkey"}},
+    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "test": true, "unlocksGame": "egg"}
+  ]
+}
+  </script>
+  <script src="js/build.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/egg.js"></script>
+</body>
+</html>

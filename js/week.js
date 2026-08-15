@@ -126,6 +126,8 @@
     document.getElementById("rally-fill").style.width = (ids.length ? (touched / ids.length) * 100 : 0) + "%";
     document.getElementById("rally-count").textContent = `${touched}/${ids.length}`;
     document.getElementById("trophy-count").textContent = Object.keys(Game.getUnlocks()).length;
+    const eggChip = document.getElementById("egg-chip");
+    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
   }
 
   function runUnlocks(extra) {
@@ -157,7 +159,8 @@
           Done
         </button>
       </div>
-      ${stamp ? `<p class="started-row"><span class="started-at">${Game.esc(stamp)}</span><button type="button" class="mini undo-mini" data-act="started" data-id="${Game.esc(w.id)}">Undo</button></p>` : ""}`;
+      ${stamp ? `<p class="started-row"><span class="started-at">${Game.esc(stamp)}</span><button type="button" class="tiny undo-mini" data-act="started" data-id="${Game.esc(w.id)}">Undo</button></p>` : ""}
+      ${st.done ? `<p class="started-row"><span class="started-at">Marked done</span><button type="button" class="tiny undo-mini" data-act="done" data-id="${Game.esc(w.id)}">Undo</button></p>` : ""}`;
   }
 
   function noteBubble(n) {
@@ -499,8 +502,9 @@
         <p class="how">${Game.esc(ach.description || ach.how || "")}</p>
         <p class="prize">${Game.esc(ach.incentive || "")}${ach.reward ? " · +" + ach.reward + " " + cur.name : ""}</p>
         <div class="trophy-tools">
-          <button type="button" class="mini" data-edit="trophy:${Game.esc(ach.id)}">Edit</button>
-          <button type="button" class="mini" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button>
+          ${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}
+          <button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button>
+          <button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button>
         </div>
       </article>`).join("");
 

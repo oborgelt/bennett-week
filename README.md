@@ -9,24 +9,24 @@ Theme: monkeys playing tennis and goofing around with guitars, bass clarinet, an
 1. Download this repo (Code → Download ZIP) or clone it.
 2. Open `index.html` in a browser. Works on a phone or laptop, including `file://`.
 3. Swipe the cards, tap the dots, or use **Prev / Next** (arrow keys work on a laptop).
-4. Tap **I started this** / **Done** on work items. **Done** is a toggle — tap again to undo (strikethrough clears; the start stamp stays). **I started this** can be undone the same way, or with the small **Undo** next to the stamp. Edit / Delete sit on every row (calendar, work, notes, questions, parent notes, check-ins). Delete asks first; undo Done does not.
+4. Tap **I started this** / **Done** on work items. **Undo**, **Edit**, and **Delete** are the small buttons. Done stays the big lime control. No confirm on undo. Scroll a day card if notes sit below the fold.
 5. Open **Trophy room** for earned trophies only. Drag or tap to rearrange. Empty room: “No trophies yet — keep the streak going.”
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
 8. **A little help** on due / start-this work: notecards, a short explanation, optional quiz, optional proofread. Additive help — not a finished assignment.
 9. Open **Progress** (HUD **Dash** on a phone) for Bennett’s activity and class grades. Same page is fine for parents — it is not a secret desk.
 
-**Undo / edit / share:** Tap **Done** again to un-done a card (no confirm). Tap **Started** or **Undo** to clear “I started this.” Every visible row has **Edit** and **Delete** (delete confirms). Changes stay on that device; parents **Export family pack** / **Import JSON** on the parent desk so Mom and Orin stay in sync — including week-item overlays, asks, notes, reflections, and streaks.
+**Undo / edit / share:** On a crossed-out card, tap the small **Undo**. Same **This week / Progress / Parent desk** chips on every screen. Parents **Export family pack** / **Import JSON** so Mom and Orin stay in sync.
 
 If GitHub Pages is on: https://oborgelt.github.io/bennett-week/
 
-Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-bleed and thumb-friendly. A normal day should not need a page or card scrollbar; rare overflow fades/clips.
+Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-bleed and thumb-friendly. Day cards scroll vertically when a day has more than fits.
 
 ## Parent desk (Mom and Orin)
 
-1. Open `parent.html` (or tap **Parent desk** in the HUD). Old `mom.html` links redirect here.
+1. Open `parent.html` (or tap **Parent desk** in the HUD — same **This week / Progress / Parent desk** chips as the other screens). Old `mom.html` links redirect here.
 2. Add / edit / delete **streak** achievements: title, how to count, incentive, bananas, target (e.g. 3 weeks).
-3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. Bennett never sees the catalog or locked tiles.
+3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. Award **Wrong number of eggs** (or let him find the banner-band secret) to unlock the office egg game. Bennett never sees the catalog or locked tiles.
 4. Inbox: Bennett’s questions and check-ins. Reply with a note on that item.
 5. Add reflection prompts (how class / teachers felt — celebrate and catch early warnings, not a psych eval).
 6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file (asks, notes, reflections, streaks, awarded trophies, Done/Started, and week/progress overlays). Week.json is not rewritten in the browser — edits and deletes live in that overlay. **Download achievements.json** to drop the catalog into the repo. **Undo award** on a streak takes the trophy out of Bennett’s room.
@@ -83,9 +83,12 @@ Grades stay seed/TEST until a real feed exists.
 
 Wholesome only. Try tapping the banner band, the little clarinet, and a shy tennis ball. Eggs never show an unearned trophy.
 
+**Egg game:** a dumb office recreation (boss talking, drag eggs to a basket, “THAT’S NOT THE RIGHT NUMBER OF EGGS,” then egg butt). Unlocks when parents award **Wrong number of eggs**, or when Bennett finds the banner-band secret. Then **🥚 Play** shows in the HUD and on that trophy. Locked players only see a “keep going” screen — not the catalog.
+
 ## Files
 
 - `index.html` — week lobby (embeds JSON fallbacks so `file://` still works)
+- `egg.html` — office egg game (locked until the trophy)
 - `progress.html` — activity + class dashboard
 - `parent.html` — parent desk
 - `mom.html` — redirect to `parent.html`
@@ -95,4 +98,6 @@ Wholesome only. Try tapping the banner band, the little clarinet, and a shy tenn
 - `family.json` — seed notes, questions, reflection pool
 - `serve.py` — static server + `/api/tutor`
 - `img/` — banner, day art, badge, jungle wallpaper
-- `css/theme.css`, `js/game.js`, `js/week.js`, `js/parent.js`, `js/tutor.js`, `js/progress.js`
+- `css/theme.css`, `js/build.js`, `js/game.js`, `js/week.js`, `js/parent.js`, `js/tutor.js`, `js/progress.js`, `js/egg.js`
+
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **23**.

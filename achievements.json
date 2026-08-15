@@ -70,7 +70,20 @@
       "test": true,
       "secret": true,
       "reward": 25,
+      "unlocksGame": "egg",
       "unlock": { "type": "easter_egg", "egg": "banner-monkey" }
+    },
+    {
+      "id": "wrong-number-eggs",
+      "title": "Wrong number of eggs",
+      "description": "Unlocks the office egg game — the dumb one where the eggs are never the right number.",
+      "how": "Parents award this to unlock the game. Finding the banner-band secret also unlocks it.",
+      "incentive": "Unlocks the egg game",
+      "icon": "banana",
+      "test": true,
+      "reward": 15,
+      "unlocksGame": "egg",
+      "streak": { "target": 1, "unit": "time" }
     }
   ]
 }
