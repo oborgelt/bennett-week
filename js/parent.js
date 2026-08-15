@@ -865,6 +865,9 @@
       reader.readAsText(file);
     });
 
+    const pick = new URLSearchParams(location.search).get("char");
+    if (pick && findChar(pick)) selectedCharId = pick;
+
     document.getElementById("reset").addEventListener("click", async () => {
       if (!confirm("Clear this device's parent-desk draft and reload the repo files?")) return;
       Game.clearMomDraft();

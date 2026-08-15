@@ -6,6 +6,7 @@
   let story = null;
   let preview = false;
   let nodeId = "";
+  let startNode = "";
 
   function nodes() {
     const list = (story && story.nodes) || [];
@@ -27,6 +28,7 @@
   }
 
   function choiceReady(choice) {
+    if (preview) return true;
     if (choice.requireAny && choice.requireAny.length) {
       return choice.requireAny.some((req) => Game.hasUnlock(req));
     }
@@ -145,11 +147,14 @@
   function showStory() {
     document.getElementById("story-gate").hidden = true;
     document.getElementById("story-panel").hidden = false;
-    go(story.start || "start");
+    const want = startNode && findNode(startNode) ? startNode : (story.start || "start");
+    go(want);
   }
 
   async function boot() {
-    preview = /(?:\?|&)preview=1(?:&|$)/.test(location.search) || /(?:\?|&)from=parent(?:&|$)/.test(location.search);
+    const params = new URLSearchParams(location.search);
+    preview = params.get("preview") === "1" || params.get("from") === "parent";
+    startNode = params.get("node") || "";
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
