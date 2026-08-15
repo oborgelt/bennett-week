@@ -15,7 +15,9 @@
       "name": "Riff",
       "talent": "Daily Reps",
       "tagline": "Again. Louder.",
-      "status": "coming"
+      "status": "ready",
+      "video": "img/characters/riff.mp4",
+      "poster": "img/characters/riff.jpg"
     },
     {
       "id": "slot-3",
