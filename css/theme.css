@@ -437,16 +437,22 @@ section.note .title { color: var(--note); }
 }
 
 .reflect {
-  margin-top: 4px;
-  padding-top: 8px;
-  border-top: 1px dashed var(--line);
+  margin: 0 0 10px;
+  padding: 8px 0 2px;
 }
 
-.reflect textarea,
+.reflect-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.reflect-row input,
 .sheet-panel textarea,
+.sheet-panel input,
 .proof-box {
   width: 100%;
-  min-height: 64px;
+  min-height: var(--tap);
   margin: 6px 0;
   border-radius: 12px;
   border: 1px solid var(--line);
@@ -454,7 +460,17 @@ section.note .title { color: var(--note); }
   color: var(--ink);
   padding: 10px 12px;
   font: inherit;
+}
+
+.sheet-panel textarea,
+.proof-box {
+  min-height: 64px;
   resize: vertical;
+}
+
+.reflect-row .act {
+  flex: 0 0 auto;
+  min-width: 72px;
 }
 
 nav.week-nav {
@@ -669,8 +685,11 @@ nav.week-nav button:disabled { opacity: 0.35; }
   gap: 10px;
 }
 
+.item-grid { display: block; }
+
 .flip {
-  min-height: 120px;
+  display: block;
+  height: 128px;
   perspective: 800px;
   cursor: pointer;
   border: 0;
@@ -682,7 +701,8 @@ nav.week-nav button:disabled { opacity: 0.35; }
 
 .flip-inner {
   position: relative;
-  min-height: 120px;
+  display: block;
+  height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.45s ease;
 }
@@ -942,6 +962,12 @@ body:has(.sheet.open) .clarinet {
   }
   .trophy-grid { grid-template-columns: 1fr 1fr 1fr; }
   .flip-row { grid-template-columns: 1fr 1fr; }
+  .item-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 28px;
+  }
+  .card-grid .start { grid-column: 1 / -1; }
 }
 
 @media (min-width: 880px) {

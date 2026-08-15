@@ -226,8 +226,10 @@
       <section class="reflect span-all">
         <h3>Quick check-in</h3>
         <p>${prompt.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(prompt.text)}</p>
-        <textarea id="reflect-text" maxlength="280" placeholder="A sentence or two"></textarea>
-        <button type="button" class="act" id="reflect-send" data-prompt="${Game.esc(prompt.id)}">Send to the parent desk</button>
+        <div class="reflect-row">
+          <input id="reflect-text" maxlength="280" placeholder="A sentence or two" autocomplete="off">
+          <button type="button" class="act" id="reflect-send" data-prompt="${Game.esc(prompt.id)}">Send</button>
+        </div>
       </section>`;
   }
 
@@ -265,6 +267,7 @@
               <div class="date">${dateLabel(d)}</div>
             </div>
             <div class="who ${who.cls}">${Game.esc(who.label)}</div>
+            ${reflectBlock(i === 0)}
             <div class="card-grid">
               ${events.length ? `<section>
                 <h3>On the calendar</h3>
@@ -285,8 +288,9 @@
                     ${itemTools("work", w.id, true)}
                   </div>`)}
               </section>` : ""}
-              ${startThis.length ? `<section class="start">
+              ${startThis.length ? `<section class="start span-all">
                 <h3>Start this</h3>
+                <div class="item-grid">
                 ${items(startThis, (w) => `
                   <div class="${itemClass(w.id)}">
                     <div class="title">${titleHtml(w.title)}</div>
@@ -294,6 +298,7 @@
                     ${workButtons(w)}
                     ${itemTools("work", w.id, true)}
                   </div>`)}
+                </div>
               </section>` : ""}
               ${!events.length && !due.length && !startThis.length ? `<p class="empty">Open day — nothing on the board.</p>` : ""}
               ${notes.length ? `
@@ -305,7 +310,6 @@
                     <div class="meta">${Game.esc(n.text || "")}</div>
                   </div>`)}
               </section>` : ""}
-              ${reflectBlock(i === 0)}
             </div>
           </div>
         </div>`;
