@@ -1169,6 +1169,15 @@ body.week-page.in-treehouse .peek-monkey {
     drop-shadow(0 12px 16px rgba(0, 0, 0, 0.5));
 }
 
+.trophy-object.trophy-alcove img {
+  object-fit: contain;
+  object-position: center bottom;
+  border-radius: 0;
+  background: transparent;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45));
+  box-shadow: none;
+}
+
 .trophy-plaque {
   position: absolute;
   left: 50%;

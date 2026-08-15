@@ -70,8 +70,8 @@
     riff: { l: "25%", t: "8%", w: "18%", h: "28%" },
     scorch: { l: "46%", t: "10%", w: "20%", h: "30%" },
     deuce: { l: "30%", t: "46%", w: "13%", h: "40%" },
-    fuzz: { l: "54%", t: "50%", w: "16%", h: "30%" },
-    bennett: { l: "41%", t: "42%", w: "14%", h: "50%" }
+    bennett: { l: "41%", t: "42%", w: "14%", h: "50%" },
+    fuzz: { l: "54%", t: "50%", w: "16%", h: "30%" }
   };
   const PEGBOARD_SLOTS = {
     "angle-finder": { l: "14%", t: "8%", w: "18%", h: "26%" },
@@ -652,20 +652,27 @@
     return `<a class="trophy-plaque-go" href="#" data-play-content="${Game.esc(item.id)}">Play</a>`;
   }
 
-  function trophyKind(ach) {
+  function crewIdOf(ach) {
+    if (ach && ach.crewId) return ach.crewId;
     const unlock = Game.rewardUnlockOf(ach);
-    if (unlock && unlock.type === "character") return "character";
+    return unlock && unlock.type === "character" ? unlock.id : "";
+  }
+
+  function trophyKind(ach) {
+    if (crewIdOf(ach)) return "character";
+    const unlock = Game.rewardUnlockOf(ach);
     if (unlock && unlock.type && unlock.type !== "content") return "gear";
     return "badge";
   }
 
   function trophyArt(ach) {
-    const unlock = Game.rewardUnlockOf(ach);
-    if (unlock && unlock.type === "character") {
-      const ch = ((roster && roster.characters) || []).find((row) => row.id === unlock.id);
+    const crewId = crewIdOf(ach);
+    if (crewId) {
+      const ch = ((roster && roster.characters) || []).find((row) => row.id === crewId);
       if (ch && ch.poster) return ch.poster;
-      return "img/characters/" + unlock.id + ".jpg";
+      return "img/characters/" + crewId + ".jpg";
     }
+    const unlock = Game.rewardUnlockOf(ach);
     if (unlock && unlock.type && unlock.type !== "content") {
       const item = Game.libraryItem(library, unlock.id) || Game.gearLibraryItem(library, unlock.id);
       const src = item ? (Game.librarySrc(item) || Game.libraryThumb(item)) : "";
@@ -699,17 +706,33 @@
     return [...earned].sort((a, b) => unlockAt(b.id) - unlockAt(a.id))[0];
   }
 
+  function crewSlotItem(id) {
+    const ch = ((roster && roster.characters) || []).find((row) => row.id === id);
+    return {
+      id: "crew:" + id,
+      crewId: id,
+      title: ch ? ch.name : id,
+      description: ch ? (ch.tagline || ch.talent || "") : ""
+    };
+  }
+
   function trophiesForZone(zoneId, earned) {
     if (zoneId === "pedestal") {
       const featured = featuredTrophy(earned);
       return featured ? [featured] : [];
     }
-    return earned.filter((ach) => homeZoneOf(ach) === zoneId);
+    const items = earned.filter((ach) => homeZoneOf(ach) === zoneId);
+    if (zoneId !== "window") return items;
+    const seen = new Set(items.map(crewIdOf).filter(Boolean));
+    Object.keys(WINDOW_SLOTS).forEach((id) => {
+      if (seen.has(id) || !Game.alreadyUnlockedCharacter(id)) return;
+      items.push(crewSlotItem(id));
+    });
+    return items;
   }
 
   function slotBox(zoneId, ach, index) {
-    const unlock = Game.rewardUnlockOf(ach);
-    const id = unlock && unlock.id ? unlock.id : "";
+    const id = crewIdOf(ach) || (Game.rewardUnlockOf(ach) || {}).id || "";
     if (zoneId === "pedestal") return PEDESTAL_SLOT;
     if (zoneId === "window") return WINDOW_SLOTS[id] || CUBBY_SLOTS[index % CUBBY_SLOTS.length];
     if (zoneId === "pegboard") return PEGBOARD_SLOTS[id] || CUBBY_SLOTS[index % CUBBY_SLOTS.length];
@@ -859,7 +882,11 @@
     slots.innerHTML = items.map((ach, i) => {
       const box = slotBox(trophyZone, ach, i);
       const kind = trophyKind(ach);
-      const extra = trophyZone === "pedestal" ? " trophy-pedestal" : "";
+      const slotId = crewIdOf(ach);
+      const extra = [
+        trophyZone === "pedestal" ? "trophy-pedestal" : "",
+        slotId === "bennett" ? "trophy-alcove" : ""
+      ].filter(Boolean).map((c) => " " + c).join("");
       return `<article class="trophy-object trophy-${kind}${extra}" data-id="${Game.esc(ach.id)}" style="${boxStyle(box)}">
         <img src="${Game.esc(trophyArt(ach))}" alt="">
       </article>`;
@@ -872,7 +899,7 @@
         const open = el.classList.contains("is-open");
         clearTrophyPlaques();
         if (open) return;
-        const ach = earned.find((row) => row.id === el.dataset.id);
+        const ach = items.find((row) => row.id === el.dataset.id);
         if (!ach) return;
         el.insertAdjacentHTML("beforeend", plaqueHtml(ach));
         el.classList.add("is-open");
