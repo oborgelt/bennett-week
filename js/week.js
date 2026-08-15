@@ -581,17 +581,40 @@
     return `<button type="button" class="tiny primary" data-play-content="${Game.esc(item.id)}">Play reward</button>`;
   }
 
+  function trophyKind(ach) {
+    const unlock = Game.rewardUnlockOf(ach);
+    if (unlock && unlock.type === "character") return "character";
+    if (unlock && unlock.type && unlock.type !== "content") return "gear";
+    return "badge";
+  }
+
+  function trophyArt(ach) {
+    const unlock = Game.rewardUnlockOf(ach);
+    if (unlock && unlock.type === "character") {
+      const ch = ((roster && roster.characters) || []).find((row) => row.id === unlock.id);
+      if (ch && ch.poster) return ch.poster;
+      return "img/characters/" + unlock.id + ".jpg";
+    }
+    if (unlock && unlock.type && unlock.type !== "content") {
+      const item = Game.libraryItem(library, unlock.id) || Game.gearLibraryItem(library, unlock.id);
+      const src = item ? (Game.librarySrc(item) || Game.libraryThumb(item)) : "";
+      if (src) return src;
+    }
+    return Game.iconFor(ach.icon);
+  }
+
   function renderShelf() {
     const grid = document.getElementById("trophy-grid");
     const cur = Game.currency(pack);
     const earned = orderedTrophies();
+    grid.classList.toggle("is-empty", !earned.length);
     if (!earned.length) {
       grid.innerHTML = `<p class="trophy-empty">No trophies yet — keep the streak going. <a class="crew-inline" href="characters.html">Characters stay locked until you earn them.</a></p>`;
       return;
     }
     grid.innerHTML = earned.map((ach) => `
-      <article class="trophy${pickedTrophy === ach.id ? " picked" : ""}" draggable="true" data-id="${Game.esc(ach.id)}">
-        <img src="${Game.iconFor(ach.icon)}" alt="">
+      <article class="trophy trophy-${trophyKind(ach)}${pickedTrophy === ach.id ? " picked" : ""}" draggable="true" data-id="${Game.esc(ach.id)}">
+        <img src="${Game.esc(trophyArt(ach))}" alt="">
         <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</h3>
         <p class="how">${Game.esc(ach.description || ach.how || "")}</p>
         <p class="prize">${Game.esc(ach.incentive || "")}${ach.reward ? " · +" + ach.reward + " " + cur.name : ""}</p>

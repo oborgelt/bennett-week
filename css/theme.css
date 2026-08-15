@@ -921,7 +921,13 @@ nav.week-nav button:disabled { opacity: 0.35; }
 
 .shelf.open, .sheet.open { display: flex; }
 
-.shelf-panel, .sheet-panel {
+.shelf {
+  align-items: stretch;
+  background:
+    url("../img/library/trophy-room.jpg") center / cover no-repeat;
+}
+
+.sheet-panel {
   width: 100%;
   max-height: 88dvh;
   overflow: auto;
@@ -932,6 +938,15 @@ nav.week-nav button:disabled { opacity: 0.35; }
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
 }
 
+.shelf-panel {
+  width: 100%;
+  height: 100%;
+  max-height: 100dvh;
+  overflow: auto;
+  background: transparent;
+  padding: 0 0 max(16px, env(safe-area-inset-bottom));
+}
+
 .shelf-head, .sheet-head {
   display: flex;
   justify-content: space-between;
@@ -940,8 +955,23 @@ nav.week-nav button:disabled { opacity: 0.35; }
   margin-bottom: 12px;
 }
 
+.shelf-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin: 0 0 8px;
+  padding: max(10px, env(safe-area-inset-top)) 14px 12px;
+  background:
+    linear-gradient(180deg, rgba(32, 20, 12, 0.88), rgba(22, 14, 10, 0.78));
+  border-bottom: 1px solid rgba(240, 195, 110, 0.38);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+}
+
 .shelf-head h2, .sheet-head h2 { margin: 0; font-size: 1.15rem; }
+.shelf-head h2 { color: #fff4d8; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65); }
 .shelf-head p, .sheet-head p { margin: 4px 0 0; color: var(--muted); font-size: 0.8rem; }
+.shelf-head p { color: #f0e2c4; }
 
 .close-shelf, .close-sheet {
   min-width: var(--tap);
@@ -953,50 +983,94 @@ nav.week-nav button:disabled { opacity: 0.35; }
   font-size: 1.1rem;
 }
 
+.close-shelf {
+  flex: 0 0 auto;
+  border-color: rgba(240, 195, 110, 0.55);
+  background: rgba(18, 12, 8, 0.72);
+  color: #fff4d8;
+}
+
 .trophy-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px 10px;
+  padding: 18% 12px 12px;
+  align-content: start;
+}
+
+.trophy-grid.is-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100dvh - 92px);
+  padding: 24px 16px 40px;
 }
 
 .trophy-empty {
   grid-column: 1 / -1;
+  max-width: 28rem;
   text-align: center;
-  padding: 28px 12px;
-  color: var(--muted);
+  padding: 22px 16px;
+  color: #fff4d8;
   font-size: 1rem;
   font-weight: 650;
+  background: rgba(20, 12, 8, 0.58);
+  border: 1px solid rgba(240, 195, 110, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
 }
 
 .trophy {
-  background: #10282a;
-  border: 1px solid rgba(240, 195, 110, 0.55);
-  border-radius: 16px;
-  padding: 10px;
-  min-height: 150px;
+  background: rgba(28, 18, 12, 0.28);
+  border: 2px solid rgba(150, 96, 42, 0.78);
+  border-radius: 14px;
+  padding: 10px 8px 8px;
+  min-height: 0;
   cursor: grab;
-  box-shadow: 0 0 0 1px rgba(240, 195, 110, 0.15);
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 1px rgba(240, 195, 110, 0.28);
+  backdrop-filter: blur(2px);
 }
 
 .trophy.picked {
   outline: 2px solid var(--start);
+  background: rgba(28, 18, 12, 0.5);
 }
 
 .trophy img {
-  width: 64px;
-  height: 64px;
+  width: 86px;
+  height: 86px;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 12px;
   display: block;
   margin: 0 auto 8px;
-  background: #0b1c1e;
+  background: rgba(12, 8, 6, 0.35);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
 }
 
-.trophy h3 { margin: 0; font-size: 0.92rem; text-align: center; }
+.trophy.trophy-character img {
+  border-radius: 14px;
+}
+
+.trophy.trophy-gear img {
+  object-fit: contain;
+  background: transparent;
+}
+
+.trophy h3 {
+  margin: 0;
+  font-size: 0.88rem;
+  text-align: center;
+  color: #fff4d8;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
 .trophy .how, .trophy .prize {
   margin: 6px 0 0;
-  font-size: 0.75rem;
-  color: var(--muted);
+  font-size: 0.72rem;
+  color: #d8c8a8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 .trophy .prize { color: var(--banana); font-weight: 650; }
 
@@ -1667,12 +1741,16 @@ body:has(.sheet.open) .clarinet {
   .when h2 { font-size: 1.7rem; }
   .card-deco { width: 64px; height: 64px; }
   .when { padding-right: 76px; }
-  .shelf-panel, .sheet-panel {
+  .sheet-panel {
     max-width: var(--desk);
     margin: 0 auto;
     border-radius: 22px 22px 0 0;
   }
-  .trophy-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .trophy-grid:not(.is-empty) {
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 16% 28px 20px;
+    gap: 16px 14px;
+  }
   .flip-row { grid-template-columns: 1fr 1fr; }
   .item-grid {
     display: grid;
@@ -1691,11 +1769,20 @@ body:has(.sheet.open) .clarinet {
   }
   .card-grid .reflect,
   .card-grid .span-all { grid-column: 1 / -1; }
+  .trophy-grid:not(.is-empty) {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    padding: 14% 40px 24px;
+  }
 }
 
 @media (min-width: 720px) and (max-height: 820px) {
   .banner-wrap img { height: 58px; }
   .hud-bar { padding-top: 4px; }
+}
+
+@media (max-height: 640px) {
+  .trophy-grid:not(.is-empty) { padding-top: 10%; }
+  .trophy-grid.is-empty { min-height: calc(100dvh - 80px); }
 }
 
 /* FEED EGGS — ITYSL */
