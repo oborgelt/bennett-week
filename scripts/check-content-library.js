@@ -66,7 +66,7 @@ const window = {
   matchMedia() { return { matches: true }; },
   AudioContext: undefined,
   webkitAudioContext: undefined,
-  BW_BUILD: { build: 32, modified: "2026-08-15T13:50:00-05:00" }
+  BW_BUILD: { build: 34, modified: "2026-08-15T13:45:00-05:00" }
 };
 window.window = window;
 const ctx = vm.createContext({
@@ -100,6 +100,74 @@ assert(khanHtml.indexOf("https://www.khanacademy.org/science/hs-chemistry") >= 0
 assert(khanHtml.indexOf("target=\"_blank\"") >= 0 && khanHtml.indexOf("rel=\"noopener\"") >= 0, "Khan links open in a new tab");
 assert(khanHtml.indexOf("No login needed") >= 0, "strip should say no login is needed");
 assert(khanHtml.indexOf("iframe") < 0, "do not embed Khan");
+
+const progress = readJson("progress.json");
+const week = readJson("week.json");
+const classIds = (progress.classes || []).map((cls) => cls.id);
+assert.deepStrictEqual(classIds, [
+  "band",
+  "sociology",
+  "web-design",
+  "academic-intervention",
+  "chemistry",
+  "strength",
+  "english-10",
+  "geometry"
+], "S1 ParentVUE roster only — no guessed PE / Algebra list");
+assert(!classIds.includes("pe"), "PE is not on the ParentVUE S1 roster");
+const byId = Object.fromEntries(progress.classes.map((cls) => [cls.id, cls]));
+["sociology", "web-design", "academic-intervention", "chemistry", "strength", "geometry"].forEach((id) => {
+  assert(Array.isArray(byId[id].items) && byId[id].items.length === 0, id + " has no assignments");
+  assert(!byId[id].grade, id + " must not invent a grade");
+});
+assert.deepStrictEqual(byId.chemistry.khan, ["hs-chemistry"], "Chemistry maps to HS Chemistry");
+assert.deepStrictEqual(byId.geometry.khan, ["geometry-home"], "Geometry maps to public Geometry course");
+const english = byId["english-10"];
+const band = byId.band;
+assert(english.grade && english.grade.display, "keep English TEST grade");
+assert(band.grade && band.grade.display, "keep Band TEST grade");
+assert((english.items || []).length >= 3, "keep existing English progress items");
+assert((band.items || []).length >= 2, "keep existing Band progress items");
+assert.deepStrictEqual(english.khan, ["ela", "grammar"], "English maps to ELA + grammar");
+assert(!band.khan, "Band has no Khan course");
+assert.strictEqual(band.period, "P1");
+assert.strictEqual(english.period, "P6");
+assert.strictEqual(byId.chemistry.time, "10:55–12:10");
+assert.strictEqual(progress.classes.length, 8, "exactly 8 ParentVUE rows — P9 is not a ninth class");
+assert.strictEqual(byId["academic-intervention"].time, "10:10–10:50", "Seminar shares the Academic Intervention clock");
+assert.deepStrictEqual(byId["academic-intervention"].periods, ["P8", "P9"], "P8/P9 are one HR100F row");
+assert.strictEqual(byId["academic-intervention"].code, "HR100F");
+assert.strictEqual(byId.band.code, "PA510");
+assert.strictEqual(byId.strength.code, "PE510A");
+assert.strictEqual(byId.strength.name, "Strength & Conditioning I");
+assert.strictEqual(Game.classPeriodLine(byId["academic-intervention"]), "Academic Intervention / Seminar");
+assert(!Game.classShowsPeriodChip(byId["academic-intervention"]), "do not print Seminar twice on the lobby");
+assert(!(week.work || []).some((w) => /algebra|history|spanish|\bPE\b/i.test(w.title || "")), "do not invent homework in week.json");
+
+const khanClassChem = Game.khanLinksForClass(byId.chemistry);
+assert.strictEqual(khanClassChem.length, 1, "Chemistry class strip is HS Chemistry only");
+assert.strictEqual(khanClassChem[0].id, "hs-chemistry", "Chemistry class strip is HS Chemistry");
+assert.strictEqual(Game.khanLinksForClass(band).length, 0, "Band omits Khan");
+assert.strictEqual(Game.khanLinksForClass(byId.sociology).length, 0, "Sociology omits Khan");
+assert.strictEqual(Game.khanLinksForClass(byId.strength).length, 0, "Strength omits Khan");
+const khanGeo = Game.khanLinksForClass(byId.geometry);
+assert.strictEqual(khanGeo.length, 1, "Geometry class strip is Geometry only");
+assert.strictEqual(khanGeo[0].url, "https://www.khanacademy.org/math/geometry-home", "Geometry uses the public course URL");
+const khanAskChem = Game.khanLinksFor("Chemistry", { classId: "chemistry" });
+assert(khanAskChem.some((k) => k.id === "hs-chemistry"), "Ask ?class=chemistry shows HS Chemistry");
+assert(!khanAskChem.some((k) => k.id === "ela"), "Ask chemistry should not dump ELA");
+assert.strictEqual(Game.classDueLabel(3), "3 due");
+assert.strictEqual(Game.classDueLabel(0), "Nothing due yet");
+assert.strictEqual(Game.classDueCount(english, week), 3, "English has 3 due from week.json");
+assert.strictEqual(Game.classDueCount(byId.chemistry, week), 0, "Chemistry has nothing due");
+assert.strictEqual(Game.classPeriodLine(band), "P1 Marching Band");
+
+let classFamily = Game.emptyFamily();
+classFamily = Game.addProgressClass(classFamily, "Study hall", progress);
+const overlayClasses = Game.applyProgressOverlay(progress, classFamily).classes;
+assert(overlayClasses.some((cls) => cls.id === "chemistry" && cls.items.length === 0), "overlay keeps empty Chemistry");
+assert(overlayClasses.some((cls) => cls.name === "Study hall" && (!cls.items || !cls.items.length) && !cls.grade), "parent-added class has no fake work or grade");
+assert(classFamily.overlay.progress.addedClasses.some((cls) => cls.name === "Study hall"), "added class exports in the family overlay");
 
 const norm = Game.normalizeLibrary(library);
 assert(norm.items.some((item) => item.id === "banana-honk"), "normalizeLibrary dropped Banana honk");

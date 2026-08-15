@@ -301,6 +301,120 @@ header.week-head {
   font-weight: 650;
 }
 
+.standing-classes {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: min(38vh, 280px);
+  overflow: auto;
+  margin: 2px 12px 4px;
+  padding: 6px 8px 6px;
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid rgba(198, 224, 58, 0.18);
+  box-shadow: var(--shadow);
+  scrollbar-width: thin;
+}
+
+.standing-classes h2 {
+  margin: 0 0 4px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.standing-class-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.standing-class {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
+  padding: 1px 4px;
+}
+
+.standing-class-period {
+  flex: 0 0 auto;
+  min-width: 3.4em;
+  color: var(--start);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.standing-class-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 750;
+  font-size: 0.78rem;
+  text-align: left;
+  cursor: pointer;
+  min-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.standing-class-name:focus-visible {
+  outline: 2px solid var(--start);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.standing-class-time {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.standing-class-status {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.standing-class-khan {
+  flex: 0 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+.standing-class-khan .khan-link {
+  font-size: 0.72rem;
+}
+
+@media (max-width: 520px) {
+  .standing-class { flex-wrap: wrap; }
+  .standing-class-khan {
+    flex-basis: 100%;
+    justify-content: flex-start;
+    padding-left: 3.4em;
+  }
+}
+
+.standing-class-sheet-status {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
 .dots {
   display: flex;
   gap: 8px;
@@ -610,6 +724,15 @@ a.tiny {
   flex-wrap: wrap;
   gap: 6px;
   padding: 0 12px 10px;
+}
+
+.class-card .khan-strip {
+  margin: 0 12px 8px;
+  padding: 8px 10px;
+}
+
+.class-card .class-ask {
+  margin: 0 12px 8px;
 }
 
 .entry-row .entry-tools {
@@ -1194,7 +1317,7 @@ body.progress-page .peek-monkey {
   background: #10282a;
   border: 1px solid var(--line);
   border-radius: 14px;
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 
 .class-card[open] {
@@ -1207,8 +1330,8 @@ body.progress-page .peek-monkey {
   gap: 10px;
   list-style: none;
   cursor: pointer;
-  padding: 10px 12px;
-  min-height: 56px;
+  padding: 8px 12px;
+  min-height: 44px;
 }
 
 .class-card summary::-webkit-details-marker { display: none; }
@@ -1242,6 +1365,16 @@ body.progress-page .peek-monkey {
   color: var(--muted);
   font-size: 0.75rem;
   font-weight: 650;
+}
+
+.class-summary-khan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.class-summary-khan .khan-link {
+  font-size: 0.72rem;
 }
 
 .grade-pill {
@@ -1522,6 +1655,7 @@ body:has(.sheet.open) .clarinet {
   .track,
   nav.week-nav,
   .draft-flag,
+  .standing-classes,
   .dash,
   .office {
     max-width: var(--desk);

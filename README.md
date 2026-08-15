@@ -11,7 +11,7 @@ Orin’s DNA: **high learning + high silliness**. Story, unlocks, and school wor
 1. Download this repo (Code → Download ZIP) or clone it.
 2. Open `index.html` in a browser. Works on a phone or laptop, including `file://`.
 3. Swipe the cards, tap the dots, or use **Prev / Next** (arrow keys work on a laptop).
-4. Tap **I started this** / **Done** on work items. **Undo**, **Edit**, and **Delete** are the small buttons. Done stays the big lime control. No confirm on undo. Scroll a day card if notes sit below the fold.
+4. Tap **I started this** / **Done** on work items. **Undo**, **Edit**, and **Delete** are the small buttons. Done stays the big lime control. No confirm on undo. Scroll a day card if notes sit below the fold. The **Classes** strip is Bennett’s S1 ParentVUE roster (period + name + time) — all 8 classes, even with nothing due, plus Khan links where we have a real public course.
 5. Open **Trophy room** for earned trophies only. Drag or tap to rearrange. Empty room: “No trophies yet — keep the streak going.” Open **Characters** (HUD **Crew** on a phone) for teammates. Locked slots are silhouettes — no talent spoilers. When Ace / Riff / Scorch is awarded, play that locker clip. After 3 unlocks, **Story** appears on the HUD (not just a toast).
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
@@ -31,9 +31,10 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. If that streak grants a character, gear, or a library item, Bennett unlocks it. Award **Meet Ace / Meet Riff / Meet Scorch** (TEST) to unlock the crew. Award **Notebook of Holding** or **First Serve** (TEST) for story tools / abilities. Award **Banana honk** (TEST) for a Fun sound. Award **Wrong number of eggs** (or let him find the banner-band secret) to unlock the office egg game. Bennett never sees the catalog or locked tile names.
 4. Inbox: Bennett’s questions and check-ins. Reply with a note on that item. **Ask AI mentor** shows what he asked the Socratic mentor.
 5. Add reflection prompts (how class / teachers felt — celebrate and catch early warnings, not a psych eval).
-6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file (asks, notes, reflections, streaks, awarded trophies, character unlocks, gear unlocks, **content unlocks**, library tags including audio/links, **device-dropped files** under 2 MB each, story ingredients, Ask AI thread, which streak grants which unlock, Done/Started, and week/progress overlays). Week.json is not rewritten in the browser — edits and deletes live in that overlay. **Download achievements.json** / **Download characters.json** to drop catalogs into the repo. **Undo award** on a streak takes the trophy out of Bennett’s room and locks that reward again if nothing else granted it.
-7. **Progress** is the same dashboard Bennett sees (activity + class grades). It does not show the locked trophy catalog.
-8. **Characters** on the parent desk: tap Ace / Riff / Scorch to see **that** character’s library (not the whole dump), or **Fun / Sounds**. Attach a still, clip, audio, or link to a streak reward or a future story / week beat. Crew comic art is available when you build a team beat. After Bennett earns 3 characters, Story is a real page.
+6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file (asks, notes, reflections, streaks, awarded trophies, character unlocks, gear unlocks, **content unlocks**, library tags including audio/links, **device-dropped files** under 2 MB each, story ingredients, Ask AI thread, which streak grants which unlock, Done/Started, week/progress overlays, and parent-added classes). Week.json is not rewritten in the browser — edits and deletes live in that overlay. **Download achievements.json** / **Download characters.json** to drop catalogs into the repo. **Undo award** on a streak takes the trophy out of Bennett’s room and locks that reward again if nothing else granted it.
+7. **Add a class** is a name field only. It saves on this device (progress overlay) with no fake assignments or grades. The S1 ParentVUE roster already ships in `progress.json` — use this if a later term changes.
+8. **Progress** is the same dashboard Bennett sees (activity + class grades). It does not show the locked trophy catalog.
+9. **Characters** on the parent desk: tap Ace / Riff / Scorch to see **that** character’s library (not the whole dump), or **Fun / Sounds**. Attach a still, clip, audio, or link to a streak reward or a future story / week beat. Crew comic art is available when you build a team beat. After Bennett earns 3 characters, Story is a real page.
 
 ## Admin library
 
@@ -85,7 +86,7 @@ Invincible is a *style* (comic energy, bananas in the hat). The character is a l
 
 ## Khan Academy
 
-On **A little help**, Ask AI, and the Story resources strip:
+On the lobby **Classes** strip, Progress empty-class rows, **A little help**, Ask AI, and the Story resources strip:
 
 - Label: **Opens on Khan. No login needed.**
 - `target="_blank"` `rel="noopener"`
@@ -93,9 +94,14 @@ On **A little help**, Ask AI, and the Story resources strip:
   - https://www.khanacademy.org/ela
   - https://www.khanacademy.org/humanities/grammar
   - https://www.khanacademy.org/science/hs-chemistry
+  - https://www.khanacademy.org/math/geometry-home
   - https://www.khanacademy.org/science
-- English 10 work (names, comic strips, notebook) maps to ELA + grammar.
-- Chemistry / chem titles map to HS Chemistry plus the Science hub. Generic science / bio stays on the Science hub.
+- English 10 (class + names / comic strips / notebook work) maps to ELA + grammar.
+- Chemistry class maps to HS Chemistry. Chemistry / chem homework titles still map to HS Chemistry plus the Science hub.
+- Geometry class maps to the public Geometry course.
+- Marching Band, Sociology, Web Design I, Academic Intervention, and Strength & Conditioning I have no Khan course — omit the link. Do not invent one.
+- Generic science / bio stays on the Science hub.
+- Ask AI with `?class=chemistry` or `?title=Chemistry` shows HS Chemistry even with no work item.
 - Do not invent Khan URLs.
 
 ## Ask AI — Socratic mentor
@@ -133,7 +139,7 @@ Anything labeled **TEST** is look-and-feel filler, not a real family rule or a r
 - `reward` may be bananas (a number) or `{ "type": "character"|"tool"|"weapon"|"ability"|"content", "id", "label" }`. Content `id` is a library item. Banana count can also live in `bananas` when `reward` is an object. `rewardCharacter` still works.
 - Seed notes / questions / reflections in `family.json` are TEST so the inbox and cards are not empty. Story ingredients TEST: “finish what you start”, “ask before you’re sunk”.
 - `week.json` may include one fake calendar row titled `TEST: …`. Real seed items from v1 stay (parenting time, Mon band, English names, comic strips, Forms & Fees, spiral notebook, chemistry absence note on 8/14).
-- Progress grades in `progress.json` are TEST seed (English overall + the three real English items + one TEST quiz). Band’s overall grade is TEST. Not a gradebook.
+- Progress grades in `progress.json` are TEST seed (English overall + the three real English items + one TEST quiz). Band’s overall grade is TEST. The other six S1 ParentVUE classes ship with empty `items` and **no grade**. Not a gradebook. Do not invent homework or extra class names (no PE / Algebra / History / Spanish). The roster is ParentVUE S1 2026-27, not a guessed four-class list.
 - Sample lobby-open times on Progress are TEST and only show when this device has no real open log yet.
 - Do not treat this as a full semester of homework. English often lives in a Google sheet; Canvas is not the full due list.
 
@@ -148,8 +154,10 @@ Anything labeled **TEST** is look-and-feel filler, not a real family rule or a r
 - Bananas from the same device store.
 
 **By class**
-- Real classes: English 10, Band. Collapsed row = class name + overall grade + actions (started / done / asked / help).
+- Real S1 ParentVUE classes, in clock order: Marching Band, Sociology, Web Design I, Academic Intervention / Seminar, Chemistry, Strength & Conditioning I, English 10, Geometry. Always list the class, even when `items` is empty. P8/P9 Seminar is the same 10:10–10:50 Academic Intervention slot — one row, not a ninth class. Course codes stay in `progress.json` metadata (and the parent desk). Do not dump them on the lobby.
+- Collapsed row = class name + overall grade (only if one exists) + actions (started / done / asked / help). Empty class: name + “No assignments yet” + Khan links. No fake grade.
 - Expand a class to see assignments and tests with a grade and status (not started / started timestamp / done). Grades stay hidden until expand.
+- `progress.html?class=chemistry` expands that class.
 - Help-opened timestamps are stored on the existing `bw-progress` object (`helpOpened`), not a new store.
 
 Bennett can see his activity and class progress. Parents can open the same page. Nobody sees the parent achievement catalog or locked trophies here.
@@ -196,4 +204,4 @@ Parents assign a teammate (or a tool / ability) on a streak, then award that str
 4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / abilities only. **Sounds** shows earned audio / links; locked names stay **???**.
 5. After 3 character unlocks, **Story** is available — a choose-your-own-adventure, not a toast. An attached unlocked sound can play on a story or week beat.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **32**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **34**.

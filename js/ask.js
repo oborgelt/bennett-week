@@ -62,20 +62,24 @@
     await Game.loadFamily();
     thread = Game.getAskThread();
     const q = params();
-    title = q.get("title") || "English 10: Finish summer comic strips";
+    const classId = (q.get("class") || "").trim();
+    title = (q.get("title") || "").trim() || Game.classNameForId(classId) || "English 10: Finish summer comic strips";
     document.getElementById("ask-title").value = title;
     const bananas = document.getElementById("bananas");
     if (bananas) bananas.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
-    document.getElementById("ask-resources").innerHTML = Game.khanStripHtml(title);
+    function paintResources(nextTitle) {
+      document.getElementById("ask-resources").innerHTML = Game.khanStripHtml(nextTitle, { classId });
+    }
+    paintResources(title);
     document.getElementById("ask-form").addEventListener("submit", (e) => {
       e.preventDefault();
       send();
     });
     document.getElementById("ask-title").addEventListener("change", () => {
       title = document.getElementById("ask-title").value.trim();
-      document.getElementById("ask-resources").innerHTML = Game.khanStripHtml(title);
+      paintResources(title);
     });
     renderLog();
   }

@@ -14,8 +14,88 @@
   ],
   "classes": [
     {
+      "id": "band",
+      "name": "Marching Band",
+      "period": "P1",
+      "code": "PA510",
+      "time": "7:40–8:25",
+      "room": "Rm 415",
+      "teacher": "Fillingham",
+      "grade": { "display": "A", "test": true },
+      "items": [
+        {
+          "id": "band-am-0817",
+          "title": "Monday morning rehearsal",
+          "kind": "event"
+        },
+        {
+          "id": "band-pm-0817",
+          "title": "Monday evening Band",
+          "kind": "event"
+        }
+      ]
+    },
+    {
+      "id": "sociology",
+      "name": "Sociology",
+      "period": "P2",
+      "code": "SS620",
+      "time": "8:30–9:15",
+      "room": "Rm 315",
+      "teacher": "Keach",
+      "items": []
+    },
+    {
+      "id": "web-design",
+      "name": "Web Design I",
+      "period": "P3",
+      "code": "CP553P",
+      "time": "9:20–10:05",
+      "room": "Rm 513",
+      "teacher": "Linn",
+      "items": []
+    },
+    {
+      "id": "academic-intervention",
+      "name": "Academic Intervention / Seminar",
+      "period": "Seminar",
+      "code": "HR100F",
+      "periods": ["P8", "P9"],
+      "time": "10:10–10:50",
+      "room": "Rm 501",
+      "teacher": "Peterson",
+      "items": []
+    },
+    {
+      "id": "chemistry",
+      "name": "Chemistry",
+      "period": "P4",
+      "code": "SC610AP",
+      "time": "10:55–12:10",
+      "room": "Rm 113",
+      "teacher": "Pfeiff",
+      "khan": ["hs-chemistry"],
+      "items": []
+    },
+    {
+      "id": "strength",
+      "name": "Strength & Conditioning I",
+      "period": "P5",
+      "code": "PE510A",
+      "time": "12:15–1:00",
+      "room": "Weight room",
+      "teacher": "Pauly",
+      "items": []
+    },
+    {
       "id": "english-10",
       "name": "English 10",
+      "period": "P6",
+      "code": "LA412A",
+      "time": "1:05–1:50",
+      "room": "Rm 816",
+      "teacher": "Goodson",
+      "khan": ["ela", "grammar"],
       "grade": { "display": "B+", "detail": "88%", "test": true },
       "items": [
         {
@@ -46,21 +126,15 @@
       ]
     },
     {
-      "id": "band",
-      "name": "Band",
-      "grade": { "display": "A", "test": true },
-      "items": [
-        {
-          "id": "band-am-0817",
-          "title": "Monday morning rehearsal",
-          "kind": "event"
-        },
-        {
-          "id": "band-pm-0817",
-          "title": "Monday evening Band",
-          "kind": "event"
-        }
-      ]
+      "id": "geometry",
+      "name": "Geometry",
+      "period": "P7",
+      "code": "MA540A",
+      "time": "1:55–2:40",
+      "room": "Rm 814",
+      "teacher": "Foster",
+      "khan": ["geometry-home"],
+      "items": []
     }
   ]
 }

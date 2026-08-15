@@ -31,6 +31,7 @@
     { id: "ela", label: "Khan Academy — ELA", url: "https://www.khanacademy.org/ela" },
     { id: "grammar", label: "Khan Academy — Grammar", url: "https://www.khanacademy.org/humanities/grammar" },
     { id: "hs-chemistry", label: "Khan Academy — HS Chemistry", url: "https://www.khanacademy.org/science/hs-chemistry" },
+    { id: "geometry-home", label: "Khan Academy — Geometry", url: "https://www.khanacademy.org/math/geometry-home" },
     { id: "science", label: "Khan Academy — Science", url: "https://www.khanacademy.org/science" }
   ];
 
@@ -193,7 +194,8 @@
         deletedClasses: [],
         deletedItems: [],
         classEdits: {},
-        itemEdits: {}
+        itemEdits: {},
+        addedClasses: []
       }
     };
   }
@@ -211,6 +213,33 @@
       }
     });
     return out;
+  }
+
+  function normalizeKhanIds(value) {
+    if (Array.isArray(value)) return value.map((id) => String(id || "").trim()).filter(Boolean);
+    if (typeof value === "string" && value.trim()) return [value.trim()];
+    return [];
+  }
+
+  function normalizeAddedClass(row) {
+    if (!row || typeof row !== "object") return null;
+    const id = String(row.id || "").trim();
+    const name = String(row.name || "").trim();
+    if (!id || !name) return null;
+    const next = {
+      id,
+      name,
+      items: Array.isArray(row.items) ? row.items.filter((item) => item && item.id) : []
+    };
+    if (row.khan != null) next.khan = normalizeKhanIds(row.khan);
+    if (row.grade && typeof row.grade === "object") next.grade = row.grade;
+    if (row.test) next.test = true;
+    return next;
+  }
+
+  function normalizeAddedClasses(value) {
+    if (!Array.isArray(value)) return [];
+    return value.map(normalizeAddedClass).filter(Boolean);
   }
 
   function normalizeOverlay(raw) {
@@ -236,7 +265,8 @@
         deletedClasses: asStringList(progress.deletedClasses),
         deletedItems: asStringList(progress.deletedItems),
         classEdits: asIdMap(progress.classEdits),
-        itemEdits: asIdMap(progress.itemEdits)
+        itemEdits: asIdMap(progress.itemEdits),
+        addedClasses: normalizeAddedClasses(progress.addedClasses)
       }
     };
   }
@@ -357,6 +387,20 @@
           });
         return Object.assign({}, cls, patch, { id: cls.id, items });
       });
+    const seen = new Set(classes.map((cls) => cls.id));
+    (overlay.addedClasses || []).forEach((row) => {
+      const added = normalizeAddedClass(row);
+      if (!added || seen.has(added.id) || overlay.deletedClasses.indexOf(added.id) >= 0) return;
+      const patch = overlay.classEdits[added.id] || {};
+      const items = (added.items || [])
+        .filter((item) => item && item.id && overlay.deletedItems.indexOf(item.id) < 0)
+        .map((item) => {
+          const ip = overlay.itemEdits[item.id];
+          return ip ? Object.assign({}, item, ip, { id: item.id }) : item;
+        });
+      classes.push(Object.assign({}, added, patch, { id: added.id, items }));
+      seen.add(added.id);
+    });
     return Object.assign({}, base, { classes });
   }
 
@@ -384,6 +428,35 @@
   function editProgressClass(family, id, patch) {
     const next = normalizeFamily(family);
     next.overlay.progress.classEdits[id] = Object.assign({}, next.overlay.progress.classEdits[id] || {}, patch, { id });
+    saveFamily(next);
+    return next;
+  }
+
+  function addProgressClass(family, name, seed) {
+    const next = normalizeFamily(family);
+    const trimmed = String(name || "").trim();
+    if (!trimmed) return next;
+    const applied = applyProgressOverlay(seed || { classes: [] }, next);
+    const existing = (applied.classes || []).find((cls) => {
+      return String(cls.name || "").trim().toLowerCase() === trimmed.toLowerCase()
+        || String(cls.id || "").toLowerCase() === slugId(trimmed, "class");
+    });
+    if (existing) return next;
+    const taken = new Set((applied.classes || []).map((cls) => cls.id));
+    (next.overlay.progress.addedClasses || []).forEach((row) => {
+      if (row && row.id) taken.add(row.id);
+    });
+    let id = slugId(trimmed, "class");
+    let n = 2;
+    while (taken.has(id)) {
+      id = slugId(trimmed, "class") + "-" + n;
+      n += 1;
+    }
+    next.overlay.progress.addedClasses = (next.overlay.progress.addedClasses || []).concat([{
+      id,
+      name: trimmed,
+      items: []
+    }]);
     saveFamily(next);
     return next;
   }
@@ -1599,7 +1672,87 @@
     return notes[0];
   }
 
-  function khanLinksFor(title) {
+  function classIdForTitle(title) {
+    const t = String(title || "");
+    if (/english(\s*10)?/i.test(t) || /\bela\b/i.test(t)) return "english-10";
+    if (/\bband\b/i.test(t)) return "band";
+    if (/sociolog/i.test(t)) return "sociology";
+    if (/web\s*design/i.test(t)) return "web-design";
+    if (/academic intervention|\bseminar\b/i.test(t)) return "academic-intervention";
+    if (/chem/i.test(t)) return "chemistry";
+    if (/strength|conditioning/i.test(t)) return "strength";
+    if (/geometry/i.test(t)) return "geometry";
+    return "";
+  }
+
+  function classNameForId(id) {
+    const key = String(id || "").toLowerCase();
+    if (key === "band") return "Marching Band";
+    if (key === "sociology") return "Sociology";
+    if (key === "web-design") return "Web Design I";
+    if (key === "academic-intervention") return "Academic Intervention / Seminar";
+    if (key === "chemistry") return "Chemistry";
+    if (key === "strength") return "Strength & Conditioning I";
+    if (key === "english-10") return "English 10";
+    if (key === "geometry") return "Geometry";
+    return "";
+  }
+
+  function classPeriodLine(cls) {
+    const period = String((cls && cls.period) || "").trim();
+    const name = String((cls && cls.name) || classNameForId(cls && cls.id) || "").trim();
+    if (period && name && name.toLowerCase().indexOf(period.toLowerCase()) >= 0) return name;
+    if (period && name) return period + " " + name;
+    return name || period;
+  }
+
+  function classShowsPeriodChip(cls) {
+    const period = String((cls && cls.period) || "").trim();
+    const name = String((cls && cls.name) || "").trim();
+    if (!period) return false;
+    return name.toLowerCase().indexOf(period.toLowerCase()) < 0;
+  }
+
+  function classMetaLine(cls) {
+    const bits = [];
+    if (cls && cls.time) bits.push(cls.time);
+    if (cls && cls.room) bits.push(cls.room);
+    if (cls && cls.teacher) bits.push(cls.teacher);
+    return bits.join(" · ");
+  }
+
+  function khanIdsForClass(cls) {
+    if (!cls) return [];
+    if (cls.khan != null) return normalizeKhanIds(cls.khan);
+    const id = String(cls.id || "").toLowerCase();
+    if (id === "english-10") return ["ela", "grammar"];
+    if (id === "chemistry") return ["hs-chemistry"];
+    if (id === "geometry") return ["geometry-home"];
+    return [];
+  }
+
+  function khanLinksByIds(ids) {
+    const want = new Set(normalizeKhanIds(ids));
+    return KHAN.filter((k) => want.has(k.id));
+  }
+
+  function khanLinksForClass(cls) {
+    return khanLinksByIds(khanIdsForClass(cls));
+  }
+
+  function khanShortLabel(link) {
+    return String((link && link.label) || "").replace(/^Khan Academy —\s*/i, "") || (link && link.label) || "";
+  }
+
+  function khanLinksFor(title, hint) {
+    const classId = String((hint && hint.classId) || "").toLowerCase();
+    if (classId) {
+      return khanLinksForClass({
+        id: classId,
+        name: (hint && hint.name) || title || classNameForId(classId),
+        khan: hint && hint.khan
+      });
+    }
     const t = String(title || "").toLowerCase();
     if (/chem/.test(t)) {
       return KHAN.filter((k) => k.id === "hs-chemistry" || k.id === "science");
@@ -1607,14 +1760,17 @@
     if (/english|ela|comic|names|notebook|grammar|panel/.test(t)) {
       return KHAN.filter((k) => k.id === "ela" || k.id === "grammar");
     }
+    if (/geometry/.test(t)) {
+      return KHAN.filter((k) => k.id === "geometry-home");
+    }
     if (/science|bio/.test(t)) {
       return KHAN.filter((k) => k.id === "science");
     }
     return KHAN.slice();
   }
 
-  function khanStripHtml(title) {
-    const links = khanLinksFor(title);
+  function khanStripFromLinks(links) {
+    if (!links || !links.length) return "";
     return `
       <div class="khan-strip">
         <p class="khan-kicker">Opens on Khan. No login needed.</p>
@@ -1622,6 +1778,36 @@
           ${links.map((k) => `<a class="khan-link" href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.label)}</a>`).join("")}
         </div>
       </div>`;
+  }
+
+  function khanStripHtml(title, hint) {
+    return khanStripFromLinks(khanLinksFor(title, hint));
+  }
+
+  function khanStripHtmlForClass(cls) {
+    return khanStripFromLinks(khanLinksForClass(cls));
+  }
+
+  function khanInlineHtml(links) {
+    if (!links || !links.length) return "";
+    return links.map((k) => {
+      return `<a class="khan-link" href="${esc(k.url)}" target="_blank" rel="noopener">${esc(khanShortLabel(k))}</a>`;
+    }).join("");
+  }
+
+  function classDueCount(cls, week) {
+    const ids = new Set(((cls && cls.items) || []).map((item) => item && item.id).filter(Boolean));
+    return ((week && week.work) || []).filter((w) => {
+      if (!w || !w.id) return false;
+      if (workState(w.id).done) return false;
+      if (ids.has(w.id)) return true;
+      return classIdForTitle(w.title) === (cls && cls.id);
+    }).length;
+  }
+
+  function classDueLabel(count) {
+    if (!count) return "Nothing due yet";
+    return count === 1 ? "1 due" : count + " due";
   }
 
   async function loadStory() {
@@ -2263,6 +2449,7 @@
     ensureWeekIds,
     applyWeekOverlay,
     applyProgressOverlay,
+    addProgressClass,
     editWeekOverlay,
     deleteWeekOverlay,
     editProgressClass,
@@ -2355,8 +2542,21 @@
     addAskMessage,
     latestReflection,
     latestBennettQuestion,
+    classIdForTitle,
+    classNameForId,
+    classPeriodLine,
+    classShowsPeriodChip,
+    classMetaLine,
+    classDueCount,
+    classDueLabel,
+    khanIdsForClass,
+    khanLinksByIds,
+    khanLinksForClass,
     khanLinksFor,
     khanStripHtml,
+    khanStripHtmlForClass,
+    khanInlineHtml,
+    khanShortLabel,
     KHAN,
     loadStory,
     characterMedia,

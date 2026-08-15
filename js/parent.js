@@ -7,6 +7,7 @@
   let library = null;
   let baseWeek = null;
   let week = null;
+  let baseSeed = null;
   let editingId = null;
   let editingCharId = null;
   let selectedCharId = null;
@@ -48,8 +49,35 @@
     renderAchievements();
     renderCharacters();
     renderCharLibrary();
+    renderClassRoster();
     fillTargets();
     hud();
+  }
+
+  function progressClasses() {
+    return Game.applyProgressOverlay(baseSeed || { classes: [] }, family).classes || [];
+  }
+
+  function renderClassRoster() {
+    const box = document.getElementById("class-roster");
+    if (!box) return;
+    const classes = progressClasses();
+    if (!classes.length) {
+      box.innerHTML = `<p class="empty">No classes yet.</p>`;
+      return;
+    }
+    box.innerHTML = classes.map((cls) => {
+      const khan = Game.khanLinksForClass(cls);
+      const khanBit = khan.length
+        ? khan.map((k) => Game.khanShortLabel(k)).join(" · ")
+        : "No Khan course";
+      const empty = !(cls.items || []).length;
+      return `
+        <article class="ach-card">
+          <h3>${cls.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(Game.classPeriodLine(cls))}</h3>
+          <p>${cls.code ? Game.esc(cls.code) + " · " : ""}${cls.time ? Game.esc(cls.time) + " · " : ""}${Game.esc(empty ? "No assignments yet" : (cls.items.length + (cls.items.length === 1 ? " item" : " items")))} · ${Game.esc(khanBit)}</p>
+        </article>`;
+    }).join("");
   }
 
   function fillRewardSelect(selected) {
@@ -748,6 +776,7 @@
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
     baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
+    baseSeed = await Game.loadProgress();
     week = Game.applyWeekOverlay(baseWeek, family);
     if (!pack.currency) pack.currency = { name: "bananas", singular: "banana", emoji: "🍌" };
     if (!Array.isArray(pack.achievements)) pack.achievements = [];
@@ -794,6 +823,24 @@
       else pack.achievements.push(next);
       persistAch();
       closeForm();
+    });
+
+    document.getElementById("add-class").addEventListener("click", () => {
+      const input = document.getElementById("new-class-name");
+      const name = (input.value || "").trim();
+      if (!name) {
+        Game.toast("Add a class name first.");
+        return;
+      }
+      const before = progressClasses();
+      if (before.some((cls) => String(cls.name || "").toLowerCase() === name.toLowerCase())) {
+        Game.toast("That class is already on the list.");
+        return;
+      }
+      family = Game.addProgressClass(family, name, baseSeed);
+      input.value = "";
+      Game.toast("Class saved on this device. Export the family pack to share.");
+      renderClassRoster();
     });
 
     document.getElementById("add-prompt").addEventListener("click", () => {
@@ -929,6 +976,7 @@
           renderAskInbox();
           renderPool();
           renderIngredients();
+          renderClassRoster();
           fillTargets();
           document.getElementById("draft-flag").hidden = false;
           if (next.skipped.length) {
@@ -967,6 +1015,7 @@
       renderAskInbox();
       renderPool();
       renderIngredients();
+      renderClassRoster();
       fillTargets();
       closeForm();
       closeCharForm();
@@ -981,6 +1030,7 @@
     renderAskInbox();
     renderPool();
     renderIngredients();
+    renderClassRoster();
     document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomCharacters() || Game.usingMomLibrary());
   }
 
