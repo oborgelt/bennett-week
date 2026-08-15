@@ -9,12 +9,14 @@ Theme: monkeys playing tennis and goofing around with guitars, bass clarinet, an
 1. Download this repo (Code → Download ZIP) or clone it.
 2. Open `index.html` in a browser. Works on a phone or laptop, including `file://`.
 3. Swipe the cards, tap the dots, or use **Prev / Next** (arrow keys work on a laptop).
-4. Tap **I started this** / **Done** on work items. The first start stamps the time in America/Chicago (`Started 8/14, 10:12 PM`). Tapping again keeps the stamp.
+4. Tap **I started this** / **Done** on work items. **Done** is a toggle — tap again to undo (strikethrough clears; the start stamp stays). **I started this** can be undone the same way, or with the small **Undo** next to the stamp. Edit / Delete sit on every row (calendar, work, notes, questions, parent notes, check-ins). Delete asks first; undo Done does not.
 5. Open **Trophy room** for earned trophies only. Drag or tap to rearrange. Empty room: “No trophies yet — keep the streak going.”
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
 8. **A little help** on due / start-this work: notecards, a short explanation, optional quiz, optional proofread. Additive help — not a finished assignment.
 9. Open **Progress** (HUD **Dash** on a phone) for Bennett’s activity and class grades. Same page is fine for parents — it is not a secret desk.
+
+**Undo / edit / share:** Tap **Done** again to un-done a card (no confirm). Tap **Started** or **Undo** to clear “I started this.” Every visible row has **Edit** and **Delete** (delete confirms). Changes stay on that device; parents **Export family pack** / **Import JSON** on the parent desk so Mom and Orin stay in sync — including week-item overlays, asks, notes, reflections, and streaks.
 
 If GitHub Pages is on: https://oborgelt.github.io/bennett-week/
 
@@ -27,7 +29,7 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. Bennett never sees the catalog or locked tiles.
 4. Inbox: Bennett’s questions and check-ins. Reply with a note on that item.
 5. Add reflection prompts (how class / teachers felt — celebrate and catch early warnings, not a psych eval).
-6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file. **Download achievements.json** to drop the catalog into the repo.
+6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file (asks, notes, reflections, streaks, awarded trophies, Done/Started, and week/progress overlays). Week.json is not rewritten in the browser — edits and deletes live in that overlay. **Download achievements.json** to drop the catalog into the repo. **Undo award** on a streak takes the trophy out of Bennett’s room.
 7. **Progress** is the same dashboard Bennett sees (activity + class grades). It does not show the locked trophy catalog.
 
 ## Live tutor help (`serve.py`)

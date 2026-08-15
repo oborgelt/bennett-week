@@ -3,6 +3,7 @@
 
   let pack = null;
   let family = null;
+  let baseWeek = null;
   let week = null;
   let editingId = null;
 
@@ -14,9 +15,41 @@
 
   function persistFamily() {
     Game.saveFamily(family);
+    week = Game.applyWeekOverlay(baseWeek, family);
     renderInbox();
     renderPool();
     renderAchievements();
+    fillTargets();
+  }
+
+  function fillTargets() {
+    const targetSel = document.getElementById("note-target");
+    if (!targetSel) return;
+    targetSel.innerHTML = allTargets().map((t) => `<option value="${Game.esc(t.value)}">${Game.esc(t.label)}</option>`).join("");
+  }
+
+  function openSheet(title, html) {
+    document.getElementById("sheet-title").textContent = title;
+    document.getElementById("sheet-body").innerHTML = html;
+    document.getElementById("sheet").classList.add("open");
+  }
+
+  function closeSheet() {
+    document.getElementById("sheet").classList.remove("open");
+  }
+
+  function editForm(fields) {
+    return fields.map((f) => {
+      if (f.type === "textarea") {
+        return `<label class="edit-label">${Game.esc(f.label)}<textarea id="ef-${Game.esc(f.name)}" maxlength="${f.max || 280}">${Game.esc(f.value || "")}</textarea></label>`;
+      }
+      return `<label class="edit-label">${Game.esc(f.label)}<input id="ef-${Game.esc(f.name)}" type="${Game.esc(f.type || "text")}" value="${Game.esc(f.value || "")}"></label>`;
+    }).join("") + `<button type="button" class="btn primary" id="edit-save">Save</button>`;
+  }
+
+  function fieldValue(name) {
+    const el = document.getElementById("ef-" + name);
+    return el ? (el.value || "").trim() : "";
   }
 
   function itemLabel(type, id) {
@@ -38,9 +71,10 @@
   function renderInbox() {
     const box = document.getElementById("inbox");
     const questions = (family.notes || []).filter((n) => n.from === "bennett");
+    const parentNotes = (family.notes || []).filter((n) => n.from === "parent");
     const answers = (family.reflections && family.reflections.answers) || [];
-    if (!questions.length && !answers.length) {
-      box.innerHTML = `<p class="empty">No questions or check-ins yet.</p>`;
+    if (!questions.length && !parentNotes.length && !answers.length) {
+      box.innerHTML = `<p class="empty">No questions, notes, or check-ins yet.</p>`;
       return;
     }
     const qHtml = questions.map((n) => `
@@ -51,7 +85,22 @@
         <label>Reply with a note
           <textarea data-reply="${Game.esc(n.id)}" maxlength="280" placeholder="A short note on this item"></textarea>
         </label>
-        <button type="button" class="btn" data-send-reply="${Game.esc(n.id)}">Send note</button>
+        <div class="parent-actions">
+          <button type="button" class="btn" data-send-reply="${Game.esc(n.id)}">Send note</button>
+          <button type="button" class="btn" data-edit-note="${Game.esc(n.id)}">Edit</button>
+          <button type="button" class="btn danger" data-del-note="${Game.esc(n.id)}">Delete</button>
+        </div>
+      </article>
+    `).join("");
+    const pHtml = parentNotes.map((n) => `
+      <article class="inbox-card">
+        <h3>${n.test ? '<span class="test-tag">TEST</span> ' : ""}Parent note · ${Game.esc(itemLabel(n.targetType, n.targetId))}</h3>
+        <p>${Game.esc(n.text)}</p>
+        <p>${Game.esc(Game.fmtStamp(n.at))}</p>
+        <div class="parent-actions">
+          <button type="button" class="btn" data-edit-note="${Game.esc(n.id)}">Edit</button>
+          <button type="button" class="btn danger" data-del-note="${Game.esc(n.id)}">Delete</button>
+        </div>
       </article>
     `).join("");
     const aHtml = answers.map((a) => `
@@ -60,9 +109,13 @@
         <p>${Game.esc(a.prompt || "")}</p>
         <p>${Game.esc(a.text)}</p>
         <p>${Game.esc(Game.fmtStamp(a.at))}</p>
+        <div class="parent-actions">
+          <button type="button" class="btn" data-edit-answer="${Game.esc(a.id)}">Edit</button>
+          <button type="button" class="btn danger" data-del-answer="${Game.esc(a.id)}">Delete</button>
+        </div>
       </article>
     `).join("");
-    box.innerHTML = qHtml + aHtml;
+    box.innerHTML = qHtml + pHtml + aHtml;
     box.querySelectorAll("[data-send-reply]").forEach((b) => {
       b.addEventListener("click", () => {
         const q = family.notes.find((n) => n.id === b.dataset.sendReply);
@@ -86,6 +139,59 @@
         renderInbox();
       });
     });
+    box.querySelectorAll("[data-edit-note]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const n = family.notes.find((x) => x.id === b.dataset.editNote);
+        if (!n) return;
+        openSheet(n.from === "bennett" ? "Edit question" : "Edit parent note", editForm([
+          { name: "text", label: "Text", value: n.text || "", type: "textarea", max: 280 }
+        ]));
+        document.getElementById("edit-save").addEventListener("click", () => {
+          const text = fieldValue("text");
+          if (!text) {
+            Game.toast("Write something first.");
+            return;
+          }
+          family = Game.updateNote(family, n.id, { text });
+          closeSheet();
+          Game.toast("Saved on this device.");
+          persistFamily();
+        });
+      });
+    });
+    box.querySelectorAll("[data-del-note]").forEach((b) => {
+      b.addEventListener("click", () => {
+        if (!Game.confirmDelete("note")) return;
+        family = Game.deleteNote(family, b.dataset.delNote);
+        persistFamily();
+      });
+    });
+    box.querySelectorAll("[data-edit-answer]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const a = ((family.reflections && family.reflections.answers) || []).find((x) => x.id === b.dataset.editAnswer);
+        if (!a) return;
+        openSheet("Edit check-in", editForm([
+          { name: "text", label: "Answer", value: a.text || "", type: "textarea", max: 280 }
+        ]));
+        document.getElementById("edit-save").addEventListener("click", () => {
+          const text = fieldValue("text");
+          if (!text) {
+            Game.toast("Write a sentence or two first.");
+            return;
+          }
+          family = Game.updateAnswer(family, a.id, { text });
+          closeSheet();
+          persistFamily();
+        });
+      });
+    });
+    box.querySelectorAll("[data-del-answer]").forEach((b) => {
+      b.addEventListener("click", () => {
+        if (!Game.confirmDelete("check-in")) return;
+        family = Game.deleteAnswer(family, b.dataset.delAnswer);
+        persistFamily();
+      });
+    });
   }
 
   function renderPool() {
@@ -99,13 +205,34 @@
       <article class="ach-card">
         <h3>${p.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(p.text)}</h3>
         <div class="parent-actions">
+          <button type="button" class="btn" data-edit-prompt="${Game.esc(p.id)}">Edit</button>
           <button type="button" class="btn danger" data-del-prompt="${Game.esc(p.id)}">Delete</button>
         </div>
       </article>
     `).join("");
+    list.querySelectorAll("[data-edit-prompt]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const p = family.reflections.pool.find((x) => x.id === b.dataset.editPrompt);
+        if (!p) return;
+        openSheet("Edit prompt", editForm([
+          { name: "text", label: "Prompt", value: p.text || "", type: "textarea", max: 140 }
+        ]));
+        document.getElementById("edit-save").addEventListener("click", () => {
+          const text = fieldValue("text");
+          if (!text) {
+            Game.toast("Write a prompt first.");
+            return;
+          }
+          family = Game.updatePrompt(family, p.id, { text });
+          closeSheet();
+          persistFamily();
+        });
+      });
+    });
     list.querySelectorAll("[data-del-prompt]").forEach((b) => {
       b.addEventListener("click", () => {
-        family.reflections.pool = family.reflections.pool.filter((p) => p.id !== b.dataset.delPrompt);
+        if (!Game.confirmDelete("check-in prompt")) return;
+        family = Game.deletePrompt(family, b.dataset.delPrompt);
         persistFamily();
       });
     });
@@ -135,7 +262,9 @@
           <p>Streak: ${st.count} / ${target} ${Game.esc(unit)}${st.awarded ? " · awarded" : ""}</p>
           <div class="parent-actions">
             <button type="button" class="btn" data-count="${Game.esc(ach.id)}">Count this week</button>
-            <button type="button" class="btn primary" data-award="${Game.esc(ach.id)}">Award</button>
+            ${st.awarded
+              ? `<button type="button" class="btn" data-revoke="${Game.esc(ach.id)}">Undo award</button>`
+              : `<button type="button" class="btn primary" data-award="${Game.esc(ach.id)}">Award</button>`}
             <button type="button" class="btn" data-edit="${Game.esc(ach.id)}">Edit</button>
             <button type="button" class="btn danger" data-del="${Game.esc(ach.id)}">Delete</button>
           </div>
@@ -164,6 +293,12 @@
       persistFamily();
       if (ach) Game.celebrate(ach, pack);
       else Game.toast("Already awarded on this device.");
+    }));
+    list.querySelectorAll("[data-revoke]").forEach((b) => b.addEventListener("click", () => {
+      const result = Game.revokeAchievement(pack, family, b.dataset.revoke);
+      family = result.family;
+      Game.toast("Award undone. Bennett’s trophy room updates on this device.");
+      persistFamily();
     }));
   }
 
@@ -235,14 +370,18 @@
   async function boot() {
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
-    week = await Game.loadWeek() || { work: [], events: [] };
+    baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
+    week = Game.applyWeekOverlay(baseWeek, family);
     if (!pack.currency) pack.currency = { name: "bananas", singular: "banana", emoji: "🍌" };
     if (!Array.isArray(pack.achievements)) pack.achievements = [];
     family = Game.normalizeFamily(family);
 
     document.getElementById("icon").innerHTML = ICONS.map((i) => `<option value="${i}">${i}</option>`).join("");
-    const targetSel = document.getElementById("note-target");
-    targetSel.innerHTML = allTargets().map((t) => `<option value="${Game.esc(t.value)}">${Game.esc(t.label)}</option>`).join("");
+    fillTargets();
+    document.getElementById("close-sheet").addEventListener("click", closeSheet);
+    document.getElementById("sheet").addEventListener("click", (e) => {
+      if (e.target.id === "sheet") closeSheet();
+    });
 
     document.getElementById("add").addEventListener("click", () => openForm(null));
     document.getElementById("cancel").addEventListener("click", closeForm);
@@ -313,9 +452,11 @@
           if (!next) throw new Error("bad pack");
           pack = next;
           family = Game.getFamilyDraft() || family;
+          week = Game.applyWeekOverlay(baseWeek, family);
           renderAchievements();
           renderInbox();
           renderPool();
+          fillTargets();
           document.getElementById("draft-flag").hidden = false;
           Game.toast("Imported on this device.");
         } catch (_) {
@@ -331,9 +472,11 @@
       Game.clearFamilyDraft();
       pack = await Game.loadAchievements();
       family = await Game.loadFamily();
+      week = Game.applyWeekOverlay(baseWeek, family);
       renderAchievements();
       renderInbox();
       renderPool();
+      fillTargets();
       closeForm();
       document.getElementById("draft-flag").hidden = true;
       Game.toast("Back to the repo files.");
@@ -342,9 +485,7 @@
     renderAchievements();
     renderInbox();
     renderPool();
-    if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
-      document.getElementById("draft-flag").hidden = !Game.usingMomDraft();
-    }
+    document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft());
   }
 
   boot();
