@@ -564,8 +564,8 @@
     document.getElementById("stat-strip").innerHTML =
       renderOpens(opens) + renderActions(totals) + renderFinds(totals);
     const want = wantedClass();
-    document.getElementById("class-list").innerHTML = classes.map((cls, i) => {
-      const open = want ? cls.id === want : i === 0;
+    document.getElementById("class-list").innerHTML = classes.map((cls) => {
+      const open = want ? cls.id === want : false;
       return renderClass(cls, open);
     }).join("");
     if (want) {

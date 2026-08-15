@@ -1317,7 +1317,7 @@ body.progress-page .peek-monkey {
   background: #10282a;
   border: 1px solid var(--line);
   border-radius: 14px;
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 
 .class-card[open] {
@@ -1330,8 +1330,8 @@ body.progress-page .peek-monkey {
   gap: 10px;
   list-style: none;
   cursor: pointer;
-  padding: 10px 12px;
-  min-height: 56px;
+  padding: 8px 12px;
+  min-height: 44px;
 }
 
 .class-card summary::-webkit-details-marker { display: none; }

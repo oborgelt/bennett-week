@@ -66,7 +66,7 @@ const window = {
   matchMedia() { return { matches: true }; },
   AudioContext: undefined,
   webkitAudioContext: undefined,
-  BW_BUILD: { build: 33, modified: "2026-08-15T13:35:00-05:00" }
+  BW_BUILD: { build: 34, modified: "2026-08-15T13:45:00-05:00" }
 };
 window.window = window;
 const ctx = vm.createContext({
