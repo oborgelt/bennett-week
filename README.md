@@ -9,18 +9,18 @@ Theme: monkeys playing tennis and goofing around with guitars, bass clarinet, an
 1. Download this repo (Code → Download ZIP) or clone it.
 2. Open `index.html` in a browser. Works on a phone or laptop, including `file://`.
 3. Swipe the cards, tap the dots, or use **Prev / Next** (arrow keys work on a laptop).
-4. Tap **I started this** / **Done** on work items. **Done** is a toggle — tap again to undo (strikethrough clears; the start stamp stays). **I started this** can be undone the same way, or with the small **Undo** next to the stamp. Edit / Delete sit on every row (calendar, work, notes, questions, parent notes, check-ins). Delete asks first; undo Done does not.
+4. Tap **I started this** / **Done** on work items. When a task is done, the lime button says **Undo** (and a small **Undo** sits under “Marked done”). No confirm. The start stamp stays. Scroll a day card if Ask / Edit / notes sit below the fold.
 5. Open **Trophy room** for earned trophies only. Drag or tap to rearrange. Empty room: “No trophies yet — keep the streak going.”
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
 8. **A little help** on due / start-this work: notecards, a short explanation, optional quiz, optional proofread. Additive help — not a finished assignment.
 9. Open **Progress** (HUD **Dash** on a phone) for Bennett’s activity and class grades. Same page is fine for parents — it is not a secret desk.
 
-**Undo / edit / share:** Tap **Done** again to un-done a card (no confirm). Tap **Started** or **Undo** to clear “I started this.” Every visible row has **Edit** and **Delete** (delete confirms). Changes stay on that device; parents **Export family pack** / **Import JSON** on the parent desk so Mom and Orin stay in sync — including week-item overlays, asks, notes, reflections, and streaks.
+**Undo / edit / share:** On a crossed-out card, tap **Undo**. Same **This week / Progress / Parent desk** chips on every screen. Every visible row has **Edit** and **Delete** (delete confirms). Parents **Export family pack** / **Import JSON** on the parent desk so Mom and Orin stay in sync.
 
 If GitHub Pages is on: https://oborgelt.github.io/bennett-week/
 
-Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-bleed and thumb-friendly. A normal day should not need a page or card scrollbar; rare overflow fades/clips.
+Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-bleed and thumb-friendly. Day cards scroll vertically when a day has more than fits.
 
 ## Parent desk (Mom and Orin)
 

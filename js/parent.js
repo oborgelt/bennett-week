@@ -7,9 +7,16 @@
   let week = null;
   let editingId = null;
 
+  function hud() {
+    const el = document.getElementById("bananas");
+    if (!el) return;
+    el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
+  }
+
   function persistAch() {
     Game.saveMomDraft(pack);
     renderAchievements();
+    hud();
     Game.toast("Saved on this device. Export JSON to share with the other parent.");
   }
 
@@ -20,6 +27,7 @@
     renderPool();
     renderAchievements();
     fillTargets();
+    hud();
   }
 
   function fillTargets() {
@@ -375,6 +383,7 @@
     if (!pack.currency) pack.currency = { name: "bananas", singular: "banana", emoji: "🍌" };
     if (!Array.isArray(pack.achievements)) pack.achievements = [];
     family = Game.normalizeFamily(family);
+    hud();
 
     document.getElementById("icon").innerHTML = ICONS.map((i) => `<option value="${i}">${i}</option>`).join("");
     fillTargets();

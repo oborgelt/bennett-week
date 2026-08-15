@@ -8,14 +8,25 @@
   <link rel="stylesheet" href="css/theme.css">
 </head>
 <body class="parent-page">
-  <div class="parent-wrap">
-    <div class="parent-hero">
-      <img src="img/monkey-badge.png" alt="Monkey achievement badge">
-      <div>
+  <header class="week-head">
+    <div class="banner-wrap">
+      <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
+      <div class="banner-title">
         <h1>Parent desk</h1>
-        <p>Mom and Orin. No login. Streaks, notes, and Bennett’s questions stay on this device until you export a file.</p>
+        <p>Mom and Orin · streaks, notes, export</p>
       </div>
     </div>
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+      <p class="progress-tagline">Same menu as the week and Progress. Export a family pack to share.</p>
+      <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
+        <a class="progress-chip" href="progress.html" aria-label="Progress"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="parent-chip on" href="parent.html" aria-current="page"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+      </div>
+    </div>
+  </header>
+  <div class="parent-wrap">
     <p class="draft-flag" id="draft-flag" hidden>This device has a draft. Export JSON to share it or drop achievements.json into the repo.</p>
     <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
       Seed items marked <span class="test-tag">TEST</span> are examples only — not real family rules.
@@ -29,8 +40,6 @@
         <input id="import" type="file" accept="application/json" class="sr-only">
       </label>
       <button type="button" class="btn" id="reset">Reset to repo files</button>
-      <a class="btn" href="progress.html">Progress</a>
-      <a class="btn" href="index.html">Back to the week</a>
     </div>
 
     <h2 style="font-size:1rem;margin:18px 0 8px">Inbox</h2>
