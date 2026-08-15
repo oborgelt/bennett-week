@@ -16,7 +16,8 @@
     deuce: "Locker clip and stills for this teammate.",
     fuzz: "Locker clip and stills for this teammate.",
     crew: "Ace + Riff + Scorch together. Comic stills and the adventure clip.",
-    fun: "Meme-style unlocks and sounds. Award a streak so Bennett can play them later."
+    fun: "Meme-style unlocks and sounds. Award a streak so Bennett can play them later.",
+    gear: "Awardable tools, outfits, and abilities. Also live on each teammate shelf."
   };
 
   let pack = null;
@@ -157,27 +158,32 @@
     });
   }
 
+  function groupBlock(id, title, items, empty) {
+    const open = groupOpen(id, items.length) ? " open" : "";
+    const count = items.length === 1 ? "1 file" : items.length + " files";
+    const body = items.length
+      ? `<div class="lib-grid">${items.map(cardHtml).join("")}</div>`
+      : `<p class="empty">${Game.esc(empty || ("No files tagged " + title + " yet."))}</p>`;
+    return `
+        <details class="lib-group" data-fold="${Game.esc(id)}"${open}>
+          <summary>
+            <span>${Game.esc(title)}</span>
+            <span class="fold-count">${Game.esc(count)}</span>
+          </summary>
+          <p>${Game.esc(GROUP_BLURB[id] || "")}</p>
+          ${body}
+        </details>`;
+  }
+
   function renderLibrary() {
     const host = document.getElementById("library-groups");
     const funItems = Game.libraryFor(library, "fun", false);
     const funOpen = groupOpen("fun", funItems.length);
-    const others = GROUPS.filter((g) => g.id !== "fun").map((g) => {
-      const items = Game.libraryFor(library, g.id, false);
-      const open = groupOpen(g.id, items.length) ? " open" : "";
-      const count = items.length === 1 ? "1 file" : items.length + " files";
-      const body = items.length
-        ? `<div class="lib-grid">${items.map(cardHtml).join("")}</div>`
-        : `<p class="empty">No files tagged ${Game.esc(g.title)} yet.</p>`;
-      return `
-        <details class="lib-group" data-fold="${Game.esc(g.id)}"${open}>
-          <summary>
-            <span>${Game.esc(g.title)}</span>
-            <span class="fold-count">${Game.esc(count)}</span>
-          </summary>
-          <p>${Game.esc(GROUP_BLURB[g.id] || "")}</p>
-          ${body}
-        </details>`;
+    const charShelves = GROUPS.filter((g) => g.id !== "fun" && g.id !== "crew").map((g) => {
+      return groupBlock(g.id, g.title, Game.libraryFor(library, g.id, false));
     }).join("");
+    const gear = groupBlock("gear", "Gear", Game.gearLibraryItems(library), "No awardable gear stills yet.");
+    const crew = groupBlock("crew", "Crew", Game.libraryFor(library, "crew", false));
     const funCount = funItems.length === 1 ? "1 audio file" : funItems.length + " audio files";
     host.innerHTML = `
       <div class="audio-toolbar">
@@ -189,7 +195,9 @@
       <div id="fun-audio-panel" class="fun-audio-panel"${funOpen ? "" : " hidden"}>
         <div class="lib-grid">${funItems.map(cardHtml).join("")}</div>
       </div>
-      ${others}`;
+      ${charShelves}
+      ${gear}
+      ${crew}`;
 
     const toggle = document.getElementById("toggle-fun-audio");
     const panel = document.getElementById("fun-audio-panel");

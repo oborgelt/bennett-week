@@ -16,8 +16,8 @@
         <p>Mom and Orin · streaks, notes, export</p>
       </div>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 38</span>
-        <span>8/15, 2:40 PM</span>
+        <span>Build 43</span>
+        <span>8/15, 3:40 PM</span>
       </div>
     </div>
     <div class="hud-bar progress-hud">
@@ -51,7 +51,7 @@
     <h2 style="font-size:1rem;margin:18px 0 8px">Characters</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
       Pick Ace, Riff, Scorch, Deuce, Fuzz, or <strong>Fun / Sounds</strong> to see that library. Crew art is for team story beats.
-      Award a streak to unlock a teammate, tool, weapon, ability, or a library sound/link. After 3 character unlocks, Story is a real page.
+      Award a streak to unlock a teammate, tool, weapon, ability, outfit, or a library sound/link. After 3 character unlocks, Story is a real page.
     </p>
     <div class="parent-actions">
       <button type="button" class="btn primary" id="add-char">Add / edit character</button>
@@ -247,6 +247,7 @@
             <option value="tool">Tool</option>
             <option value="weapon">Weapon</option>
             <option value="ability">Ability</option>
+            <option value="outfit">Outfit</option>
             <option value="content">Content (sound / link)</option>
           </select>
         </label>
@@ -332,7 +333,11 @@
     {"id": "test-deuce-return", "title": "Meet Deuce", "reward": 10, "rewardCharacter": "deuce", "rewardUnlock": {"type": "character", "id": "deuce", "label": "Deuce"}, "streak": {"target": 1, "unit": "time"}},
     {"id": "test-fuzz-unplugged", "title": "Meet Fuzz", "reward": 10, "rewardCharacter": "fuzz", "rewardUnlock": {"type": "character", "id": "fuzz", "label": "Fuzz"}, "streak": {"target": 1, "unit": "time"}},
     {"id": "test-notebook-holding", "title": "Notebook of Holding", "bananas": 10, "reward": {"type": "tool", "id": "notebook-holding", "label": "Notebook of Holding"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-first-serve", "title": "First Serve", "bananas": 10, "reward": {"type": "ability", "id": "first-serve", "label": "First Serve"}, "streak": {"target": 1, "unit": "time"}}
+    {"id": "test-first-serve", "title": "First Serve", "bananas": 10, "reward": {"type": "ability", "id": "first-serve", "label": "First Serve"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-angle-finder", "title": "Angle Finder", "reward": 10, "rewardUnlock": {"type": "tool", "id": "angle-finder", "label": "Angle Finder"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-field-kit", "title": "Field Kit", "reward": 10, "rewardUnlock": {"type": "tool", "id": "field-kit", "label": "Field Kit"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-unplugged-strap", "title": "Unplugged Strap", "reward": 10, "rewardUnlock": {"type": "outfit", "id": "unplugged-strap", "label": "Unplugged Strap"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-daily-pick", "title": "Daily Pick", "reward": 10, "rewardUnlock": {"type": "tool", "id": "daily-pick", "label": "Daily Pick"}, "streak": {"target": 1, "unit": "time"}}
   ]
 }
   </script>

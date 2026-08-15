@@ -61,6 +61,37 @@ assert(meetDeuce && meetDeuce.rewardUnlock && meetDeuce.rewardUnlock.id === "deu
 assert(meetFuzz && meetFuzz.rewardUnlock && meetFuzz.rewardUnlock.id === "fuzz", "Meet Fuzz should unlock character fuzz");
 assert(meetDeuce.rewardCharacter === "deuce" && meetFuzz.rewardCharacter === "fuzz", "Meet streaks keep rewardCharacter");
 
+const gearSeed = [
+  { id: "angle-finder", label: "Angle Finder", character: "deuce", slot: "tool", ach: "test-angle-finder", type: "tool" },
+  { id: "field-kit", label: "Field Kit", character: "scorch", slot: "tool", ach: "test-field-kit", type: "tool" },
+  { id: "unplugged-strap", label: "Unplugged Strap", character: "fuzz", slot: "outfit", ach: "test-unplugged-strap", type: "outfit" },
+  { id: "daily-pick", label: "Daily Pick", character: "riff", slot: "tool", ach: "test-daily-pick", type: "tool" },
+  { id: "notebook-holding", label: "Notebook of Holding", character: "ace", slot: "tool", ach: "test-notebook-holding", type: "tool" },
+  { id: "first-serve", label: "First Serve", character: "ace", slot: "ability", ach: "test-first-serve", type: "ability" }
+];
+gearSeed.forEach((row) => {
+  const item = library.items.find((it) => it.id === row.id);
+  assert(item, row.id + " should be in library.json");
+  assert.strictEqual(item.kind, "image", row.id + " should be an image");
+  assert.strictEqual(item.character, row.character, row.id + " should sit on " + row.character);
+  assert.strictEqual(item.slot, row.slot, row.id + " slot");
+  assert.strictEqual(item.path, "img/library/" + row.id + ".png", row.id + " path");
+  assert.strictEqual(item.poster, "img/library/" + row.id + ".png", row.id + " poster");
+  assert(fs.existsSync(path.join(root, item.path)), row.id + " png should already be on disk");
+  const ach = (achievements.achievements || []).find((a) => a.id === row.ach);
+  assert(ach, row.ach + " should stay in achievements.json");
+  const unlock = ach.rewardUnlock || (ach.reward && typeof ach.reward === "object" ? ach.reward : null);
+  assert(unlock && unlock.id === row.id && unlock.type === row.type, row.ach + " should grant " + row.type + " " + row.id);
+  assert.strictEqual(ach.title, row.label, row.ach + " title");
+});
+assert((achievements.achievements || []).some((a) => a.id === "test-notebook-holding"), "keep test-notebook-holding");
+assert((achievements.achievements || []).some((a) => a.id === "test-first-serve"), "keep test-first-serve");
+const parentHtml = fs.readFileSync(path.join(root, "parent.html"), "utf8");
+assert(/test-angle-finder/.test(parentHtml) && /test-field-kit/.test(parentHtml) && /test-unplugged-strap/.test(parentHtml) && /test-daily-pick/.test(parentHtml), "parent desk fallback should list the four gear awards");
+assert(/outfit/.test(parentHtml), "parent desk should offer an outfit reward type");
+assert(adminHtml.includes("img/library/angle-finder.png") && adminHtml.includes("img/library/daily-pick.png"), "Admin file:// seed should include gear stills");
+assert(/Jungle Jam/.test(parentHtml), "parent desk should keep the Jungle Jam product name");
+
 const honk = library.items.find((item) => item.id === "banana-honk");
 assert(!honk, "Banana honk TEST seed should be gone");
 
@@ -276,6 +307,16 @@ const rosterIds = (roster.characters || []).map((ch) => String(ch.id));
 assert.strictEqual(rosterIds.join(","), "ace,riff,scorch,deuce,fuzz", "roster appends Deuce and Fuzz after the original trio");
 assert(Game.LIBRARY_GROUPS.indexOf("deuce") >= 0 && Game.LIBRARY_GROUPS.indexOf("fuzz") >= 0, "library groups include Deuce and Fuzz shelves");
 assert(Game.LIBRARY_GROUPS.indexOf("fun") > Game.LIBRARY_GROUPS.indexOf("fuzz"), "Deuce/Fuzz shelves sit with characters, not Fun");
+assert(Game.GEAR_SLOTS && Game.GEAR_SLOTS.indexOf("outfit") >= 0 && Game.GEAR_SLOTS.indexOf("tool") >= 0, "gear slots include outfit");
+const seededLib = Game.normalizeLibrary(library);
+gearSeed.forEach((row) => {
+  const item = Game.libraryItem(seededLib, row.id);
+  assert(item && item.slot === row.slot, row.id + " should keep slot after normalize");
+  assert(Game.libraryFor(seededLib, row.character, false).some((it) => it.id === row.id), row.id + " should appear on the " + row.character + " shelf");
+});
+assert.strictEqual(Game.gearLibraryItems(seededLib).length, 6, "Gear group should list the six stills");
+assert(Game.gearThumbHtml(seededLib, "angle-finder").indexOf("img/library/angle-finder.png") >= 0, "loadout thumb should use the Angle Finder png");
+assert(Game.defaultLibrary().items.some((item) => item.id === "angle-finder" && item.slot === "tool"), "file:// default library includes Angle Finder");
 
 const pack = {
   currency: achievements.currency,
@@ -296,6 +337,21 @@ assert(awardedFuzz.freshCharacter, "awarding Meet Fuzz should unlock Fuzz");
 assert(Game.alreadyUnlockedCharacter("fuzz"), "Fuzz unlock should persist");
 family = awardedFuzz.family;
 
+const awardedAngle = Game.awardStreak(pack, family, "test-angle-finder");
+assert(awardedAngle.freshGear, "awarding Angle Finder should unlock gear");
+assert(Game.alreadyUnlockedGear("angle-finder"), "Angle Finder unlock should persist");
+family = awardedAngle.family;
+assert(family.gearUnlocks["angle-finder"], "family pack should carry the Angle Finder unlock");
+["test-field-kit", "test-unplugged-strap", "test-daily-pick"].forEach((id) => {
+  const next = Game.awardStreak(pack, family, id);
+  assert(next.freshGear, "awarding " + id + " should unlock gear");
+  family = next.family;
+});
+assert(Game.alreadyUnlockedGear("field-kit") && Game.alreadyUnlockedGear("unplugged-strap") && Game.alreadyUnlockedGear("daily-pick"), "Parent desk gear awards should persist");
+const awardedNotebook = Game.awardStreak(pack, family, "test-notebook-holding");
+assert(awardedNotebook.freshGear, "Notebook of Holding should still grant a tool");
+family = awardedNotebook.family;
+
 const awarded = Game.awardStreak(pack, family, "test-fun-honk");
 assert(awarded.freshContent, "awarding a content streak should unlock content");
 assert(Game.alreadyUnlockedContent("honk"), "content unlock should persist");
@@ -307,6 +363,9 @@ const exported = Game.exportPack(pack, family, Game.defaultCharacters(), funLib)
 assert.strictEqual(exported.version, 7);
 assert(exported.libraryBlobs && typeof exported.libraryBlobs === "object");
 assert(exported.contentUnlocks.honk, "export should include content unlocks");
+assert(exported.gearUnlocks["angle-finder"], "export should include gear unlocks");
+const exportedGear = Game.exportPack(pack, family, Game.defaultCharacters(), seededLib);
+assert(exportedGear.library.items.some((item) => item.id === "angle-finder" && item.path === "img/library/angle-finder.png"), "family pack library should keep the gear still");
 assert(exported.library.items.some((item) => item.id === "honk" && item.kind === "audio"));
 assert(!banned.test(JSON.stringify(exported)), "family pack seed must not invent ITYSL lines");
 

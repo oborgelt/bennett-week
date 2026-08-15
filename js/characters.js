@@ -68,17 +68,24 @@
     const grid = document.getElementById("loadout-grid");
     if (!grid) return;
     const gear = Game.unlockedGear();
-    const cards = gear.map((g) => `
+    const cards = gear.map((g) => {
+      const item = Game.libraryItem(library, g.id);
+      const art = item
+        ? `<div class="loadout-media">${Game.libraryThumbHtml(item)}</div>`
+        : "";
+      return `
       <article class="loadout-card ready">
+        ${art}
         <p class="loadout-type">${Game.esc(g.type)}</p>
         <h3>${Game.esc(g.label || g.id)}</h3>
       </article>
-    `);
+    `;
+    });
     const lockedSlots = Math.max(0, 2 - gear.length);
     for (let i = 0; i < lockedSlots; i += 1) {
       cards.push(`
         <article class="loadout-card locked">
-          <div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>Locked</p></div>
+          <div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>???</p></div>
         </article>
       `);
     }

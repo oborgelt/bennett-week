@@ -398,12 +398,20 @@
       const st = streakOf(ach);
       const target = (ach.streak && ach.streak.target) || 1;
       const unit = (ach.streak && ach.streak.unit) || "week";
+      const unlock = Game.rewardUnlockOf(ach);
+      const gearItem = unlock && unlock.type !== "character" && unlock.type !== "content"
+        ? Game.libraryItem(library, unlock.id)
+        : null;
+      const thumb = gearItem
+        ? `<div class="ach-gear-thumb">${Game.libraryThumbHtml(gearItem)}</div>`
+        : "";
       return `
-        <article class="ach-card">
+        <article class="ach-card${gearItem ? " has-gear" : ""}">
+          ${thumb}
           <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title || "Untitled")}</h3>
           <p>${Game.esc(ach.description || "")}</p>
           <p>Incentive: ${Game.esc(ach.incentive || "—")} · ${Game.bananasOf(ach) || 0} ${cur.name}</p>
-          <p>Reward: ${Game.rewardUnlockOf(ach) ? Game.esc(rewardLabel(ach)) : "None"}${ach.rewardMedia ? " · media attached" : ""}</p>
+          <p>Reward: ${unlock ? Game.esc(rewardLabel(ach)) : "None"}${ach.rewardMedia ? " · media attached" : ""}</p>
           <p>Streak: ${st.count} / ${target} ${Game.esc(unit)}${st.awarded ? " · awarded" : ""}</p>
           <div class="parent-actions">
             <button type="button" class="btn" data-count="${Game.esc(ach.id)}">Count this week</button>

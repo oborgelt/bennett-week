@@ -2547,6 +2547,30 @@ audio.lib-play {
 
 .loadout-card h3 { margin: 0; font-size: 1rem; }
 
+.loadout-media,
+.ach-gear-thumb {
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 0 8px;
+}
+
+.ach-card.has-gear {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 0 12px;
+  align-items: start;
+}
+
+.ach-card.has-gear > *:not(.ach-gear-thumb) {
+  grid-column: 2;
+}
+
+.ach-card.has-gear .ach-gear-thumb {
+  grid-column: 1;
+  grid-row: 1 / span 8;
+  margin: 0;
+}
+
 body.story-page,
 body.ask-page,
 body.admin-page {
