@@ -49,7 +49,7 @@
       };
     }
     return {
-      explain: "Read the title and the teacher note. Do one small start — not the whole thing. This TEST help is built from the card, not a finished assignment.",
+      explain: "Read the title and the teacher note. Do one small start — not the whole thing. This offline help is built from the card, not a finished assignment.",
       cards: [
         { front: "What's the assignment?", back: t },
         { front: "What does the note say?", back: n || "Check the week card for the teacher note." },
@@ -66,12 +66,12 @@
   function testHelp(payload) {
     const base = cardsFrom(payload.title, payload.note);
     const mode = payload.mode || "notecards";
-    const out = { live: false, source: "TEST", mode };
+    const out = { live: false, source: "offline", mode };
     if (mode === "explain") out.explain = base.explain;
     else if (mode === "quiz") out.quiz = base.quiz;
     else if (mode === "proofread") {
       out.feedback = [
-        "TEST fallback — run serve.py with ANTHROPIC_API_KEY for live notes.",
+        "Offline help — run serve.py with ANTHROPIC_API_KEY for live notes.",
         "Read the draft out loud. Fix names, dates, and anything you would not say.",
         "Do not let a helper write the assignment for you."
       ];
@@ -111,10 +111,10 @@
       reply = "What's the smallest first serve on \"" + t + "\" — not the whole thing, just the first real move?";
     }
     return {
-      reply: "TEST mentor: " + reply,
+      reply: reply,
       live: false,
-      source: "TEST",
-      test: true
+      source: "offline",
+      test: false
     };
   }
 

@@ -1,17 +1,12 @@
 {
   "timezone": "America/Chicago",
-  "gradesNote": "Grades are TEST seed until a real feed exists. English often lives in a Google sheet; Canvas is not the full due list.",
+  "gradesNote": "No grades until a real feed exists. English often lives in a Google sheet; Canvas is not the full due list.",
   "eggNames": {
     "banner-monkey": "Garage-band grin",
     "hidden-ball": "Stray tennis ball",
     "clarinet-honk": "Bass clarinet honk"
   },
-  "sampleOpens": [
-    { "at": "2026-08-12T19:30:00-05:00", "test": true },
-    { "at": "2026-08-13T21:05:00-05:00", "test": true },
-    { "at": "2026-08-14T20:12:00-05:00", "test": true },
-    { "at": "2026-08-15T07:41:00-05:00", "test": true }
-  ],
+  "sampleOpens": [],
   "classes": [
     {
       "id": "band",
@@ -21,7 +16,6 @@
       "time": "7:40–8:25",
       "room": "Rm 415",
       "teacher": "Fillingham",
-      "grade": { "display": "A", "test": true },
       "items": [
         {
           "id": "band-am-0817",
@@ -96,32 +90,21 @@
       "room": "Rm 816",
       "teacher": "Goodson",
       "khan": ["ela", "grammar"],
-      "grade": { "display": "B+", "detail": "88%", "test": true },
       "items": [
         {
           "id": "eng-names",
           "title": "Help me learn your names!",
-          "kind": "assignment",
-          "grade": { "display": "5/5", "test": true }
+          "kind": "assignment"
         },
         {
           "id": "eng-comics",
           "title": "Finish summer comic strips",
-          "kind": "assignment",
-          "grade": { "display": "—", "test": true }
+          "kind": "assignment"
         },
         {
           "id": "eng-notebook",
           "title": "Bring spiral notebook",
-          "kind": "assignment",
-          "grade": { "display": "—", "test": true }
-        },
-        {
-          "id": "eng-quiz-test",
-          "title": "Warm-up quiz",
-          "kind": "quiz",
-          "test": true,
-          "grade": { "display": "9/10", "test": true }
+          "kind": "assignment"
         }
       ]
     },

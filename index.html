@@ -41,6 +41,7 @@
         <a class="crew-chip" href="characters.html" aria-label="Characters"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
         <a class="story-chip" id="story-chip" href="story.html" hidden>Story</a>
         <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="admin-chip" href="admin.html">Admin</a>
         <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
     </div>
@@ -94,75 +95,26 @@
   <script id="week-seed" type="application/json">
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-14",
+  "as_of": "2026-08-15",
   "parenting": [
     {"who": "Mom", "start": "2026-08-14T00:00:00", "end": "2026-08-16T18:00:00"},
     {"who": "Dad", "start": "2026-08-16T18:00:00", "end": "2026-08-20T16:30:00"},
     {"who": "Mom", "start": "2026-08-20T16:30:00", "end": "2026-08-22T00:00:00"}
   ],
   "events": [
-    {
-      "id": "band-am-0817",
-      "title": "Band rehearsal",
-      "start": "2026-08-17T06:50:00",
-      "kind": "calendar",
-      "note": "Dad's time"
-    },
-    {
-      "id": "band-pm-0817",
-      "title": "Band",
-      "start": "2026-08-17T18:30:00",
-      "end": "2026-08-17T20:30:00",
-      "kind": "calendar",
-      "place": "Olathe East"
-    },
-    {
-      "id": "forms-0820",
-      "title": "Forms & Fees Night",
-      "start": "2026-08-20T17:30:00",
-      "end": "2026-08-20T19:00:00",
-      "kind": "calendar",
-      "place": "Band/Orchestra rooms",
-      "note": "After 4:30pm handoff to Mom"
-    },
-    {
-      "id": "test-jam",
-      "title": "TEST: Monkey jam (not a real event)",
-      "start": "2026-08-19T16:00:00",
-      "kind": "calendar",
-      "note": "TEST data only — look-and-feel filler, not on any real calendar."
-    }
+    {"id": "band-am-0817", "title": "Band rehearsal", "start": "2026-08-17T06:50:00", "kind": "calendar", "note": "Arrive by 6:40. Dad's time. Rehearsals from here are graded, including 6:50am MTWF."},
+    {"id": "band-pm-0817", "title": "Marching band", "start": "2026-08-17T18:30:00", "end": "2026-08-17T20:30:00", "kind": "calendar", "place": "Olathe East"},
+    {"id": "pe-touchbase-0818", "title": "TouchBase PE items pickup", "start": "2026-08-18T13:05:00", "kind": "calendar", "note": "Optional. In class."},
+    {"id": "schedule-change-0818", "title": "Schedule-change form due", "start": "2026-08-18T16:00:00", "kind": "calendar", "place": "Main Gym", "note": "10th grade printed pickup. Calendar note, not homework."},
+    {"id": "pe-uniform-0819", "title": "PE uniform starts", "start": "2026-08-19T07:40:00", "kind": "calendar", "note": "Existing OE uniform is OK."},
+    {"id": "forms-0820", "title": "Forms, Fees & Fit Night", "start": "2026-08-20T17:30:00", "end": "2026-08-20T19:00:00", "kind": "calendar", "place": "Band/Orchestra rooms", "note": "Due by 7pm: medical form + handbook agreement. Pay uniform accessories $60 (shirt $15, shoes $40, gloves $5) and yearly contribution $350 to OE Band Boosters (check to Olathe East Band Boosters; Fillingham/Reed or Boosters that night). After 4:30pm handoff to Mom."}
   ],
   "work": [
-    {
-      "id": "eng-names",
-      "title": "English 10: Help me learn your names!",
-      "due": "2026-08-17T23:59:00",
-      "note": "Canvas video: full name twice + something you are awesome at. 5 points."
-    },
-    {
-      "id": "eng-comics",
-      "title": "English 10: Finish summer comic strips",
-      "due": "2026-08-18T13:05:00",
-      "note": "Started 8/17 in class. From Daily Agendas sheet.",
-      "suggest_from": "2026-08-14"
-    },
-    {
-      "id": "eng-notebook",
-      "title": "English 10: Bring spiral notebook",
-      "due": "2026-08-21T13:05:00",
-      "note": "Spiral or composition notebook. Also highlighter and 100 index cards.",
-      "suggest_from": "2026-08-14"
-    }
+    {"id": "eng-names", "title": "English 10: Help me learn your names!", "due": "2026-08-17T23:59:00", "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points."},
+    {"id": "eng-comics", "title": "English 10: Finish summer comic strips", "due": "2026-08-18T13:05:00", "note": "In class Tuesday. Monday card should still say start this.", "suggest_from": "2026-08-15"},
+    {"id": "eng-notebook", "title": "English 10: Bring spiral notebook", "due": "2026-08-21T13:05:00", "note": "Spiral or composition notebook. Also highlighter and 100 index cards.", "suggest_from": "2026-08-15"}
   ],
-  "notes": [
-    {
-      "id": "chem-absence-0814",
-      "date": "2026-08-14",
-      "title": "Chemistry absence",
-      "text": "Historical note from 8/14. Unresolved, not an assignment."
-    }
-  ]
+  "notes": []
 }
   </script>
   <script id="ach-seed" type="application/json">
@@ -178,9 +130,8 @@
       "title": "Straight A's",
       "description": "Straight A's for 3 weeks in a row.",
       "how": "Parents count each week of straight A's, then award.",
-      "incentive": "TEST — pick dinner",
+      "incentive": "Pick dinner",
       "icon": "badge",
-      "test": true,
       "reward": 20,
       "streak": { "target": 3, "unit": "week" }
     },
@@ -189,9 +140,8 @@
       "title": "On-time streak",
       "description": "No late assignments for 4 weeks.",
       "how": "Parents count a clean week, then award at 4.",
-      "incentive": "TEST — extra 15 min screen time",
+      "incentive": "Extra 15 min screen time",
       "icon": "tennis",
-      "test": true,
       "reward": 20,
       "streak": { "target": 4, "unit": "week" }
     },
@@ -200,9 +150,8 @@
       "title": "Flash-card first test",
       "description": "Used flash cards for his first test.",
       "how": "Parents award when he actually used the cards.",
-      "incentive": "TEST — pick a snack",
+      "incentive": "Pick a snack",
       "icon": "guitar",
-      "test": true,
       "reward": 10,
       "streak": { "target": 1, "unit": "time" }
     },
@@ -211,9 +160,8 @@
       "title": "Five-day start",
       "description": "Started the week 5 school days in a row.",
       "how": "Parents count a school day he opened the lobby and started something.",
-      "incentive": "TEST — skip one chore",
+      "incentive": "Skip one chore",
       "icon": "clarinet",
-      "test": true,
       "reward": 15,
       "streak": { "target": 5, "unit": "school day" }
     },
@@ -222,9 +170,8 @@
       "title": "Asked before it was due",
       "description": "Asked a question before a due date.",
       "how": "Parents award help-seeking, not a finished worksheet.",
-      "incentive": "TEST — high five",
+      "incentive": "High five",
       "icon": "banana",
-      "test": true,
       "reward": 10,
       "streak": { "target": 1, "unit": "time" }
     },
@@ -233,9 +180,8 @@
       "title": "Hidden banana",
       "description": "You found a silly secret in the jungle.",
       "how": "Easter egg. Tap the banner band five times.",
-      "incentive": "TEST — a goofy dance from a parent",
+      "incentive": "A goofy dance from a parent",
       "icon": "banana",
-      "test": true,
       "secret": true,
       "reward": 25,
       "unlocksGame": "egg",
@@ -248,7 +194,6 @@
       "how": "Parents award this to unlock the game. Finding the banner-band secret also unlocks it.",
       "incentive": "Unlocks the egg game",
       "icon": "banana",
-      "test": true,
       "reward": 15,
       "unlocksGame": "egg",
       "streak": { "target": 1, "unit": "time" }
@@ -256,11 +201,10 @@
     {
       "id": "test-ace-closer",
       "title": "Meet Ace",
-      "description": "TEST — award this to unlock Ace for Bennett. Not auto-unlocked.",
-      "how": "Parents award this TEST streak when they want Bennett to meet Ace.",
+      "description": "Award this to unlock Ace for Bennett. Loading the site does not auto-unlock.",
+      "how": "Parents award this when they want Bennett to meet Ace.",
       "incentive": "Unlocks Ace",
       "icon": "tennis",
-      "test": true,
       "reward": 10,
       "rewardCharacter": "ace",
       "streak": { "target": 1, "unit": "time" }
@@ -268,11 +212,10 @@
     {
       "id": "test-deuce-return",
       "title": "Meet Deuce",
-      "description": "TEST — award this to unlock Deuce for Bennett. Not auto-unlocked.",
-      "how": "Parents award this TEST streak when they want Bennett to meet Deuce.",
+      "description": "Award this to unlock Deuce for Bennett. Loading the site does not auto-unlock.",
+      "how": "Parents award this when they want Bennett to meet Deuce.",
       "incentive": "Unlocks Deuce",
       "icon": "tennis",
-      "test": true,
       "reward": 10,
       "rewardCharacter": "deuce",
       "streak": { "target": 1, "unit": "time" }
@@ -280,11 +223,10 @@
     {
       "id": "test-fuzz-unplugged",
       "title": "Meet Fuzz",
-      "description": "TEST — award this to unlock Fuzz for Bennett. Not auto-unlocked.",
-      "how": "Parents award this TEST streak when they want Bennett to meet Fuzz.",
+      "description": "Award this to unlock Fuzz for Bennett. Loading the site does not auto-unlock.",
+      "how": "Parents award this when they want Bennett to meet Fuzz.",
       "incentive": "Unlocks Fuzz",
       "icon": "guitar",
-      "test": true,
       "reward": 10,
       "rewardCharacter": "fuzz",
       "streak": { "target": 1, "unit": "time" }
@@ -306,54 +248,14 @@
   </script>
   <script id="family-seed" type="application/json">
 {
-  "notes": [
-    {
-      "id": "test-note-names",
-      "targetType": "work",
-      "targetId": "eng-names",
-      "from": "parent",
-      "kind": "note",
-      "text": "TEST: Say your full name twice, then one thing you are awesome at. Keep it short.",
-      "at": "2026-08-14T20:15:00-05:00",
-      "test": true
-    },
-    {
-      "id": "test-q-comics",
-      "targetType": "work",
-      "targetId": "eng-comics",
-      "from": "bennett",
-      "kind": "question",
-      "text": "TEST: Do the comic strips need color, or is pencil okay?",
-      "at": "2026-08-14T21:04:00-05:00",
-      "test": true
-    },
-    {
-      "id": "test-note-band",
-      "targetType": "event",
-      "targetId": "band-am-0817",
-      "from": "parent",
-      "kind": "note",
-      "text": "TEST: Early call — pack the clarinet the night before.",
-      "at": "2026-08-14T19:10:00-05:00",
-      "test": true
-    }
-  ],
+  "notes": [],
   "reflections": {
     "pool": [
-      { "id": "r-easiest", "text": "Which class felt easiest today?", "test": true },
-      { "id": "r-teacher", "text": "Name one thing a teacher did that helped", "test": true },
-      { "id": "r-weird", "text": "Anything feel weird or too fast?", "test": true }
+      { "id": "r-easiest", "text": "Which class felt easiest today?" },
+      { "id": "r-teacher", "text": "Name one thing a teacher did that helped" },
+      { "id": "r-weird", "text": "Anything feel weird or too fast?" }
     ],
-    "answers": [
-      {
-        "id": "ra-test-1",
-        "promptId": "r-easiest",
-        "prompt": "Which class felt easiest today?",
-        "text": "TEST: Band — we mostly set up and tuned.",
-        "at": "2026-08-14T19:42:00-05:00",
-        "test": true
-      }
-    ]
+    "answers": []
   },
   "streaks": {}
 }

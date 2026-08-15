@@ -576,7 +576,7 @@
     }
     const note = document.getElementById("grades-note");
     if (note) {
-      note.textContent = seed.gradesNote || "Grades are TEST seed until a real feed exists.";
+      note.textContent = seed.gradesNote || "No grades until a real feed exists.";
     }
     bindDash();
   }

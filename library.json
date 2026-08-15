@@ -103,14 +103,6 @@
       "poster": "img/library/crew-hero.jpg",
       "kind": "video",
       "character": "crew"
-    },
-    {
-      "id": "banana-honk",
-      "label": "Banana honk",
-      "kind": "audio",
-      "character": "fun",
-      "synth": "honk",
-      "test": true
     }
   ]
 }

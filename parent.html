@@ -36,7 +36,6 @@
   <div class="parent-wrap">
     <p class="draft-flag" id="draft-flag" hidden>This device has a draft. Export JSON to share it or drop achievements.json into the repo.</p>
     <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
-      Seed items marked <span class="test-tag">TEST</span> are examples only — not real family rules.
       Bennett never sees this catalog, only trophies you award.
     </p>
     <div class="parent-actions">
@@ -105,14 +104,14 @@
 
     <h2 style="font-size:1rem;margin:18px 0 8px">Story ingredients</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
-      Topics to fold into the comic. TEST seeds: finish what you start · ask before you’re sunk.
+      Topics to fold into the comic.
     </p>
     <div class="form-grid">
       <label>New ingredient
         <input id="new-ingredient" maxlength="140" placeholder="finish what you start">
       </label>
       <label class="check">
-        <input id="ingredient-test" type="checkbox" checked> Mark as TEST
+        <input id="ingredient-test" type="checkbox"> Mark as TEST
       </label>
       <label>Include in story (parent note)
         <textarea id="story-note" maxlength="280" placeholder="Optional. Leave blank to skip — do not invent Bennett’s voice."></textarea>
@@ -202,7 +201,7 @@
         <input id="new-prompt" maxlength="140" placeholder="Which class felt easiest today?">
       </label>
       <label class="check">
-        <input id="prompt-test" type="checkbox" checked> Mark as TEST
+        <input id="prompt-test" type="checkbox"> Mark as TEST
       </label>
     </div>
     <div class="parent-actions">
@@ -223,7 +222,7 @@
           <textarea id="how" maxlength="200" placeholder="Count each week, then award"></textarea>
         </label>
         <label>Incentive
-          <input id="incentive" maxlength="120" placeholder="TEST — pick dinner">
+          <input id="incentive" maxlength="120" placeholder="pick dinner">
         </label>
         <div class="form-row">
           <label>Icon
@@ -275,7 +274,7 @@
           </select>
         </label>
         <label class="check">
-          <input id="test" type="checkbox" checked> Mark as TEST
+          <input id="test" type="checkbox"> Mark as TEST
         </label>
       </div>
       <div class="parent-actions">
@@ -312,8 +311,7 @@
   "events": [
     {"id": "band-am-0817", "title": "Band rehearsal", "start": "2026-08-17T06:50:00"},
     {"id": "band-pm-0817", "title": "Band", "start": "2026-08-17T18:30:00"},
-    {"id": "forms-0820", "title": "Forms & Fees Night", "start": "2026-08-20T17:30:00"},
-    {"id": "test-jam", "title": "TEST: Monkey jam (not a real event)", "start": "2026-08-19T16:00:00"}
+    {"id": "forms-0820", "title": "Forms & Fees Night", "start": "2026-08-20T17:30:00"}
   ]
 }
   </script>
@@ -321,21 +319,20 @@
 {
   "currency": {"name": "bananas", "singular": "banana", "emoji": "🍌"},
   "achievements": [
-    {"id": "straight-as-3w", "title": "Straight A's", "description": "Straight A's for 3 weeks in a row.", "how": "Parents count each week of straight A's, then award.", "incentive": "TEST — pick dinner", "icon": "badge", "test": true, "reward": 20, "streak": {"target": 3, "unit": "week"}},
-    {"id": "no-late-4w", "title": "On-time streak", "description": "No late assignments for 4 weeks.", "how": "Parents count a clean week, then award at 4.", "incentive": "TEST — extra 15 min screen time", "icon": "tennis", "test": true, "reward": 20, "streak": {"target": 4, "unit": "week"}},
-    {"id": "flash-cards-first", "title": "Flash-card first test", "description": "Used flash cards for his first test.", "how": "Parents award when he actually used the cards.", "incentive": "TEST — pick a snack", "icon": "guitar", "test": true, "reward": 10, "streak": {"target": 1, "unit": "time"}},
-    {"id": "started-week-5", "title": "Five-day start", "description": "Started the week 5 school days in a row.", "how": "Parents count a school day he opened the lobby and started something.", "incentive": "TEST — skip one chore", "icon": "clarinet", "test": true, "reward": 15, "streak": {"target": 5, "unit": "school day"}},
-    {"id": "asked-before-due", "title": "Asked before it was due", "description": "Asked a question before a due date.", "how": "Parents award help-seeking, not a finished worksheet.", "incentive": "TEST — high five", "icon": "banana", "test": true, "reward": 10, "streak": {"target": 1, "unit": "time"}},
-    {"id": "hidden-banana", "title": "Hidden banana", "description": "You found a silly secret in the jungle.", "how": "Easter egg. Tap the banner band five times.", "incentive": "TEST — a goofy dance from a parent", "icon": "banana", "test": true, "secret": true, "reward": 25, "unlocksGame": "egg", "unlock": {"type": "easter_egg", "egg": "banner-monkey"}},
-    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "description": "Unlocks the office egg game — the dumb one where the eggs are never the right number.", "how": "Parents award this to unlock the game.", "incentive": "Unlocks the egg game", "icon": "banana", "test": true, "reward": 15, "unlocksGame": "egg", "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-ace-closer", "title": "Meet Ace", "description": "TEST — award this to unlock Ace for Bennett. Not auto-unlocked.", "how": "Parents award this TEST streak when they want Bennett to meet Ace.", "incentive": "Unlocks Ace", "icon": "tennis", "test": true, "reward": 10, "rewardCharacter": "ace", "rewardUnlock": {"type": "character", "id": "ace", "label": "Ace"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-riff-reps", "title": "Meet Riff", "test": true, "reward": 10, "rewardCharacter": "riff", "rewardUnlock": {"type": "character", "id": "riff", "label": "Riff"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-scorch-recover", "title": "Meet Scorch", "test": true, "reward": 10, "rewardCharacter": "scorch", "rewardUnlock": {"type": "character", "id": "scorch", "label": "Scorch"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-deuce-return", "title": "Meet Deuce", "test": true, "reward": 10, "rewardCharacter": "deuce", "rewardUnlock": {"type": "character", "id": "deuce", "label": "Deuce"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-fuzz-unplugged", "title": "Meet Fuzz", "test": true, "reward": 10, "rewardCharacter": "fuzz", "rewardUnlock": {"type": "character", "id": "fuzz", "label": "Fuzz"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-notebook-holding", "title": "Notebook of Holding", "test": true, "bananas": 10, "reward": {"type": "tool", "id": "notebook-holding", "label": "Notebook of Holding"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-first-serve", "title": "First Serve", "test": true, "bananas": 10, "reward": {"type": "ability", "id": "first-serve", "label": "First Serve"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-banana-honk", "title": "Banana honk", "description": "TEST — award this to unlock a silly original honk.", "how": "Parents award this TEST streak.", "incentive": "Unlocks a Fun sound", "icon": "banana", "test": true, "reward": 5, "rewardUnlock": {"type": "content", "id": "banana-honk", "label": "Banana honk"}, "streak": {"target": 1, "unit": "time"}}
+    {"id": "straight-as-3w", "title": "Straight A's", "description": "Straight A's for 3 weeks in a row.", "how": "Parents count each week of straight A's, then award.", "incentive": "pick dinner", "icon": "badge", "reward": 20, "streak": {"target": 3, "unit": "week"}},
+    {"id": "no-late-4w", "title": "On-time streak", "description": "No late assignments for 4 weeks.", "how": "Parents count a clean week, then award at 4.", "incentive": "extra 15 min screen time", "icon": "tennis", "reward": 20, "streak": {"target": 4, "unit": "week"}},
+    {"id": "flash-cards-first", "title": "Flash-card first test", "description": "Used flash cards for his first test.", "how": "Parents award when he actually used the cards.", "incentive": "pick a snack", "icon": "guitar", "reward": 10, "streak": {"target": 1, "unit": "time"}},
+    {"id": "started-week-5", "title": "Five-day start", "description": "Started the week 5 school days in a row.", "how": "Parents count a school day he opened the lobby and started something.", "incentive": "skip one chore", "icon": "clarinet", "reward": 15, "streak": {"target": 5, "unit": "school day"}},
+    {"id": "asked-before-due", "title": "Asked before it was due", "description": "Asked a question before a due date.", "how": "Parents award help-seeking, not a finished worksheet.", "incentive": "high five", "icon": "banana", "reward": 10, "streak": {"target": 1, "unit": "time"}},
+    {"id": "hidden-banana", "title": "Hidden banana", "description": "You found a silly secret in the jungle.", "how": "Easter egg. Tap the banner band five times.", "incentive": "a goofy dance from a parent", "icon": "banana", "secret": true, "reward": 25, "unlocksGame": "egg", "unlock": {"type": "easter_egg", "egg": "banner-monkey"}},
+    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "description": "Unlocks the office egg game — the dumb one where the eggs are never the right number.", "how": "Parents award this to unlock the game.", "incentive": "Unlocks the egg game", "icon": "banana", "reward": 15, "unlocksGame": "egg", "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-ace-closer", "title": "Meet Ace", "description": "Award this to unlock Ace for Bennett. Loading the site does not auto-unlock.", "how": "Parents award this when they want Bennett to meet Ace.", "incentive": "Unlocks Ace", "icon": "tennis", "reward": 10, "rewardCharacter": "ace", "rewardUnlock": {"type": "character", "id": "ace", "label": "Ace"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-riff-reps", "title": "Meet Riff", "reward": 10, "rewardCharacter": "riff", "rewardUnlock": {"type": "character", "id": "riff", "label": "Riff"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-scorch-recover", "title": "Meet Scorch", "reward": 10, "rewardCharacter": "scorch", "rewardUnlock": {"type": "character", "id": "scorch", "label": "Scorch"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-deuce-return", "title": "Meet Deuce", "reward": 10, "rewardCharacter": "deuce", "rewardUnlock": {"type": "character", "id": "deuce", "label": "Deuce"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-fuzz-unplugged", "title": "Meet Fuzz", "reward": 10, "rewardCharacter": "fuzz", "rewardUnlock": {"type": "character", "id": "fuzz", "label": "Fuzz"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-notebook-holding", "title": "Notebook of Holding", "bananas": 10, "reward": {"type": "tool", "id": "notebook-holding", "label": "Notebook of Holding"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-first-serve", "title": "First Serve", "bananas": 10, "reward": {"type": "ability", "id": "first-serve", "label": "First Serve"}, "streak": {"target": 1, "unit": "time"}}
   ]
 }
   </script>
@@ -353,27 +350,18 @@
   </script>
   <script id="family-seed" type="application/json">
 {
-  "notes": [
-    {"id": "test-note-names", "targetType": "work", "targetId": "eng-names", "from": "parent", "kind": "note", "text": "TEST: Say your full name twice, then one thing you are awesome at. Keep it short.", "at": "2026-08-14T20:15:00-05:00", "test": true},
-    {"id": "test-q-comics", "targetType": "work", "targetId": "eng-comics", "from": "bennett", "kind": "question", "text": "TEST: Do the comic strips need color, or is pencil okay?", "at": "2026-08-14T21:04:00-05:00", "test": true},
-    {"id": "test-note-band", "targetType": "event", "targetId": "band-am-0817", "from": "parent", "kind": "note", "text": "TEST: Early call — pack the clarinet the night before.", "at": "2026-08-14T19:10:00-05:00", "test": true}
-  ],
+  "notes": [],
   "reflections": {
     "pool": [
-      {"id": "r-easiest", "text": "Which class felt easiest today?", "test": true},
-      {"id": "r-teacher", "text": "Name one thing a teacher did that helped", "test": true},
-      {"id": "r-weird", "text": "Anything feel weird or too fast?", "test": true}
+      {"id": "r-easiest", "text": "Which class felt easiest today?"},
+      {"id": "r-teacher", "text": "Name one thing a teacher did that helped"},
+      {"id": "r-weird", "text": "Anything feel weird or too fast?"}
     ],
-    "answers": [
-      {"id": "ra-test-1", "promptId": "r-easiest", "prompt": "Which class felt easiest today?", "text": "TEST: Band — we mostly set up and tuned.", "at": "2026-08-14T19:42:00-05:00", "test": true}
-    ]
+    "answers": []
   },
   "streaks": {},
   "story": {
-    "ingredients": [
-      {"id": "si-finish", "text": "finish what you start", "test": true},
-      {"id": "si-ask", "text": "ask before you're sunk", "test": true}
-    ],
+    "ingredients": [],
     "includeNote": "",
     "attachments": {}
   }

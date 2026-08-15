@@ -301,6 +301,42 @@
     };
   }
 
+  const SEED_GEN = 41;
+  const SEED_GEN_KEY = "bw-seed-gen";
+
+  function migrateCleanSlate() {
+    try {
+      if (Number(localStorage.getItem(SEED_GEN_KEY) || 0) >= SEED_GEN) return;
+      const family = read(KEYS.family, null);
+      const cues = family && family.soundCues && typeof family.soundCues === "object" ? family.soundCues : {};
+      [
+        KEYS.mom,
+        KEYS.family,
+        KEYS.progress,
+        KEYS.unlocks,
+        KEYS.bananas,
+        KEYS.eggs,
+        KEYS.trophyOrder,
+        KEYS.characterUnlocks,
+        KEYS.characterSeen,
+        KEYS.gear,
+        KEYS.content,
+        KEYS.contentSeen,
+        KEYS.ask,
+        KEYS.opened,
+        KEYS.opens
+      ].forEach((key) => {
+        try { localStorage.removeItem(key); } catch (_) {}
+      });
+      if (Object.keys(cues).length) {
+        const next = emptyFamily();
+        next.soundCues = asCueMap(cues);
+        write(KEYS.family, next);
+      }
+      localStorage.setItem(SEED_GEN_KEY, String(SEED_GEN));
+    } catch (_) {}
+  }
+
   function emptyFamily() {
     return {
       notes: [],
@@ -625,11 +661,13 @@
   }
 
   async function loadWeek() {
+    migrateCleanSlate();
     const seed = parseSeed("week-seed") || parseSeed("seed");
     return fetchJson("week.json", seed);
   }
 
   async function loadAchievements() {
+    migrateCleanSlate();
     const seed = parseSeed("ach-seed");
     const file = await fetchJson("achievements.json", seed);
     const draft = getMomDraft();
@@ -843,8 +881,7 @@
         { id: "crew-hero", label: "Crew hero lineup", path: "img/library/crew-hero.jpg", kind: "image", character: "crew" },
         { id: "crew-run", label: "Crew run", path: "img/library/crew-run.jpg", kind: "image", character: "crew" },
         { id: "crew-burst", label: "Crew burst", path: "img/library/crew-burst.jpg", kind: "image", character: "crew" },
-        { id: "crew-adventure", label: "Crew adventure clip", path: "img/library/crew-adventure.mp4", poster: "img/library/crew-hero.jpg", kind: "video", character: "crew" },
-        { id: "banana-honk", label: "Banana honk", kind: "audio", character: "fun", synth: "honk", test: true }
+        { id: "crew-adventure", label: "Crew adventure clip", path: "img/library/crew-adventure.mp4", poster: "img/library/crew-hero.jpg", kind: "video", character: "crew" }
       ]
     };
   }
@@ -2362,6 +2399,7 @@
   }
 
   async function loadFamily() {
+    migrateCleanSlate();
     const seed = normalizeFamily(parseSeed("family-seed") || emptyFamily());
     const stored = getFamilyDraft();
     if (stored) {
@@ -2390,6 +2428,7 @@
   }
 
   async function loadProgress() {
+    migrateCleanSlate();
     const seed = normalizeProgressSeed(parseSeed("progress-seed") || emptyProgressSeed());
     const file = await fetchJson("progress.json", null);
     return normalizeProgressSeed(file || seed);

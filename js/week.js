@@ -909,7 +909,7 @@
   function renderHelpBody(work, data, mode) {
     const banner = data.live
       ? `<p class="help-banner live">Live tutor help — a nudge, not a finished assignment.</p>`
-      : `<p class="help-banner"><span class="test-tag">TEST</span> Offline help from the assignment title and note. Run serve.py with ANTHROPIC_API_KEY for live help.</p>`;
+      : `<p class="help-banner">Offline help from the assignment title and note. Run serve.py with ANTHROPIC_API_KEY for live help.</p>`;
     const tabs = `
       <div class="help-tabs">
         <button type="button" class="mini" data-mode="notecards">Notecards</button>

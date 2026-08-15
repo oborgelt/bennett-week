@@ -62,18 +62,12 @@ assert(meetFuzz && meetFuzz.rewardUnlock && meetFuzz.rewardUnlock.id === "fuzz",
 assert(meetDeuce.rewardCharacter === "deuce" && meetFuzz.rewardCharacter === "fuzz", "Meet streaks keep rewardCharacter");
 
 const honk = library.items.find((item) => item.id === "banana-honk");
-assert(honk, "TEST Banana honk seed is missing");
-assert(honk.test === true, "Banana honk should be TEST");
-assert(honk.kind === "audio", "Banana honk should be audio");
-assert(honk.character === "fun", "Banana honk should sit on Fun / Sounds");
-assert(honk.synth === "honk", "Banana honk should be a generated beep");
-assert(!honk.path && !honk.url, "Banana honk must not point at a third-party file");
+assert(!honk, "Banana honk TEST seed should be gone");
 
 const reward = (achievements.achievements || []).find((a) => a.id === "test-banana-honk");
-assert(reward, "TEST Banana honk achievement is missing");
-assert(reward.rewardUnlock && reward.rewardUnlock.type === "content", "Banana honk reward should be content");
-assert(reward.rewardUnlock.id === "banana-honk", "Banana honk reward should unlock banana-honk");
-assert(!banned.test(JSON.stringify(reward)), "achievement seed must not invent ITYSL lines");
+assert(!reward, "Banana honk TEST achievement should be gone");
+assert(!(achievements.achievements || []).some((a) => a.test), "achievements.json should not ship TEST flags");
+assert(!(library.items || []).some((item) => item.test), "library.json should not ship TEST flags");
 
 const store = {};
 const localStorage = {
@@ -153,8 +147,8 @@ assert.deepStrictEqual(byId.chemistry.khan, ["hs-chemistry"], "Chemistry maps to
 assert.deepStrictEqual(byId.geometry.khan, ["geometry-home"], "Geometry maps to public Geometry course");
 const english = byId["english-10"];
 const band = byId.band;
-assert(english.grade && english.grade.display, "keep English TEST grade");
-assert(band.grade && band.grade.display, "keep Band TEST grade");
+assert(!english.grade, "do not invent an English grade");
+assert(!band.grade, "do not invent a Band grade");
 assert((english.items || []).length >= 3, "keep existing English progress items");
 assert((band.items || []).length >= 2, "keep existing Band progress items");
 assert.deepStrictEqual(english.khan, ["ela", "grammar"], "English maps to ELA + grammar");
@@ -198,8 +192,35 @@ assert(overlayClasses.some((cls) => cls.id === "chemistry" && cls.items.length =
 assert(overlayClasses.some((cls) => cls.name === "Study hall" && (!cls.items || !cls.items.length) && !cls.grade), "parent-added class has no fake work or grade");
 assert(classFamily.overlay.progress.addedClasses.some((cls) => cls.name === "Study hall"), "added class exports in the family overlay");
 
-const norm = Game.normalizeLibrary(library);
-assert(norm.items.some((item) => item.id === "banana-honk"), "normalizeLibrary dropped Banana honk");
+const funLib = Game.normalizeLibrary({
+  items: [
+    { id: "random", label: "Random", kind: "audio", character: "fun", filename: "random.mp3", device: true },
+    { id: "honk", label: "Honk", kind: "audio", character: "fun", synth: "honk" }
+  ]
+});
+assert(Game.emptyFamily().soundCues && typeof Game.emptyFamily().soundCues === "object");
+assert(Game.SOUND_CUES.some((c) => c.id === "egg-end"), "egg-end cue should exist");
+assert(Game.SOUND_CUES.some((c) => c.id === "egg-win"), "egg-win cue should exist");
+assert(Game.SOUND_CUES.some((c) => c.id === "egg-closed"), "egg-closed cue should exist");
+assert.strictEqual(Game.RANDOM_CUE, "__random__");
+const cued = Game.setSoundCue(Game.emptyFamily(), "egg-end", "honk");
+assert.strictEqual(cued.soundCues["egg-end"], "honk");
+assert.strictEqual(Game.cueLibraryItem(cued, funLib, "egg-end").id, "honk");
+assert.strictEqual(Game.playSoundCue(Game.emptyFamily(), funLib, "missing-cue"), false);
+assert(Game.audioLibraryItems(funLib).some((item) => item.id === "honk"));
+assert(Game.playRandomLibraryItem(funLib), "random clip should pick an audio item");
+const shuffled = Game.setSoundCue(Game.emptyFamily(), "egg-end", Game.RANDOM_CUE);
+assert.strictEqual(shuffled.soundCues["egg-end"], Game.RANDOM_CUE);
+assert.strictEqual(Game.cueSoundLabel(shuffled, funLib, "egg-end"), "Shuffle — any library clip");
+assert(!Game.cueLibraryItem(shuffled, funLib, "egg-end"), "shuffle is not a library file");
+assert(Game.playSoundCue(shuffled, funLib, "egg-end"), "shuffle cue should pick a clip");
+const libWithRandom = funLib;
+const namedRandom = Game.setSoundCue(Game.emptyFamily(), "egg-end", "random");
+const resolved = Game.resolveCuePlay(namedRandom, libWithRandom, "egg-end");
+assert.strictEqual(resolved.item && resolved.item.id, "random", "a clip named Random is that file, not a shuffle");
+assert.strictEqual(Game.cueSoundLabel(namedRandom, libWithRandom, "egg-end"), "Random");
+const cleared = Game.setSoundCue(cued, "egg-end", "");
+assert(!cleared.soundCues["egg-end"], "clearing a cue should drop it");
 assert.strictEqual(Game.inferKind("img/library/foo.mp3", "", ""), "audio");
 assert.strictEqual(Game.labelFromFilename("my-cool_honk.mp3"), "My Cool Honk");
 assert.strictEqual(Game.labelFromFilename("TEST-beep.wav"), "TEST Beep");
@@ -249,35 +270,6 @@ assert.strictEqual(dirty.items[0].url, "");
 assert.strictEqual(dirty.items[0].path, "");
 assert(dirty.items[0].device);
 
-assert(Game.emptyFamily().soundCues && typeof Game.emptyFamily().soundCues === "object");
-assert(Game.SOUND_CUES.some((c) => c.id === "egg-end"), "egg-end cue should exist");
-assert(Game.SOUND_CUES.some((c) => c.id === "egg-win"), "egg-win cue should exist");
-assert(Game.SOUND_CUES.some((c) => c.id === "egg-closed"), "egg-closed cue should exist");
-assert.strictEqual(Game.RANDOM_CUE, "__random__");
-const cued = Game.setSoundCue(Game.emptyFamily(), "egg-end", "banana-honk");
-assert.strictEqual(cued.soundCues["egg-end"], "banana-honk");
-assert.strictEqual(Game.cueLibraryItem(cued, Game.normalizeLibrary(library), "egg-end").id, "banana-honk");
-assert.strictEqual(Game.playSoundCue(Game.emptyFamily(), Game.normalizeLibrary(library), "missing-cue"), false);
-assert(Game.audioLibraryItems(Game.normalizeLibrary(library)).some((item) => item.id === "banana-honk"));
-assert(Game.playRandomLibraryItem(Game.normalizeLibrary(library)), "random clip should pick an audio item");
-const shuffled = Game.setSoundCue(Game.emptyFamily(), "egg-end", Game.RANDOM_CUE);
-assert.strictEqual(shuffled.soundCues["egg-end"], Game.RANDOM_CUE);
-assert.strictEqual(Game.cueSoundLabel(shuffled, Game.normalizeLibrary(library), "egg-end"), "Shuffle — any library clip");
-assert(!Game.cueLibraryItem(shuffled, Game.normalizeLibrary(library), "egg-end"), "shuffle is not a library file");
-assert(Game.playSoundCue(shuffled, Game.normalizeLibrary(library), "egg-end"), "shuffle cue should pick a clip");
-const libWithRandom = Game.normalizeLibrary({
-  items: [
-    { id: "random", label: "Random", kind: "audio", character: "fun", filename: "random.mp3", device: true },
-    { id: "banana-honk", label: "Banana honk", kind: "audio", character: "fun", synth: "honk" }
-  ]
-});
-const namedRandom = Game.setSoundCue(Game.emptyFamily(), "egg-end", "random");
-const resolved = Game.resolveCuePlay(namedRandom, libWithRandom, "egg-end");
-assert.strictEqual(resolved.item && resolved.item.id, "random", "a clip named Random is that file, not a shuffle");
-assert.strictEqual(Game.cueSoundLabel(namedRandom, libWithRandom, "egg-end"), "Random");
-const cleared = Game.setSoundCue(cued, "egg-end", "");
-assert(!cleared.soundCues["egg-end"], "clearing a cue should drop it");
-
 const roster = Game.defaultCharacters();
 assert.strictEqual(roster.comicStartsAfter, 3, "comicStartsAfter stays 3");
 const rosterIds = (roster.characters || []).map((ch) => String(ch.id));
@@ -287,7 +279,12 @@ assert(Game.LIBRARY_GROUPS.indexOf("fun") > Game.LIBRARY_GROUPS.indexOf("fuzz"),
 
 const pack = {
   currency: achievements.currency,
-  achievements: achievements.achievements
+  achievements: (achievements.achievements || []).concat([{
+    id: "test-fun-honk",
+    title: "Honk",
+    rewardUnlock: { type: "content", id: "honk", label: "Honk" },
+    streak: { target: 1, unit: "time" }
+  }])
 };
 let family = Game.emptyFamily();
 const awardedDeuce = Game.awardStreak(pack, family, "test-deuce-return");
@@ -299,22 +296,23 @@ assert(awardedFuzz.freshCharacter, "awarding Meet Fuzz should unlock Fuzz");
 assert(Game.alreadyUnlockedCharacter("fuzz"), "Fuzz unlock should persist");
 family = awardedFuzz.family;
 
-const awarded = Game.awardStreak(pack, family, "test-banana-honk");
-assert(awarded.freshContent, "awarding Banana honk should unlock content");
-assert(Game.alreadyUnlockedContent("banana-honk"), "content unlock should persist");
+const awarded = Game.awardStreak(pack, family, "test-fun-honk");
+assert(awarded.freshContent, "awarding a content streak should unlock content");
+assert(Game.alreadyUnlockedContent("honk"), "content unlock should persist");
 family = awarded.family;
-assert(family.contentUnlocks["banana-honk"], "family pack should carry the content unlock");
+assert(family.contentUnlocks.honk, "family pack should carry the content unlock");
 
-const exported = Game.exportPack(pack, family, Game.defaultCharacters(), norm);
+const norm = Game.normalizeLibrary(library);
+const exported = Game.exportPack(pack, family, Game.defaultCharacters(), funLib);
 assert.strictEqual(exported.version, 7);
 assert(exported.libraryBlobs && typeof exported.libraryBlobs === "object");
-assert(exported.contentUnlocks["banana-honk"], "export should include content unlocks");
-assert(exported.library.items.some((item) => item.id === "banana-honk" && item.kind === "audio"));
+assert(exported.contentUnlocks.honk, "export should include content unlocks");
+assert(exported.library.items.some((item) => item.id === "honk" && item.kind === "audio"));
 assert(!banned.test(JSON.stringify(exported)), "family pack seed must not invent ITYSL lines");
 
-const revoked = Game.revokeAchievement(pack, family, "test-banana-honk");
+const revoked = Game.revokeAchievement(pack, family, "test-fun-honk");
 assert(revoked.revokedContent, "undo award should lock the sound again");
-assert(!Game.alreadyUnlockedContent("banana-honk"), "content should be locked after undo");
+assert(!Game.alreadyUnlockedContent("honk"), "content should be locked after undo");
 
 (async () => {
   const beep = new File([new Uint8Array([82, 73, 70, 70, 0, 0, 0, 0])], "TEST-beep.wav", { type: "audio/wav" });

@@ -30,6 +30,7 @@
         <a class="crew-chip" href="characters.html" aria-label="Characters"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
         <a class="story-chip" id="story-chip" href="story.html" hidden>Story</a>
         <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="admin-chip" href="admin.html">Admin</a>
         <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
     </div>
@@ -40,7 +41,7 @@
     <section class="class-pane">
       <div class="class-pane-head">
         <h2>By class</h2>
-        <p id="grades-note">Grades are TEST seed until a real feed exists.</p>
+        <p id="grades-note">No grades until a real feed exists.</p>
       </div>
       <div class="class-list" id="class-list"></div>
     </section>
@@ -80,18 +81,18 @@
 {
   "currency": {"name": "bananas", "singular": "banana", "emoji": "🍌"},
   "achievements": [
-    {"id": "straight-as-3w", "title": "Straight A's", "test": true},
-    {"id": "no-late-4w", "title": "On-time streak", "test": true},
-    {"id": "flash-cards-first", "title": "Flash-card first test", "test": true},
-    {"id": "started-week-5", "title": "Five-day start", "test": true},
-    {"id": "asked-before-due", "title": "Asked before it was due", "test": true},
-    {"id": "hidden-banana", "title": "Hidden banana", "test": true, "secret": true, "unlocksGame": "egg"},
-    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "test": true, "unlocksGame": "egg"},
-    {"id": "test-ace-closer", "title": "Meet Ace", "test": true, "rewardCharacter": "ace"},
-    {"id": "test-riff-reps", "title": "Meet Riff", "test": true, "rewardCharacter": "riff"},
-    {"id": "test-scorch-recover", "title": "Meet Scorch", "test": true, "rewardCharacter": "scorch"},
-    {"id": "test-deuce-return", "title": "Meet Deuce", "test": true, "rewardCharacter": "deuce"},
-    {"id": "test-fuzz-unplugged", "title": "Meet Fuzz", "test": true, "rewardCharacter": "fuzz"}
+    {"id": "straight-as-3w", "title": "Straight A's"},
+    {"id": "no-late-4w", "title": "On-time streak"},
+    {"id": "flash-cards-first", "title": "Flash-card first test"},
+    {"id": "started-week-5", "title": "Five-day start"},
+    {"id": "asked-before-due", "title": "Asked before it was due"},
+    {"id": "hidden-banana", "title": "Hidden banana", "secret": true, "unlocksGame": "egg"},
+    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "unlocksGame": "egg"},
+    {"id": "test-ace-closer", "title": "Meet Ace", "rewardCharacter": "ace"},
+    {"id": "test-riff-reps", "title": "Meet Riff", "rewardCharacter": "riff"},
+    {"id": "test-scorch-recover", "title": "Meet Scorch", "rewardCharacter": "scorch"},
+    {"id": "test-deuce-return", "title": "Meet Deuce", "rewardCharacter": "deuce"},
+    {"id": "test-fuzz-unplugged", "title": "Meet Fuzz", "rewardCharacter": "fuzz"}
   ]
 }
   </script>
@@ -109,18 +110,14 @@
   </script>
   <script id="family-seed" type="application/json">
 {
-  "notes": [
-    {"id": "test-note-names", "targetType": "work", "targetId": "eng-names", "from": "parent", "kind": "note", "text": "TEST: Say your full name twice, then one thing you are awesome at. Keep it short.", "at": "2026-08-14T20:15:00-05:00", "test": true},
-    {"id": "test-q-comics", "targetType": "work", "targetId": "eng-comics", "from": "bennett", "kind": "question", "text": "TEST: Do the comic strips need color, or is pencil okay?", "at": "2026-08-14T21:04:00-05:00", "test": true},
-    {"id": "test-note-band", "targetType": "event", "targetId": "band-am-0817", "from": "parent", "kind": "note", "text": "TEST: Early call — pack the clarinet the night before.", "at": "2026-08-14T19:10:00-05:00", "test": true}
-  ],
+  "notes": [],
   "reflections": {
     "pool": [
-      {"id": "r-easiest", "text": "Which class felt easiest today?", "test": true}
+      {"id": "r-easiest", "text": "Which class felt easiest today?"},
+      {"id": "r-teacher", "text": "Name one thing a teacher did that helped"},
+      {"id": "r-weird", "text": "Anything feel weird or too fast?"}
     ],
-    "answers": [
-      {"id": "ra-test-1", "promptId": "r-easiest", "prompt": "Which class felt easiest today?", "text": "TEST: Band — we mostly set up and tuned.", "at": "2026-08-14T19:42:00-05:00", "test": true}
-    ]
+    "answers": []
   },
   "streaks": {}
 }
@@ -128,18 +125,13 @@
   <script id="progress-seed" type="application/json">
 {
   "timezone": "America/Chicago",
-  "gradesNote": "Grades are TEST seed until a real feed exists. English often lives in a Google sheet; Canvas is not the full due list.",
+  "gradesNote": "No grades until a real feed exists. English often lives in a Google sheet; Canvas is not the full due list.",
   "eggNames": {
     "banner-monkey": "Garage-band grin",
     "hidden-ball": "Stray tennis ball",
     "clarinet-honk": "Bass clarinet honk"
   },
-  "sampleOpens": [
-    {"at": "2026-08-12T19:30:00-05:00", "test": true},
-    {"at": "2026-08-13T21:05:00-05:00", "test": true},
-    {"at": "2026-08-14T20:12:00-05:00", "test": true},
-    {"at": "2026-08-15T07:41:00-05:00", "test": true}
-  ],
+  "sampleOpens": [],
   "classes": [
     {
       "id": "band",
@@ -149,7 +141,6 @@
       "time": "7:40–8:25",
       "room": "Rm 415",
       "teacher": "Fillingham",
-      "grade": {"display": "A", "test": true},
       "items": [
         {"id": "band-am-0817", "title": "Monday morning rehearsal", "kind": "event"},
         {"id": "band-pm-0817", "title": "Monday evening Band", "kind": "event"}
@@ -216,12 +207,10 @@
       "room": "Rm 816",
       "teacher": "Goodson",
       "khan": ["ela", "grammar"],
-      "grade": {"display": "B+", "detail": "88%", "test": true},
       "items": [
-        {"id": "eng-names", "title": "Help me learn your names!", "kind": "assignment", "grade": {"display": "5/5", "test": true}},
-        {"id": "eng-comics", "title": "Finish summer comic strips", "kind": "assignment", "grade": {"display": "—", "test": true}},
-        {"id": "eng-notebook", "title": "Bring spiral notebook", "kind": "assignment", "grade": {"display": "—", "test": true}},
-        {"id": "eng-quiz-test", "title": "Warm-up quiz", "kind": "quiz", "test": true, "grade": {"display": "9/10", "test": true}}
+        {"id": "eng-names", "title": "Help me learn your names!", "kind": "assignment"},
+        {"id": "eng-comics", "title": "Finish summer comic strips", "kind": "assignment"},
+        {"id": "eng-notebook", "title": "Bring spiral notebook", "kind": "assignment"}
       ]
     },
     {
