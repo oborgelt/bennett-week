@@ -1854,7 +1854,7 @@
   function cueSoundLabel(family, lib, cueId) {
     const id = cueStoredId(family, cueId);
     if (!id) return "";
-    if (id === RANDOM_CUE) return "Shuffle — random clip";
+    if (id === RANDOM_CUE) return "Shuffle — any library clip";
     const item = libraryItem(lib, id);
     return item ? item.label : "Missing file";
   }
@@ -1870,15 +1870,6 @@
     return next;
   }
 
-  function looksLikeShuffleItem(item) {
-    if (!item) return false;
-    const file = String(item.filename || "").toLowerCase();
-    const stem = file.replace(/\.[a-z0-9]+$/, "");
-    const label = String(item.label || "").trim().toLowerCase().replace(/!+$/, "");
-    const id = String(item.id || "").toLowerCase();
-    return stem === "random" || file === "random.mp3" || label === "random" || id === "random";
-  }
-
   function resolveCuePlay(family, lib, cueId) {
     const id = cueStoredId(family, cueId);
     if (!id) return { played: false, item: null };
@@ -1887,10 +1878,6 @@
       return { played: !!pick, item: pick };
     }
     const item = libraryItem(lib, id);
-    if (looksLikeShuffleItem(item)) {
-      const pick = playRandomLibraryItem(lib, item.id);
-      return { played: !!pick, item: pick };
-    }
     return { played: playLibraryItem(item), item: item };
   }
 
@@ -1905,7 +1892,7 @@
     const shuffleOn = selected === RANDOM_CUE ? " selected" : "";
     const opts = [
       '<option value="">None</option>',
-      `<option value="${esc(RANDOM_CUE)}"${shuffleOn}>Shuffle — random clip</option>`
+      `<option value="${esc(RANDOM_CUE)}"${shuffleOn}>Shuffle — any library clip</option>`
     ].concat(items.map((item) => {
       const on = item.id === selected ? " selected" : "";
       return `<option value="${esc(item.id)}"${on}>${esc(item.label)}</option>`;
