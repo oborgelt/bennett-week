@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve Bennett Week and proxy Anthropic tutor calls.
+"""Serve Jungle Jam and proxy Anthropic tutor calls.
 
 GitHub Pages cannot hide a key. Keep ANTHROPIC_API_KEY in the environment
 on a laptop — never in frontend JS or this repo.
@@ -206,7 +206,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 def main():
     server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
-    print(f"Bennett Week at http://127.0.0.1:{PORT}/")
+    print(f"Jungle Jam at http://127.0.0.1:{PORT}/")
     if os.environ.get("ANTHROPIC_API_KEY", "").strip():
         print(f"Live tutor on POST /api/tutor and POST /api/ask ({MODEL})")
     else:
