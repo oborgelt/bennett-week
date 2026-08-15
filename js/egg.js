@@ -1,7 +1,6 @@
 (function () {
-  const START_EGGS = 6;
   const PACK = 80;
-  const LIES = [6, 6, 40, 41, 6, 25, 40, 80, 41, 7];
+  const RUN_OUT_AT = 8;
   const SPOTS = [
     { left: "10%", top: "40%" },
     { left: "36%", top: "48%" },
@@ -14,13 +13,15 @@
   ];
 
   let pack = null;
-  let left = START_EGGS;
   let fed = 0;
+  let afterBuy = 0;
   let dragging = null;
   let dragOffset = { x: 0, y: 0 };
+  let dragStart = { x: 0, y: 0 };
   let busy = false;
   let bought = false;
   let won = false;
+  let emptyBowl = false;
 
   function hud() {
     const el = document.getElementById("bananas");
@@ -47,20 +48,33 @@
     } catch (_) {}
   }
 
-  function speakCount(n) {
+  function slinky() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      const ctx = slinky._ctx || new Ctx();
+      slinky._ctx = ctx;
+      const notes = [196, 220, 247, 262, 247, 220, 196, 165];
+      notes.forEach((f, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "square";
+        o.frequency.setValueAtTime(f, ctx.currentTime + i * 0.14);
+        g.gain.setValueAtTime(0.04, ctx.currentTime + i * 0.14);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.14 + 0.16);
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start(ctx.currentTime + i * 0.14);
+        o.stop(ctx.currentTime + i * 0.14 + 0.18);
+      });
+    } catch (_) {}
+  }
+
+  function speak(text) {
     try {
       if (!window.speechSynthesis) return;
-      const words = {
-        6: "Six eggs.",
-        7: "Seven eggs.",
-        25: "Twenty five eggs.",
-        40: "Forty eggs.",
-        41: "Forty one eggs.",
-        80: "Eighty eggs."
-      };
-      const u = new SpeechSynthesisUtterance(words[n] || (n + " eggs."));
-      u.rate = 0.82;
-      u.pitch = 0.55;
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.84;
+      u.pitch = 0.52;
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
     } catch (_) {}
@@ -123,11 +137,12 @@
   }
 
   function renderPlay() {
-    left = START_EGGS;
     fed = 0;
+    afterBuy = 0;
     bought = false;
     busy = false;
     won = false;
+    emptyBowl = false;
     dragging = null;
     document.getElementById("office").innerHTML = `
       <div class="feed-window" id="feed" aria-label="FEED EGGS">
@@ -158,26 +173,26 @@
         </div>
         <div class="feed-popup win" id="win-pop" hidden>
           ${titlebar(true)}
-          <p class="butt-line">egg butt.</p>
+          <p id="win-text">41 EGGS</p>
+          <p class="butt-line" id="win-sub">YOU WIN.</p>
           <button type="button" class="feed-again" id="play-again">Play again</button>
         </div>
       </div>`;
     fillPile();
     bindPlay();
-    showCount(START_EGGS, false);
   }
 
   function fillPile() {
     const pile = document.getElementById("pile");
     if (!pile) return;
     pile.innerHTML = "";
-    const show = Math.min(Math.max(left, 0), SPOTS.length);
-    for (let i = 0; i < show; i += 1) {
+    if (emptyBowl) return;
+    SPOTS.forEach((spot, i) => {
       pile.insertAdjacentHTML("beforeend", smallEgg("e" + i));
       const el = pile.lastElementChild;
-      el.style.left = SPOTS[i].left;
-      el.style.top = SPOTS[i].top;
-    }
+      el.style.left = spot.left;
+      el.style.top = spot.top;
+    });
   }
 
   function hidePops() {
@@ -187,24 +202,19 @@
     });
   }
 
-  function liedCount() {
-    if (fed <= 0) return START_EGGS;
-    return LIES[Math.min(fed - 1, LIES.length - 1)];
-  }
-
-  function showCount(n, talk) {
+  function showCount(label, line) {
     const pop = document.getElementById("count-pop");
     if (!pop || won) return;
     hidePops();
-    document.getElementById("count-text").textContent = n + " EGGS";
+    document.getElementById("count-text").textContent = label;
     pop.hidden = false;
-    if (talk) speakCount(n);
+    if (line) speak(line);
     clearTimeout(showCount._t);
     showCount._t = setTimeout(() => {
       if (!won && document.getElementById("buy-pop") && document.getElementById("buy-pop").hidden) {
         pop.hidden = true;
       }
-    }, 1200);
+    }, 1400);
   }
 
   function showWarn() {
@@ -230,50 +240,71 @@
     return x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad;
   }
 
-  function eat() {
-    busy = true;
-    setFace("chew");
-    left = Math.max(0, left - 1);
-    fed += 1;
-    fillPile();
-    const n = liedCount();
-    showCount(n, true);
-    beep("eat");
-    setTimeout(() => {
-      setFace("");
-      busy = false;
-      if (won) return;
-      if (left <= 0 && !bought) {
+  function nextBeat() {
+    if (!bought) {
+      if (fed === 1 || fed === 4 || fed === 7) {
+        showCount("6 EGGS", "Six eggs.");
+      }
+      if (fed >= RUN_OUT_AT) {
+        emptyBowl = true;
+        fillPile();
         hidePops();
         document.getElementById("buy-pop").hidden = false;
         const input = document.getElementById("buy-input");
         input.value = "";
         input.focus();
-      } else if (bought && fed >= START_EGGS + 2) {
-        revealButt();
+        return;
       }
-    }, 420);
+      return;
+    }
+    if (afterBuy === 1) {
+      showCount("40 EGGS", "You now have 40 eggs.");
+      return;
+    }
+    if (afterBuy >= 2) {
+      revealWin();
+    }
   }
 
-  function revealButt() {
+  function eat() {
+    busy = true;
+    setFace("chew");
+    fed += 1;
+    if (bought) afterBuy += 1;
+    if (!emptyBowl) fillPile();
+    beep("eat");
+    setTimeout(() => {
+      setFace("");
+      busy = false;
+      if (!won) nextBeat();
+    }, 280);
+  }
+
+  function revealWin() {
     won = true;
     busy = true;
-    setFace("butt");
     hidePops();
-    document.getElementById("win-pop").hidden = false;
-    Game.confetti();
-    Game.addBananas(2);
-    hud();
-    beep("ok");
-    Game.toast("egg butt. +2 bananas");
+    const pop = document.getElementById("win-pop");
+    document.getElementById("win-text").textContent = "41 EGGS";
+    document.getElementById("win-sub").textContent = "YOU WIN.";
+    pop.hidden = false;
+    speak("41 eggs. You win.");
+    slinky();
+    setTimeout(() => {
+      setFace("butt");
+      document.getElementById("win-sub").textContent = "egg butt.";
+      Game.confetti();
+      Game.addBananas(2);
+      hud();
+      Game.toast("egg butt. +2 bananas");
+    }, 900);
   }
 
   function buyPack() {
     bought = true;
-    left = PACK;
+    emptyBowl = false;
     hidePops();
     fillPile();
-    showCount(PACK, true);
     beep("ok");
   }
 
@@ -286,22 +317,53 @@
     setTimeout(() => t.remove(), 160);
   }
 
-  function releaseEgg(e) {
-    if (!dragging) return;
-    const egg = dragging;
+  function flyToMouth(egg, done) {
     const mouth = document.getElementById("mouth-hit");
-    const hit = pointIn(mouth, e.clientX, e.clientY);
-    egg.classList.remove("flying", "near");
+    const er = egg.getBoundingClientRect();
+    const mr = mouth.getBoundingClientRect();
+    egg.classList.add("flying", "toss");
+    egg.style.position = "fixed";
+    egg.style.left = er.left + "px";
+    egg.style.top = er.top + "px";
+    egg.style.zIndex = "50";
+    requestAnimationFrame(() => {
+      egg.style.left = (mr.left + mr.width / 2 - er.width / 2) + "px";
+      egg.style.top = (mr.top + mr.height / 2 - er.height / 2) + "px";
+    });
+    setTimeout(done, 220);
+  }
+
+  function clearDrag(egg) {
+    egg.classList.remove("flying", "near", "toss");
     egg.style.position = "";
     egg.style.left = "";
     egg.style.top = "";
     egg.style.zIndex = "";
+    egg.style.transition = "";
+  }
+
+  function releaseEgg(e) {
+    if (!dragging) return;
+    const egg = dragging;
+    const mouth = document.getElementById("mouth-hit");
+    const moved = Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y);
+    const hit = pointIn(mouth, e.clientX, e.clientY);
     dragging = null;
-    if (hit && !busy && !won) eat();
-    else {
+    if (won || busy) {
+      clearDrag(egg);
       fillPile();
-      if (fed > 0 && !won) showWarn();
+      return;
     }
+    if (hit || moved < 14) {
+      flyToMouth(egg, () => {
+        clearDrag(egg);
+        eat();
+      });
+      return;
+    }
+    clearDrag(egg);
+    fillPile();
+    if (fed > 0) showWarn();
   }
 
   function bindPlay() {
@@ -313,6 +375,8 @@
       if (!document.getElementById("buy-pop").hidden) return;
       e.preventDefault();
       dragging = egg;
+      dragStart.x = e.clientX;
+      dragStart.y = e.clientY;
       egg.classList.add("flying");
       try { egg.setPointerCapture(e.pointerId); } catch (_) {}
       const r = egg.getBoundingClientRect();
@@ -325,11 +389,9 @@
     });
 
     feed.addEventListener("pointermove", (e) => {
-      if (!dragging) return;
-      const x = e.clientX - dragOffset.x;
-      const y = e.clientY - dragOffset.y;
-      dragging.style.left = x + "px";
-      dragging.style.top = y + "px";
+      if (!dragging || dragging.classList.contains("toss")) return;
+      dragging.style.left = (e.clientX - dragOffset.x) + "px";
+      dragging.style.top = (e.clientY - dragOffset.y) + "px";
       dragging.classList.toggle("near", pointIn(document.getElementById("mouth-hit"), e.clientX, e.clientY));
       if (e.movementX || e.movementY) trailAt(e.clientX, e.clientY);
     });
