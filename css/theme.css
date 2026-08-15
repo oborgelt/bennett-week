@@ -439,6 +439,83 @@ section.note .title { color: var(--note); }
   font-weight: 650;
 }
 
+.started-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 6px 0 0;
+}
+
+.started-row .started-at { margin: 0; }
+
+.undo-mini {
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.mini.danger {
+  background: rgba(232, 160, 176, 0.12);
+  border-color: rgba(232, 160, 176, 0.35);
+  color: var(--mom);
+}
+
+.entry-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.bubble .entry-tools { margin-top: 6px; }
+
+.edit-label {
+  display: block;
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.edit-label input,
+.edit-label textarea {
+  width: 100%;
+  margin-top: 4px;
+  min-height: var(--tap);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #0e2426;
+  color: var(--ink);
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.edit-label textarea { min-height: 72px; resize: vertical; }
+
+.sheet-panel .btn { margin-top: 8px; }
+
+.trophy-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.class-card-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 12px 10px;
+}
+
+.entry-row .entry-tools {
+  display: inline-flex;
+  margin-top: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
 .item-tools {
   display: flex;
   flex-wrap: wrap;

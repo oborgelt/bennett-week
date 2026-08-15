@@ -160,8 +160,66 @@
     localStorage.removeItem(KEYS.mom);
   }
 
+  function emptyOverlay() {
+    return {
+      week: {
+        deleted: { events: [], work: [], notes: [] },
+        edits: { events: {}, work: {}, notes: {} }
+      },
+      progress: {
+        deletedClasses: [],
+        deletedItems: [],
+        classEdits: {},
+        itemEdits: {}
+      }
+    };
+  }
+
+  function asStringList(value) {
+    return Array.isArray(value) ? value.filter((id) => id != null && id !== "").map(String) : [];
+  }
+
+  function asIdMap(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    const out = {};
+    Object.keys(value).forEach((id) => {
+      if (value[id] && typeof value[id] === "object" && !Array.isArray(value[id])) {
+        out[id] = Object.assign({}, value[id]);
+      }
+    });
+    return out;
+  }
+
+  function normalizeOverlay(raw) {
+    const o = raw && typeof raw === "object" ? raw : {};
+    const week = o.week && typeof o.week === "object" ? o.week : {};
+    const progress = o.progress && typeof o.progress === "object" ? o.progress : {};
+    const deleted = week.deleted && typeof week.deleted === "object" ? week.deleted : {};
+    const edits = week.edits && typeof week.edits === "object" ? week.edits : {};
+    return {
+      week: {
+        deleted: {
+          events: asStringList(deleted.events),
+          work: asStringList(deleted.work),
+          notes: asStringList(deleted.notes)
+        },
+        edits: {
+          events: asIdMap(edits.events),
+          work: asIdMap(edits.work),
+          notes: asIdMap(edits.notes)
+        }
+      },
+      progress: {
+        deletedClasses: asStringList(progress.deletedClasses),
+        deletedItems: asStringList(progress.deletedItems),
+        classEdits: asIdMap(progress.classEdits),
+        itemEdits: asIdMap(progress.itemEdits)
+      }
+    };
+  }
+
   function emptyFamily() {
-    return { notes: [], reflections: { pool: [], answers: [] }, streaks: {} };
+    return { notes: [], reflections: { pool: [], answers: [] }, streaks: {}, overlay: emptyOverlay() };
   }
 
   function normalizeFamily(raw) {
@@ -173,8 +231,185 @@
         pool: Array.isArray(reflections.pool) ? reflections.pool : [],
         answers: Array.isArray(reflections.answers) ? reflections.answers : []
       },
-      streaks: f.streaks && typeof f.streaks === "object" && !Array.isArray(f.streaks) ? f.streaks : {}
+      streaks: f.streaks && typeof f.streaks === "object" && !Array.isArray(f.streaks) ? f.streaks : {},
+      overlay: normalizeOverlay(f.overlay)
     };
+  }
+
+  function slugId(text, fallback) {
+    const slug = String(text || fallback || "item")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 32);
+    return slug || fallback || "item";
+  }
+
+  function ensureWeekIds(week) {
+    const src = week && typeof week === "object" ? week : {};
+    const notes = (src.notes || []).map((n, i) => {
+      if (n && n.id) return n;
+      const id = "note-" + (n && n.date ? n.date : "x") + "-" + slugId(n && n.title, "note-" + i);
+      return Object.assign({}, n, { id });
+    });
+    return Object.assign({}, src, { notes });
+  }
+
+  function applyListOverlay(list, deleted, edits) {
+    const gone = new Set(deleted || []);
+    const patches = edits || {};
+    return (list || []).filter((item) => item && item.id && !gone.has(item.id)).map((item) => {
+      const patch = patches[item.id];
+      return patch ? Object.assign({}, item, patch, { id: item.id }) : item;
+    });
+  }
+
+  function applyWeekOverlay(week, family) {
+    const base = ensureWeekIds(week);
+    const overlay = normalizeFamily(family).overlay.week;
+    return Object.assign({}, base, {
+      events: applyListOverlay(base.events, overlay.deleted.events, overlay.edits.events),
+      work: applyListOverlay(base.work, overlay.deleted.work, overlay.edits.work),
+      notes: applyListOverlay(base.notes, overlay.deleted.notes, overlay.edits.notes)
+    });
+  }
+
+  function applyProgressOverlay(seed, family) {
+    const base = seed && typeof seed === "object" ? seed : {};
+    const overlay = normalizeFamily(family).overlay.progress;
+    const classes = (base.classes || [])
+      .filter((cls) => cls && cls.id && overlay.deletedClasses.indexOf(cls.id) < 0)
+      .map((cls) => {
+        const patch = overlay.classEdits[cls.id] || {};
+        const items = (cls.items || [])
+          .filter((item) => item && item.id && overlay.deletedItems.indexOf(item.id) < 0)
+          .map((item) => {
+            const ip = overlay.itemEdits[item.id];
+            return ip ? Object.assign({}, item, ip, { id: item.id }) : item;
+          });
+        return Object.assign({}, cls, patch, { id: cls.id, items });
+      });
+    return Object.assign({}, base, { classes });
+  }
+
+  function pushUnique(list, id) {
+    const next = list.slice();
+    if (next.indexOf(id) < 0) next.push(id);
+    return next;
+  }
+
+  function editWeekOverlay(family, kind, id, patch) {
+    const next = normalizeFamily(family);
+    if (!next.overlay.week.edits[kind]) next.overlay.week.edits[kind] = {};
+    next.overlay.week.edits[kind][id] = Object.assign({}, next.overlay.week.edits[kind][id] || {}, patch, { id });
+    saveFamily(next);
+    return next;
+  }
+
+  function deleteWeekOverlay(family, kind, id) {
+    const next = normalizeFamily(family);
+    next.overlay.week.deleted[kind] = pushUnique(next.overlay.week.deleted[kind] || [], id);
+    saveFamily(next);
+    return next;
+  }
+
+  function editProgressClass(family, id, patch) {
+    const next = normalizeFamily(family);
+    next.overlay.progress.classEdits[id] = Object.assign({}, next.overlay.progress.classEdits[id] || {}, patch, { id });
+    saveFamily(next);
+    return next;
+  }
+
+  function deleteProgressClass(family, id) {
+    const next = normalizeFamily(family);
+    next.overlay.progress.deletedClasses = pushUnique(next.overlay.progress.deletedClasses, id);
+    saveFamily(next);
+    return next;
+  }
+
+  function editProgressItem(family, id, patch) {
+    const next = normalizeFamily(family);
+    next.overlay.progress.itemEdits[id] = Object.assign({}, next.overlay.progress.itemEdits[id] || {}, patch, { id });
+    saveFamily(next);
+    return next;
+  }
+
+  function deleteProgressItem(family, id) {
+    const next = normalizeFamily(family);
+    next.overlay.progress.deletedItems = pushUnique(next.overlay.progress.deletedItems, id);
+    saveFamily(next);
+    return next;
+  }
+
+  function updateById(list, id, patch) {
+    return (list || []).map((row) => (row && row.id === id ? Object.assign({}, row, patch, { id }) : row));
+  }
+
+  function updateNote(family, id, patch) {
+    const next = normalizeFamily(family);
+    next.notes = updateById(next.notes, id, patch);
+    saveFamily(next);
+    return next;
+  }
+
+  function deleteNote(family, id) {
+    const next = normalizeFamily(family);
+    next.notes = next.notes.filter((n) => n.id !== id);
+    saveFamily(next);
+    return next;
+  }
+
+  function updatePrompt(family, id, patch) {
+    const next = normalizeFamily(family);
+    next.reflections.pool = updateById(next.reflections.pool, id, patch);
+    saveFamily(next);
+    return next;
+  }
+
+  function deletePrompt(family, id) {
+    const next = normalizeFamily(family);
+    next.reflections.pool = next.reflections.pool.filter((p) => p.id !== id);
+    saveFamily(next);
+    return next;
+  }
+
+  function updateAnswer(family, id, patch) {
+    const next = normalizeFamily(family);
+    next.reflections.answers = updateById(next.reflections.answers, id, patch);
+    saveFamily(next);
+    return next;
+  }
+
+  function deleteAnswer(family, id) {
+    const next = normalizeFamily(family);
+    next.reflections.answers = next.reflections.answers.filter((a) => a.id !== id);
+    saveFamily(next);
+    return next;
+  }
+
+  function confirmDelete(label) {
+    return window.confirm("Delete this " + (label || "entry") + "? It disappears on this device. Export the family pack so Mom and Orin stay in sync.");
+  }
+
+  function entryButtons(editToken, delToken) {
+    return `
+      <button type="button" class="mini" data-edit="${esc(editToken)}">Edit</button>
+      <button type="button" class="mini danger" data-del="${esc(delToken)}">Delete</button>`;
+  }
+
+  function toLocalInput(iso) {
+    if (!iso) return "";
+    const s = String(iso);
+    if (s.length === 10) return s;
+    return s.slice(0, 16);
+  }
+
+  function fromLocalInput(value, asDate) {
+    if (!value) return "";
+    const s = String(value).trim();
+    if (asDate || s.length === 10) return s.slice(0, 10);
+    if (s.length === 16) return s + ":00";
+    return s;
   }
 
   function getFamilyDraft() {
@@ -264,33 +499,50 @@
 
   function workState(id) {
     const cur = getProgress()[id] || {};
-    const started = !!(cur.started || cur.startedAt);
     let startedAt = cur.startedAt || null;
     if (!startedAt && typeof cur.started === "number") {
       startedAt = new Date(cur.started).toISOString();
     }
-    if (!startedAt && typeof cur.started === "string" && cur.started !== "true") {
+    if (!startedAt && typeof cur.started === "string" && cur.started !== "true" && cur.started !== "false") {
       startedAt = cur.started;
     }
+    const started = cur.started === false
+      ? false
+      : !!(cur.started === true || typeof cur.started === "number" || startedAt);
     return { started, startedAt, done: cur.done || null };
   }
 
   function touchWork(id, kind) {
     const all = getProgress();
     const cur = Object.assign({}, all[id] || {});
+    const before = workState(id);
     let first = false;
     if (kind === "started") {
-      if (!cur.started && !cur.startedAt) {
+      if (before.started) {
+        const hist = Array.isArray(cur.startedHistory) ? cur.startedHistory.slice() : [];
+        if (cur.startedAt) hist.push(cur.startedAt);
+        cur.startedHistory = hist;
+        cur.started = false;
+      } else {
         cur.started = true;
-        cur.startedAt = nowIso();
-        first = true;
-        addBananas(2);
+        if (!cur.startedAt) cur.startedAt = nowIso();
+        else cur.startedAt = nowIso();
+        first = !cur.startedAwarded;
+        if (first) {
+          cur.startedAwarded = true;
+          addBananas(2);
+        }
       }
     } else if (kind === "done") {
-      if (!cur.done) {
+      if (cur.done) {
+        cur.done = null;
+      } else {
         cur.done = Date.now();
-        first = true;
-        addBananas(3);
+        first = !cur.doneAwarded;
+        if (first) {
+          cur.doneAwarded = true;
+          addBananas(3);
+        }
       }
     }
     all[id] = cur;
@@ -356,6 +608,27 @@
     if (!markUnlocked(id)) return null;
     addBananas(ach.reward || 0);
     return ach;
+  }
+
+  function revokeUnlock(id) {
+    const all = getUnlocks();
+    if (!all[id]) return false;
+    delete all[id];
+    write(KEYS.unlocks, all);
+    return true;
+  }
+
+  function revokeAchievement(pack, family, id) {
+    const ach = (pack.achievements || []).find((a) => a.id === id);
+    const was = revokeUnlock(id);
+    const next = normalizeFamily(family);
+    const st = next.streaks[id] || { count: 0 };
+    next.streaks[id] = Object.assign({}, st, { awarded: false });
+    saveFamily(next);
+    if (was && ach && ach.reward) {
+      write(KEYS.bananas, Math.max(0, getBananas() - (Number(ach.reward) || 0)));
+    }
+    return { family: next, revoked: was, achievement: ach || null };
   }
 
   function recordEgg(egg) {
@@ -517,12 +790,13 @@
 
   function exportPack(pack, family) {
     return {
-      version: 2,
+      version: 3,
       currency: currency(pack),
       achievements: pack.achievements || [],
       family: normalizeFamily(family),
       unlocks: getUnlocks(),
-      trophyOrder: getTrophyOrder()
+      trophyOrder: getTrophyOrder(),
+      progress: getProgress()
     };
   }
 
@@ -541,6 +815,9 @@
     if (obj.family) saveFamily(obj.family);
     if (obj.unlocks && typeof obj.unlocks === "object") write(KEYS.unlocks, obj.unlocks);
     if (Array.isArray(obj.trophyOrder)) saveTrophyOrder(obj.trophyOrder);
+    if (obj.progress && typeof obj.progress === "object" && !Array.isArray(obj.progress)) {
+      write(KEYS.progress, obj.progress);
+    }
     return pack;
   }
 
@@ -572,6 +849,27 @@
     usingFamilyDraft,
     emptyFamily,
     normalizeFamily,
+    emptyOverlay,
+    normalizeOverlay,
+    ensureWeekIds,
+    applyWeekOverlay,
+    applyProgressOverlay,
+    editWeekOverlay,
+    deleteWeekOverlay,
+    editProgressClass,
+    deleteProgressClass,
+    editProgressItem,
+    deleteProgressItem,
+    updateNote,
+    deleteNote,
+    updatePrompt,
+    deletePrompt,
+    updateAnswer,
+    deleteAnswer,
+    confirmDelete,
+    entryButtons,
+    toLocalInput,
+    fromLocalInput,
     getTrophyOrder,
     saveTrophyOrder,
     workState,
@@ -580,6 +878,8 @@
     helpOpens,
     checkUnlocks,
     awardAchievement,
+    revokeUnlock,
+    revokeAchievement,
     recordEgg,
     bumpEggCount,
     toast,

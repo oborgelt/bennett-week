@@ -2,6 +2,7 @@
   const TZ = "America/Chicago";
   const DAY_COUNT = 7;
   let dayIndex = 0;
+  let baseWeek = null;
   let week = null;
   let pack = null;
   let family = null;
@@ -139,9 +140,14 @@
     if (document.getElementById("shelf").classList.contains("open")) renderShelf();
   }
 
+  function syncWeek() {
+    week = Game.applyWeekOverlay(baseWeek, family);
+    return week;
+  }
+
   function workButtons(w) {
     const st = Game.workState(w.id);
-    const stamp = st.startedAt ? `Started ${Game.fmtStamp(st.startedAt)}` : "";
+    const stamp = st.started && st.startedAt ? `Started ${Game.fmtStamp(st.startedAt)}` : "";
     return `
       <div class="actions">
         <button type="button" class="act ${st.started ? "started" : ""}" data-act="started" data-id="${Game.esc(w.id)}">
@@ -151,27 +157,33 @@
           Done
         </button>
       </div>
-      ${stamp ? `<p class="started-at">${Game.esc(stamp)}</p>` : ""}`;
+      ${stamp ? `<p class="started-row"><span class="started-at">${Game.esc(stamp)}</span><button type="button" class="mini undo-mini" data-act="started" data-id="${Game.esc(w.id)}">Undo</button></p>` : ""}`;
+  }
+
+  function noteBubble(n) {
+    const kid = n.from === "bennett";
+    const label = kid ? "You asked: " : "Parent note: ";
+    return `
+      <div class="bubble ${kid ? "kid" : "parent"}">
+        ${n.test ? '<span class="test-tag">TEST</span> ' : ""}${label}${Game.esc(n.text)}
+        <div class="entry-tools">${Game.entryButtons("note:" + n.id, "note:" + n.id)}</div>
+      </div>`;
   }
 
   function itemNotes(targetType, targetId) {
     const notes = Game.notesFor(family, targetType, targetId);
     const parent = notes.filter((n) => n.from === "parent");
     const kid = notes.filter((n) => n.from === "bennett");
-    return `
-      ${parent.map((n) => `
-        <div class="bubble parent">${n.test ? '<span class="test-tag">TEST</span> ' : ""}Parent note: ${Game.esc(n.text)}</div>
-      `).join("")}
-      ${kid.map((n) => `
-        <div class="bubble kid">${n.test ? '<span class="test-tag">TEST</span> ' : ""}You asked: ${Game.esc(n.text)}</div>
-      `).join("")}`;
+    return parent.map(noteBubble).join("") + kid.map(noteBubble).join("");
   }
 
   function itemTools(targetType, targetId, help) {
+    const kind = targetType === "event" ? "event" : "work";
     return `
       <div class="item-tools">
         <button type="button" class="mini" data-ask="${targetType}:${Game.esc(targetId)}">Ask</button>
         ${help ? `<button type="button" class="mini" data-help="${Game.esc(targetId)}">A little help</button>` : ""}
+        ${Game.entryButtons(kind + ":" + targetId, kind + ":" + targetId)}
       </div>
       ${itemNotes(targetType, targetId)}`;
   }
@@ -204,28 +216,37 @@
     return pool[hashDay(key) % pool.length];
   }
 
-  function answeredToday(prompt) {
+  function todaysAnswer(prompt) {
     const key = ymd(todayInChicago());
-    return ((family.reflections && family.reflections.answers) || []).some((a) => {
+    return ((family.reflections && family.reflections.answers) || []).find((a) => {
       return a.promptId === prompt.id && (a.at || "").slice(0, 10) === key;
-    });
+    }) || null;
   }
 
   function reflectBlock(isToday) {
     if (!isToday) return "";
     const prompt = todaysPrompt();
     if (!prompt) return "";
-    if (answeredToday(prompt)) {
+    const answer = todaysAnswer(prompt);
+    if (answer) {
       return `
         <section class="reflect span-all">
           <h3>Quick check-in</h3>
-          <p class="empty">Thanks — sent to the parent desk.</p>
+          <div class="item">
+            <div class="title">${prompt.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(prompt.text)}</div>
+            <div class="entry-tools">${Game.entryButtons("prompt:" + prompt.id, "prompt:" + prompt.id)}</div>
+          </div>
+          <div class="item">
+            <div class="meta">${answer.test ? '<span class="test-tag">TEST</span> ' : ""}You said: ${Game.esc(answer.text)}</div>
+            <div class="entry-tools">${Game.entryButtons("answer:" + answer.id, "answer:" + answer.id)}</div>
+          </div>
         </section>`;
     }
     return `
       <section class="reflect span-all">
         <h3>Quick check-in</h3>
         <p>${prompt.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(prompt.text)}</p>
+        <div class="entry-tools">${Game.entryButtons("prompt:" + prompt.id, "prompt:" + prompt.id)}</div>
         <div class="reflect-row">
           <input id="reflect-text" maxlength="280" placeholder="A sentence or two" autocomplete="off">
           <button type="button" class="act" id="reflect-send" data-prompt="${Game.esc(prompt.id)}">Send</button>
@@ -308,6 +329,7 @@
                   <div class="item">
                     <div class="title">${titleHtml(n.title)}</div>
                     <div class="meta">${Game.esc(n.text || "")}</div>
+                    <div class="item-tools">${Game.entryButtons("weeknote:" + n.id, "weeknote:" + n.id)}</div>
                   </div>`)}
               </section>` : ""}
             </div>
@@ -336,6 +358,12 @@
     });
     track.querySelectorAll("[data-help]").forEach((btn) => {
       btn.addEventListener("click", () => openHelp(btn.dataset.help));
+    });
+    track.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => openEdit(btn.dataset.edit));
+    });
+    track.querySelectorAll("[data-del]").forEach((btn) => {
+      btn.addEventListener("click", () => deleteEntry(btn.dataset.del));
     });
     const send = document.getElementById("reflect-send");
     if (send) {
@@ -470,6 +498,10 @@
         <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</h3>
         <p class="how">${Game.esc(ach.description || ach.how || "")}</p>
         <p class="prize">${Game.esc(ach.incentive || "")}${ach.reward ? " · +" + ach.reward + " " + cur.name : ""}</p>
+        <div class="trophy-tools">
+          <button type="button" class="mini" data-edit="trophy:${Game.esc(ach.id)}">Edit</button>
+          <button type="button" class="mini" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button>
+        </div>
       </article>`).join("");
 
     grid.querySelectorAll(".trophy").forEach((el) => {
@@ -484,7 +516,8 @@
         moveTrophy(from, el.dataset.id);
         pickedTrophy = null;
       });
-      el.addEventListener("click", () => {
+      el.addEventListener("click", (e) => {
+        if (e.target.closest(".trophy-tools")) return;
         if (pickedTrophy && pickedTrophy !== el.dataset.id) {
           moveTrophy(pickedTrophy, el.dataset.id);
           pickedTrophy = null;
@@ -492,6 +525,22 @@
           pickedTrophy = pickedTrophy === el.dataset.id ? null : el.dataset.id;
           renderShelf();
         }
+      });
+    });
+    grid.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openEdit(btn.dataset.edit);
+      });
+    });
+    grid.querySelectorAll("[data-undo-trophy]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const result = Game.revokeAchievement(pack, family, btn.dataset.undoTrophy);
+        family = result.family;
+        Game.toast("Award undone. That trophy is gone from the room.");
+        hud();
+        renderShelf();
       });
     });
   }
@@ -508,6 +557,216 @@
 
   function findWork(id) {
     return (week.work || []).find((w) => w.id === id);
+  }
+
+  function refreshBoard() {
+    syncWeek();
+    renderCards();
+    goTo(dayIndex, true);
+    hud();
+  }
+
+  function editForm(fields, saveId) {
+    const rows = fields.map((f) => {
+      if (f.type === "textarea") {
+        return `<label class="edit-label">${Game.esc(f.label)}<textarea id="ef-${Game.esc(f.name)}" maxlength="${f.max || 280}">${Game.esc(f.value || "")}</textarea></label>`;
+      }
+      if (f.type === "checkbox") {
+        return `<label class="check"><input id="ef-${Game.esc(f.name)}" type="checkbox"${f.value ? " checked" : ""}> ${Game.esc(f.label)}</label>`;
+      }
+      return `<label class="edit-label">${Game.esc(f.label)}<input id="ef-${Game.esc(f.name)}" type="${Game.esc(f.type || "text")}" value="${Game.esc(f.value || "")}" maxlength="${f.max || 120}"></label>`;
+    }).join("");
+    return `${rows}<button type="button" class="btn primary" id="${saveId}">Save</button>`;
+  }
+
+  function fieldValue(name, type) {
+    const el = document.getElementById("ef-" + name);
+    if (!el) return "";
+    if (type === "checkbox") return el.checked;
+    return (el.value || "").trim();
+  }
+
+  function splitToken(token) {
+    const i = (token || "").indexOf(":");
+    if (i < 0) return { kind: token || "", id: "" };
+    return { kind: token.slice(0, i), id: token.slice(i + 1) };
+  }
+
+  function openEdit(token) {
+    const { kind, id } = splitToken(token);
+    if (kind === "event") {
+      const e = (week.events || []).find((x) => x.id === id);
+      if (!e) return;
+      openSheet("Edit event", editForm([
+        { name: "title", label: "Title", value: e.title || "" },
+        { name: "start", label: "Start", value: Game.toLocalInput(e.start), type: "datetime-local" },
+        { name: "end", label: "End", value: Game.toLocalInput(e.end), type: "datetime-local" },
+        { name: "place", label: "Place", value: e.place || "" },
+        { name: "note", label: "Note", value: e.note || "", type: "textarea" }
+      ], "edit-save"));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        family = Game.editWeekOverlay(family, "events", id, {
+          title: fieldValue("title"),
+          start: Game.fromLocalInput(fieldValue("start")),
+          end: Game.fromLocalInput(fieldValue("end")) || undefined,
+          place: fieldValue("place"),
+          note: fieldValue("note")
+        });
+        closeSheet();
+        Game.toast("Saved on this device. Export the family pack to share.");
+        refreshBoard();
+      });
+      return;
+    }
+    if (kind === "work") {
+      const w = (week.work || []).find((x) => x.id === id);
+      if (!w) return;
+      openSheet("Edit work", editForm([
+        { name: "title", label: "Title", value: w.title || "" },
+        { name: "due", label: "Due", value: Game.toLocalInput(w.due), type: "datetime-local" },
+        { name: "suggest", label: "Start this from", value: w.suggest_from || "", type: "date" },
+        { name: "note", label: "Note", value: w.note || "", type: "textarea" }
+      ], "edit-save"));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        family = Game.editWeekOverlay(family, "work", id, {
+          title: fieldValue("title"),
+          due: Game.fromLocalInput(fieldValue("due")),
+          suggest_from: Game.fromLocalInput(fieldValue("suggest"), true) || undefined,
+          note: fieldValue("note")
+        });
+        closeSheet();
+        Game.toast("Saved on this device. Export the family pack to share.");
+        refreshBoard();
+      });
+      return;
+    }
+    if (kind === "weeknote") {
+      const n = (week.notes || []).find((x) => x.id === id);
+      if (!n) return;
+      openSheet("Edit note", editForm([
+        { name: "title", label: "Title", value: n.title || "" },
+        { name: "date", label: "Date", value: n.date || "", type: "date" },
+        { name: "text", label: "Text", value: n.text || "", type: "textarea" }
+      ], "edit-save"));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        family = Game.editWeekOverlay(family, "notes", id, {
+          title: fieldValue("title"),
+          date: Game.fromLocalInput(fieldValue("date"), true),
+          text: fieldValue("text")
+        });
+        closeSheet();
+        Game.toast("Saved on this device. Export the family pack to share.");
+        refreshBoard();
+      });
+      return;
+    }
+    if (kind === "note") {
+      const n = (family.notes || []).find((x) => x.id === id);
+      if (!n) return;
+      openSheet(n.from === "bennett" ? "Edit question" : "Edit parent note", editForm([
+        { name: "text", label: "Text", value: n.text || "", type: "textarea", max: 280 }
+      ], "edit-save"));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        const text = fieldValue("text");
+        if (!text) {
+          Game.toast("Write something first.");
+          return;
+        }
+        family = Game.updateNote(family, id, { text });
+        closeSheet();
+        Game.toast("Saved on this device.");
+        refreshBoard();
+      });
+      return;
+    }
+    if (kind === "prompt") {
+      const p = ((family.reflections && family.reflections.pool) || []).find((x) => x.id === id);
+      if (!p) return;
+      openSheet("Edit check-in prompt", editForm([
+        { name: "text", label: "Prompt", value: p.text || "", type: "textarea", max: 140 }
+      ], "edit-save"));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        const text = fieldValue("text");
+        if (!text) {
+          Game.toast("Write a prompt first.");
+          return;
+        }
+        family = Game.updatePrompt(family, id, { text });
+        closeSheet();
+        Game.toast("Saved on this device.");
+        refreshBoard();
+      });
+      return;
+    }
+    if (kind === "answer") {
+      const a = ((family.reflections && family.reflections.answers) || []).find((x) => x.id === id);
+      if (!a) return;
+      openSheet("Edit check-in", editForm([
+        { name: "text", label: "Answer", value: a.text || "", type: "textarea", max: 280 }
+      ], "edit-save"));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        const text = fieldValue("text");
+        if (!text) {
+          Game.toast("Write a sentence or two first.");
+          return;
+        }
+        family = Game.updateAnswer(family, id, { text });
+        closeSheet();
+        Game.toast("Saved on this device.");
+        refreshBoard();
+      });
+      return;
+    }
+    if (kind === "trophy") {
+      const ach = (pack.achievements || []).find((x) => x.id === id);
+      if (!ach) return;
+      openSheet("Edit trophy", editForm([
+        { name: "title", label: "Title", value: ach.title || "" },
+        { name: "description", label: "Description", value: ach.description || "", type: "textarea" },
+        { name: "incentive", label: "Incentive", value: ach.incentive || "" }
+      ], "edit-save"));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        const title = fieldValue("title");
+        if (!title) {
+          Game.toast("Add a title first.");
+          return;
+        }
+        const idx = pack.achievements.findIndex((x) => x.id === id);
+        if (idx >= 0) {
+          pack.achievements[idx] = Object.assign({}, pack.achievements[idx], {
+            title,
+            description: fieldValue("description"),
+            incentive: fieldValue("incentive")
+          });
+          Game.saveMomDraft(pack);
+        }
+        closeSheet();
+        Game.toast("Saved on this device. Export the family pack to share.");
+        renderShelf();
+      });
+    }
+  }
+
+  function deleteEntry(token) {
+    const { kind, id } = splitToken(token);
+    const labels = {
+      event: "calendar event",
+      work: "work item",
+      weeknote: "note",
+      note: "note",
+      prompt: "check-in prompt",
+      answer: "check-in"
+    };
+    if (!Game.confirmDelete(labels[kind] || "entry")) return;
+    if (kind === "event") family = Game.deleteWeekOverlay(family, "events", id);
+    else if (kind === "work") family = Game.deleteWeekOverlay(family, "work", id);
+    else if (kind === "weeknote") family = Game.deleteWeekOverlay(family, "notes", id);
+    else if (kind === "note") family = Game.deleteNote(family, id);
+    else if (kind === "prompt") family = Game.deletePrompt(family, id);
+    else if (kind === "answer") family = Game.deleteAnswer(family, id);
+    else return;
+    Game.toast("Deleted on this device. Export the family pack to share.");
+    refreshBoard();
   }
 
   function openAsk(token) {
@@ -685,10 +944,11 @@
 
   async function boot() {
     Game.markOpened();
-    week = await Game.loadWeek();
+    baseWeek = Game.ensureWeekIds(await Game.loadWeek());
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
-    if (Game.usingMomDraft()) {
+    syncWeek();
+    if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
       document.getElementById("draft-flag").hidden = false;
     }
     renderCards();

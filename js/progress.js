@@ -1,7 +1,9 @@
 (function () {
+  let baseWeek = null;
   let week = null;
   let pack = null;
   let family = null;
+  let baseSeed = null;
   let seed = null;
 
   function classIdForTitle(title) {
@@ -262,7 +264,7 @@
       ? eggs.map((e) => `<li>${Game.esc(e.name)}${e.at ? " · " + Game.esc(Game.fmtStamp(e.at)) : ""}</li>`).join("")
       : `<li class="empty">None found yet. The lobby has a few wholesome surprises.</li>`;
     const trophyList = trophies.length
-      ? trophies.map((ach) => `<li>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</li>`).join("")
+      ? trophies.map((ach) => `<li class="entry-row">${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)} <span class="entry-tools"><button type="button" class="mini" data-edit="trophy:${Game.esc(ach.id)}">Edit</button><button type="button" class="mini" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button></span></li>`).join("")
       : `<li class="empty">No trophies yet — keep the streak going.</li>`;
     return `
       <article class="stat-card finds-card">
@@ -303,6 +305,7 @@
               </div>
               ${item.grade ? gradeHtml(item.grade, item.test) : (item.kind === "event" ? "" : `<span class="grade-pill empty">—</span>`)}
             </div>
+            <div class="entry-tools">${Game.entryButtons("pitem:" + item.id, "pitem:" + item.id)}</div>
           </li>`;
       }).join("")
       : `<li class="empty">No assignments or tests on the board yet. Band lives on the week calendar.</li>`;
@@ -318,7 +321,195 @@
           ${gradeHtml(cls.grade, cls.test)}
         </summary>
         <ul class="class-items">${itemHtml}</ul>
+        <div class="class-card-tools">${Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id)}</div>
       </details>`;
+  }
+
+  function syncViews() {
+    week = Game.applyWeekOverlay(baseWeek, family);
+    seed = Game.applyProgressOverlay(baseSeed, family);
+  }
+
+  function openSheet(title, html) {
+    document.getElementById("sheet-title").textContent = title;
+    document.getElementById("sheet-body").innerHTML = html;
+    document.getElementById("sheet").classList.add("open");
+  }
+
+  function closeSheet() {
+    document.getElementById("sheet").classList.remove("open");
+  }
+
+  function editForm(fields) {
+    return fields.map((f) => {
+      if (f.type === "textarea") {
+        return `<label class="edit-label">${Game.esc(f.label)}<textarea id="ef-${Game.esc(f.name)}" maxlength="${f.max || 120}">${Game.esc(f.value || "")}</textarea></label>`;
+      }
+      if (f.type === "checkbox") {
+        return `<label class="check"><input id="ef-${Game.esc(f.name)}" type="checkbox"${f.value ? " checked" : ""}> ${Game.esc(f.label)}</label>`;
+      }
+      return `<label class="edit-label">${Game.esc(f.label)}<input id="ef-${Game.esc(f.name)}" type="${Game.esc(f.type || "text")}" value="${Game.esc(f.value || "")}"></label>`;
+    }).join("") + `<button type="button" class="btn primary" id="edit-save">Save</button>`;
+  }
+
+  function fieldValue(name, type) {
+    const el = document.getElementById("ef-" + name);
+    if (!el) return "";
+    if (type === "checkbox") return el.checked;
+    return (el.value || "").trim();
+  }
+
+  function findClassItem(id) {
+    const classes = mergeClasses();
+    for (let i = 0; i < classes.length; i += 1) {
+      const hit = (classes[i].items || []).find((item) => item.id === id);
+      if (hit) return { cls: classes[i], item: hit };
+    }
+    return null;
+  }
+
+  function openEdit(token) {
+    const i = (token || "").indexOf(":");
+    const kind = i < 0 ? token : token.slice(0, i);
+    const id = i < 0 ? "" : token.slice(i + 1);
+    if (kind === "pitem") {
+      const found = findClassItem(id);
+      if (!found) return;
+      const item = found.item;
+      const grade = item.grade || {};
+      openSheet("Edit class item", editForm([
+        { name: "title", label: "Title", value: item.title || "" },
+        { name: "kind", label: "Kind (assignment, quiz, test, event)", value: item.kind || "assignment" },
+        { name: "grade", label: "Grade", value: grade.display || "" },
+        { name: "detail", label: "Detail", value: grade.detail || "" },
+        { name: "test", label: "TEST label", type: "checkbox", value: !!item.test || !!(grade.test) }
+      ]));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        const title = fieldValue("title");
+        if (!title) {
+          Game.toast("Add a title first.");
+          return;
+        }
+        family = Game.editProgressItem(family, id, {
+          title,
+          kind: fieldValue("kind") || "assignment",
+          test: fieldValue("test", "checkbox"),
+          grade: {
+            display: fieldValue("grade") || "—",
+            detail: fieldValue("detail"),
+            test: fieldValue("test", "checkbox")
+          }
+        });
+        closeSheet();
+        Game.toast("Saved on this device. Export the family pack to share.");
+        syncViews();
+        render();
+      });
+      return;
+    }
+    if (kind === "pclass") {
+      const cls = mergeClasses().find((c) => c.id === id);
+      if (!cls) return;
+      const grade = cls.grade || {};
+      openSheet("Edit class", editForm([
+        { name: "name", label: "Class name", value: cls.name || "" },
+        { name: "grade", label: "Overall grade", value: grade.display || "" },
+        { name: "detail", label: "Detail", value: grade.detail || "" },
+        { name: "test", label: "TEST label", type: "checkbox", value: !!cls.test || !!(grade.test) }
+      ]));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        const name = fieldValue("name");
+        if (!name) {
+          Game.toast("Add a class name first.");
+          return;
+        }
+        family = Game.editProgressClass(family, id, {
+          name,
+          test: fieldValue("test", "checkbox"),
+          grade: {
+            display: fieldValue("grade") || "—",
+            detail: fieldValue("detail"),
+            test: fieldValue("test", "checkbox")
+          }
+        });
+        closeSheet();
+        Game.toast("Saved on this device. Export the family pack to share.");
+        syncViews();
+        render();
+      });
+      return;
+    }
+    if (kind === "trophy") {
+      const ach = (pack.achievements || []).find((x) => x.id === id);
+      if (!ach) return;
+      openSheet("Edit trophy", editForm([
+        { name: "title", label: "Title", value: ach.title || "" },
+        { name: "description", label: "Description", value: ach.description || "", type: "textarea" },
+        { name: "incentive", label: "Incentive", value: ach.incentive || "" }
+      ]));
+      document.getElementById("edit-save").addEventListener("click", () => {
+        const title = fieldValue("title");
+        if (!title) {
+          Game.toast("Add a title first.");
+          return;
+        }
+        const idx = pack.achievements.findIndex((x) => x.id === id);
+        if (idx >= 0) {
+          pack.achievements[idx] = Object.assign({}, pack.achievements[idx], {
+            title,
+            description: fieldValue("description"),
+            incentive: fieldValue("incentive")
+          });
+          Game.saveMomDraft(pack);
+        }
+        closeSheet();
+        Game.toast("Saved on this device. Export the family pack to share.");
+        render();
+      });
+    }
+  }
+
+  function deleteEntry(token) {
+    const i = (token || "").indexOf(":");
+    const kind = i < 0 ? token : token.slice(0, i);
+    const id = i < 0 ? "" : token.slice(i + 1);
+    if (kind === "pitem") {
+      if (!Game.confirmDelete("class item")) return;
+      family = Game.deleteProgressItem(family, id);
+    } else if (kind === "pclass") {
+      if (!Game.confirmDelete("class")) return;
+      family = Game.deleteProgressClass(family, id);
+    } else {
+      return;
+    }
+    Game.toast("Deleted on this device. Export the family pack to share.");
+    syncViews();
+    render();
+  }
+
+  function bindDash() {
+    document.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openEdit(btn.dataset.edit);
+      });
+    });
+    document.querySelectorAll("[data-del]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        deleteEntry(btn.dataset.del);
+      });
+    });
+    document.querySelectorAll("[data-undo-trophy]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const result = Game.revokeAchievement(pack, family, btn.dataset.undoTrophy);
+        family = result.family;
+        Game.toast("Award undone. That trophy leaves the room.");
+        render();
+      });
+    });
   }
 
   function render() {
@@ -333,13 +524,19 @@
     if (note) {
       note.textContent = seed.gradesNote || "Grades are TEST seed until a real feed exists.";
     }
+    bindDash();
   }
 
   async function boot() {
-    week = await Game.loadWeek() || { work: [], events: [] };
+    baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [] });
     pack = await Game.loadAchievements() || { currency: Game.currency({}), achievements: [] };
     family = await Game.loadFamily();
-    seed = await Game.loadProgress();
+    baseSeed = await Game.loadProgress();
+    syncViews();
+    document.getElementById("close-sheet").addEventListener("click", closeSheet);
+    document.getElementById("sheet").addEventListener("click", (e) => {
+      if (e.target.id === "sheet") closeSheet();
+    });
     render();
   }
 
