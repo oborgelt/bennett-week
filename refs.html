@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071618">
+  <title>Locker refs · Jungle Jam</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="parent-page refs-page">
+  <header class="week-head">
+    <div class="banner-wrap">
+      <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
+      <div class="banner-title">
+        <h1>Locker refs</h1>
+        <p>Ace · Riff · Scorch · Deuce · Fuzz</p>
+      </div>
+      <div class="build-stamp" id="build-stamp">
+        <span>Build 41</span>
+        <span>8/15, 3:10 PM</span>
+      </div>
+    </div>
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+      <p class="progress-tagline">One page. Drag the stills — no Downloads folder.</p>
+      <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
+        <a class="progress-chip" href="progress.html"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="crew-chip" href="characters.html"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
+        <a class="parent-chip" href="parent.html"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="admin-chip" href="admin.html">Admin</a>
+        <a class="refs-chip on" href="refs.html" aria-current="page">Locker refs</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="refs-wrap">
+    <p class="refs-note">Drag these into Imagine (Quality / Image). Do not redesign.</p>
+    <ol class="refs-grid">
+      <li class="refs-card">
+        <figure>
+          <img src="img/characters/ace.jpg" alt="1 Ace" width="928" height="1376" draggable="true">
+          <figcaption>1 Ace</figcaption>
+        </figure>
+      </li>
+      <li class="refs-card">
+        <figure>
+          <img src="img/characters/riff.jpg" alt="2 Riff" width="1408" height="1408" draggable="true">
+          <figcaption>2 Riff</figcaption>
+        </figure>
+      </li>
+      <li class="refs-card">
+        <figure>
+          <img src="img/characters/scorch.jpg" alt="3 Scorch" width="1408" height="1408" draggable="true">
+          <figcaption>3 Scorch</figcaption>
+        </figure>
+      </li>
+      <li class="refs-card">
+        <figure>
+          <img src="img/characters/deuce.jpg" alt="4 Deuce" width="1408" height="1408" draggable="true">
+          <figcaption>4 Deuce</figcaption>
+        </figure>
+      </li>
+      <li class="refs-card">
+        <figure>
+          <img src="img/characters/fuzz.jpg" alt="5 Fuzz" width="1408" height="1408" draggable="true">
+          <figcaption>5 Fuzz</figcaption>
+        </figure>
+      </li>
+    </ol>
+  </main>
+
+  <script src="js/build.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    (function () {
+      var el = document.getElementById("bananas");
+      if (el && window.Game) el.textContent = "🍌 " + Game.getBananas();
+    })();
+  </script>
+</body>
+</html>

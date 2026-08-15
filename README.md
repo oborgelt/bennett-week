@@ -38,7 +38,7 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 
 ## Admin library
 
-Open `admin.html` from the parent desk **Admin** chip.
+Open `admin.html` from the parent desk **Admin** chip. **Locker refs** opens the five locker stills for Imagine.
 
 - Library kinds: **image**, **video**, **audio**, **link** (YouTube / any https URL).
 - Grouped **Ace / Riff / Scorch / Deuce / Fuzz / Crew / Fun / Sounds**.
@@ -177,6 +177,7 @@ Wholesome only. Try tapping the banner band, the little clarinet, and a shy tenn
 - `story.html` — CYOA first slice (gated until 3 unlocks; parents use `?preview=1`)
 - `ask.html` — Socratic Ask AI
 - `admin.html` — parent-only media library
+- `refs.html` — **Locker refs**: Ace / Riff / Scorch / Deuce / Fuzz stills to drag into Imagine
 - `egg.html` — FEED EGGS (locked until the trophy)
 - `progress.html` — activity + class dashboard
 - `parent.html` — parent desk
@@ -204,4 +205,8 @@ Parents assign a teammate (or a tool / ability) on a streak, then award that str
 4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / abilities only. **Sounds** shows earned audio / links; locked names stay **???**.
 5. After 3 character unlocks, **Story** is available — a choose-your-own-adventure, not a toast. An attached unlocked sound can play on a story or week beat.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **38**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **41**.
+
+## Locker refs (Orin)
+
+Open `refs.html` (HUD **Locker refs** on Admin and Characters, or https://oborgelt.github.io/bennett-week/refs.html). Five large locker stills already on the site — 1 Ace, 2 Riff, 3 Scorch, 4 Deuce, 5 Fuzz. Drag them into Imagine (Quality / Image). Do not redesign. No new media files.
