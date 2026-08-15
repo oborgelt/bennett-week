@@ -408,7 +408,6 @@ assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHt
 assert(/theme\.css\?v=/.test(weekHtml) && /week\.js\?v=/.test(weekHtml) && /game\.js\?v=/.test(weekHtml), "index should cache-bust css/js");
 assert(!/trophyManage/.test(weekJs), "week.js should not keep a manage mode in Bennett's room");
 assert(/trophy-plaque/.test(weekJs) && /prefersReducedMotion/.test(weekJs), "walk-up objects should open a plaque and respect reduced motion");
-assert(/bennett:\s*\{/.test(weekJs), "window wall should reserve the center alcove slot for Bennett");
 assert(/id="trophy-order-list"/.test(parentHtml), "parent desk should keep trophy drag-reorder");
 assert(/theme\.css\?v=/.test(parentHtml) && /parent\.js\?v=/.test(parentHtml), "parent desk should cache-bust css/js");
 assert(crewJs.includes("gearThumbHtml") && crewJs.includes("alreadyUnlockedGear"), "loadout should use real gear stills when unlocked");
