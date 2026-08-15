@@ -838,7 +838,9 @@
     host.onclick = (e) => {
       if (skipTrophyClick) return;
       const btn = e.target.closest("[data-zone]");
-      if (btn) enterTrophyZone(btn.dataset.zone);
+      if (!btn) return;
+      e.stopPropagation();
+      enterTrophyZone(btn.dataset.zone);
     };
   }
 
@@ -905,7 +907,7 @@
     trophyLookClose = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
     trophyDrag = null;
     const room = document.getElementById("trophy-room");
-    if (room) room.classList.remove("is-settled", "is-zoomed");
+    if (room) room.classList.remove("is-settled", "is-quiet", "is-zoomed");
     if (trophyHintTimer) {
       window.clearTimeout(trophyHintTimer);
       trophyHintTimer = 0;
@@ -1319,7 +1321,15 @@
       if (leave) leave.focus();
       trophyHintTimer = window.setTimeout(() => {
         const room = document.getElementById("trophy-room");
-        if (room && shelf.classList.contains("open")) room.classList.add("is-settled");
+        if (!room || !shelf.classList.contains("open")) return;
+        room.classList.add("is-settled");
+        if (Game.prefersReducedMotion()) {
+          room.classList.add("is-quiet");
+          return;
+        }
+        window.setTimeout(() => {
+          if (shelf.classList.contains("open")) room.classList.add("is-quiet");
+        }, 2600);
       }, Game.prefersReducedMotion() ? 0 : 1200);
     }
     door.addEventListener("click", openShelf);
@@ -1382,7 +1392,7 @@
     stage.addEventListener("click", (e) => {
       if (skipTrophyClick) return;
       if (!trophyZone) return;
-      if (e.target.closest(".trophy-object") || e.target.closest(".trophy-leave")) return;
+      if (e.target.closest(".trophy-object") || e.target.closest(".trophy-leave") || e.target.closest(".trophy-hotspot")) return;
       if (document.querySelector(".trophy-plaque")) {
         clearTrophyPlaques();
         return;
