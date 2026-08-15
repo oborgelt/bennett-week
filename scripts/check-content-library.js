@@ -133,6 +133,15 @@ assert(!band.khan, "Band has no Khan course");
 assert.strictEqual(band.period, "P1");
 assert.strictEqual(english.period, "P6");
 assert.strictEqual(byId.chemistry.time, "10:55–12:10");
+assert.strictEqual(progress.classes.length, 8, "exactly 8 ParentVUE rows — P9 is not a ninth class");
+assert.strictEqual(byId["academic-intervention"].time, "10:10–10:50", "Seminar shares the Academic Intervention clock");
+assert.deepStrictEqual(byId["academic-intervention"].periods, ["P8", "P9"], "P8/P9 are one HR100F row");
+assert.strictEqual(byId["academic-intervention"].code, "HR100F");
+assert.strictEqual(byId.band.code, "PA510");
+assert.strictEqual(byId.strength.code, "PE510A");
+assert.strictEqual(byId.strength.name, "Strength & Conditioning I");
+assert.strictEqual(Game.classPeriodLine(byId["academic-intervention"]), "Academic Intervention / Seminar");
+assert(!Game.classShowsPeriodChip(byId["academic-intervention"]), "do not print Seminar twice on the lobby");
 assert(!(week.work || []).some((w) => /algebra|history|spanish|\bPE\b/i.test(w.title || "")), "do not invent homework in week.json");
 
 const khanClassChem = Game.khanLinksForClass(byId.chemistry);

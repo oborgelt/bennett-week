@@ -154,7 +154,7 @@ Anything labeled **TEST** is look-and-feel filler, not a real family rule or a r
 - Bananas from the same device store.
 
 **By class**
-- Real S1 ParentVUE classes, in period order: Marching Band, Sociology, Web Design I, Academic Intervention, Chemistry, Strength & Conditioning I, English 10, Geometry. Always list the class, even when `items` is empty.
+- Real S1 ParentVUE classes, in clock order: Marching Band, Sociology, Web Design I, Academic Intervention / Seminar, Chemistry, Strength & Conditioning I, English 10, Geometry. Always list the class, even when `items` is empty. P8/P9 Seminar is the same 10:10–10:50 Academic Intervention slot — one row, not a ninth class. Course codes stay in `progress.json` metadata (and the parent desk). Do not dump them on the lobby.
 - Collapsed row = class name + overall grade (only if one exists) + actions (started / done / asked / help). Empty class: name + “No assignments yet” + Khan links. No fake grade.
 - Expand a class to see assignments and tests with a grade and status (not started / started timestamp / done). Grades stay hidden until expand.
 - `progress.html?class=chemistry` expands that class.

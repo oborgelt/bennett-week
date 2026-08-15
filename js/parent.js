@@ -75,7 +75,7 @@
       return `
         <article class="ach-card">
           <h3>${cls.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(Game.classPeriodLine(cls))}</h3>
-          <p>${cls.time ? Game.esc(cls.time) + " · " : ""}${Game.esc(empty ? "No assignments yet" : (cls.items.length + (cls.items.length === 1 ? " item" : " items")))} · ${Game.esc(khanBit)}</p>
+          <p>${cls.code ? Game.esc(cls.code) + " · " : ""}${cls.time ? Game.esc(cls.time) + " · " : ""}${Game.esc(empty ? "No assignments yet" : (cls.items.length + (cls.items.length === 1 ? " item" : " items")))} · ${Game.esc(khanBit)}</p>
         </article>`;
     }).join("");
   }

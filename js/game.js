@@ -1690,7 +1690,7 @@
     if (key === "band") return "Marching Band";
     if (key === "sociology") return "Sociology";
     if (key === "web-design") return "Web Design I";
-    if (key === "academic-intervention") return "Academic Intervention";
+    if (key === "academic-intervention") return "Academic Intervention / Seminar";
     if (key === "chemistry") return "Chemistry";
     if (key === "strength") return "Strength & Conditioning I";
     if (key === "english-10") return "English 10";
@@ -1701,8 +1701,16 @@
   function classPeriodLine(cls) {
     const period = String((cls && cls.period) || "").trim();
     const name = String((cls && cls.name) || classNameForId(cls && cls.id) || "").trim();
+    if (period && name && name.toLowerCase().indexOf(period.toLowerCase()) >= 0) return name;
     if (period && name) return period + " " + name;
     return name || period;
+  }
+
+  function classShowsPeriodChip(cls) {
+    const period = String((cls && cls.period) || "").trim();
+    const name = String((cls && cls.name) || "").trim();
+    if (!period) return false;
+    return name.toLowerCase().indexOf(period.toLowerCase()) < 0;
   }
 
   function classMetaLine(cls) {
@@ -2537,6 +2545,7 @@
     classIdForTitle,
     classNameForId,
     classPeriodLine,
+    classShowsPeriodChip,
     classMetaLine,
     classDueCount,
     classDueLabel,

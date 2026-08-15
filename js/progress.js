@@ -41,6 +41,8 @@
         id: cls.id,
         name: cls.name,
         period: cls.period || "",
+        code: cls.code || "",
+        periods: cls.periods,
         time: cls.time || "",
         room: cls.room || "",
         teacher: cls.teacher || "",

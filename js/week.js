@@ -170,7 +170,7 @@
       const status = Game.classDueLabel(due);
       const links = Game.khanLinksForClass(cls);
       const khan = Game.khanInlineHtml(links);
-      const period = String(cls.period || "").trim();
+      const period = Game.classShowsPeriodChip(cls) ? String(cls.period || "").trim() : "";
       return `
         <article class="standing-class" data-class="${Game.esc(cls.id)}">
           ${period ? `<span class="standing-class-period">${Game.esc(period)}</span>` : ""}
