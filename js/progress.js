@@ -73,6 +73,9 @@
     bits.push(stats.done ? stats.done + " done" : "0 done");
     bits.push(stats.asked ? stats.asked + " asked" : "0 asked");
     bits.push(stats.help ? stats.help + " help" : "0 help");
+    if (stats.parentNotes) {
+      bits.push(stats.parentNotes + (stats.parentNotes === 1 ? " note" : " notes"));
+    }
     return bits.join(" · ");
   }
 

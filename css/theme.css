@@ -1131,12 +1131,24 @@ body.progress-page .peek-monkey {
     overflow: auto;
   }
   body.progress-page { display: block; }
-  .dash { height: auto; }
+  .dash { height: auto; gap: 8px; }
   .class-pane { overflow: visible; }
   .class-list { overflow: visible; }
   .progress-tagline { display: none; }
   .progress-hud { grid-template-columns: auto auto; }
   .progress-hud .hud-nav { grid-column: auto; }
+  .stat-card { padding: 8px 10px 6px; }
+  .stat-lead { font-size: 0.95rem; }
+  .stat-sub { margin-bottom: 4px; }
+  .spark { height: 26px; margin-bottom: 0; }
+  .stat-row,
+  .metric-grid { margin-bottom: 0; }
+  .opens-card .open-list,
+  .actions-card .open-list,
+  .actions-card > .empty,
+  .finds-card h4,
+  .finds-card .open-list { display: none; }
+  body.progress-page .peek-monkey { display: none; }
 }
 
 @media (min-width: 880px) {

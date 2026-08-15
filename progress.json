@@ -48,7 +48,7 @@
     {
       "id": "band",
       "name": "Band",
-      "grade": { "display": "A", "detail": "no posted work yet", "test": true },
+      "grade": { "display": "A", "test": true },
       "items": [
         {
           "id": "band-am-0817",
