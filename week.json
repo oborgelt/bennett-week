@@ -24,7 +24,7 @@
       "title": "Band rehearsal",
       "start": "2026-08-17T06:50:00",
       "kind": "calendar",
-      "note": "Dad's time"
+      "note": "Arrive by 6:40. Dad's time. Rehearsals from here are graded, including 6:50am MTWF."
     },
     {
       "id": "band-pm-0817",
@@ -58,12 +58,12 @@
     },
     {
       "id": "forms-0820",
-      "title": "Forms & Fees Night",
+      "title": "Forms, Fees & Fit Night",
       "start": "2026-08-20T17:30:00",
       "end": "2026-08-20T19:00:00",
       "kind": "calendar",
       "place": "Band/Orchestra rooms",
-      "note": "After 4:30pm handoff to Mom"
+      "note": "Due by 7pm: medical form + handbook agreement. Pay uniform accessories $60 (shirt $15, shoes $40, gloves $5) and yearly contribution $350 to OE Band Boosters (check to Olathe East Band Boosters; Fillingham/Reed or Boosters that night). After 4:30pm handoff to Mom."
     }
   ],
   "work": [
@@ -88,12 +88,5 @@
       "suggest_from": "2026-08-15"
     }
   ],
-  "notes": [
-    {
-      "id": "chem-absence-0814",
-      "date": "2026-08-14",
-      "title": "P4 Chemistry absence",
-      "text": "Still ABSENT UNEXCUSED. Unresolved note, not an assignment."
-    }
-  ]
+  "notes": []
 }
