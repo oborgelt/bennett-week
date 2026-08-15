@@ -16,8 +16,8 @@
         <p>Mom and Orin · streaks, notes, export</p>
       </div>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 27</span>
-        <span>8/15, 11:42 AM</span>
+        <span>Build 28</span>
+        <span>8/15, 11:52 AM</span>
       </div>
     </div>
     <div class="hud-bar progress-hud">
@@ -28,6 +28,7 @@
         <a class="progress-chip" href="progress.html" aria-label="Progress"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
         <a class="crew-chip" href="characters.html" aria-label="Characters"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
         <a class="parent-chip on" href="parent.html" aria-current="page"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="admin-chip" href="admin.html">Admin</a>
         <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
     </div>
@@ -50,19 +51,66 @@
 
     <h2 style="font-size:1rem;margin:18px 0 8px">Characters</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
-      Ace is ready. Riff and #3 are coming slots you can name later.
-      Assign a character as a streak reward — awarding that streak unlocks them for Bennett.
-      After 3 unlocks, a comic storyline starts (placeholder only).
+      Pick Ace, Riff, or Scorch to see that locker’s library. Crew art is for team story beats.
+      Award a streak to unlock a teammate, tool, weapon, or ability. After 3 character unlocks, Story is a real page.
     </p>
     <div class="parent-actions">
       <button type="button" class="btn primary" id="add-char">Add / edit character</button>
       <button type="button" class="btn" id="download-chars">Download characters.json</button>
     </div>
     <div class="char-grid" id="char-list"></div>
-    <section class="comic-soon" id="parent-comic-soon" hidden>
-      <h2>Story unlocked — comic coming</h2>
-      <p>Bennett earned the first three teammates. The comic-strip storyline is on the way. Nothing to write yet.</p>
+    <section class="char-library" id="char-library" hidden>
+      <h2 id="char-lib-title">Library</h2>
+      <p id="char-lib-lead">Assets for this teammate. Attach one to a streak reward or a story beat. Crew files show when you build a team beat.</p>
+      <div class="lib-grid" id="char-lib-grid"></div>
+      <div class="form-grid" id="char-lib-attach">
+        <label>Attach selected file to streak
+          <select id="attach-streak"></select>
+        </label>
+        <label>Or to a story beat
+          <select id="attach-beat">
+            <option value="">None</option>
+            <option value="start">Start</option>
+            <option value="panel-check">English 10 board</option>
+            <option value="scorch-recover">Scorch recover</option>
+            <option value="ace-serve">Ace serve</option>
+            <option value="notebook">Notebook</option>
+            <option value="finale">Finale</option>
+          </select>
+        </label>
+      </div>
+      <div class="parent-actions">
+        <button type="button" class="btn" id="attach-media">Attach selected file</button>
+      </div>
     </section>
+    <section class="comic-soon" id="parent-comic-soon">
+      <h2>Story</h2>
+      <p id="parent-story-copy">Parents can always preview. Bennett’s HUD shows Story after three teammates unlock.</p>
+      <div class="parent-actions">
+        <a class="btn primary" href="story.html?preview=1">Preview story</a>
+      </div>
+    </section>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Story ingredients</h2>
+    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
+      Topics to fold into the comic. TEST seeds: finish what you start · ask before you’re sunk.
+    </p>
+    <div class="form-grid">
+      <label>New ingredient
+        <input id="new-ingredient" maxlength="140" placeholder="finish what you start">
+      </label>
+      <label class="check">
+        <input id="ingredient-test" type="checkbox" checked> Mark as TEST
+      </label>
+      <label>Include in story (parent note)
+        <textarea id="story-note" maxlength="280" placeholder="Optional. Leave blank to skip — do not invent Bennett’s voice."></textarea>
+      </label>
+    </div>
+    <div class="parent-actions">
+      <button type="button" class="btn" id="add-ingredient">Add ingredient</button>
+      <button type="button" class="btn primary" id="save-story-note">Save include-in-story note</button>
+    </div>
+    <div id="ingredients"></div>
     <section id="char-editor" hidden>
       <h2 id="char-editor-title" style="margin:18px 0 10px;font-size:1.05rem">Edit character</h2>
       <div class="form-grid">
@@ -102,6 +150,10 @@
     <h2 style="font-size:1rem;margin:18px 0 8px">Inbox</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">Questions Bennett asked on a task or event, plus his daily check-in. Reply with a note on that item.</p>
     <div id="inbox"></div>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Ask AI mentor</h2>
+    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">What he asked the Socratic mentor. Hints only — not a finished assignment.</p>
+    <div id="ask-inbox"></div>
 
     <h2 style="font-size:1rem;margin:18px 0 8px">Note on an item</h2>
     <div class="form-grid">
@@ -162,8 +214,30 @@
             <input id="unit" maxlength="24" value="week">
           </label>
         </div>
+        <label>Reward unlock
+          <select id="reward-type">
+            <option value="">None</option>
+            <option value="character">Character</option>
+            <option value="tool">Tool</option>
+            <option value="weapon">Weapon</option>
+            <option value="ability">Ability</option>
+          </select>
+        </label>
         <label>Reward character
           <select id="reward-character">
+            <option value="">None</option>
+          </select>
+        </label>
+        <div class="form-row" id="reward-gear-row">
+          <label>Unlock id
+            <input id="reward-unlock-id" maxlength="40" placeholder="notebook-holding">
+          </label>
+          <label>Unlock label
+            <input id="reward-unlock-label" maxlength="60" placeholder="Notebook of Holding">
+          </label>
+        </div>
+        <label>Attach library file (filtered by character)
+          <select id="reward-media">
             <option value="">None</option>
           </select>
         </label>
@@ -221,7 +295,11 @@
     {"id": "asked-before-due", "title": "Asked before it was due", "description": "Asked a question before a due date.", "how": "Parents award help-seeking, not a finished worksheet.", "incentive": "TEST — high five", "icon": "banana", "test": true, "reward": 10, "streak": {"target": 1, "unit": "time"}},
     {"id": "hidden-banana", "title": "Hidden banana", "description": "You found a silly secret in the jungle.", "how": "Easter egg. Tap the banner band five times.", "incentive": "TEST — a goofy dance from a parent", "icon": "banana", "test": true, "secret": true, "reward": 25, "unlocksGame": "egg", "unlock": {"type": "easter_egg", "egg": "banner-monkey"}},
     {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "description": "Unlocks the office egg game — the dumb one where the eggs are never the right number.", "how": "Parents award this to unlock the game.", "incentive": "Unlocks the egg game", "icon": "banana", "test": true, "reward": 15, "unlocksGame": "egg", "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-ace-closer", "title": "Meet Ace", "description": "TEST — award this to unlock Ace for Bennett. Not auto-unlocked.", "how": "Parents award this TEST streak when they want Bennett to meet Ace.", "incentive": "Unlocks Ace", "icon": "tennis", "test": true, "reward": 10, "rewardCharacter": "ace", "streak": {"target": 1, "unit": "time"}}
+    {"id": "test-ace-closer", "title": "Meet Ace", "description": "TEST — award this to unlock Ace for Bennett. Not auto-unlocked.", "how": "Parents award this TEST streak when they want Bennett to meet Ace.", "incentive": "Unlocks Ace", "icon": "tennis", "test": true, "reward": 10, "rewardCharacter": "ace", "rewardUnlock": {"type": "character", "id": "ace", "label": "Ace"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-riff-reps", "title": "Meet Riff", "test": true, "reward": 10, "rewardCharacter": "riff", "rewardUnlock": {"type": "character", "id": "riff", "label": "Riff"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-scorch-recover", "title": "Meet Scorch", "test": true, "reward": 10, "rewardCharacter": "scorch", "rewardUnlock": {"type": "character", "id": "scorch", "label": "Scorch"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-notebook-holding", "title": "Notebook of Holding", "test": true, "bananas": 10, "reward": {"type": "tool", "id": "notebook-holding", "label": "Notebook of Holding"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-first-serve", "title": "First Serve", "test": true, "bananas": 10, "reward": {"type": "ability", "id": "first-serve", "label": "First Serve"}, "streak": {"target": 1, "unit": "time"}}
   ]
 }
   </script>
@@ -230,8 +308,8 @@
   "comicStartsAfter": 3,
   "characters": [
     {"id": "ace", "name": "Ace", "talent": "The Closer", "tagline": "Last point counts.", "status": "ready", "video": "img/characters/ace.mp4", "poster": "img/characters/ace.jpg"},
-    {"id": "riff", "name": "Riff", "talent": "Daily Reps", "tagline": "Again. Louder.", "status": "coming"},
-    {"id": "slot-3", "name": "", "talent": "", "tagline": "", "status": "coming"}
+    {"id": "riff", "name": "Riff", "talent": "Daily Reps", "tagline": "Again. Louder.", "status": "ready", "video": "img/characters/riff.mp4", "poster": "img/characters/riff.jpg"},
+    {"id": "scorch", "name": "Scorch", "talent": "The Recover", "tagline": "Burned. Not out.", "status": "ready", "video": "img/characters/scorch.mp4", "poster": "img/characters/scorch.jpg"}
   ]
 }
   </script>
@@ -252,7 +330,15 @@
       {"id": "ra-test-1", "promptId": "r-easiest", "prompt": "Which class felt easiest today?", "text": "TEST: Band — we mostly set up and tuned.", "at": "2026-08-14T19:42:00-05:00", "test": true}
     ]
   },
-  "streaks": {}
+  "streaks": {},
+  "story": {
+    "ingredients": [
+      {"id": "si-finish", "text": "finish what you start", "test": true},
+      {"id": "si-ask", "text": "ask before you're sunk", "test": true}
+    ],
+    "includeNote": "",
+    "attachments": {}
+  }
 }
   </script>
   <script src="js/build.js"></script>

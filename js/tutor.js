@@ -97,5 +97,45 @@
     }
   }
 
-  global.Tutor = { request, testHelp, cardsFrom };
+  function testAsk(title, lastUser) {
+    const t = (title || "this assignment").trim();
+    const blob = (t + " " + (lastUser || "")).toLowerCase();
+    let reply = "";
+    if (/comic|panel/.test(blob)) {
+      reply = "Before the next box — what does that panel need besides pictures? A word, a beat, something the reader can hear? What's the one thing this strip has to say?";
+    } else if (/names/.test(blob)) {
+      reply = "What's the one true thing you're awesome at — and can you say it in one breath right after your name, twice?";
+    } else if (/notebook|index card/.test(blob)) {
+      reply = "Where will the notebook live tonight so Friday-you isn't hunting lockers? What's the smallest pack-it-now move?";
+    } else {
+      reply = "What's the smallest first serve on \"" + t + "\" — not the whole thing, just the first real move?";
+    }
+    return {
+      reply: "TEST mentor: " + reply,
+      live: false,
+      source: "TEST",
+      test: true
+    };
+  }
+
+  async function ask(payload) {
+    const title = (payload && payload.title) || "";
+    const messages = (payload && payload.messages) || [];
+    const lastUser = [...messages].reverse().find((m) => m && m.role === "bennett") || {};
+    try {
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("ask unavailable");
+      const data = await res.json();
+      if (!data || data.error || !data.reply) throw new Error((data && data.error) || "ask error");
+      return Object.assign({ live: true, source: "live" }, data);
+    } catch (_) {
+      return testAsk(title, lastUser.text || "");
+    }
+  }
+
+  global.Tutor = { request, testHelp, cardsFrom, ask, testAsk };
 })(window);

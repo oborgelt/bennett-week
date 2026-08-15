@@ -1,0 +1,78 @@
+{
+  "items": [
+    {
+      "id": "ace-clip",
+      "label": "Ace locker clip",
+      "path": "img/characters/ace.mp4",
+      "poster": "img/characters/ace.jpg",
+      "kind": "video",
+      "character": "ace"
+    },
+    {
+      "id": "ace-poster",
+      "label": "Ace poster",
+      "path": "img/characters/ace.jpg",
+      "kind": "image",
+      "character": "ace"
+    },
+    {
+      "id": "riff-clip",
+      "label": "Riff locker clip",
+      "path": "img/characters/riff.mp4",
+      "poster": "img/characters/riff.jpg",
+      "kind": "video",
+      "character": "riff"
+    },
+    {
+      "id": "riff-poster",
+      "label": "Riff poster",
+      "path": "img/characters/riff.jpg",
+      "kind": "image",
+      "character": "riff"
+    },
+    {
+      "id": "scorch-clip",
+      "label": "Scorch locker clip",
+      "path": "img/characters/scorch.mp4",
+      "poster": "img/characters/scorch.jpg",
+      "kind": "video",
+      "character": "scorch"
+    },
+    {
+      "id": "scorch-poster",
+      "label": "Scorch poster",
+      "path": "img/characters/scorch.jpg",
+      "kind": "image",
+      "character": "scorch"
+    },
+    {
+      "id": "crew-hero",
+      "label": "Crew hero lineup",
+      "path": "img/library/crew-hero.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "crew-run",
+      "label": "Crew run",
+      "path": "img/library/crew-run.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "crew-burst",
+      "label": "Crew burst",
+      "path": "img/library/crew-burst.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "crew-adventure",
+      "label": "Crew adventure clip",
+      "path": "img/library/crew-adventure.mp4",
+      "poster": "img/library/crew-hero.jpg",
+      "kind": "video",
+      "character": "crew"
+    }
+  ]
+}

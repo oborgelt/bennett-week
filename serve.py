@@ -32,6 +32,14 @@ Do not invent a semester of homework.
 Return ONLY compact JSON matching the requested shape. No markdown fences.
 """
 
+ASK_SYSTEM = """You are a Socratic study mentor for Bennett, a high-school sophomore at Olathe East.
+He asks; you answer with questions and small hints — never the finished assignment, script, comic, or essay.
+Kid-safe. Silly is allowed (monkeys, tennis, bananas, garage band). Never mean. Never shame.
+Keep replies short: 2–5 sentences. End with a question when you can.
+If he is stuck on English 10 (names video, summer comic strips, spiral notebook), stay on that real work.
+Do not invent a semester of homework. Do not write the work for him.
+"""
+
 
 def tutor_payload(body: dict) -> dict:
     mode = (body.get("mode") or "notecards").strip()
@@ -66,13 +74,45 @@ def tutor_payload(body: dict) -> dict:
     }
 
 
-def call_anthropic(body: dict) -> tuple[int, dict]:
+def ask_payload(body: dict) -> dict:
+    title = (body.get("title") or "").strip()
+    note = (body.get("note") or "").strip()
+    incoming = body.get("messages") if isinstance(body.get("messages"), list) else []
+    messages = []
+    for row in incoming[-12:]:
+        if not isinstance(row, dict):
+            continue
+        text = str(row.get("text") or row.get("content") or "").strip()
+        if not text:
+            continue
+        role = "assistant" if row.get("role") in ("mentor", "assistant") else "user"
+        messages.append({"role": role, "content": text})
+    if not messages:
+        messages = [{"role": "user", "content": "I need a nudge to start."}]
+    lead = ""
+    if title or note:
+        lead = f"(Assignment on the card: {title or 'this work'}"
+        if note:
+            lead += f" — teacher note: {note}"
+        lead += ")\n\n"
+        first = messages[0]
+        if first["role"] == "user":
+            first["content"] = lead + first["content"]
+    return {
+        "model": MODEL,
+        "max_tokens": 400,
+        "system": ASK_SYSTEM,
+        "messages": messages,
+    }
+
+
+def call_anthropic(payload: dict) -> tuple[int, dict]:
     key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     if not key:
         return 503, {"error": "ANTHROPIC_API_KEY is not set on the server."}
     req = urllib.request.Request(
         ANTHROPIC_URL,
-        data=json.dumps(tutor_payload(body)).encode("utf-8"),
+        data=json.dumps(payload).encode("utf-8"),
         headers={
             "content-type": "application/json",
             "x-api-key": key,
@@ -107,6 +147,20 @@ def call_anthropic(body: dict) -> tuple[int, dict]:
     return 200, parsed
 
 
+def call_ask(body: dict) -> tuple[int, dict]:
+    status, payload = call_anthropic(ask_payload(body))
+    if status != 200:
+        return status, payload
+    reply = ""
+    if isinstance(payload.get("explain"), str) and not payload.get("cards"):
+        reply = payload["explain"]
+    elif isinstance(payload, dict):
+        reply = str(payload.get("reply") or payload.get("explain") or "").strip()
+    if not reply:
+        reply = "What's the smallest first move — not the whole assignment?"
+    return 200, {"reply": reply, "live": True, "model": payload.get("model") or MODEL}
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=ROOT, **kwargs)
@@ -117,7 +171,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         path = self.path.split("?", 1)[0]
-        if path != "/api/tutor":
+        if path not in ("/api/tutor", "/api/ask"):
             self.send_error(404, "Not found")
             return
         length = int(self.headers.get("Content-Length") or 0)
@@ -128,7 +182,10 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
-        status, payload = call_anthropic(body)
+        if path == "/api/ask":
+            status, payload = call_ask(body)
+        else:
+            status, payload = call_anthropic(tutor_payload(body))
         data = json.dumps(payload).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -137,8 +194,12 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(data)
 
     def log_message(self, fmt, *args):
-        if args and str(args[0]).startswith("POST /api/tutor"):
-            print(f"tutor {args[0]}")
+        line = str(args[0]) if args else ""
+        if line.startswith("POST /api/tutor"):
+            print(f"tutor {line}")
+            return
+        if line.startswith("POST /api/ask"):
+            print(f"ask {line}")
             return
         super().log_message(fmt, *args)
 
@@ -147,9 +208,9 @@ def main():
     server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"Bennett Week at http://127.0.0.1:{PORT}/")
     if os.environ.get("ANTHROPIC_API_KEY", "").strip():
-        print(f"Live tutor on POST /api/tutor ({MODEL})")
+        print(f"Live tutor on POST /api/tutor and POST /api/ask ({MODEL})")
     else:
-        print("No ANTHROPIC_API_KEY — the page will use labeled TEST notecards.")
+        print("No ANTHROPIC_API_KEY — the page will use labeled TEST notecards and TEST Ask AI.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

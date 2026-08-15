@@ -129,6 +129,7 @@
     document.getElementById("trophy-count").textContent = Object.keys(Game.getUnlocks()).length;
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    Game.paintStoryChip(roster);
   }
 
   function runUnlocks(extra) {
@@ -839,7 +840,9 @@
           </span>
         </button>`).join("")}</div>`;
     }
-    document.getElementById("sheet-body").innerHTML = banner + tabs + main;
+    const khan = Game.khanStripHtml(work.title || "");
+    const askLink = `<p class="ask-help-link"><a href="ask.html?title=${encodeURIComponent(work.title || "")}">Ask AI — Socratic mentor</a></p>`;
+    document.getElementById("sheet-body").innerHTML = banner + tabs + main + askLink + khan;
     document.getElementById("sheet-body").querySelectorAll("[data-mode]").forEach((b) => {
       b.addEventListener("click", () => loadHelp(work, b.dataset.mode));
     });

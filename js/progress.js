@@ -530,6 +530,7 @@
     document.getElementById("bananas").textContent = `${Game.currency(pack).emoji} ${totals.bananas}`;
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    Game.paintStoryChip(roster);
     document.getElementById("stat-strip").innerHTML =
       renderOpens(opens) + renderActions(totals) + renderFinds(totals);
     document.getElementById("class-list").innerHTML = classes.map((cls, i) => renderClass(cls, i === 0)).join("");

@@ -17,8 +17,8 @@
         <p>Teammates you have earned</p>
       </div>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 27</span>
-        <span>8/15, 11:42 AM</span>
+        <span>Build 28</span>
+        <span>8/15, 11:52 AM</span>
       </div>
     </div>
     <div class="hud-bar progress-hud">
@@ -28,6 +28,7 @@
         <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
         <a class="progress-chip" href="progress.html" aria-label="Progress"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
         <a class="crew-chip on" href="characters.html" aria-current="page"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
+        <a class="story-chip" id="story-chip" href="story.html" hidden>Story</a>
         <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
         <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
@@ -35,11 +36,17 @@
   </header>
 
   <main class="crew-wrap">
-    <p class="crew-lead">Earn streaks. Meet the crew. After three unlocks, a comic story starts.</p>
+    <p class="crew-lead">Earn streaks. Meet the crew. Gear you unlock shows in the loadout. Locked stays a silhouette.</p>
     <div class="char-grid" id="crew-grid"></div>
+    <section class="loadout" id="loadout">
+      <h2>Loadout</h2>
+      <p>Tools, weapons, and abilities you have earned. Locked slots stay blank.</p>
+      <div class="loadout-grid" id="loadout-grid"></div>
+    </section>
     <section class="comic-soon" id="comic-soon" hidden>
-      <h2>Story unlocked — comic coming</h2>
-      <p>You unlocked the first three teammates. The comic-strip storyline is on the way. Nothing to read yet.</p>
+      <h2>Story unlocked</h2>
+      <p>The crew is ready. School work and the comic are the same game.</p>
+      <a class="btn primary" href="story.html">Open the story</a>
     </section>
   </main>
 
@@ -59,8 +66,8 @@
   "comicStartsAfter": 3,
   "characters": [
     {"id": "ace", "name": "Ace", "talent": "The Closer", "tagline": "Last point counts.", "status": "ready", "video": "img/characters/ace.mp4", "poster": "img/characters/ace.jpg"},
-    {"id": "riff", "name": "Riff", "talent": "Daily Reps", "tagline": "Again. Louder.", "status": "coming"},
-    {"id": "slot-3", "name": "", "talent": "", "tagline": "", "status": "coming"}
+    {"id": "riff", "name": "Riff", "talent": "Daily Reps", "tagline": "Again. Louder.", "status": "ready", "video": "img/characters/riff.mp4", "poster": "img/characters/riff.jpg"},
+    {"id": "scorch", "name": "Scorch", "talent": "The Recover", "tagline": "Burned. Not out.", "status": "ready", "video": "img/characters/scorch.mp4", "poster": "img/characters/scorch.jpg"}
   ]
 }
   </script>

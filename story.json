@@ -1,0 +1,80 @@
+{
+  "title": "First Serve",
+  "kicker": "Issue 1",
+  "start": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "image": "crew-hero",
+      "kicker": "Issue 1",
+      "title": "Debris, bananas, first serve",
+      "text": "Ace, Riff, and Scorch freeze the explosion mid-air. Tennis whites. Denim vest. A purple hat with a banana plume. The English 10 board is still due. High learning. High silliness. Last point still counts.",
+      "choices": [
+        { "id": "c-board", "label": "Check the English 10 board", "to": "panel-check" },
+        { "id": "c-ace", "label": "Ace takes the first serve", "to": "ace-serve", "requireAny": [{ "type": "character", "id": "ace" }, { "type": "ability", "id": "first-serve" }] },
+        { "id": "c-tool", "label": "Pull a tool from the loadout", "to": "notebook", "require": { "type": "tool", "id": "notebook-holding" } }
+      ]
+    },
+    {
+      "id": "panel-check",
+      "image": "crew-run",
+      "kicker": "English 10",
+      "title": "The board is a comic page",
+      "text": "Summer strips. Empty boxes. Scorch taps a blank panel with the sax. A picture with no beat is just a poster. The real assignment is still the summer comic — finish the pages you started.",
+      "school": {
+        "workId": "eng-comics",
+        "prompt": "What does a comic panel need besides pictures?",
+        "options": [
+          { "id": "words", "label": "Words, speech, or a story beat", "ok": true },
+          { "id": "novel", "label": "A finished novel in the margin", "ok": false },
+          { "id": "nothing", "label": "Nothing — pictures are enough", "ok": false }
+        ],
+        "correct": "finale",
+        "wrong": "scorch-recover"
+      }
+    },
+    {
+      "id": "scorch-recover",
+      "image": "crew-burst",
+      "kicker": "Scorch",
+      "title": "Burned. Not out.",
+      "text": "Scorch shrugs the tattered jacket back on. Wrong swing. Not shame. You get the ball back. A panel still needs more than drawings — words, a beat, something the reader can hear.",
+      "choices": [
+        { "id": "c-retry", "label": "Try the board again", "to": "panel-check" }
+      ]
+    },
+    {
+      "id": "ace-serve",
+      "image": "crew-run",
+      "kicker": "Ace",
+      "title": "First serve",
+      "text": "Ace steps wide. Green headband. One clean toss. The first serve is a start, not the whole match — same as the names video, same as one unfinished strip. You do not have to finish the novel tonight.",
+      "choices": [
+        { "id": "c-ace-board", "label": "Now face the comic board", "to": "panel-check" },
+        { "id": "c-ace-end", "label": "Hold the rally and walk off", "to": "finale" }
+      ]
+    },
+    {
+      "id": "notebook",
+      "image": "crew-hero",
+      "kicker": "Tool",
+      "title": "Notebook of Holding",
+      "text": "The spiral is bigger on the inside. Index cards. A highlighter. Friday-you will not hunt lockers. Finish what you start — one page, then the next. Not a semester in one sitting.",
+      "choices": [
+        { "id": "c-nb-board", "label": "Carry it to the comic board", "to": "panel-check" },
+        { "id": "c-nb-end", "label": "Pack it and call the rally", "to": "finale" }
+      ]
+    },
+    {
+      "id": "finale",
+      "image": "crew-burst",
+      "kicker": "The crew",
+      "title": "Rally held",
+      "text": "Rock hangs in the air. The city is a silhouette. Ace, Riff, and Scorch are still standing. School work and the story are the same game. Come back when the next strip is due.",
+      "end": true,
+      "choices": [
+        { "id": "c-again", "label": "Read it again from the top", "to": "start" }
+      ]
+    }
+  ]
+}
