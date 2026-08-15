@@ -14,8 +14,79 @@
   ],
   "classes": [
     {
+      "id": "band",
+      "name": "Marching Band",
+      "period": "P1",
+      "time": "7:40–8:25",
+      "room": "Rm 415",
+      "teacher": "Fillingham / Reed",
+      "grade": { "display": "A", "test": true },
+      "items": [
+        {
+          "id": "band-am-0817",
+          "title": "Monday morning rehearsal",
+          "kind": "event"
+        },
+        {
+          "id": "band-pm-0817",
+          "title": "Monday evening Band",
+          "kind": "event"
+        }
+      ]
+    },
+    {
+      "id": "sociology",
+      "name": "Sociology",
+      "period": "P2",
+      "time": "8:30–9:15",
+      "room": "Rm 315",
+      "teacher": "Todd Keach",
+      "items": []
+    },
+    {
+      "id": "web-design",
+      "name": "Web Design I",
+      "period": "P3",
+      "time": "9:20–10:05",
+      "room": "Rm 513",
+      "teacher": "Derek Linn",
+      "items": []
+    },
+    {
+      "id": "academic-intervention",
+      "name": "Academic Intervention",
+      "period": "Seminar",
+      "time": "10:10–10:50",
+      "room": "Rm 501",
+      "teacher": "Kirk Peterson",
+      "items": []
+    },
+    {
+      "id": "chemistry",
+      "name": "Chemistry",
+      "period": "P4",
+      "time": "10:55–12:10",
+      "room": "Rm 113",
+      "teacher": "Justin Pfeiff",
+      "khan": ["hs-chemistry"],
+      "items": []
+    },
+    {
+      "id": "strength",
+      "name": "Strength & Conditioning I",
+      "period": "P5",
+      "time": "12:15–1:00",
+      "room": "Weight room",
+      "teacher": "Rachelle Pauly",
+      "items": []
+    },
+    {
       "id": "english-10",
       "name": "English 10",
+      "period": "P6",
+      "time": "1:05–1:50",
+      "room": "Rm 816",
+      "teacher": "Ann Goodson / Gary Carl",
       "khan": ["ela", "grammar"],
       "grade": { "display": "B+", "detail": "88%", "test": true },
       "items": [
@@ -47,31 +118,13 @@
       ]
     },
     {
-      "id": "band",
-      "name": "Band",
-      "grade": { "display": "A", "test": true },
-      "items": [
-        {
-          "id": "band-am-0817",
-          "title": "Monday morning rehearsal",
-          "kind": "event"
-        },
-        {
-          "id": "band-pm-0817",
-          "title": "Monday evening Band",
-          "kind": "event"
-        }
-      ]
-    },
-    {
-      "id": "chemistry",
-      "name": "Chemistry",
-      "khan": ["hs-chemistry"],
-      "items": []
-    },
-    {
-      "id": "pe",
-      "name": "PE",
+      "id": "geometry",
+      "name": "Geometry",
+      "period": "P7",
+      "time": "1:55–2:40",
+      "room": "Rm 814",
+      "teacher": "Katelyn Foster",
+      "khan": ["geometry-home"],
       "items": []
     }
   ]

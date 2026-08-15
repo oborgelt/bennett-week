@@ -15,9 +15,14 @@
     return String(title || "")
       .replace(/^TEST:\s*/i, "")
       .replace(/^English 10:\s*/i, "")
+      .replace(/^Marching Band:\s*/i, "")
       .replace(/^Band:\s*/i, "")
+      .replace(/^Sociology:\s*/i, "")
+      .replace(/^Web Design I:\s*/i, "")
+      .replace(/^Academic Intervention:\s*/i, "")
       .replace(/^Chemistry:\s*/i, "")
-      .replace(/^PE:\s*/i, "")
+      .replace(/^Strength & Conditioning I:\s*/i, "")
+      .replace(/^Geometry:\s*/i, "")
       .trim();
   }
 
@@ -35,6 +40,10 @@
       map.set(cls.id, {
         id: cls.id,
         name: cls.name,
+        period: cls.period || "",
+        time: cls.time || "",
+        room: cls.room || "",
+        teacher: cls.teacher || "",
         test: !!cls.test,
         khan: cls.khan,
         grade: cls.grade || null,
@@ -337,8 +346,8 @@
         <summary>
           <span class="chev" aria-hidden="true"></span>
           <span class="class-copy">
-            <span class="class-name">${cls.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(cls.name)}</span>
-            <span class="class-actions">${items.length ? Game.esc(actionBits(stats)) : "No assignments yet"}</span>
+            <span class="class-name">${cls.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(Game.classPeriodLine(cls))}</span>
+            <span class="class-actions">${cls.time ? Game.esc(cls.time) + " · " : ""}${items.length ? Game.esc(actionBits(stats)) : "No assignments yet"}</span>
             ${summaryKhan ? `<span class="class-summary-khan">${summaryKhan}</span>` : ""}
           </span>
           ${gradeHtml(cls.grade, cls.test)}

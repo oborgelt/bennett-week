@@ -170,9 +170,12 @@
       const status = Game.classDueLabel(due);
       const links = Game.khanLinksForClass(cls);
       const khan = Game.khanInlineHtml(links);
+      const period = String(cls.period || "").trim();
       return `
         <article class="standing-class" data-class="${Game.esc(cls.id)}">
+          ${period ? `<span class="standing-class-period">${Game.esc(period)}</span>` : ""}
           <button type="button" class="standing-class-name" data-open-class="${Game.esc(cls.id)}">${Game.esc(cls.name)}</button>
+          ${cls.time ? `<span class="standing-class-time">${Game.esc(cls.time)}</span>` : ""}
           <span class="standing-class-status">${Game.esc(status)}</span>
           ${khan ? `<span class="standing-class-khan">${khan}</span>` : ""}
         </article>`;
@@ -189,8 +192,9 @@
     const khan = Game.khanStripHtmlForClass(cls);
     const askHref = `ask.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
     const progressHref = `progress.html?class=${encodeURIComponent(cls.id)}`;
-    openSheet(cls.name, `
-      <p class="standing-class-sheet-status">${Game.esc(Game.classDueLabel(due))}</p>
+    const meta = Game.classMetaLine(cls);
+    openSheet(Game.classPeriodLine(cls), `
+      <p class="standing-class-sheet-status">${Game.esc(Game.classDueLabel(due))}${meta ? " · " + Game.esc(meta) : ""}</p>
       ${khan || `<p class="empty">No Khan course for this class.</p>`}
       <p class="ask-help-link"><a href="${Game.esc(askHref)}">Ask AI — Socratic mentor</a></p>
       <p class="ask-help-link"><a href="${Game.esc(progressHref)}">See Progress for ${Game.esc(cls.name)}</a></p>

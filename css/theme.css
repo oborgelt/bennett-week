@@ -302,13 +302,17 @@ header.week-head {
 }
 
 .standing-classes {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: min(38vh, 280px);
+  overflow: auto;
   margin: 2px 12px 4px;
   padding: 6px 8px 6px;
   border-radius: 12px;
   background: var(--card);
   border: 1px solid rgba(198, 224, 58, 0.18);
   box-shadow: var(--shadow);
+  scrollbar-width: thin;
 }
 
 .standing-classes h2 {
@@ -322,19 +326,29 @@ header.week-head {
 .standing-class-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .standing-class {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 28px;
-  padding: 2px 4px;
+  gap: 6px;
+  min-height: 22px;
+  padding: 1px 4px;
+}
+
+.standing-class-period {
+  flex: 0 0 auto;
+  min-width: 3.4em;
+  color: var(--start);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .standing-class-name {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
@@ -342,10 +356,13 @@ header.week-head {
   color: var(--ink);
   font: inherit;
   font-weight: 750;
-  font-size: 0.84rem;
+  font-size: 0.78rem;
   text-align: left;
   cursor: pointer;
-  min-height: 28px;
+  min-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .standing-class-name:focus-visible {
@@ -354,10 +371,18 @@ header.week-head {
   border-radius: 6px;
 }
 
-.standing-class-status {
-  flex: 1 1 auto;
+.standing-class-time {
+  flex: 0 0 auto;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.standing-class-status {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.68rem;
   font-weight: 650;
   white-space: nowrap;
 }
@@ -373,6 +398,15 @@ header.week-head {
 
 .standing-class-khan .khan-link {
   font-size: 0.72rem;
+}
+
+@media (max-width: 520px) {
+  .standing-class { flex-wrap: wrap; }
+  .standing-class-khan {
+    flex-basis: 100%;
+    justify-content: flex-start;
+    padding-left: 3.4em;
+  }
 }
 
 .standing-class-sheet-status {

@@ -31,6 +31,7 @@
     { id: "ela", label: "Khan Academy — ELA", url: "https://www.khanacademy.org/ela" },
     { id: "grammar", label: "Khan Academy — Grammar", url: "https://www.khanacademy.org/humanities/grammar" },
     { id: "hs-chemistry", label: "Khan Academy — HS Chemistry", url: "https://www.khanacademy.org/science/hs-chemistry" },
+    { id: "geometry-home", label: "Khan Academy — Geometry", url: "https://www.khanacademy.org/math/geometry-home" },
     { id: "science", label: "Khan Academy — Science", url: "https://www.khanacademy.org/science" }
   ];
 
@@ -1675,27 +1676,50 @@
     const t = String(title || "");
     if (/english(\s*10)?/i.test(t) || /\bela\b/i.test(t)) return "english-10";
     if (/\bband\b/i.test(t)) return "band";
+    if (/sociolog/i.test(t)) return "sociology";
+    if (/web\s*design/i.test(t)) return "web-design";
+    if (/academic intervention|\bseminar\b/i.test(t)) return "academic-intervention";
     if (/chem/i.test(t)) return "chemistry";
-    if (/(^|[\s:])pe\b/i.test(t) || /physical education/i.test(t)) return "pe";
+    if (/strength|conditioning/i.test(t)) return "strength";
+    if (/geometry/i.test(t)) return "geometry";
     return "";
   }
 
   function classNameForId(id) {
     const key = String(id || "").toLowerCase();
-    if (key === "english-10") return "English 10";
-    if (key === "band") return "Band";
+    if (key === "band") return "Marching Band";
+    if (key === "sociology") return "Sociology";
+    if (key === "web-design") return "Web Design I";
+    if (key === "academic-intervention") return "Academic Intervention";
     if (key === "chemistry") return "Chemistry";
-    if (key === "pe") return "PE";
+    if (key === "strength") return "Strength & Conditioning I";
+    if (key === "english-10") return "English 10";
+    if (key === "geometry") return "Geometry";
     return "";
+  }
+
+  function classPeriodLine(cls) {
+    const period = String((cls && cls.period) || "").trim();
+    const name = String((cls && cls.name) || classNameForId(cls && cls.id) || "").trim();
+    if (period && name) return period + " " + name;
+    return name || period;
+  }
+
+  function classMetaLine(cls) {
+    const bits = [];
+    if (cls && cls.time) bits.push(cls.time);
+    if (cls && cls.room) bits.push(cls.room);
+    if (cls && cls.teacher) bits.push(cls.teacher);
+    return bits.join(" · ");
   }
 
   function khanIdsForClass(cls) {
     if (!cls) return [];
     if (cls.khan != null) return normalizeKhanIds(cls.khan);
     const id = String(cls.id || "").toLowerCase();
-    const name = String(cls.name || "").toLowerCase();
-    if (id === "english-10" || /english/.test(name)) return ["ela", "grammar"];
-    if (id === "chemistry" || /chem/.test(name)) return ["hs-chemistry"];
+    if (id === "english-10") return ["ela", "grammar"];
+    if (id === "chemistry") return ["hs-chemistry"];
+    if (id === "geometry") return ["geometry-home"];
     return [];
   }
 
@@ -1727,6 +1751,9 @@
     }
     if (/english|ela|comic|names|notebook|grammar|panel/.test(t)) {
       return KHAN.filter((k) => k.id === "ela" || k.id === "grammar");
+    }
+    if (/geometry/.test(t)) {
+      return KHAN.filter((k) => k.id === "geometry-home");
     }
     if (/science|bio/.test(t)) {
       return KHAN.filter((k) => k.id === "science");
@@ -2509,6 +2536,8 @@
     latestBennettQuestion,
     classIdForTitle,
     classNameForId,
+    classPeriodLine,
+    classMetaLine,
     classDueCount,
     classDueLabel,
     khanIdsForClass,
