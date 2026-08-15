@@ -14,6 +14,20 @@ function readJson(rel) {
 
 const library = readJson("library.json");
 const achievements = readJson("achievements.json");
+const refsHtml = fs.readFileSync(path.join(root, "refs.html"), "utf8");
+const adminHtml = fs.readFileSync(path.join(root, "admin.html"), "utf8");
+const charactersHtml = fs.readFileSync(path.join(root, "characters.html"), "utf8");
+
+assert(/Locker refs/.test(refsHtml), "refs.html should be titled Locker refs");
+assert(/Jungle Jam/.test(refsHtml), "refs.html should keep the Jungle Jam product name");
+assert(/Imagine \(Quality \/ Image\)/.test(refsHtml), "refs.html should say to drag into Imagine (Quality / Image)");
+assert(/Do not redesign/.test(refsHtml), "refs.html should say do not redesign");
+["ace", "riff", "scorch", "deuce", "fuzz"].forEach((id) => {
+  assert(refsHtml.includes("img/characters/" + id + ".jpg"), id + " locker still should be on refs.html");
+});
+assert(/1 Ace/.test(refsHtml) && /2 Riff/.test(refsHtml) && /3 Scorch/.test(refsHtml) && /4 Deuce/.test(refsHtml) && /5 Fuzz/.test(refsHtml), "refs.html should label 1 Ace through 5 Fuzz");
+assert(adminHtml.includes("refs.html") && /Locker refs/.test(adminHtml), "Admin should link Locker refs");
+assert(charactersHtml.includes("refs.html") && /Locker refs/.test(charactersHtml), "Characters should link Locker refs");
 
 const kinds = new Set(["image", "video", "audio", "link"]);
 const groups = new Set(["ace", "riff", "scorch", "deuce", "fuzz", "crew", "fun"]);
