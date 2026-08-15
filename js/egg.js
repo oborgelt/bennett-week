@@ -302,6 +302,7 @@
         const input = document.getElementById("buy-input");
         input.value = "";
         input.focus();
+        speak("Dude, you ran out of eggs. Would you like to buy an 80 pack of eggs?");
         return;
       }
       return;
@@ -315,18 +316,28 @@
     }
   }
 
+  function chewALittle(done) {
+    const beats = ["chew", "", "chew", ""];
+    let i = 0;
+    function step() {
+      setFace(beats[i] || "");
+      i += 1;
+      if (i < beats.length) setTimeout(step, 120);
+      else done();
+    }
+    step();
+  }
+
   function eat() {
     busy = true;
-    setFace("chew");
     fed += 1;
     if (bought) afterBuy += 1;
     if (!emptyBowl) fillPile();
     beep("eat");
-    setTimeout(() => {
-      setFace("");
+    chewALittle(() => {
       busy = false;
       if (!won) nextBeat();
-    }, 280);
+    });
   }
 
   function revealWin() {

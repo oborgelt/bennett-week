@@ -1636,7 +1636,7 @@ body.egg-page {
   max-width: 240px;
 }
 
-.eater-svg { width: 100%; height: auto; display: block; }
+.eater-svg { width: 100%; height: auto; display: block; transition: transform 0.08s linear; }
 .eater-body { fill: #fff; stroke: var(--feed-ink); stroke-width: 3; }
 .eater-eye { fill: #fff; stroke: var(--feed-ink); stroke-width: 2.5; }
 .eater-pupil { fill: var(--feed-ink); }
@@ -1654,6 +1654,7 @@ body.egg-page {
 
 .eater.chew .eater-face-open { display: none; }
 .eater.chew .eater-face-chew { display: block; }
+.eater.chew .eater-svg { transform: scale(1.02, 0.96); transform-origin: 50% 80%; }
 .eater.butt .eater-face-open,
 .eater.butt .eater-face-chew { display: none; }
 .eater.butt .eater-butt { display: block; }
