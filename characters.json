@@ -45,6 +45,15 @@
       "status": "ready",
       "video": "img/characters/fuzz.mp4",
       "poster": "img/characters/fuzz.jpg"
+    },
+    {
+      "id": "bennett",
+      "name": "Bennett",
+      "talent": "The Show-Up",
+      "tagline": "I'm in.",
+      "status": "ready",
+      "video": "img/characters/bennett.mp4",
+      "poster": "img/characters/bennett.jpg"
     }
   ]
 }

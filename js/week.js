@@ -67,7 +67,8 @@
     riff: { l: "25%", t: "8%", w: "18%", h: "28%" },
     scorch: { l: "46%", t: "10%", w: "20%", h: "30%" },
     deuce: { l: "30%", t: "46%", w: "13%", h: "40%" },
-    fuzz: { l: "54%", t: "50%", w: "16%", h: "30%" }
+    fuzz: { l: "54%", t: "50%", w: "16%", h: "30%" },
+    bennett: { l: "41%", t: "42%", w: "14%", h: "50%" }
   };
   const PEGBOARD_SLOTS = {
     "angle-finder": { l: "14%", t: "8%", w: "18%", h: "26%" },
@@ -1424,6 +1425,11 @@
     family = preview.family;
     if (preview.ran) {
       Game.toast("Parent preview: all rewards unlocked on this device.");
+    }
+    const signin = Game.maybeAwardSignIn(pack, family);
+    family = signin.family;
+    if (signin.awarded && signin.achievement && !preview.ran) {
+      Game.celebrate(signin.achievement, pack);
     }
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);

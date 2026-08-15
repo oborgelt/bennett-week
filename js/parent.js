@@ -478,7 +478,7 @@
     if (!list) return;
     const chars = roster.characters || [];
     if (!chars.length) {
-      list.innerHTML = `<p class="empty">No character slots yet. Add Ace, Riff, Scorch, Deuce, or Fuzz.</p>`;
+      list.innerHTML = `<p class="empty">No character slots yet. Add Ace, Riff, Scorch, Deuce, Fuzz, or Bennett.</p>`;
       return;
     }
     list.innerHTML = chars.map((ch) => {
@@ -496,7 +496,9 @@
           <h3>${ch.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(label)}</h3>
           <p>${ch.talent ? Game.esc(ch.talent) : "Talent TBD"}</p>
           <p>${ch.tagline ? "“" + Game.esc(ch.tagline) + "”" : "Tag line later"}</p>
-          <p>${unlocked ? "Unlocked for Bennett" : "Locked for Bennett until a streak awards them"}</p>
+          <p>${ch.id === "bennett"
+            ? (unlocked ? "Unlocked by sign-in" : "Unlocks the first time he opens the site")
+            : (unlocked ? "Unlocked for Bennett" : "Locked for Bennett until a streak awards them")}</p>
           <div class="parent-actions">
             <button type="button" class="tiny" data-select-char="${Game.esc(ch.id)}">Library</button>
             <button type="button" class="tiny" data-edit-char="${Game.esc(ch.id)}">Edit</button>

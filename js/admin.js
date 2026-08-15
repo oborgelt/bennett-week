@@ -5,6 +5,7 @@
     { id: "scorch", title: "Scorch" },
     { id: "deuce", title: "Deuce" },
     { id: "fuzz", title: "Fuzz" },
+    { id: "bennett", title: "Bennett" },
     { id: "crew", title: "Crew" },
     { id: "fun", title: "Fun / Sounds" }
   ];
@@ -15,6 +16,7 @@
     scorch: "Locker clip and stills for this teammate.",
     deuce: "Locker clip and stills for this teammate.",
     fuzz: "Locker clip and stills for this teammate.",
+    bennett: "Locker clip and stills for Bennett — his own avatar, not another animal teammate.",
     crew: "Ace + Riff + Scorch together. Comic stills and the adventure clip.",
     fun: "Meme-style unlocks and sounds. Award a streak so Bennett can play them later.",
     gear: "Awardable tools, outfits, and abilities. Also live on each teammate shelf."

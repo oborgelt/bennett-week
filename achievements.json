@@ -79,6 +79,30 @@
       "streak": { "target": 1, "unit": "time" }
     },
     {
+      "id": "signin-bennett",
+      "title": "Signed in",
+      "description": "Opened Jungle Jam.",
+      "how": "Earned the first time this device opens the lobby or Characters. Parents can undo it from the desk.",
+      "incentive": "Unlocks Bennett",
+      "icon": "badge",
+      "reward": 10,
+      "rewardCharacter": "bennett",
+      "rewardUnlock": { "type": "character", "id": "bennett", "label": "Bennett" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-bennett-showup",
+      "title": "Meet Bennett",
+      "description": "Award this to unlock Bennett again. The live path is first sign-in.",
+      "how": "Parents can re-award this from the desk. Loading the site is the usual earn.",
+      "incentive": "Unlocks Bennett",
+      "icon": "badge",
+      "reward": 10,
+      "rewardCharacter": "bennett",
+      "rewardUnlock": { "type": "character", "id": "bennett", "label": "Bennett" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
       "id": "test-ace-closer",
       "title": "Meet Ace",
       "description": "Award this to unlock Ace for Bennett. Loading the site does not auto-unlock.",

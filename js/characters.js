@@ -155,14 +155,21 @@
   }
 
   async function boot() {
+    Game.markOpened();
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
-    const preview = Game.maybeAutoPreviewAll(pack, await Game.loadFamily());
+    let family = await Game.loadFamily();
+    const preview = Game.maybeAutoPreviewAll(pack, family);
+    family = preview.family;
+    const signin = Game.maybeAwardSignIn(pack, family);
+    family = signin.family;
     library = await Game.loadLibrary();
     hud();
     render();
     if (preview.ran) {
       Game.toast("Parent preview: all rewards unlocked on this device.");
+    } else if (signin.awarded && signin.achievement) {
+      Game.celebrate(signin.achievement, pack);
     }
     if (!Game.maybePlayUnlockCelebration(roster)) {
       Game.maybePlayContentCelebration(library);

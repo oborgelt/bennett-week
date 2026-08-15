@@ -22,15 +22,15 @@ assert(/Locker refs/.test(refsHtml), "refs.html should be titled Locker refs");
 assert(/Jungle Jam/.test(refsHtml), "refs.html should keep the Jungle Jam product name");
 assert(/Imagine \(Quality \/ Image\)/.test(refsHtml), "refs.html should say to drag into Imagine (Quality / Image)");
 assert(/Do not redesign/.test(refsHtml), "refs.html should say do not redesign");
-["ace", "riff", "scorch", "deuce", "fuzz"].forEach((id) => {
+["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
   assert(refsHtml.includes("img/characters/" + id + ".jpg"), id + " locker still should be on refs.html");
 });
-assert(/1 Ace/.test(refsHtml) && /2 Riff/.test(refsHtml) && /3 Scorch/.test(refsHtml) && /4 Deuce/.test(refsHtml) && /5 Fuzz/.test(refsHtml), "refs.html should label 1 Ace through 5 Fuzz");
+assert(/1 Ace/.test(refsHtml) && /2 Riff/.test(refsHtml) && /3 Scorch/.test(refsHtml) && /4 Deuce/.test(refsHtml) && /5 Fuzz/.test(refsHtml) && /6 Bennett/.test(refsHtml), "refs.html should label 1 Ace through 6 Bennett");
 assert(adminHtml.includes("refs.html") && /Locker refs/.test(adminHtml), "Admin should link Locker refs");
 assert(charactersHtml.includes("refs.html") && /Locker refs/.test(charactersHtml), "Characters should link Locker refs");
 
 const kinds = new Set(["image", "video", "audio", "link"]);
-const groups = new Set(["ace", "riff", "scorch", "deuce", "fuzz", "crew", "fun"]);
+const groups = new Set(["ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew", "fun"]);
 const banned = /i think you should leave|itysl|ithinkyoushouldquote|hot dog car|were you trying to sex me/i;
 
 assert(Array.isArray(library.items), "library.json needs items");
@@ -46,7 +46,7 @@ library.items.forEach((item) => {
   }
 });
 
-["deuce", "fuzz"].forEach((id) => {
+["deuce", "fuzz", "bennett"].forEach((id) => {
   const clip = library.items.find((item) => item.id === id + "-clip");
   const poster = library.items.find((item) => item.id === id + "-poster");
   assert(clip && clip.kind === "video" && clip.character === id, id + "-clip should be a locker video");
@@ -57,9 +57,17 @@ library.items.forEach((item) => {
 
 const meetDeuce = (achievements.achievements || []).find((a) => a.id === "test-deuce-return");
 const meetFuzz = (achievements.achievements || []).find((a) => a.id === "test-fuzz-unplugged");
+const signedIn = (achievements.achievements || []).find((a) => a.id === "signin-bennett");
+const meetBennett = (achievements.achievements || []).find((a) => a.id === "test-bennett-showup");
 assert(meetDeuce && meetDeuce.rewardUnlock && meetDeuce.rewardUnlock.id === "deuce", "Meet Deuce should unlock character deuce");
 assert(meetFuzz && meetFuzz.rewardUnlock && meetFuzz.rewardUnlock.id === "fuzz", "Meet Fuzz should unlock character fuzz");
 assert(meetDeuce.rewardCharacter === "deuce" && meetFuzz.rewardCharacter === "fuzz", "Meet streaks keep rewardCharacter");
+assert(signedIn && signedIn.rewardUnlock && signedIn.rewardUnlock.id === "bennett", "Signed in should unlock character bennett");
+assert(signedIn.title === "Signed in" && /Opened Jungle Jam/i.test(signedIn.description || ""), "Signed in copy");
+assert(signedIn.incentive === "Unlocks Bennett", "Signed in incentive");
+assert(meetBennett && meetBennett.rewardUnlock && meetBennett.rewardUnlock.id === "bennett", "Meet Bennett TEST should re-award bennett");
+assert(fs.existsSync(path.join(root, "img/characters/bennett.jpg")), "bennett locker still should already be on disk");
+assert(fs.existsSync(path.join(root, "img/characters/bennett.mp4")), "bennett locker clip should already be on disk");
 
 const gearSeed = [
   { id: "angle-finder", label: "Angle Finder", character: "deuce", slot: "tool", ach: "test-angle-finder", type: "tool" },
@@ -304,9 +312,14 @@ assert(dirty.items[0].device);
 const roster = Game.defaultCharacters();
 assert.strictEqual(roster.comicStartsAfter, 3, "comicStartsAfter stays 3");
 const rosterIds = (roster.characters || []).map((ch) => String(ch.id));
-assert.strictEqual(rosterIds.join(","), "ace,riff,scorch,deuce,fuzz", "roster appends Deuce and Fuzz after the original trio");
+assert.strictEqual(rosterIds.join(","), "ace,riff,scorch,deuce,fuzz,bennett", "roster appends Bennett after the five teammates");
 assert(Game.LIBRARY_GROUPS.indexOf("deuce") >= 0 && Game.LIBRARY_GROUPS.indexOf("fuzz") >= 0, "library groups include Deuce and Fuzz shelves");
+assert(Game.LIBRARY_GROUPS.indexOf("bennett") > Game.LIBRARY_GROUPS.indexOf("fuzz"), "Bennett shelf sits after the animal teammates");
 assert(Game.LIBRARY_GROUPS.indexOf("fun") > Game.LIBRARY_GROUPS.indexOf("fuzz"), "Deuce/Fuzz shelves sit with characters, not Fun");
+assert.strictEqual((Game.TEAMMATE_IDS || []).join(","), "ace,riff,scorch,deuce,fuzz", "comic unlock still counts the five teammates");
+const bennett = (roster.characters || []).find((ch) => ch.id === "bennett");
+assert(bennett && bennett.talent === "The Show-Up" && bennett.tagline === "I'm in.", "Bennett locker copy stays locked");
+assert(bennett.video === "img/characters/bennett.mp4" && bennett.poster === "img/characters/bennett.jpg", "Bennett uses the committed locker media");
 assert(Game.GEAR_SLOTS && Game.GEAR_SLOTS.indexOf("outfit") >= 0 && Game.GEAR_SLOTS.indexOf("tool") >= 0, "gear slots include outfit");
 const seededLib = Game.normalizeLibrary(library);
 gearSeed.forEach((row) => {
@@ -377,13 +390,18 @@ assert(/Unlock all rewards \(preview\)/.test(parentHtml), "parent desk should of
 assert(/Lock them back/.test(parentHtml), "parent desk should offer Lock them back");
 assert(/preview-unlock-all/.test(parentHtml) && /preview-lock-back/.test(parentHtml), "preview buttons need ids");
 const weekJs = fs.readFileSync(path.join(root, "js/week.js"), "utf8");
+const crewJs = fs.readFileSync(path.join(root, "js/characters.js"), "utf8");
+const parentJs = fs.readFileSync(path.join(root, "js/parent.js"), "utf8");
+assert(/bennett:\s*\{/.test(weekJs), "trophy window slots should include bennett");
+assert(crewJs.includes("markOpened") && crewJs.includes("maybeAwardSignIn"), "Characters page should sign in and award Bennett");
+assert(weekJs.includes("maybeAwardSignIn"), "lobby should award Bennett on first open");
+assert(/Unlocked by sign-in/.test(parentJs) && /Unlocks the first time he opens the site/.test(parentJs), "parent desk should label Bennett as unlocked-by-sign-in");
 const weekHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
 ["trophy-room.jpg", "trophy-pedestal.jpg", "trophy-cubbies.jpg", "trophy-pegboard.jpg", "trophy-lockers.jpg", "trophy-window.jpg"].forEach((name) => {
   const pathName = "img/library/" + name;
   assert(weekJs.includes(pathName) || weekHtml.includes(pathName) || themeCss.includes(pathName), "trophy room should use " + name);
 });
-const crewJs = fs.readFileSync(path.join(root, "js/characters.js"), "utf8");
 assert(crewJs.includes("gearThumbHtml") && crewJs.includes("alreadyUnlockedGear"), "loadout should use real gear stills when unlocked");
 
 ["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
@@ -392,17 +410,50 @@ const previewFamily = Game.emptyFamily();
 const auto = Game.maybeAutoPreviewAll(pack, previewFamily);
 assert(auto.ran, "first load with no crew/gear should auto-preview once");
 assert(Game.alreadyUnlockedCharacter("ace") && Game.alreadyUnlockedCharacter("fuzz"), "preview should unlock the crew");
+assert(Game.alreadyUnlockedCharacter("bennett") && Game.alreadyUnlocked("signin-bennett"), "preview / Unlock all should include Signed in → Bennett");
 assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("unplugged-strap") && Game.alreadyUnlockedGear("first-serve"), "preview should unlock gear");
 assert(Game.alreadyUnlocked("straight-as-3w") && Game.alreadyUnlocked("hidden-banana"), "preview should award the other streaks");
 assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "auto-preview should set bw-preview-all");
 const locked = Game.revokeAllPreview(pack, auto.family);
 assert(!Game.alreadyUnlockedCharacter("ace") && !Game.alreadyUnlockedGear("angle-finder"), "Lock them back should revoke preview awards");
+assert(!Game.alreadyUnlockedCharacter("bennett") && !Game.alreadyUnlocked("signin-bennett"), "Lock them back should revoke Bennett too");
 assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "lock-back must keep the flag so auto-preview does not re-fire");
 const again = Game.maybeAutoPreviewAll(pack, locked.family);
 assert(!again.ran, "auto-preview must not run again after lock-back");
 assert(!Game.alreadyUnlockedCharacter("ace"), "crew stays locked until a parent unlocks preview again");
 const manual = Game.awardAllPreview(pack, locked.family);
 assert(manual.awarded > 0 && Game.alreadyUnlockedCharacter("deuce") && Game.alreadyUnlockedGear("daily-pick"), "parent Unlock all should award through awardStreak again");
+assert(Game.alreadyUnlockedCharacter("bennett"), "Unlock all should re-award Bennett");
+
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+localStorage.removeItem("bw-family");
+let signFamily = Game.emptyFamily();
+const signin = Game.maybeAwardSignIn(pack, signFamily);
+assert(signin.awarded && signin.freshCharacter, "first sign-in should award Signed in and unlock Bennett");
+assert(Game.alreadyUnlockedCharacter("bennett") && Game.alreadyUnlocked("signin-bennett"), "sign-in unlock should persist");
+signFamily = signin.family;
+const signinAgain = Game.maybeAwardSignIn(pack, signFamily);
+assert(!signinAgain.awarded && !signinAgain.freshCharacter, "later opens should not re-award Bennett");
+Game.markCharacterUnlocked("ace");
+Game.markCharacterUnlocked("riff");
+assert(!Game.comicUnlocked(roster), "Bennett plus two teammates should not open Story");
+Game.markCharacterUnlocked("scorch");
+assert(Game.comicUnlocked(roster), "three teammates still open Story even with Bennett on the roster");
+["ace", "riff", "scorch", "deuce", "fuzz"].forEach((id) => Game.revokeCharacterUnlock(id));
+assert(!Game.comicUnlocked(roster), "Bennett alone does not count toward comicStartsAfter");
+const undone = Game.revokeAchievement(pack, signFamily, "signin-bennett");
+assert(undone.revokedCharacter && !Game.alreadyUnlockedCharacter("bennett"), "parent undo should lock Bennett");
+const afterUndo = Game.maybeAwardSignIn(pack, undone.family);
+assert(!afterUndo.awarded && !Game.alreadyUnlockedCharacter("bennett"), "sign-in must not re-award after a parent undo");
+const reaward = Game.awardStreak(pack, undone.family, "test-bennett-showup");
+assert(reaward.freshCharacter && Game.alreadyUnlockedCharacter("bennett"), "Meet Bennett TEST can re-award after undo");
+
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+localStorage.removeItem("bw-family");
+Game.markCharacterUnlocked("bennett");
+const previewAfterBennett = Game.maybeAutoPreviewAll(pack, Game.emptyFamily());
+assert(previewAfterBennett.ran, "Bennett-only unlock should not block auto-preview of the crew");
+assert(Game.alreadyUnlockedCharacter("ace"), "auto-preview still unlocks teammates after Bennett signed in");
 
 (async () => {
   const beep = new File([new Uint8Array([82, 73, 70, 70, 0, 0, 0, 0])], "TEST-beep.wav", { type: "audio/wav" });
