@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1a2230">
+  <title>Bennett · This week</title>
+  <style>
+    :root {
+      --bg: #1a2230;
+      --card: #243044;
+      --ink: #f4efe6;
+      --muted: #b7c0ce;
+      --line: #33415a;
+      --mom: #e8a0b0;
+      --dad: #8ec5ff;
+      --due: #f0c36e;
+      --start: #9ad7b5;
+      --note: #c9b8e8;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    body { display: flex; flex-direction: column; }
+    header {
+      padding: 16px 16px 8px;
+      padding-top: max(16px, env(safe-area-inset-top));
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+    }
+    header p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .dots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 8px 16px 4px;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #4a5870;
+      border: 0;
+      padding: 0;
+    }
+    .dot.on { background: var(--ink); width: 18px; border-radius: 8px; }
+    .track {
+      flex: 1;
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .track::-webkit-scrollbar { display: none; }
+    .day {
+      min-width: 100%;
+      scroll-snap-align: start;
+      padding: 8px 16px 24px;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 18px 16px 14px;
+      min-height: calc(100vh - 140px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
+    }
+    .when {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .when h2 { margin: 0; font-size: 1.55rem; line-height: 1.1; }
+    .when .date { color: var(--muted); font-size: 0.9rem; }
+    .who {
+      display: inline-block;
+      margin: 10px 0 16px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 650;
+      letter-spacing: .02em;
+    }
+    .who.Mom { background: rgba(232,160,176,.18); color: var(--mom); }
+    .who.Dad { background: rgba(142,197,255,.16); color: var(--dad); }
+    .who.Split { background: rgba(240,195,110,.14); color: var(--due); }
+    section { margin: 0 0 16px; }
+    section h3 {
+      margin: 0 0 8px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .item {
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+    .item:first-of-type { border-top: 0; padding-top: 0; }
+    .item .title { font-weight: 600; }
+    .item .meta { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+    .empty { color: #7f8aa0; font-size: 0.92rem; }
+    .tag { color: var(--due); }
+    section.start .title { color: var(--start); }
+    section.note .title { color: var(--note); }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 16px 12px;
+    }
+    nav button {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+    }
+    nav button:disabled { opacity: .35; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Bennett · This week</h1>
+    <p>Today plus the next 6 days · America/Chicago</p>
+  </header>
+  <div class="dots" id="dots"></div>
+  <div class="track" id="track"></div>
+  <nav>
+    <button id="prev" type="button">← Prev</button>
+    <button id="next" type="button">Next →</button>
+  </nav>
+  <script id="seed" type="application/json">
+{
+  "timezone": "America/Chicago",
+  "as_of": "2026-08-14",
+  "parenting": [
+    {"who": "Mom", "start": "2026-08-14T00:00:00", "end": "2026-08-16T18:00:00"},
+    {"who": "Dad", "start": "2026-08-16T18:00:00", "end": "2026-08-20T16:30:00"},
+    {"who": "Mom", "start": "2026-08-20T16:30:00", "end": "2026-08-22T00:00:00"}
+  ],
+  "events": [
+    {
+      "id": "band-am-0817",
+      "title": "Band rehearsal",
+      "start": "2026-08-17T06:50:00",
+      "kind": "calendar",
+      "note": "Dad's time"
+    },
+    {
+      "id": "band-pm-0817",
+      "title": "Band",
+      "start": "2026-08-17T18:30:00",
+      "end": "2026-08-17T20:30:00",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "forms-0820",
+      "title": "Forms & Fees Night",
+      "start": "2026-08-20T17:30:00",
+      "end": "2026-08-20T19:00:00",
+      "kind": "calendar",
+      "place": "Band/Orchestra rooms",
+      "note": "After 4:30pm handoff to Mom"
+    }
+  ],
+  "work": [
+    {
+      "id": "eng-names",
+      "title": "English 10: Help me learn your names!",
+      "due": "2026-08-17T23:59:00",
+      "note": "Canvas video: full name twice + something you are awesome at. 5 points."
+    },
+    {
+      "id": "eng-comics",
+      "title": "English 10: Finish summer comic strips",
+      "due": "2026-08-18T13:05:00",
+      "note": "Started 8/17 in class. From Daily Agendas sheet.",
+      "suggest_from": "2026-08-14"
+    },
+    {
+      "id": "eng-notebook",
+      "title": "English 10: Bring spiral notebook",
+      "due": "2026-08-21T13:05:00",
+      "note": "Spiral or composition notebook. Also highlighter and 100 index cards.",
+      "suggest_from": "2026-08-14"
+    }
+  ],
+  "notes": [
+    {
+      "date": "2026-08-14",
+      "title": "Chemistry absence",
+      "text": "Historical note from 8/14. Unresolved, not an assignment."
+    }
+  ]
+}
+  </script>
+  <script>
+    const TZ = "America/Chicago";
+    const seedEl = document.getElementById("seed");
+
+    function parseLocal(iso) {
+      const [d, t] = iso.split("T");
+      const [y, m, day] = d.split("-").map(Number);
+      const [hh, mm] = (t || "00:00:00").split(":").map(Number);
+      return new Date(y, m - 1, day, hh || 0, mm || 0, 0);
+    }
+    function ymd(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+    function todayInChicago() {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit"
+      }).formatToParts(new Date());
+      const get = t => parts.find(p => p.type === t).value;
+      return new Date(Number(get("year")), Number(get("month")) - 1, Number(get("day")));
+    }
+    function fmtTime(iso) {
+      if (!iso || !iso.includes("T")) return "";
+      const d = parseLocal(iso);
+      return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    }
+    function fmtRange(start, end) {
+      const a = fmtTime(start);
+      const b = end ? fmtTime(end) : "";
+      if (a && b) return `${a} – ${b}`;
+      return a || "All day";
+    }
+    function dayLabel(d) {
+      return d.toLocaleDateString("en-US", { weekday: "long" });
+    }
+    function dateLabel(d) {
+      return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    }
+    function whoOn(data, d) {
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59);
+      const hits = (data.parenting || []).filter(p => {
+        const a = parseLocal(p.start);
+        const b = parseLocal(p.end);
+        return a < end && b > start;
+      });
+      if (!hits.length) return { label: "Who: not set", cls: "Split" };
+      if (hits.length === 1 && parseLocal(hits[0].start) <= start && parseLocal(hits[0].end) >= end) {
+        return { label: "With " + hits[0].who, cls: hits[0].who };
+      }
+      const bits = hits.map(p => {
+        const a = parseLocal(p.start);
+        const b = parseLocal(p.end);
+        const from = a > start ? fmtTime(p.start) : "";
+        const to = b < end ? fmtTime(p.end) : "";
+        if (from && to) return `${p.who} ${from}–${to}`;
+        if (to) return `${p.who} until ${to}`;
+        if (from) return `${p.who} from ${from}`;
+        return p.who;
+      });
+      return { label: bits.join(" · "), cls: "Split" };
+    }
+    function sameDay(iso, d) {
+      return (iso || "").slice(0, 10) === ymd(d);
+    }
+    function items(arr, html) {
+      if (!arr.length) return `<p class="empty">None</p>`;
+      return arr.map(html).join("");
+    }
+
+    function render(data) {
+      const start = todayInChicago();
+      const days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        return d;
+      });
+      const track = document.getElementById("track");
+      const dots = document.getElementById("dots");
+      track.innerHTML = "";
+      dots.innerHTML = "";
+
+      days.forEach((d, i) => {
+        const events = (data.events || []).filter(e => sameDay(e.start, d));
+        const due = (data.work || []).filter(w => sameDay(w.due, d));
+        const startThis = (data.work || []).filter(w => {
+          if (sameDay(w.due, d)) return false;
+          const dueD = parseLocal(w.due);
+          const from = w.suggest_from ? parseLocal(w.suggest_from + "T00:00:00") : new Date(dueD.getTime() - 3 * 86400000);
+          return d >= from && d < new Date(dueD.getFullYear(), dueD.getMonth(), dueD.getDate());
+        });
+        const notes = (data.notes || []).filter(n => n.date === ymd(d));
+        const who = whoOn(data, d);
+
+        const card = document.createElement("article");
+        card.className = "day";
+        card.innerHTML = `
+          <div class="card">
+            <div class="when">
+              <h2>${i === 0 ? "Today" : dayLabel(d)}</h2>
+              <div class="date">${dateLabel(d)}</div>
+            </div>
+            <div class="who ${who.cls}">${who.label}</div>
+            <section>
+              <h3>On the calendar</h3>
+              ${items(events, e => `
+                <div class="item">
+                  <div class="title">${e.title}</div>
+                  <div class="meta">${fmtRange(e.start, e.end)}${e.place ? " · " + e.place : ""}${e.note ? " · " + e.note : ""}</div>
+                </div>`)}
+            </section>
+            <section>
+              <h3>Due today</h3>
+              ${items(due, w => `
+                <div class="item">
+                  <div class="title"><span class="tag">Due</span> ${w.title}</div>
+                  <div class="meta">${fmtTime(w.due)}${w.note ? " · " + w.note : ""}</div>
+                </div>`)}
+            </section>
+            <section class="start">
+              <h3>Start this</h3>
+              ${items(startThis, w => `
+                <div class="item">
+                  <div class="title">${w.title}</div>
+                  <div class="meta">Due ${dateLabel(parseLocal(w.due))} · ${w.note || "Get ahead"}</div>
+                </div>`)}
+            </section>
+            ${notes.length ? `
+            <section class="note">
+              <h3>Note</h3>
+              ${items(notes, n => `
+                <div class="item">
+                  <div class="title">${n.title}</div>
+                  <div class="meta">${n.text || ""}</div>
+                </div>`)}
+            </section>` : ""}
+          </div>`;
+        track.appendChild(card);
+
+        const b = document.createElement("button");
+        b.className = "dot" + (i === 0 ? " on" : "");
+        b.type = "button";
+        b.setAttribute("aria-label", dayLabel(d));
+        b.addEventListener("click", () => track.scrollTo({ left: card.offsetLeft, behavior: "smooth" }));
+        dots.appendChild(b);
+      });
+
+      const prev = document.getElementById("prev");
+      const next = document.getElementById("next");
+      function index() {
+        return Math.round(track.scrollLeft / track.clientWidth);
+      }
+      function go(i) {
+        const cards = track.querySelectorAll(".day");
+        const t = cards[Math.max(0, Math.min(cards.length - 1, i))];
+        if (t) track.scrollTo({ left: t.offsetLeft, behavior: "smooth" });
+      }
+      function sync() {
+        const i = index();
+        dots.querySelectorAll(".dot").forEach((el, n) => el.classList.toggle("on", n === i));
+        prev.disabled = i <= 0;
+        next.disabled = i >= 6;
+      }
+      prev.onclick = () => go(index() - 1);
+      next.onclick = () => go(index() + 1);
+      track.addEventListener("scroll", () => requestAnimationFrame(sync), { passive: true });
+      sync();
+    }
+
+    async function load() {
+      let data = JSON.parse(seedEl.textContent);
+      try {
+        const res = await fetch("week.json", { cache: "no-store" });
+        if (res.ok) data = await res.json();
+      } catch (_) {}
+      render(data);
+    }
+    load();
+  </script>
+</body>
+</html>
