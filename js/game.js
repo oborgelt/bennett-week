@@ -393,8 +393,16 @@
 
   function entryButtons(editToken, delToken) {
     return `
-      <button type="button" class="mini" data-edit="${esc(editToken)}">Edit</button>
-      <button type="button" class="mini danger" data-del="${esc(delToken)}">Delete</button>`;
+      <button type="button" class="tiny" data-edit="${esc(editToken)}">Edit</button>
+      <button type="button" class="tiny danger" data-del="${esc(delToken)}">Delete</button>`;
+  }
+
+  function hasEggGame(pack) {
+    return (pack && pack.achievements || []).some((ach) => ach.unlocksGame === "egg" && alreadyUnlocked(ach.id));
+  }
+
+  function gameHref(ach) {
+    return ach && ach.unlocksGame === "egg" ? "egg.html" : "";
   }
 
   function toLocalInput(iso) {
@@ -705,7 +713,8 @@
     const cur = currency(pack);
     const prize = ach.incentive ? " · " + ach.incentive : "";
     const extra = ach.reward ? " · +" + ach.reward + " " + cur.name : "";
-    toast((ach.title || "Achievement") + " unlocked!" + prize + extra);
+    const game = ach.unlocksGame === "egg" ? " · Egg game unlocked" : "";
+    toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game);
     confetti();
   }
 
@@ -868,6 +877,8 @@
     deleteAnswer,
     confirmDelete,
     entryButtons,
+    hasEggGame,
+    gameHref,
     toLocalInput,
     fromLocalInput,
     getTrophyOrder,

@@ -11,6 +11,8 @@
     const el = document.getElementById("bananas");
     if (!el) return;
     el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
+    const eggChip = document.getElementById("egg-chip");
+    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
   }
 
   function persistAch() {
@@ -95,8 +97,8 @@
         </label>
         <div class="parent-actions">
           <button type="button" class="btn" data-send-reply="${Game.esc(n.id)}">Send note</button>
-          <button type="button" class="btn" data-edit-note="${Game.esc(n.id)}">Edit</button>
-          <button type="button" class="btn danger" data-del-note="${Game.esc(n.id)}">Delete</button>
+          <button type="button" class="tiny" data-edit-note="${Game.esc(n.id)}">Edit</button>
+          <button type="button" class="tiny danger" data-del-note="${Game.esc(n.id)}">Delete</button>
         </div>
       </article>
     `).join("");
@@ -106,8 +108,8 @@
         <p>${Game.esc(n.text)}</p>
         <p>${Game.esc(Game.fmtStamp(n.at))}</p>
         <div class="parent-actions">
-          <button type="button" class="btn" data-edit-note="${Game.esc(n.id)}">Edit</button>
-          <button type="button" class="btn danger" data-del-note="${Game.esc(n.id)}">Delete</button>
+          <button type="button" class="tiny" data-edit-note="${Game.esc(n.id)}">Edit</button>
+          <button type="button" class="tiny danger" data-del-note="${Game.esc(n.id)}">Delete</button>
         </div>
       </article>
     `).join("");
@@ -118,8 +120,8 @@
         <p>${Game.esc(a.text)}</p>
         <p>${Game.esc(Game.fmtStamp(a.at))}</p>
         <div class="parent-actions">
-          <button type="button" class="btn" data-edit-answer="${Game.esc(a.id)}">Edit</button>
-          <button type="button" class="btn danger" data-del-answer="${Game.esc(a.id)}">Delete</button>
+          <button type="button" class="tiny" data-edit-answer="${Game.esc(a.id)}">Edit</button>
+          <button type="button" class="tiny danger" data-del-answer="${Game.esc(a.id)}">Delete</button>
         </div>
       </article>
     `).join("");
@@ -213,8 +215,8 @@
       <article class="ach-card">
         <h3>${p.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(p.text)}</h3>
         <div class="parent-actions">
-          <button type="button" class="btn" data-edit-prompt="${Game.esc(p.id)}">Edit</button>
-          <button type="button" class="btn danger" data-del-prompt="${Game.esc(p.id)}">Delete</button>
+          <button type="button" class="tiny" data-edit-prompt="${Game.esc(p.id)}">Edit</button>
+          <button type="button" class="tiny danger" data-del-prompt="${Game.esc(p.id)}">Delete</button>
         </div>
       </article>
     `).join("");
@@ -271,10 +273,10 @@
           <div class="parent-actions">
             <button type="button" class="btn" data-count="${Game.esc(ach.id)}">Count this week</button>
             ${st.awarded
-              ? `<button type="button" class="btn" data-revoke="${Game.esc(ach.id)}">Undo award</button>`
+              ? `<button type="button" class="tiny" data-revoke="${Game.esc(ach.id)}">Undo award</button>`
               : `<button type="button" class="btn primary" data-award="${Game.esc(ach.id)}">Award</button>`}
-            <button type="button" class="btn" data-edit="${Game.esc(ach.id)}">Edit</button>
-            <button type="button" class="btn danger" data-del="${Game.esc(ach.id)}">Delete</button>
+            <button type="button" class="tiny" data-edit="${Game.esc(ach.id)}">Edit</button>
+            <button type="button" class="tiny danger" data-del="${Game.esc(ach.id)}">Delete</button>
           </div>
         </article>`;
     }).join("");

@@ -23,6 +23,7 @@
         <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
         <a class="progress-chip" href="progress.html" aria-label="Progress"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
         <a class="parent-chip on" href="parent.html" aria-current="page"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
     </div>
   </header>
@@ -157,7 +158,8 @@
     {"id": "flash-cards-first", "title": "Flash-card first test", "description": "Used flash cards for his first test.", "how": "Parents award when he actually used the cards.", "incentive": "TEST — pick a snack", "icon": "guitar", "test": true, "reward": 10, "streak": {"target": 1, "unit": "time"}},
     {"id": "started-week-5", "title": "Five-day start", "description": "Started the week 5 school days in a row.", "how": "Parents count a school day he opened the lobby and started something.", "incentive": "TEST — skip one chore", "icon": "clarinet", "test": true, "reward": 15, "streak": {"target": 5, "unit": "school day"}},
     {"id": "asked-before-due", "title": "Asked before it was due", "description": "Asked a question before a due date.", "how": "Parents award help-seeking, not a finished worksheet.", "incentive": "TEST — high five", "icon": "banana", "test": true, "reward": 10, "streak": {"target": 1, "unit": "time"}},
-    {"id": "hidden-banana", "title": "Hidden banana", "description": "You found a silly secret in the jungle.", "how": "Easter egg. Tap the banner band five times.", "incentive": "TEST — a goofy dance from a parent", "icon": "banana", "test": true, "secret": true, "reward": 25, "unlock": {"type": "easter_egg", "egg": "banner-monkey"}}
+    {"id": "hidden-banana", "title": "Hidden banana", "description": "You found a silly secret in the jungle.", "how": "Easter egg. Tap the banner band five times.", "incentive": "TEST — a goofy dance from a parent", "icon": "banana", "test": true, "secret": true, "reward": 25, "unlocksGame": "egg", "unlock": {"type": "easter_egg", "egg": "banner-monkey"}},
+    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "description": "Unlocks the office egg game — the dumb one where the eggs are never the right number.", "how": "Parents award this to unlock the game.", "incentive": "Unlocks the egg game", "icon": "banana", "test": true, "reward": 15, "unlocksGame": "egg", "streak": {"target": 1, "unit": "time"}}
   ]
 }
   </script>
