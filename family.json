@@ -48,5 +48,13 @@
       }
     ]
   },
-  "streaks": {}
+  "streaks": {},
+  "story": {
+    "ingredients": [
+      { "id": "si-finish", "text": "finish what you start", "test": true },
+      { "id": "si-ask", "text": "ask before you're sunk", "test": true }
+    ],
+    "includeNote": "",
+    "attachments": {}
+  }
 }

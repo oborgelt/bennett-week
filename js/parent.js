@@ -4,10 +4,13 @@
   let pack = null;
   let family = null;
   let roster = null;
+  let library = null;
   let baseWeek = null;
   let week = null;
   let editingId = null;
   let editingCharId = null;
+  let selectedCharId = null;
+  let selectedLibId = null;
 
   function hud() {
     const el = document.getElementById("bananas");
@@ -38,9 +41,12 @@
     Game.saveFamily(family);
     week = Game.applyWeekOverlay(baseWeek, family);
     renderInbox();
+    renderAskInbox();
     renderPool();
+    renderIngredients();
     renderAchievements();
     renderCharacters();
+    renderCharLibrary();
     fillTargets();
     hud();
   }
@@ -64,9 +70,42 @@
   }
 
   function rewardLabel(ach) {
-    const id = ach && ach.rewardCharacter;
-    if (!id) return "";
-    return Game.characterLabel(findChar(id), id);
+    const unlock = Game.rewardUnlockOf(ach);
+    if (!unlock) return "";
+    if (unlock.type === "character") {
+      return "Character · " + Game.characterLabel(findChar(unlock.id), unlock.id);
+    }
+    return (unlock.type || "unlock") + " · " + (unlock.label || unlock.id);
+  }
+
+  function fillRewardMedia(characterId, selected) {
+    const sel = document.getElementById("reward-media");
+    if (!sel) return;
+    const items = characterId
+      ? Game.libraryFor(library, characterId, false)
+      : [];
+    sel.innerHTML = [`<option value="">None</option>`].concat(
+      items.map((item) => `<option value="${Game.esc(item.id)}">${Game.esc(item.label)}</option>`)
+    ).join("");
+    sel.value = selected || "";
+  }
+
+  function fillAttachStreaks() {
+    const sel = document.getElementById("attach-streak");
+    if (!sel) return;
+    sel.innerHTML = [`<option value="">None</option>`].concat(
+      (pack.achievements || []).map((ach) => `<option value="${Game.esc(ach.id)}">${Game.esc(ach.title || ach.id)}</option>`)
+    ).join("");
+  }
+
+  function syncRewardTypeUi() {
+    const type = (document.getElementById("reward-type") || {}).value || "";
+    const charSel = document.getElementById("reward-character");
+    const gearRow = document.getElementById("reward-gear-row");
+    if (charSel) charSel.closest("label").hidden = type !== "character";
+    if (gearRow) gearRow.hidden = type === "" || type === "character";
+    const charId = type === "character" ? (charSel && charSel.value) : "";
+    fillRewardMedia(charId, document.getElementById("reward-media").value);
   }
 
   function fillTargets() {
@@ -305,8 +344,8 @@
         <article class="ach-card">
           <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title || "Untitled")}</h3>
           <p>${Game.esc(ach.description || "")}</p>
-          <p>Incentive: ${Game.esc(ach.incentive || "—")} · ${ach.reward || 0} ${cur.name}</p>
-          <p>Reward character: ${ach.rewardCharacter ? Game.esc(rewardLabel(ach)) : "None"}</p>
+          <p>Incentive: ${Game.esc(ach.incentive || "—")} · ${Game.bananasOf(ach) || 0} ${cur.name}</p>
+          <p>Reward: ${Game.rewardUnlockOf(ach) ? Game.esc(rewardLabel(ach)) : "None"}${ach.rewardMedia ? " · media attached" : ""}</p>
           <p>Streak: ${st.count} / ${target} ${Game.esc(unit)}${st.awarded ? " · awarded" : ""}</p>
           <div class="parent-actions">
             <button type="button" class="btn" data-count="${Game.esc(ach.id)}">Count this week</button>
@@ -346,6 +385,9 @@
           const ch = findChar(result.grantedCharacter);
           Game.toast((ch ? Game.characterLabel(ch) : "Character") + " unlocked for Bennett.");
         }
+        if (result.freshGear && result.grantedUnlock) {
+          Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for the story.");
+        }
       } else {
         Game.toast("Already awarded on this device.");
       }
@@ -376,23 +418,37 @@
           ? `<img class="char-preview" src="${Game.esc(ch.poster)}" alt="">`
           : `<div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>${coming ? "Coming — empty slot" : "No clip yet"}</p></div>`;
       return `
-        <article class="char-card ${coming ? "coming" : "ready"}">
+        <article class="char-card ${coming ? "coming" : "ready"}${selectedCharId === ch.id ? " selected" : ""}" data-select-char="${Game.esc(ch.id)}">
           <div class="char-media">${media}</div>
           <h3>${ch.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(label)}</h3>
           <p>${ch.talent ? Game.esc(ch.talent) : "Talent TBD"}</p>
           <p>${ch.tagline ? "“" + Game.esc(ch.tagline) + "”" : "Tag line later"}</p>
           <p>${unlocked ? "Unlocked for Bennett" : "Locked for Bennett until a streak awards them"}</p>
           <div class="parent-actions">
+            <button type="button" class="tiny" data-select-char="${Game.esc(ch.id)}">Library</button>
             <button type="button" class="tiny" data-edit-char="${Game.esc(ch.id)}">Edit</button>
             <button type="button" class="tiny danger" data-del-char="${Game.esc(ch.id)}">Delete</button>
           </div>
         </article>`;
     }).join("");
+    list.querySelectorAll("[data-select-char]").forEach((b) => {
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectedCharId = b.dataset.selectChar;
+        selectedLibId = null;
+        renderCharacters();
+        renderCharLibrary();
+      });
+    });
     list.querySelectorAll("[data-edit-char]").forEach((b) => {
-      b.addEventListener("click", () => openCharForm(b.dataset.editChar));
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openCharForm(b.dataset.editChar);
+      });
     });
     list.querySelectorAll("[data-del-char]").forEach((b) => {
-      b.addEventListener("click", () => {
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
         if (!confirm("Delete this character slot?")) return;
         roster.characters = roster.characters.filter((c) => c.id !== b.dataset.delChar);
         persistChars();
@@ -400,7 +456,101 @@
       });
     });
     const comic = document.getElementById("parent-comic-soon");
-    if (comic) comic.hidden = !Game.comicUnlocked(roster);
+    const copy = document.getElementById("parent-story-copy");
+    if (comic) comic.hidden = false;
+    if (copy) {
+      copy.textContent = Game.comicUnlocked(roster)
+        ? "Bennett earned three teammates. Story is on his HUD now. You can still preview."
+        : "Parents can always preview. Bennett’s HUD shows Story after three teammates unlock.";
+    }
+  }
+
+  function renderCharLibrary() {
+    const box = document.getElementById("char-library");
+    const grid = document.getElementById("char-lib-grid");
+    if (!box || !grid) return;
+    if (!selectedCharId) {
+      box.hidden = true;
+      return;
+    }
+    const ch = findChar(selectedCharId);
+    box.hidden = false;
+    document.getElementById("char-lib-title").textContent = (ch ? Game.characterLabel(ch) : selectedCharId) + " library";
+    const items = Game.libraryFor(library, selectedCharId, false);
+    const crew = Game.libraryFor(library, "crew", false);
+    const showCrew = crew.length ? `
+      <h3 class="lib-sub">Crew (team story beats)</h3>
+      <div class="lib-grid">${crew.map((item) => libPickCard(item, true)).join("")}</div>
+    ` : "";
+    grid.innerHTML = (items.length
+      ? items.map((item) => libPickCard(item, false)).join("")
+      : `<p class="empty">No files tagged to this teammate yet. Add them on Admin.</p>`) + showCrew;
+    box.querySelectorAll("[data-pick-lib]").forEach((b) => {
+      b.addEventListener("click", () => {
+        selectedLibId = b.dataset.pickLib;
+        renderCharLibrary();
+      });
+    });
+    fillAttachStreaks();
+  }
+
+  function libPickCard(item, crew) {
+    const thumb = Game.libraryThumb(item);
+    const media = item.kind === "video"
+      ? `<video class="lib-thumb" src="${Game.esc(item.path)}" poster="${Game.esc(item.poster || thumb)}" preload="metadata" muted playsinline></video>`
+      : `<img class="lib-thumb" src="${Game.esc(item.path)}" alt="">`;
+    return `
+      <article class="lib-card ${selectedLibId === item.id ? "selected" : ""} ${crew ? "crew" : ""}">
+        <button type="button" class="lib-media" data-pick-lib="${Game.esc(item.id)}">
+          ${media}
+        </button>
+        <h3>${Game.esc(item.label)}</h3>
+        <p>${item.kind === "video" ? "Video" : "Still"} · ${Game.esc(item.character)}</p>
+      </article>`;
+  }
+
+  function renderIngredients() {
+    const box = document.getElementById("ingredients");
+    if (!box) return;
+    const list = (family.story && family.story.ingredients) || [];
+    const note = document.getElementById("story-note");
+    if (note && document.activeElement !== note) note.value = (family.story && family.story.includeNote) || "";
+    if (!list.length) {
+      box.innerHTML = `<p class="empty">No story ingredients yet.</p>`;
+      return;
+    }
+    box.innerHTML = list.map((row) => `
+      <article class="ach-card">
+        <h3>${row.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(row.text)}</h3>
+        <div class="parent-actions">
+          <button type="button" class="tiny danger" data-del-ing="${Game.esc(row.id)}">Delete</button>
+        </div>
+      </article>
+    `).join("");
+    box.querySelectorAll("[data-del-ing]").forEach((b) => {
+      b.addEventListener("click", () => {
+        if (!Game.confirmDelete("story ingredient")) return;
+        family.story.ingredients = family.story.ingredients.filter((row) => row.id !== b.dataset.delIng);
+        persistFamily();
+      });
+    });
+  }
+
+  function renderAskInbox() {
+    const box = document.getElementById("ask-inbox");
+    if (!box) return;
+    const messages = (Game.getAskThread().messages || []);
+    if (!messages.length) {
+      box.innerHTML = `<p class="empty">He has not asked the mentor yet.</p>`;
+      return;
+    }
+    box.innerHTML = messages.slice().reverse().map((m) => `
+      <article class="inbox-card">
+        <h3>${m.test ? '<span class="test-tag">TEST</span> ' : ""}${m.role === "mentor" ? "Mentor" : "Bennett"} · Ask AI</h3>
+        <p>${Game.esc(m.text)}</p>
+        <p>${Game.esc(Game.fmtStamp(m.at))}${m.title ? " · " + Game.esc(m.title) : ""}</p>
+      </article>
+    `).join("");
   }
 
   function blankChar() {
@@ -456,6 +606,8 @@
       test: true,
       reward: 10,
       rewardCharacter: "",
+      rewardUnlock: null,
+      rewardMedia: "",
       streak: { target: 3, unit: "week" }
     };
   }
@@ -466,11 +618,17 @@
     document.getElementById("how").value = ach.how || "";
     document.getElementById("incentive").value = ach.incentive || "";
     document.getElementById("icon").value = ach.icon || "badge";
-    document.getElementById("reward").value = ach.reward ?? 10;
+    document.getElementById("reward").value = Game.bananasOf(ach) || 10;
     document.getElementById("test").checked = !!ach.test;
     document.getElementById("target").value = (ach.streak && ach.streak.target) || 1;
     document.getElementById("unit").value = (ach.streak && ach.streak.unit) || "week";
-    fillRewardSelect(ach.rewardCharacter || "");
+    const unlock = Game.rewardUnlockOf(ach);
+    document.getElementById("reward-type").value = unlock ? unlock.type : "";
+    fillRewardSelect(unlock && unlock.type === "character" ? unlock.id : (ach.rewardCharacter || ""));
+    document.getElementById("reward-unlock-id").value = unlock && unlock.type !== "character" ? unlock.id : "";
+    document.getElementById("reward-unlock-label").value = unlock && unlock.type !== "character" ? (unlock.label || "") : "";
+    fillRewardMedia(document.getElementById("reward-character").value, ach.rewardMedia || "");
+    syncRewardTypeUi();
   }
 
   function slug(title) {
@@ -483,7 +641,9 @@
 
   function collect() {
     const prev = editingId ? pack.achievements.find((a) => a.id === editingId) || {} : {};
+    const rewardType = document.getElementById("reward-type").value || "";
     const rewardCharacter = document.getElementById("reward-character").value || "";
+    const bananas = Number(document.getElementById("reward").value) || 0;
     const next = Object.assign({}, prev, {
       id: editingId || slug(document.getElementById("title").value) + "-" + Date.now().toString(36),
       title: document.getElementById("title").value.trim(),
@@ -492,14 +652,26 @@
       incentive: document.getElementById("incentive").value.trim(),
       icon: document.getElementById("icon").value,
       test: document.getElementById("test").checked,
-      reward: Number(document.getElementById("reward").value) || 0,
+      reward: bananas,
       streak: {
         target: Number(document.getElementById("target").value) || 1,
         unit: document.getElementById("unit").value.trim() || "week"
       }
     });
-    if (rewardCharacter) next.rewardCharacter = rewardCharacter;
-    else delete next.rewardCharacter;
+    delete next.rewardUnlock;
+    delete next.rewardCharacter;
+    delete next.bananas;
+    if (rewardType === "character" && rewardCharacter) {
+      next.rewardCharacter = rewardCharacter;
+      next.rewardUnlock = { type: "character", id: rewardCharacter, label: Game.characterLabel(findChar(rewardCharacter), rewardCharacter) };
+    } else if (rewardType && rewardType !== "character") {
+      const id = document.getElementById("reward-unlock-id").value.trim() || slug(document.getElementById("reward-unlock-label").value || rewardType);
+      const label = document.getElementById("reward-unlock-label").value.trim() || id;
+      next.rewardUnlock = { type: rewardType, id, label };
+    }
+    const media = document.getElementById("reward-media").value || "";
+    if (media) next.rewardMedia = media;
+    else delete next.rewardMedia;
     return next;
   }
 
@@ -521,6 +693,7 @@
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
     roster = await Game.loadCharacters();
+    library = await Game.loadLibrary();
     baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
     week = Game.applyWeekOverlay(baseWeek, family);
     if (!pack.currency) pack.currency = { name: "bananas", singular: "banana", emoji: "🍌" };
@@ -607,8 +780,56 @@
       Game.toast("Downloaded the streak catalog.");
     });
 
+    document.getElementById("reward-type").addEventListener("change", syncRewardTypeUi);
+    document.getElementById("reward-character").addEventListener("change", syncRewardTypeUi);
+    document.getElementById("add-ingredient").addEventListener("click", () => {
+      const text = (document.getElementById("new-ingredient").value || "").trim();
+      if (!text) {
+        Game.toast("Write an ingredient first.");
+        return;
+      }
+      family.story.ingredients.push({
+        id: Game.uid("si"),
+        text,
+        test: document.getElementById("ingredient-test").checked
+      });
+      document.getElementById("new-ingredient").value = "";
+      persistFamily();
+    });
+    document.getElementById("save-story-note").addEventListener("click", () => {
+      family.story.includeNote = (document.getElementById("story-note").value || "").trim();
+      persistFamily();
+      Game.toast(family.story.includeNote ? "Story will include that parent note." : "No parent note — story will skip it.");
+    });
+    document.getElementById("attach-media").addEventListener("click", () => {
+      if (!selectedLibId) {
+        Game.toast("Pick a file from this character’s library first.");
+        return;
+      }
+      const streakId = document.getElementById("attach-streak").value;
+      const beatId = document.getElementById("attach-beat").value;
+      if (!streakId && !beatId) {
+        Game.toast("Pick a streak or a story beat.");
+        return;
+      }
+      if (streakId) {
+        const ach = pack.achievements.find((a) => a.id === streakId);
+        if (ach) {
+          ach.rewardMedia = selectedLibId;
+          Game.saveMomDraft(pack);
+        }
+      }
+      if (beatId) {
+        family.story.attachments[beatId] = selectedLibId;
+        Game.saveFamily(family);
+      }
+      persistFamily();
+      renderAchievements();
+      Game.toast("Attached on this device. Export the family pack to share.");
+    });
+
     document.getElementById("export").addEventListener("click", () => {
-      Game.downloadJson("bennett-week-export.json", Game.exportPack(pack, family, roster));
+      Game.downloadJson("bennett-week-export.json", Game.exportPack(pack, family, roster, library));
       Game.toast("Downloaded the family pack. The other parent can import it.");
     });
 
@@ -624,12 +845,16 @@
           pack = next;
           family = Game.getFamilyDraft() || family;
           roster = Game.getMomCharacters() || roster;
+          library = Game.getMomLibrary() || library;
           week = Game.applyWeekOverlay(baseWeek, family);
           fillRewardSelect("");
           renderAchievements();
           renderCharacters();
+          renderCharLibrary();
           renderInbox();
+          renderAskInbox();
           renderPool();
+          renderIngredients();
           fillTargets();
           document.getElementById("draft-flag").hidden = false;
           Game.toast("Imported on this device.");
@@ -645,15 +870,21 @@
       Game.clearMomDraft();
       Game.clearFamilyDraft();
       Game.clearMomCharacters();
+      Game.clearMomLibrary();
       pack = await Game.loadAchievements();
       family = await Game.loadFamily();
       roster = await Game.loadCharacters();
+      library = await Game.loadLibrary();
       week = Game.applyWeekOverlay(baseWeek, family);
+      selectedCharId = null;
       fillRewardSelect("");
       renderAchievements();
       renderCharacters();
+      renderCharLibrary();
       renderInbox();
+      renderAskInbox();
       renderPool();
+      renderIngredients();
       fillTargets();
       closeForm();
       closeCharForm();
@@ -663,9 +894,12 @@
 
     renderAchievements();
     renderCharacters();
+    renderCharLibrary();
     renderInbox();
+    renderAskInbox();
     renderPool();
-    document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomCharacters());
+    renderIngredients();
+    document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomCharacters() || Game.usingMomLibrary());
   }
 
   boot();

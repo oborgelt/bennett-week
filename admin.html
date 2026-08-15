@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071618">
+  <title>Admin · Bennett Week</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="parent-page admin-page">
+  <header class="week-head">
+    <div class="banner-wrap">
+      <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
+      <div class="banner-title">
+        <h1>Admin</h1>
+        <p>Media library · story ingredients</p>
+      </div>
+      <div class="build-stamp" id="build-stamp">
+        <span>Build 28</span>
+        <span>8/15, 11:52 AM</span>
+      </div>
+    </div>
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+      <p class="progress-tagline">Parent-only. Bennett’s HUD does not link here.</p>
+      <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
+        <a class="progress-chip" href="progress.html"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="crew-chip" href="characters.html"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
+        <a class="parent-chip" href="parent.html"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="admin-chip on" href="admin.html" aria-current="page">Admin</a>
+        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="parent-wrap">
+    <p class="draft-flag" id="draft-flag" hidden>This device has a library or family draft. Export the family pack to share.</p>
+    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
+      Tag stills and clips to Ace, Riff, Scorch, or <strong>Crew</strong> (the three-together comic).
+      Paths work on <code>file://</code> and Pages. Do not re-encode the locker clips.
+    </p>
+    <div class="parent-actions">
+      <a class="btn" href="parent.html">Back to parent desk</a>
+      <a class="btn" href="story.html?preview=1">Preview story</a>
+      <button type="button" class="btn" id="export">Export family pack</button>
+      <label class="btn">Import JSON
+        <input id="import" type="file" accept="application/json" class="sr-only">
+      </label>
+    </div>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Add a library item</h2>
+    <div class="form-grid">
+      <label>Label
+        <input id="lib-label" maxlength="80" placeholder="Crew hero lineup">
+      </label>
+      <label>Path
+        <input id="lib-path" maxlength="200" placeholder="img/library/crew-hero.jpg">
+      </label>
+      <div class="form-row">
+        <label>Character
+          <select id="lib-character">
+            <option value="ace">Ace</option>
+            <option value="riff">Riff</option>
+            <option value="scorch">Scorch</option>
+            <option value="crew" selected>Crew</option>
+          </select>
+        </label>
+        <label>Kind
+          <select id="lib-kind">
+            <option value="">Auto from path</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+        </label>
+      </div>
+      <label>Poster path (videos)
+        <input id="lib-poster" maxlength="200" placeholder="img/library/crew-hero.jpg">
+      </label>
+    </div>
+    <div class="parent-actions">
+      <button type="button" class="btn primary" id="add-lib">Add to library</button>
+    </div>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Story ingredients</h2>
+    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
+      Topics you want in the comic. TEST seeds: finish what you start · ask before you’re sunk.
+      A parent “include in story” note is pulled read-only if you write one.
+    </p>
+    <div class="form-grid">
+      <label>New ingredient
+        <input id="new-ingredient" maxlength="140" placeholder="finish what you start">
+      </label>
+      <label class="check">
+        <input id="ingredient-test" type="checkbox" checked> Mark as TEST
+      </label>
+      <label>Include in story (parent note)
+        <textarea id="story-note" maxlength="280" placeholder="Optional note Bennett’s story can quote. Leave blank to skip."></textarea>
+      </label>
+    </div>
+    <div class="parent-actions">
+      <button type="button" class="btn" id="add-ingredient">Add ingredient</button>
+      <button type="button" class="btn primary" id="save-story-note">Save include-in-story note</button>
+    </div>
+    <div id="ingredients"></div>
+
+    <div id="library-groups"></div>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet-panel" role="dialog" aria-labelledby="sheet-title">
+      <div class="sheet-head">
+        <div>
+          <h2 id="sheet-title">Preview</h2>
+        </div>
+        <button type="button" class="close-sheet" id="close-sheet" aria-label="Close">✕</button>
+      </div>
+      <div id="sheet-body"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script id="library-seed" type="application/json">
+{
+  "items": [
+    {"id":"ace-clip","label":"Ace locker clip","path":"img/characters/ace.mp4","poster":"img/characters/ace.jpg","kind":"video","character":"ace"},
+    {"id":"ace-poster","label":"Ace poster","path":"img/characters/ace.jpg","kind":"image","character":"ace"},
+    {"id":"riff-clip","label":"Riff locker clip","path":"img/characters/riff.mp4","poster":"img/characters/riff.jpg","kind":"video","character":"riff"},
+    {"id":"riff-poster","label":"Riff poster","path":"img/characters/riff.jpg","kind":"image","character":"riff"},
+    {"id":"scorch-clip","label":"Scorch locker clip","path":"img/characters/scorch.mp4","poster":"img/characters/scorch.jpg","kind":"video","character":"scorch"},
+    {"id":"scorch-poster","label":"Scorch poster","path":"img/characters/scorch.jpg","kind":"image","character":"scorch"},
+    {"id":"crew-hero","label":"Crew hero lineup","path":"img/library/crew-hero.jpg","kind":"image","character":"crew"},
+    {"id":"crew-run","label":"Crew run","path":"img/library/crew-run.jpg","kind":"image","character":"crew"},
+    {"id":"crew-burst","label":"Crew burst","path":"img/library/crew-burst.jpg","kind":"image","character":"crew"},
+    {"id":"crew-adventure","label":"Crew adventure clip","path":"img/library/crew-adventure.mp4","poster":"img/library/crew-hero.jpg","kind":"video","character":"crew"}
+  ]
+}
+  </script>
+  <script src="js/build.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

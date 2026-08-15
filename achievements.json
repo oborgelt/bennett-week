@@ -95,6 +95,57 @@
       "test": true,
       "reward": 10,
       "rewardCharacter": "ace",
+      "rewardUnlock": { "type": "character", "id": "ace", "label": "Ace" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-riff-reps",
+      "title": "Meet Riff",
+      "description": "TEST — award this to unlock Riff for Bennett. Not auto-unlocked.",
+      "how": "Parents award this TEST streak when they want Bennett to meet Riff.",
+      "incentive": "Unlocks Riff",
+      "icon": "guitar",
+      "test": true,
+      "reward": 10,
+      "rewardCharacter": "riff",
+      "rewardUnlock": { "type": "character", "id": "riff", "label": "Riff" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-scorch-recover",
+      "title": "Meet Scorch",
+      "description": "TEST — award this to unlock Scorch for Bennett. Not auto-unlocked.",
+      "how": "Parents award this TEST streak when they want Bennett to meet Scorch.",
+      "incentive": "Unlocks Scorch",
+      "icon": "clarinet",
+      "test": true,
+      "reward": 10,
+      "rewardCharacter": "scorch",
+      "rewardUnlock": { "type": "character", "id": "scorch", "label": "Scorch" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-notebook-holding",
+      "title": "Notebook of Holding",
+      "description": "TEST — award this to unlock the Notebook of Holding tool for the story.",
+      "how": "Parents award this TEST streak. It grants a tool, not a character.",
+      "incentive": "Unlocks a story tool",
+      "icon": "badge",
+      "test": true,
+      "bananas": 10,
+      "reward": { "type": "tool", "id": "notebook-holding", "label": "Notebook of Holding" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-first-serve",
+      "title": "First Serve",
+      "description": "TEST — award this to unlock the First Serve ability.",
+      "how": "Parents award this TEST streak. It grants an ability that helps the story move.",
+      "incentive": "Unlocks a story ability",
+      "icon": "tennis",
+      "test": true,
+      "bananas": 10,
+      "reward": { "type": "ability", "id": "first-serve", "label": "First Serve" },
       "streak": { "target": 1, "unit": "time" }
     }
   ]

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#071618">
+  <title>Bennett · Story</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="story-page">
+  <header class="week-head">
+    <div class="banner-wrap">
+      <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
+      <div class="banner-title">
+        <h1>Story</h1>
+        <p>Choose-your-own-adventure · first serve</p>
+      </div>
+      <div class="build-stamp" id="build-stamp">
+        <span>Build 28</span>
+        <span>8/15, 11:52 AM</span>
+      </div>
+    </div>
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+      <p class="progress-tagline">School thinking + crew comic. Wrong answers recover — no shame.</p>
+      <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
+        <a class="progress-chip" href="progress.html"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="crew-chip" href="characters.html"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
+        <a class="story-chip on" href="story.html" aria-current="page">Story</a>
+        <a class="parent-chip" href="parent.html"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="story-wrap">
+    <p class="preview-flag" id="preview-flag" hidden>Parent preview — Bennett sees this after three teammates unlock.</p>
+    <section class="story-gate" id="story-gate" hidden>
+      <h2>Story locked</h2>
+      <p>Unlock three teammates first. Keep the streak going — no catalog spoilers.</p>
+      <a class="btn" href="characters.html">Back to Characters</a>
+    </section>
+    <article class="story-panel" id="story-panel" hidden>
+      <p class="story-kicker" id="story-kicker"></p>
+      <div class="story-art" id="story-art"></div>
+      <h2 id="story-title"></h2>
+      <p class="story-text" id="story-text"></p>
+      <div class="story-extras" id="story-extras"></div>
+      <div class="story-school" id="story-school" hidden></div>
+      <div class="story-choices" id="story-choices"></div>
+    </article>
+    <aside class="khan-strip" id="story-resources"></aside>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <script id="story-seed" type="application/json">
+{
+  "title": "First Serve",
+  "start": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "image": "crew-hero",
+      "kicker": "Issue 1",
+      "title": "Debris, bananas, first serve",
+      "text": "Ace, Riff, and Scorch freeze the explosion mid-air. The English 10 board is still due.",
+      "choices": [
+        {"id": "c-board", "label": "Check the English 10 board", "to": "panel-check"}
+      ]
+    }
+  ]
+}
+  </script>
+  <script src="js/build.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/story.js"></script>
+</body>
+</html>

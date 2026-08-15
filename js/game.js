@@ -10,9 +10,20 @@
     trophyOrder: "bw-trophy-order",
     characterUnlocks: "bw-character-unlocks",
     characterSeen: "bw-character-seen",
+    library: "bw-mom-library",
+    gear: "bw-gear-unlocks",
+    ask: "bw-ask-thread",
     opened: "bw-opened",
     opens: "bw-opens"
   };
+
+  const LIBRARY_GROUPS = ["ace", "riff", "scorch", "crew"];
+
+  const KHAN = [
+    { id: "ela", label: "Khan Academy — ELA", url: "https://www.khanacademy.org/ela" },
+    { id: "grammar", label: "Khan Academy — Grammar", url: "https://www.khanacademy.org/humanities/grammar" },
+    { id: "science", label: "Khan Academy — Science", url: "https://www.khanacademy.org/science" }
+  ];
 
   const EGG_NAMES = {
     "banner-monkey": "Garage-band grin",
@@ -221,8 +232,39 @@
     };
   }
 
+  function emptyStory() {
+    return { ingredients: [], includeNote: "", attachments: {} };
+  }
+
+  function normalizeStory(raw) {
+    const s = raw && typeof raw === "object" ? raw : {};
+    const attachments = s.attachments && typeof s.attachments === "object" && !Array.isArray(s.attachments)
+      ? Object.assign({}, s.attachments)
+      : {};
+    const ingredients = Array.isArray(s.ingredients)
+      ? s.ingredients.filter((row) => row && typeof row === "object").map((row) => ({
+        id: String(row.id || "").trim() || uid("si"),
+        text: String(row.text || "").trim(),
+        test: !!row.test
+      }))
+      : [];
+    return {
+      ingredients,
+      includeNote: String(s.includeNote || "").trim(),
+      attachments
+    };
+  }
+
   function emptyFamily() {
-    return { notes: [], reflections: { pool: [], answers: [] }, streaks: {}, characterUnlocks: {}, overlay: emptyOverlay() };
+    return {
+      notes: [],
+      reflections: { pool: [], answers: [] },
+      streaks: {},
+      characterUnlocks: {},
+      gearUnlocks: {},
+      story: emptyStory(),
+      overlay: emptyOverlay()
+    };
   }
 
   function asUnlockMap(value) {
@@ -245,6 +287,8 @@
       },
       streaks: f.streaks && typeof f.streaks === "object" && !Array.isArray(f.streaks) ? f.streaks : {},
       characterUnlocks: asUnlockMap(f.characterUnlocks),
+      gearUnlocks: asUnlockMap(f.gearUnlocks),
+      story: normalizeStory(f.story),
       overlay: normalizeOverlay(f.overlay)
     };
   }
@@ -507,14 +551,18 @@
           name: "Riff",
           talent: "Daily Reps",
           tagline: "Again. Louder.",
-          status: "coming"
+          status: "ready",
+          video: "img/characters/riff.mp4",
+          poster: "img/characters/riff.jpg"
         },
         {
-          id: "slot-3",
-          name: "",
-          talent: "",
-          tagline: "",
-          status: "coming"
+          id: "scorch",
+          name: "Scorch",
+          talent: "The Recover",
+          tagline: "Burned. Not out.",
+          status: "ready",
+          video: "img/characters/scorch.mp4",
+          poster: "img/characters/scorch.jpg"
         }
       ]
     };
@@ -643,12 +691,297 @@
     return unlockedCharacters(roster).filter((ch) => !seen[ch.id]);
   }
 
-  function aceMedia(roster) {
-    const ace = ((roster && roster.characters) || []).find((ch) => ch.id === "ace");
+  function characterMedia(roster, ch) {
+    if (ch && (ch.video || ch.poster)) {
+      return { video: ch.video || "", poster: ch.poster || "" };
+    }
+    const ace = ((roster && roster.characters) || []).find((row) => row.id === "ace");
     return {
       video: (ace && ace.video) || "img/characters/ace.mp4",
       poster: (ace && ace.poster) || "img/characters/ace.jpg"
     };
+  }
+
+  function aceMedia(roster) {
+    return characterMedia(roster, ((roster && roster.characters) || []).find((ch) => ch.id === "ace"));
+  }
+
+  function defaultLibrary() {
+    return {
+      items: [
+        { id: "ace-clip", label: "Ace locker clip", path: "img/characters/ace.mp4", poster: "img/characters/ace.jpg", kind: "video", character: "ace" },
+        { id: "ace-poster", label: "Ace poster", path: "img/characters/ace.jpg", kind: "image", character: "ace" },
+        { id: "riff-clip", label: "Riff locker clip", path: "img/characters/riff.mp4", poster: "img/characters/riff.jpg", kind: "video", character: "riff" },
+        { id: "riff-poster", label: "Riff poster", path: "img/characters/riff.jpg", kind: "image", character: "riff" },
+        { id: "scorch-clip", label: "Scorch locker clip", path: "img/characters/scorch.mp4", poster: "img/characters/scorch.jpg", kind: "video", character: "scorch" },
+        { id: "scorch-poster", label: "Scorch poster", path: "img/characters/scorch.jpg", kind: "image", character: "scorch" },
+        { id: "crew-hero", label: "Crew hero lineup", path: "img/library/crew-hero.jpg", kind: "image", character: "crew" },
+        { id: "crew-run", label: "Crew run", path: "img/library/crew-run.jpg", kind: "image", character: "crew" },
+        { id: "crew-burst", label: "Crew burst", path: "img/library/crew-burst.jpg", kind: "image", character: "crew" },
+        { id: "crew-adventure", label: "Crew adventure clip", path: "img/library/crew-adventure.mp4", poster: "img/library/crew-hero.jpg", kind: "video", character: "crew" }
+      ]
+    };
+  }
+
+  function inferKind(path, kind) {
+    if (kind === "video" || kind === "image") return kind;
+    return /\.(mp4|webm|mov)(\?|$)/i.test(path || "") ? "video" : "image";
+  }
+
+  function normalizeLibraryItem(item, i) {
+    const src = item && typeof item === "object" ? item : {};
+    const path = String(src.path || "").trim();
+    const character = LIBRARY_GROUPS.indexOf(src.character) >= 0 ? src.character : "crew";
+    return {
+      id: String(src.id || "").trim() || ("lib-" + (i + 1)),
+      label: String(src.label || "").trim() || path.split("/").pop() || "Untitled",
+      path,
+      poster: String(src.poster || "").trim(),
+      kind: inferKind(path, src.kind),
+      character,
+      test: !!src.test
+    };
+  }
+
+  function normalizeLibrary(raw) {
+    const src = raw && typeof raw === "object" ? raw : {};
+    const list = Array.isArray(src.items) ? src.items : [];
+    return { items: list.map(normalizeLibraryItem).filter((item) => item.path) };
+  }
+
+  function usingMomLibrary() {
+    return !!localStorage.getItem(KEYS.library);
+  }
+
+  function getMomLibrary() {
+    const stored = read(KEYS.library, null);
+    return stored ? normalizeLibrary(stored) : null;
+  }
+
+  function saveMomLibrary(lib) {
+    write(KEYS.library, normalizeLibrary(lib));
+  }
+
+  function clearMomLibrary() {
+    localStorage.removeItem(KEYS.library);
+  }
+
+  async function loadLibrary() {
+    const seed = normalizeLibrary(parseSeed("library-seed") || defaultLibrary());
+    const file = await fetchJson("library.json", null);
+    const draft = getMomLibrary();
+    return normalizeLibrary(draft || file || seed);
+  }
+
+  function libraryItem(lib, id) {
+    return ((lib && lib.items) || []).find((item) => item.id === id) || null;
+  }
+
+  function libraryFor(lib, character, includeCrew) {
+    return ((lib && lib.items) || []).filter((item) => {
+      if (item.character === character) return true;
+      return !!(includeCrew && item.character === "crew");
+    });
+  }
+
+  function libraryThumb(item) {
+    if (!item) return "";
+    if (item.kind === "video") return item.poster || "";
+    return item.path || "";
+  }
+
+  function bananasOf(ach) {
+    if (!ach) return 0;
+    if (typeof ach.bananas === "number") return Number(ach.bananas) || 0;
+    if (typeof ach.reward === "number") return Number(ach.reward) || 0;
+    return 0;
+  }
+
+  function rewardUnlockOf(ach) {
+    if (!ach) return null;
+    const obj = (ach.rewardUnlock && typeof ach.rewardUnlock === "object")
+      ? ach.rewardUnlock
+      : (ach.reward && typeof ach.reward === "object" ? ach.reward : null);
+    if (obj && obj.type && obj.id) {
+      return {
+        type: String(obj.type),
+        id: String(obj.id),
+        label: String(obj.label || obj.id)
+      };
+    }
+    if (ach.rewardCharacter) {
+      return { type: "character", id: String(ach.rewardCharacter), label: String(ach.rewardCharacter) };
+    }
+    return null;
+  }
+
+  function rewardCharacterId(ach) {
+    const unlock = rewardUnlockOf(ach);
+    if (unlock && unlock.type === "character") return unlock.id;
+    return ach && ach.rewardCharacter ? String(ach.rewardCharacter) : "";
+  }
+
+  function getGearUnlocks() {
+    return asUnlockMap(read(KEYS.gear, {}));
+  }
+
+  function saveGearUnlocks(map) {
+    write(KEYS.gear, asUnlockMap(map));
+  }
+
+  function mergeGearUnlocks(extra) {
+    const next = Object.assign({}, getGearUnlocks(), asUnlockMap(extra));
+    saveGearUnlocks(next);
+    return next;
+  }
+
+  function alreadyUnlockedGear(id) {
+    return !!(id && getGearUnlocks()[id]);
+  }
+
+  function markGearUnlocked(unlock) {
+    if (!unlock || !unlock.id) return false;
+    const all = getGearUnlocks();
+    if (all[unlock.id]) return false;
+    all[unlock.id] = {
+      type: unlock.type || "tool",
+      id: unlock.id,
+      label: unlock.label || unlock.id,
+      at: nowIso()
+    };
+    saveGearUnlocks(all);
+    return true;
+  }
+
+  function revokeGearUnlock(id) {
+    if (!id) return false;
+    const all = getGearUnlocks();
+    if (!all[id]) return false;
+    delete all[id];
+    saveGearUnlocks(all);
+    return true;
+  }
+
+  function unlockedGear() {
+    const map = getGearUnlocks();
+    return Object.keys(map).map((id) => {
+      const row = map[id] && typeof map[id] === "object" ? map[id] : { id };
+      return {
+        type: row.type || "tool",
+        id,
+        label: row.label || id,
+        at: row.at || row
+      };
+    });
+  }
+
+  function hasUnlock(require) {
+    if (!require || !require.type || !require.id) return true;
+    if (require.type === "character") return alreadyUnlockedCharacter(require.id);
+    return alreadyUnlockedGear(require.id);
+  }
+
+  function applyFamilyGearUnlocks(family) {
+    const next = normalizeFamily(family);
+    mergeGearUnlocks(next.gearUnlocks);
+    return next;
+  }
+
+  function grantGear(family, unlock) {
+    const next = normalizeFamily(family);
+    if (!unlock || !unlock.id) return { family: next, fresh: false };
+    const fresh = markGearUnlocked(unlock);
+    if (!next.gearUnlocks[unlock.id]) {
+      next.gearUnlocks[unlock.id] = Object.assign({ at: nowIso() }, unlock);
+      saveFamily(next);
+    } else if (fresh) {
+      saveFamily(next);
+    }
+    return { family: next, fresh };
+  }
+
+  function otherAwardGrantsGear(pack, family, gearId, exceptId) {
+    return (pack.achievements || []).some((ach) => {
+      if (!ach || ach.id === exceptId) return false;
+      const unlock = rewardUnlockOf(ach);
+      if (!unlock || unlock.type === "character" || unlock.id !== gearId) return false;
+      return !!(family.streaks[ach.id] && family.streaks[ach.id].awarded) || alreadyUnlocked(ach.id);
+    });
+  }
+
+  function emptyAskThread() {
+    return { messages: [] };
+  }
+
+  function normalizeAskThread(raw) {
+    const src = raw && typeof raw === "object" ? raw : {};
+    const messages = Array.isArray(src.messages) ? src.messages.filter((m) => m && m.text).map((m) => ({
+      id: String(m.id || uid("ask")),
+      role: m.role === "mentor" ? "mentor" : "bennett",
+      text: String(m.text || "").trim(),
+      at: m.at || nowIso(),
+      title: String(m.title || "").trim(),
+      test: !!m.test
+    })) : [];
+    return { messages };
+  }
+
+  function getAskThread() {
+    return normalizeAskThread(read(KEYS.ask, emptyAskThread()));
+  }
+
+  function saveAskThread(thread) {
+    write(KEYS.ask, normalizeAskThread(thread));
+  }
+
+  function addAskMessage(thread, msg) {
+    const next = normalizeAskThread(thread);
+    next.messages = next.messages.concat([Object.assign({ id: uid("ask"), at: nowIso() }, msg)]);
+    saveAskThread(next);
+    return next;
+  }
+
+  function latestReflection(family) {
+    const answers = ((family && family.reflections && family.reflections.answers) || []).slice();
+    if (!answers.length) return null;
+    answers.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    const row = answers[0];
+    if (!row || !String(row.text || "").trim()) return null;
+    return row;
+  }
+
+  function latestBennettQuestion(family) {
+    const notes = ((family && family.notes) || []).filter((n) => n && n.from === "bennett" && String(n.text || "").trim());
+    if (!notes.length) return null;
+    notes.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    return notes[0];
+  }
+
+  function khanLinksFor(title) {
+    const t = String(title || "").toLowerCase();
+    if (/english|ela|comic|names|notebook|grammar|panel/.test(t)) {
+      return KHAN.filter((k) => k.id === "ela" || k.id === "grammar");
+    }
+    if (/chem|science|bio/.test(t)) {
+      return KHAN.filter((k) => k.id === "science");
+    }
+    return KHAN.slice();
+  }
+
+  function khanStripHtml(title) {
+    const links = khanLinksFor(title);
+    return `
+      <div class="khan-strip">
+        <p class="khan-kicker">Khan Academy — opens in a new tab</p>
+        <div class="khan-links">
+          ${links.map((k) => `<a class="khan-link" href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.label)}</a>`).join("")}
+        </div>
+      </div>`;
+  }
+
+  async function loadStory() {
+    const seed = parseSeed("story-seed");
+    return fetchJson("story.json", seed || { title: "Story", start: "start", nodes: [] });
   }
 
   function closeCharacterCelebrate() {
@@ -662,7 +995,7 @@
   }
 
   function playUnlockClip(roster, unlockedChar) {
-    const ace = aceMedia(roster);
+    const media = characterMedia(roster, unlockedChar);
     const name = characterLabel(unlockedChar, "New teammate");
     let layer = document.getElementById("char-celebrate");
     if (!layer) {
@@ -675,7 +1008,7 @@
       <div class="char-celebrate-panel" role="dialog" aria-labelledby="char-celebrate-title">
         <p class="char-celebrate-kicker">New teammate</p>
         <h2 id="char-celebrate-title">${esc(name)} unlocked!</h2>
-        <video src="${esc(ace.video)}" poster="${esc(ace.poster)}" playsinline ${prefersReducedMotion() ? "" : "autoplay"} controls></video>
+        <video src="${esc(media.video)}" poster="${esc(media.poster)}" playsinline ${prefersReducedMotion() ? "" : "autoplay"} controls></video>
         <button type="button" class="btn primary" id="char-celebrate-close">Nice</button>
       </div>`;
     layer.classList.add("open");
@@ -699,6 +1032,7 @@
   function applyFamilyCharacterUnlocks(family) {
     const next = normalizeFamily(family);
     mergeCharacterUnlocks(next.characterUnlocks);
+    applyFamilyGearUnlocks(next);
     return next;
   }
 
@@ -718,7 +1052,8 @@
   function otherAwardGrantsCharacter(pack, family, characterId, exceptId) {
     return (pack.achievements || []).some((ach) => {
       if (!ach || ach.id === exceptId) return false;
-      const grant = (family.streaks[ach.id] && family.streaks[ach.id].grantedCharacter) || ach.rewardCharacter;
+      const grant = (family.streaks[ach.id] && family.streaks[ach.id].grantedCharacter)
+        || rewardCharacterId(ach);
       if (grant !== characterId) return false;
       return !!(family.streaks[ach.id] && family.streaks[ach.id].awarded) || alreadyUnlocked(ach.id);
     });
@@ -856,7 +1191,7 @@
       if (alreadyUnlocked(ach.id)) return;
       if (!evaluate(ach, ctx)) return;
       if (markUnlocked(ach.id)) {
-        addBananas(ach.reward || 0);
+        addBananas(bananasOf(ach));
         fresh.push(ach);
       }
     });
@@ -867,7 +1202,7 @@
     const ach = (pack.achievements || []).find((a) => a.id === id);
     if (!ach) return null;
     if (!markUnlocked(id)) return null;
-    addBananas(ach.reward || 0);
+    addBananas(bananasOf(ach));
     return ach;
   }
 
@@ -875,21 +1210,38 @@
     const ach = awardAchievement(pack, id);
     const next = normalizeFamily(family);
     const st = next.streaks[id] || { count: 0 };
-    const granted = (ach && ach.rewardCharacter) || st.grantedCharacter || "";
+    const unlock = rewardUnlockOf(ach) || (st.grantedUnlock && typeof st.grantedUnlock === "object" ? st.grantedUnlock : null);
+    const granted = (unlock && unlock.type === "character" && unlock.id) || st.grantedCharacter || "";
     next.streaks[id] = Object.assign({}, st, {
       awarded: true,
       awardedAt: nowIso(),
-      grantedCharacter: granted || undefined
+      grantedCharacter: granted || undefined,
+      grantedUnlock: unlock || undefined,
+      rewardMedia: (ach && ach.rewardMedia) || st.rewardMedia || undefined
     });
     let freshCharacter = false;
+    let freshGear = false;
     if (granted) {
       const grant = grantCharacter(next, granted);
       freshCharacter = grant.fresh;
       Object.assign(next, grant.family);
-    } else {
+    }
+    if (unlock && unlock.type !== "character") {
+      const grant = grantGear(next, unlock);
+      freshGear = grant.fresh;
+      Object.assign(next, grant.family);
+    }
+    if (!granted && !(unlock && unlock.type !== "character")) {
       saveFamily(next);
     }
-    return { family: next, achievement: ach, grantedCharacter: granted || "", freshCharacter };
+    return {
+      family: next,
+      achievement: ach,
+      grantedCharacter: granted || "",
+      grantedUnlock: unlock,
+      freshCharacter,
+      freshGear
+    };
   }
 
   function revokeUnlock(id) {
@@ -905,20 +1257,28 @@
     const was = revokeUnlock(id);
     const next = normalizeFamily(family);
     const st = next.streaks[id] || { count: 0 };
-    const granted = st.grantedCharacter || (ach && ach.rewardCharacter) || "";
+    const unlock = st.grantedUnlock || rewardUnlockOf(ach);
+    const granted = st.grantedCharacter || (unlock && unlock.type === "character" && unlock.id) || "";
     next.streaks[id] = Object.assign({}, st, { awarded: false });
     let revokedCharacter = false;
+    let revokedGear = false;
     if (granted && !otherAwardGrantsCharacter(pack, next, granted, id)) {
       revokedCharacter = revokeCharacterUnlock(granted);
       if (next.characterUnlocks[granted]) {
         delete next.characterUnlocks[granted];
       }
     }
-    saveFamily(next);
-    if (was && ach && ach.reward) {
-      write(KEYS.bananas, Math.max(0, getBananas() - (Number(ach.reward) || 0)));
+    if (unlock && unlock.type !== "character" && unlock.id && !otherAwardGrantsGear(pack, next, unlock.id, id)) {
+      revokedGear = revokeGearUnlock(unlock.id);
+      if (next.gearUnlocks[unlock.id]) {
+        delete next.gearUnlocks[unlock.id];
+      }
     }
-    return { family: next, revoked: was, achievement: ach || null, revokedCharacter };
+    saveFamily(next);
+    if (was && ach) {
+      write(KEYS.bananas, Math.max(0, getBananas() - bananasOf(ach)));
+    }
+    return { family: next, revoked: was, achievement: ach || null, revokedCharacter, revokedGear };
   }
 
   function recordEgg(egg) {
@@ -994,10 +1354,12 @@
   function celebrate(ach, pack) {
     const cur = currency(pack);
     const prize = ach.incentive ? " · " + ach.incentive : "";
-    const extra = ach.reward ? " · +" + ach.reward + " " + cur.name : "";
+    const extra = bananasOf(ach) ? " · +" + bananasOf(ach) + " " + cur.name : "";
     const game = ach.unlocksGame === "egg" ? " · Egg game unlocked" : "";
-    const mate = ach.rewardCharacter ? " · teammate unlocked" : "";
-    toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game + mate);
+    const unlock = rewardUnlockOf(ach);
+    const mate = unlock && unlock.type === "character" ? " · teammate unlocked" : "";
+    const gear = unlock && unlock.type !== "character" ? " · " + (unlock.label || unlock.type) + " unlocked" : "";
+    toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game + mate + gear);
     confetti();
   }
 
@@ -1080,16 +1442,20 @@
     return next;
   }
 
-  function exportPack(pack, family, roster) {
+  function exportPack(pack, family, roster, library) {
     const characters = normalizeCharacters(roster || getMomCharacters() || defaultCharacters());
     const familyNext = normalizeFamily(family);
     familyNext.characterUnlocks = Object.assign({}, familyNext.characterUnlocks, getCharacterUnlocks());
+    familyNext.gearUnlocks = Object.assign({}, familyNext.gearUnlocks, getGearUnlocks());
     return {
-      version: 4,
+      version: 5,
       currency: currency(pack),
       achievements: pack.achievements || [],
       characters,
       characterUnlocks: getCharacterUnlocks(),
+      gearUnlocks: getGearUnlocks(),
+      library: normalizeLibrary(library || getMomLibrary() || defaultLibrary()),
+      askThread: getAskThread(),
       family: familyNext,
       unlocks: getUnlocks(),
       trophyOrder: getTrophyOrder(),
@@ -1110,12 +1476,14 @@
     }
     saveMomDraft(pack);
     if (obj.characters) saveMomCharacters(obj.characters);
+    if (obj.library) saveMomLibrary(obj.library);
     if (obj.family) saveFamily(obj.family);
     if (obj.unlocks && typeof obj.unlocks === "object") write(KEYS.unlocks, obj.unlocks);
     if (Array.isArray(obj.trophyOrder)) saveTrophyOrder(obj.trophyOrder);
     if (obj.progress && typeof obj.progress === "object" && !Array.isArray(obj.progress)) {
       write(KEYS.progress, obj.progress);
     }
+    if (obj.askThread) saveAskThread(obj.askThread);
     const importedUnlocks = Object.assign(
       {},
       asUnlockMap(obj.characterUnlocks),
@@ -1123,6 +1491,14 @@
     );
     if (obj.characterUnlocks || (obj.family && obj.family.characterUnlocks)) {
       saveCharacterUnlocks(importedUnlocks);
+    }
+    const importedGear = Object.assign(
+      {},
+      asUnlockMap(obj.gearUnlocks),
+      asUnlockMap(obj.family && obj.family.gearUnlocks)
+    );
+    if (obj.gearUnlocks || (obj.family && obj.family.gearUnlocks)) {
+      saveGearUnlocks(importedGear);
     }
     return pack;
   }
@@ -1154,6 +1530,17 @@
     getMomCharacters,
     saveMomCharacters,
     clearMomCharacters,
+    usingMomLibrary,
+    getMomLibrary,
+    saveMomLibrary,
+    clearMomLibrary,
+    loadLibrary,
+    defaultLibrary,
+    normalizeLibrary,
+    libraryItem,
+    libraryFor,
+    libraryThumb,
+    LIBRARY_GROUPS,
     getFamilyDraft,
     saveFamily,
     clearFamilyDraft,
@@ -1230,8 +1617,34 @@
     maybePlayUnlockCelebration,
     applyFamilyCharacterUnlocks,
     grantCharacter,
+    grantGear,
+    bananasOf,
+    rewardUnlockOf,
+    rewardCharacterId,
+    getGearUnlocks,
+    alreadyUnlockedGear,
+    unlockedGear,
+    hasUnlock,
+    getAskThread,
+    saveAskThread,
+    addAskMessage,
+    latestReflection,
+    latestBennettQuestion,
+    khanLinksFor,
+    khanStripHtml,
+    KHAN,
+    loadStory,
+    characterMedia,
+    paintStoryChip,
     paintBuild
   };
+
+  function paintStoryChip(roster, force) {
+    const el = document.getElementById("story-chip");
+    if (!el) return;
+    const open = !!force || comicUnlocked(roster);
+    el.hidden = !open;
+  }
 
   function paintBuild() {
     const meta = global.BW_BUILD || { build: 0, modified: "" };

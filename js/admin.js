@@ -1,0 +1,240 @@
+(function () {
+  const GROUPS = [
+    { id: "ace", title: "Ace" },
+    { id: "riff", title: "Riff" },
+    { id: "scorch", title: "Scorch" },
+    { id: "crew", title: "Crew" }
+  ];
+
+  let pack = null;
+  let family = null;
+  let roster = null;
+  let library = null;
+
+  function persistLib() {
+    Game.saveMomLibrary(library);
+    renderLibrary();
+    document.getElementById("draft-flag").hidden = false;
+    Game.toast("Library saved on this device. Export the family pack to share.");
+  }
+
+  function persistFamily() {
+    Game.saveFamily(family);
+    renderIngredients();
+    document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomLibrary());
+  }
+
+  function openSheet(title, html) {
+    document.getElementById("sheet-title").textContent = title;
+    document.getElementById("sheet-body").innerHTML = html;
+    document.getElementById("sheet").classList.add("open");
+  }
+
+  function closeSheet() {
+    const sheet = document.getElementById("sheet");
+    const video = sheet.querySelector("video");
+    if (video) {
+      try { video.pause(); } catch (_) {}
+    }
+    sheet.classList.remove("open");
+  }
+
+  function previewItem(item) {
+    const media = item.kind === "video"
+      ? `<video class="lib-play" src="${Game.esc(item.path)}" poster="${Game.esc(item.poster || "")}" controls playsinline></video>`
+      : `<img class="lib-play" src="${Game.esc(item.path)}" alt="">`;
+    openSheet(item.label || "Preview", `
+      <p class="empty">${Game.esc(item.path)}</p>
+      ${media}
+    `);
+  }
+
+  function tagSelect(item) {
+    return GROUPS.map((g) => {
+      const on = item.character === g.id ? " selected" : "";
+      return `<option value="${g.id}"${on}>${g.title}</option>`;
+    }).join("");
+  }
+
+  function cardHtml(item) {
+    const thumb = Game.libraryThumb(item);
+    const media = item.kind === "video"
+      ? `<video class="lib-thumb" src="${Game.esc(item.path)}" poster="${Game.esc(item.poster || thumb)}" preload="metadata" muted playsinline></video>`
+      : `<img class="lib-thumb" src="${Game.esc(item.path)}" alt="">`;
+    return `
+      <article class="lib-card">
+        <button type="button" class="lib-media" data-preview="${Game.esc(item.id)}" aria-label="Preview ${Game.esc(item.label)}">
+          ${media}
+          ${item.kind === "video" ? '<span class="lib-play-badge">Play</span>' : ""}
+        </button>
+        <h3>${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.label)}</h3>
+        <p>${Game.esc(item.path)}</p>
+        <label>Tag
+          <select data-tag="${Game.esc(item.id)}">${tagSelect(item)}</select>
+        </label>
+        <div class="parent-actions">
+          <button type="button" class="tiny" data-preview="${Game.esc(item.id)}">Preview</button>
+          <button type="button" class="tiny danger" data-del-lib="${Game.esc(item.id)}">Delete</button>
+        </div>
+      </article>`;
+  }
+
+  function renderLibrary() {
+    const host = document.getElementById("library-groups");
+    host.innerHTML = GROUPS.map((g) => {
+      const items = Game.libraryFor(library, g.id, false);
+      const body = items.length
+        ? `<div class="lib-grid">${items.map(cardHtml).join("")}</div>`
+        : `<p class="empty">No files tagged ${Game.esc(g.title)} yet.</p>`;
+      return `
+        <section class="lib-group">
+          <h2>${Game.esc(g.title)}</h2>
+          <p>${g.id === "crew" ? "Ace + Riff + Scorch together. Comic stills and the adventure clip." : "Locker clip and stills for this teammate."}</p>
+          ${body}
+        </section>`;
+    }).join("");
+
+    host.querySelectorAll("[data-preview]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const item = Game.libraryItem(library, b.dataset.preview);
+        if (item) previewItem(item);
+      });
+    });
+    host.querySelectorAll("[data-tag]").forEach((sel) => {
+      sel.addEventListener("change", () => {
+        const item = Game.libraryItem(library, sel.dataset.tag);
+        if (!item) return;
+        item.character = sel.value;
+        persistLib();
+      });
+    });
+    host.querySelectorAll("[data-del-lib]").forEach((b) => {
+      b.addEventListener("click", () => {
+        if (!Game.confirmDelete("library item")) return;
+        library.items = library.items.filter((item) => item.id !== b.dataset.delLib);
+        persistLib();
+      });
+    });
+  }
+
+  function renderIngredients() {
+    const box = document.getElementById("ingredients");
+    const list = (family.story && family.story.ingredients) || [];
+    document.getElementById("story-note").value = (family.story && family.story.includeNote) || "";
+    if (!list.length) {
+      box.innerHTML = `<p class="empty">No story ingredients yet.</p>`;
+      return;
+    }
+    box.innerHTML = list.map((row) => `
+      <article class="ach-card">
+        <h3>${row.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(row.text)}</h3>
+        <div class="parent-actions">
+          <button type="button" class="tiny danger" data-del-ing="${Game.esc(row.id)}">Delete</button>
+        </div>
+      </article>
+    `).join("");
+    box.querySelectorAll("[data-del-ing]").forEach((b) => {
+      b.addEventListener("click", () => {
+        if (!Game.confirmDelete("story ingredient")) return;
+        family.story.ingredients = family.story.ingredients.filter((row) => row.id !== b.dataset.delIng);
+        persistFamily();
+      });
+    });
+  }
+
+  async function boot() {
+    pack = await Game.loadAchievements();
+    family = await Game.loadFamily();
+    roster = await Game.loadCharacters();
+    library = await Game.loadLibrary();
+    const bananas = document.getElementById("bananas");
+    if (bananas) bananas.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
+    const eggChip = document.getElementById("egg-chip");
+    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomLibrary());
+
+    document.getElementById("close-sheet").addEventListener("click", closeSheet);
+    document.getElementById("sheet").addEventListener("click", (e) => {
+      if (e.target.id === "sheet") closeSheet();
+    });
+
+    document.getElementById("add-lib").addEventListener("click", () => {
+      const label = document.getElementById("lib-label").value.trim();
+      const path = document.getElementById("lib-path").value.trim();
+      if (!path) {
+        Game.toast("Add a path first.");
+        return;
+      }
+      library.items.push(Game.normalizeLibrary({
+        items: [{
+          id: Game.uid("lib"),
+          label: label || path.split("/").pop(),
+          path,
+          poster: document.getElementById("lib-poster").value.trim(),
+          kind: document.getElementById("lib-kind").value,
+          character: document.getElementById("lib-character").value,
+          test: true
+        }]
+      }).items[0]);
+      document.getElementById("lib-label").value = "";
+      document.getElementById("lib-path").value = "";
+      document.getElementById("lib-poster").value = "";
+      persistLib();
+    });
+
+    document.getElementById("add-ingredient").addEventListener("click", () => {
+      const text = document.getElementById("new-ingredient").value.trim();
+      if (!text) {
+        Game.toast("Write an ingredient first.");
+        return;
+      }
+      family.story.ingredients.push({
+        id: Game.uid("si"),
+        text,
+        test: document.getElementById("ingredient-test").checked
+      });
+      document.getElementById("new-ingredient").value = "";
+      persistFamily();
+    });
+
+    document.getElementById("save-story-note").addEventListener("click", () => {
+      family.story.includeNote = document.getElementById("story-note").value.trim();
+      persistFamily();
+      Game.toast(family.story.includeNote ? "Story will include that parent note." : "No parent note — story will skip it.");
+    });
+
+    document.getElementById("export").addEventListener("click", () => {
+      Game.downloadJson("bennett-week-export.json", Game.exportPack(pack, family, roster, library));
+      Game.toast("Downloaded the family pack.");
+    });
+
+    document.getElementById("import").addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const obj = JSON.parse(reader.result);
+          const next = Game.importPack(obj);
+          if (!next) throw new Error("bad pack");
+          pack = next;
+          family = Game.getFamilyDraft() || family;
+          roster = Game.getMomCharacters() || roster;
+          library = Game.getMomLibrary() || library;
+          renderLibrary();
+          renderIngredients();
+          document.getElementById("draft-flag").hidden = false;
+          Game.toast("Imported on this device.");
+        } catch (_) {
+          Game.toast("Could not read that JSON file.");
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    renderLibrary();
+    renderIngredients();
+  }
+
+  boot();
+})();

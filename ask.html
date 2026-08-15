@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#071618">
+  <title>Bennett · Ask AI</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="ask-page">
+  <header class="week-head">
+    <div class="banner-wrap">
+      <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
+      <div class="banner-title">
+        <h1>Ask AI</h1>
+        <p>Socratic mentor · hints, not the assignment</p>
+      </div>
+      <div class="build-stamp" id="build-stamp">
+        <span>Build 28</span>
+        <span>8/15, 11:52 AM</span>
+      </div>
+    </div>
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+      <p class="progress-tagline">Questions and small nudges. Silly allowed. Never mean.</p>
+      <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
+        <a class="progress-chip" href="progress.html"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="crew-chip" href="characters.html"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
+        <a class="parent-chip" href="parent.html"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="ask-wrap">
+    <p class="ask-lead">Ask about the work on the card. The mentor will question you back — not write it for you.</p>
+    <label class="ask-title-label">Assignment on the card
+      <input id="ask-title" maxlength="120" placeholder="English 10: Finish summer comic strips">
+    </label>
+    <div class="ask-log" id="ask-log" aria-live="polite"></div>
+    <form class="ask-form" id="ask-form">
+      <label class="sr-only" for="ask-input">Your question</label>
+      <textarea id="ask-input" maxlength="400" rows="3" placeholder="What are you stuck on?"></textarea>
+      <button type="submit" class="btn primary" id="ask-send">Ask</button>
+    </form>
+    <aside id="ask-resources"></aside>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/build.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/tutor.js"></script>
+  <script src="js/ask.js"></script>
+</body>
+</html>
