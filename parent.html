@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071618">
+  <title>Parent desk · Bennett Week</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="parent-page">
+  <div class="parent-wrap">
+    <div class="parent-hero">
+      <img src="img/monkey-badge.png" alt="Monkey achievement badge">
+      <div>
+        <h1>Parent desk</h1>
+        <p>Mom and Orin. No login. Streaks, notes, and Bennett’s questions stay on this device until you export a file.</p>
+      </div>
+    </div>
+    <p class="draft-flag" id="draft-flag" hidden>This device has a draft. Export JSON to share it or drop achievements.json into the repo.</p>
+    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
+      Seed items marked <span class="test-tag">TEST</span> are examples only — not real family rules.
+      Bennett never sees this catalog, only trophies you award.
+    </p>
+    <div class="parent-actions">
+      <button type="button" class="btn primary" id="add">Add streak</button>
+      <button type="button" class="btn" id="download-ach">Download achievements.json</button>
+      <button type="button" class="btn" id="export">Export family pack</button>
+      <label class="btn">Import JSON
+        <input id="import" type="file" accept="application/json" class="sr-only">
+      </label>
+      <button type="button" class="btn" id="reset">Reset to repo files</button>
+      <a class="btn" href="index.html">Back to the week</a>
+    </div>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Inbox</h2>
+    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">Questions Bennett asked on a task or event, plus his daily check-in. Reply with a note on that item.</p>
+    <div id="inbox"></div>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Note on an item</h2>
+    <div class="form-grid">
+      <label>Item
+        <select id="note-target"></select>
+      </label>
+      <label>Note Bennett will see
+        <textarea id="parent-note" maxlength="280" placeholder="Pack the clarinet tonight."></textarea>
+      </label>
+    </div>
+    <div class="parent-actions">
+      <button type="button" class="btn primary" id="add-note">Save note</button>
+    </div>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Reflection pool</h2>
+    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">Bennett sees one prompt at a time on the week page. Fun and useful — not a psych eval.</p>
+    <div class="form-grid">
+      <label>New prompt
+        <input id="new-prompt" maxlength="140" placeholder="Which class felt easiest today?">
+      </label>
+      <label class="check">
+        <input id="prompt-test" type="checkbox" checked> Mark as TEST
+      </label>
+    </div>
+    <div class="parent-actions">
+      <button type="button" class="btn" id="add-prompt">Add prompt</button>
+    </div>
+    <div id="pool"></div>
+
+    <section id="editor" hidden>
+      <h2 id="editor-title" style="margin:18px 0 10px;font-size:1.05rem">New streak</h2>
+      <div class="form-grid">
+        <label>Title
+          <input id="title" maxlength="80" placeholder="Straight A's">
+        </label>
+        <label>Description
+          <textarea id="description" maxlength="200" placeholder="Straight A's for 3 weeks"></textarea>
+        </label>
+        <label>How parents count it
+          <textarea id="how" maxlength="200" placeholder="Count each week, then award"></textarea>
+        </label>
+        <label>Incentive
+          <input id="incentive" maxlength="120" placeholder="TEST — pick dinner">
+        </label>
+        <div class="form-row">
+          <label>Icon
+            <select id="icon"></select>
+          </label>
+          <label>Bananas
+            <input id="reward" type="number" min="0" max="99" value="10">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Streak target
+            <input id="target" type="number" min="1" max="99" value="3">
+          </label>
+          <label>Unit
+            <input id="unit" maxlength="24" value="week">
+          </label>
+        </div>
+        <label class="check">
+          <input id="test" type="checkbox" checked> Mark as TEST
+        </label>
+      </div>
+      <div class="parent-actions">
+        <button type="button" class="btn primary" id="save">Save on this device</button>
+        <button type="button" class="btn" id="cancel">Cancel</button>
+      </div>
+    </section>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Streaks</h2>
+    <div id="list"></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <script id="week-seed" type="application/json">
+{
+  "timezone": "America/Chicago",
+  "work": [
+    {"id": "eng-names", "title": "English 10: Help me learn your names!", "due": "2026-08-17T23:59:00"},
+    {"id": "eng-comics", "title": "English 10: Finish summer comic strips", "due": "2026-08-18T13:05:00"},
+    {"id": "eng-notebook", "title": "English 10: Bring spiral notebook", "due": "2026-08-21T13:05:00"}
+  ],
+  "events": [
+    {"id": "band-am-0817", "title": "Band rehearsal", "start": "2026-08-17T06:50:00"},
+    {"id": "band-pm-0817", "title": "Band", "start": "2026-08-17T18:30:00"},
+    {"id": "forms-0820", "title": "Forms & Fees Night", "start": "2026-08-20T17:30:00"},
+    {"id": "test-jam", "title": "TEST: Monkey jam (not a real event)", "start": "2026-08-19T16:00:00"}
+  ]
+}
+  </script>
+  <script id="ach-seed" type="application/json">
+{
+  "currency": {"name": "bananas", "singular": "banana", "emoji": "🍌"},
+  "achievements": [
+    {"id": "straight-as-3w", "title": "Straight A's", "description": "Straight A's for 3 weeks in a row.", "how": "Parents count each week of straight A's, then award.", "incentive": "TEST — pick dinner", "icon": "badge", "test": true, "reward": 20, "streak": {"target": 3, "unit": "week"}},
+    {"id": "no-late-4w", "title": "On-time streak", "description": "No late assignments for 4 weeks.", "how": "Parents count a clean week, then award at 4.", "incentive": "TEST — extra 15 min screen time", "icon": "tennis", "test": true, "reward": 20, "streak": {"target": 4, "unit": "week"}},
+    {"id": "flash-cards-first", "title": "Flash-card first test", "description": "Used flash cards for his first test.", "how": "Parents award when he actually used the cards.", "incentive": "TEST — pick a snack", "icon": "guitar", "test": true, "reward": 10, "streak": {"target": 1, "unit": "time"}},
+    {"id": "started-week-5", "title": "Five-day start", "description": "Started the week 5 school days in a row.", "how": "Parents count a school day he opened the lobby and started something.", "incentive": "TEST — skip one chore", "icon": "clarinet", "test": true, "reward": 15, "streak": {"target": 5, "unit": "school day"}},
+    {"id": "asked-before-due", "title": "Asked before it was due", "description": "Asked a question before a due date.", "how": "Parents award help-seeking, not a finished worksheet.", "incentive": "TEST — high five", "icon": "banana", "test": true, "reward": 10, "streak": {"target": 1, "unit": "time"}},
+    {"id": "hidden-banana", "title": "Hidden banana", "description": "You found a silly secret in the jungle.", "how": "Easter egg. Tap the banner band five times.", "incentive": "TEST — a goofy dance from a parent", "icon": "banana", "test": true, "secret": true, "reward": 25, "unlock": {"type": "easter_egg", "egg": "banner-monkey"}}
+  ]
+}
+  </script>
+  <script id="family-seed" type="application/json">
+{
+  "notes": [
+    {"id": "test-note-names", "targetType": "work", "targetId": "eng-names", "from": "parent", "kind": "note", "text": "TEST: Say your full name twice, then one thing you are awesome at. Keep it short.", "at": "2026-08-14T20:15:00-05:00", "test": true},
+    {"id": "test-q-comics", "targetType": "work", "targetId": "eng-comics", "from": "bennett", "kind": "question", "text": "TEST: Do the comic strips need color, or is pencil okay?", "at": "2026-08-14T21:04:00-05:00", "test": true},
+    {"id": "test-note-band", "targetType": "event", "targetId": "band-am-0817", "from": "parent", "kind": "note", "text": "TEST: Early call — pack the clarinet the night before.", "at": "2026-08-14T19:10:00-05:00", "test": true}
+  ],
+  "reflections": {
+    "pool": [
+      {"id": "r-easiest", "text": "Which class felt easiest today?", "test": true},
+      {"id": "r-teacher", "text": "Name one thing a teacher did that helped", "test": true},
+      {"id": "r-weird", "text": "Anything feel weird or too fast?", "test": true}
+    ],
+    "answers": [
+      {"id": "ra-test-1", "promptId": "r-easiest", "prompt": "Which class felt easiest today?", "text": "TEST: Band — we mostly set up and tuned.", "at": "2026-08-14T19:42:00-05:00", "test": true}
+    ]
+  },
+  "streaks": {}
+}
+  </script>
+  <script src="js/game.js"></script>
+  <script src="js/parent.js"></script>
+</body>
+</html>

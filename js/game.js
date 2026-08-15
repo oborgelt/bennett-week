@@ -5,6 +5,8 @@
     bananas: "bw-bananas",
     eggs: "bw-eggs",
     mom: "bw-mom-achievements",
+    family: "bw-family",
+    trophyOrder: "bw-trophy-order",
     opened: "bw-opened"
   };
 
@@ -52,6 +54,31 @@
     return ICONS[name] || ICONS.badge;
   }
 
+  function uid(prefix) {
+    return (prefix || "id") + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
+  }
+
+  function nowIso() {
+    return new Date().toISOString();
+  }
+
+  function fmtStamp(iso) {
+    if (!iso) return "";
+    const d = typeof iso === "number" ? new Date(iso) : new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Chicago",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    }).formatToParts(d);
+    const get = (t) => (parts.find((p) => p.type === t) || {}).value || "";
+    const day = `${get("month")}/${get("day")}`;
+    const time = `${get("hour")}:${get("minute")} ${get("dayPeriod")}`.trim();
+    return day && time ? `${day}, ${time}` : d.toLocaleString("en-US");
+  }
+
   function getProgress() {
     return read(KEYS.progress, {});
   }
@@ -90,6 +117,49 @@
     localStorage.removeItem(KEYS.mom);
   }
 
+  function emptyFamily() {
+    return { notes: [], reflections: { pool: [], answers: [] }, streaks: {} };
+  }
+
+  function normalizeFamily(raw) {
+    const f = raw && typeof raw === "object" ? raw : {};
+    const reflections = f.reflections && typeof f.reflections === "object" ? f.reflections : {};
+    return {
+      notes: Array.isArray(f.notes) ? f.notes : [],
+      reflections: {
+        pool: Array.isArray(reflections.pool) ? reflections.pool : [],
+        answers: Array.isArray(reflections.answers) ? reflections.answers : []
+      },
+      streaks: f.streaks && typeof f.streaks === "object" && !Array.isArray(f.streaks) ? f.streaks : {}
+    };
+  }
+
+  function getFamilyDraft() {
+    const stored = read(KEYS.family, null);
+    return stored ? normalizeFamily(stored) : null;
+  }
+
+  function saveFamily(family) {
+    write(KEYS.family, normalizeFamily(family));
+  }
+
+  function clearFamilyDraft() {
+    localStorage.removeItem(KEYS.family);
+  }
+
+  function usingFamilyDraft() {
+    return !!localStorage.getItem(KEYS.family);
+  }
+
+  function getTrophyOrder() {
+    const order = read(KEYS.trophyOrder, []);
+    return Array.isArray(order) ? order : [];
+  }
+
+  function saveTrophyOrder(ids) {
+    write(KEYS.trophyOrder, ids);
+  }
+
   function parseSeed(id) {
     const el = document.getElementById(id);
     if (!el) return null;
@@ -120,19 +190,48 @@
     return draft || file || { currency: currency({}), achievements: [] };
   }
 
+  async function loadFamily() {
+    const seed = normalizeFamily(parseSeed("family-seed") || emptyFamily());
+    const stored = getFamilyDraft();
+    if (stored) return stored;
+    const file = await fetchJson("family.json", null);
+    return normalizeFamily(file || seed);
+  }
+
   function workState(id) {
-    return getProgress()[id] || {};
+    const cur = getProgress()[id] || {};
+    const started = !!(cur.started || cur.startedAt);
+    let startedAt = cur.startedAt || null;
+    if (!startedAt && typeof cur.started === "number") {
+      startedAt = new Date(cur.started).toISOString();
+    }
+    if (!startedAt && typeof cur.started === "string" && cur.started !== "true") {
+      startedAt = cur.started;
+    }
+    return { started, startedAt, done: cur.done || null };
   }
 
   function touchWork(id, kind) {
     const all = getProgress();
-    const cur = all[id] || {};
-    const first = !cur[kind];
-    if (first) cur[kind] = Date.now();
+    const cur = Object.assign({}, all[id] || {});
+    let first = false;
+    if (kind === "started") {
+      if (!cur.started && !cur.startedAt) {
+        cur.started = true;
+        cur.startedAt = nowIso();
+        first = true;
+        addBananas(2);
+      }
+    } else if (kind === "done") {
+      if (!cur.done) {
+        cur.done = Date.now();
+        first = true;
+        addBananas(3);
+      }
+    }
     all[id] = cur;
     write(KEYS.progress, all);
-    if (first) addBananas(kind === "done" ? 3 : 2);
-    return { first, state: cur };
+    return { first, state: workState(id) };
   }
 
   function alreadyUnlocked(id) {
@@ -147,46 +246,9 @@
     return true;
   }
 
-  function dueDate(work) {
-    if (!work || !work.due) return null;
-    const [d, t] = work.due.split("T");
-    const [y, m, day] = d.split("-").map(Number);
-    return new Date(y, m - 1, day, 0, 0, 0);
-  }
-
-  function todayLocal() {
-    const parts = new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Chicago",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).formatToParts(new Date());
-    const get = (t) => parts.find((p) => p.type === t).value;
-    return new Date(Number(get("year")), Number(get("month")) - 1, Number(get("day")));
-  }
-
-  function beforeDue(work) {
-    const due = dueDate(work);
-    if (!due) return true;
-    return todayLocal() < due;
-  }
-
-  function findWork(week, id) {
-    return (week.work || []).find((w) => w.id === id);
-  }
-
   function evaluate(ach, ctx) {
     const rule = ach.unlock || {};
-    const type = rule.type;
-    if (type === "open_week") return true;
-    if (type === "easter_egg") return !!(ctx.eggs && ctx.eggs[rule.egg]);
-    if (type === "view_event") return !!(ctx.viewedEvents && ctx.viewedEvents[rule.eventId]);
-    const work = findWork(ctx.week, rule.workId);
-    const st = workState(rule.workId);
-    const earlyOk = !rule.beforeDue || beforeDue(work);
-    if (type === "start_work") return !!(st.started && earlyOk);
-    if (type === "done_work") return !!(st.done && earlyOk);
-    if (type === "touch_work") return !!((st.started || st.done) && earlyOk);
+    if (rule.type === "easter_egg") return !!(ctx.eggs && ctx.eggs[rule.egg]);
     return false;
   }
 
@@ -201,6 +263,14 @@
       }
     });
     return fresh;
+  }
+
+  function awardAchievement(pack, id) {
+    const ach = (pack.achievements || []).find((a) => a.id === id);
+    if (!ach) return null;
+    if (!markUnlocked(id)) return null;
+    addBananas(ach.reward || 0);
+    return ach;
   }
 
   function recordEgg(egg) {
@@ -294,14 +364,58 @@
     if (!localStorage.getItem(KEYS.opened)) write(KEYS.opened, Date.now());
   }
 
+  function notesFor(family, targetType, targetId) {
+    return (family.notes || []).filter((n) => n.targetType === targetType && n.targetId === targetId);
+  }
+
+  function addNote(family, note) {
+    const next = normalizeFamily(family);
+    next.notes = next.notes.concat([note]);
+    saveFamily(next);
+    return next;
+  }
+
+  function exportPack(pack, family) {
+    return {
+      version: 2,
+      currency: currency(pack),
+      achievements: pack.achievements || [],
+      family: normalizeFamily(family),
+      unlocks: getUnlocks(),
+      trophyOrder: getTrophyOrder()
+    };
+  }
+
+  function importPack(obj) {
+    if (!obj || typeof obj !== "object") return null;
+    const pack = {
+      currency: obj.currency || currency({}),
+      achievements: Array.isArray(obj.achievements)
+        ? obj.achievements
+        : (obj.achievementsPack && obj.achievementsPack.achievements) || []
+    };
+    if (obj.achievementsPack && obj.achievementsPack.currency) {
+      pack.currency = obj.achievementsPack.currency;
+    }
+    saveMomDraft(pack);
+    if (obj.family) saveFamily(obj.family);
+    if (obj.unlocks && typeof obj.unlocks === "object") write(KEYS.unlocks, obj.unlocks);
+    if (Array.isArray(obj.trophyOrder)) saveTrophyOrder(obj.trophyOrder);
+    return pack;
+  }
+
   global.Game = {
     KEYS,
     esc,
+    uid,
+    nowIso,
+    fmtStamp,
     currency,
     iconFor,
     prefersReducedMotion,
     loadWeek,
     loadAchievements,
+    loadFamily,
     getProgress,
     getUnlocks,
     getBananas,
@@ -311,9 +425,18 @@
     getMomDraft,
     saveMomDraft,
     clearMomDraft,
+    getFamilyDraft,
+    saveFamily,
+    clearFamilyDraft,
+    usingFamilyDraft,
+    emptyFamily,
+    normalizeFamily,
+    getTrophyOrder,
+    saveTrophyOrder,
     workState,
     touchWork,
     checkUnlocks,
+    awardAchievement,
     recordEgg,
     bumpEggCount,
     toast,
@@ -322,6 +445,11 @@
     celebrate,
     downloadJson,
     markOpened,
-    alreadyUnlocked
+    alreadyUnlocked,
+    markUnlocked,
+    notesFor,
+    addNote,
+    exportPack,
+    importPack
   };
 })(window);

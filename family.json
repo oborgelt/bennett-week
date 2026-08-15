@@ -1,0 +1,52 @@
+{
+  "notes": [
+    {
+      "id": "test-note-names",
+      "targetType": "work",
+      "targetId": "eng-names",
+      "from": "parent",
+      "kind": "note",
+      "text": "TEST: Say your full name twice, then one thing you are awesome at. Keep it short.",
+      "at": "2026-08-14T20:15:00-05:00",
+      "test": true
+    },
+    {
+      "id": "test-q-comics",
+      "targetType": "work",
+      "targetId": "eng-comics",
+      "from": "bennett",
+      "kind": "question",
+      "text": "TEST: Do the comic strips need color, or is pencil okay?",
+      "at": "2026-08-14T21:04:00-05:00",
+      "test": true
+    },
+    {
+      "id": "test-note-band",
+      "targetType": "event",
+      "targetId": "band-am-0817",
+      "from": "parent",
+      "kind": "note",
+      "text": "TEST: Early call — pack the clarinet the night before.",
+      "at": "2026-08-14T19:10:00-05:00",
+      "test": true
+    }
+  ],
+  "reflections": {
+    "pool": [
+      { "id": "r-easiest", "text": "Which class felt easiest today?", "test": true },
+      { "id": "r-teacher", "text": "Name one thing a teacher did that helped", "test": true },
+      { "id": "r-weird", "text": "Anything feel weird or too fast?", "test": true }
+    ],
+    "answers": [
+      {
+        "id": "ra-test-1",
+        "promptId": "r-easiest",
+        "prompt": "Which class felt easiest today?",
+        "text": "TEST: Band — we mostly set up and tuned.",
+        "at": "2026-08-14T19:42:00-05:00",
+        "test": true
+      }
+    ]
+  },
+  "streaks": {}
+}

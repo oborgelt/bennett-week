@@ -12,7 +12,7 @@
   <div class="note-field" id="notes" aria-hidden="true"></div>
   <button type="button" class="clarinet" id="clarinet" aria-label="Honk the clarinet">🎶</button>
 
-  <header>
+  <header class="week-head">
     <div class="banner-wrap">
       <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
       <button type="button" class="banner-hotspot" id="banner-monkey" aria-label="Tap the monkey band"></button>
@@ -31,8 +31,9 @@
         </div>
       </div>
       <button type="button" class="trophies" id="trophies">🏆 <span id="trophy-count">0</span></button>
+      <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
     </div>
-    <p class="draft-flag" id="draft-flag" hidden>Using Mom desk draft on this device</p>
+    <p class="draft-flag" id="draft-flag" hidden>Using parent desk draft on this device</p>
   </header>
 
   <div class="dots" id="dots"></div>
@@ -41,7 +42,6 @@
     <button id="prev" type="button">← Prev</button>
     <button id="next" type="button">Next →</button>
   </nav>
-  <p class="mom-link"><a href="mom.html">Mom desk</a></p>
 
   <div class="peek-monkey" aria-hidden="true">
     <img src="img/monkey-tennis.png" alt="">
@@ -52,12 +52,24 @@
     <div class="shelf-panel" role="dialog" aria-labelledby="shelf-title">
       <div class="shelf-head">
         <div>
-          <h2 id="shelf-title">Trophy shelf</h2>
-          <p>TEST achievements while we tune look and feel. Incentives are examples only.</p>
+          <h2 id="shelf-title">Trophy room</h2>
+          <p>Only trophies you have earned. Drag or tap to rearrange.</p>
         </div>
         <button type="button" class="close-shelf" id="close-shelf" aria-label="Close">✕</button>
       </div>
       <div class="trophy-grid" id="trophy-grid"></div>
+    </div>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet-panel" role="dialog" aria-labelledby="sheet-title">
+      <div class="sheet-head">
+        <div>
+          <h2 id="sheet-title">Sheet</h2>
+        </div>
+        <button type="button" class="close-sheet" id="close-sheet" aria-label="Close">✕</button>
+      </div>
+      <div id="sheet-body"></div>
     </div>
   </div>
 
@@ -146,66 +158,66 @@
   },
   "achievements": [
     {
-      "id": "first-serve",
-      "title": "First serve",
-      "description": "Walk into the week lobby.",
-      "how": "Open Bennett Week.",
-      "incentive": "TEST — high five",
-      "icon": "tennis",
-      "test": true,
-      "reward": 5,
-      "unlock": { "type": "open_week" }
-    },
-    {
-      "id": "name-game",
-      "title": "Name game",
-      "description": "Start the English names video.",
-      "how": "Tap I started this on Help me learn your names.",
-      "incentive": "TEST — pick a snack",
+      "id": "straight-as-3w",
+      "title": "Straight A's",
+      "description": "Straight A's for 3 weeks in a row.",
+      "how": "Parents count each week of straight A's, then award.",
+      "incentive": "TEST — pick dinner",
       "icon": "badge",
       "test": true,
-      "reward": 10,
-      "unlock": { "type": "start_work", "workId": "eng-names" }
+      "reward": 20,
+      "streak": { "target": 3, "unit": "week" }
     },
     {
-      "id": "comic-warmup",
-      "title": "Comic warm-up",
-      "description": "Start summer comic strips before Tuesday.",
-      "how": "Tap I started this on the comic strips before they are due.",
-      "incentive": "TEST — extra 10 min screen time",
+      "id": "no-late-4w",
+      "title": "On-time streak",
+      "description": "No late assignments for 4 weeks.",
+      "how": "Parents count a clean week, then award at 4.",
+      "incentive": "TEST — extra 15 min screen time",
+      "icon": "tennis",
+      "test": true,
+      "reward": 20,
+      "streak": { "target": 4, "unit": "week" }
+    },
+    {
+      "id": "flash-cards-first",
+      "title": "Flash-card first test",
+      "description": "Used flash cards for his first test.",
+      "how": "Parents award when he actually used the cards.",
+      "incentive": "TEST — pick a snack",
       "icon": "guitar",
       "test": true,
       "reward": 10,
-      "unlock": { "type": "start_work", "workId": "eng-comics", "beforeDue": true }
+      "streak": { "target": 1, "unit": "time" }
     },
     {
-      "id": "notebook-scout",
-      "title": "Notebook scout",
-      "description": "Get the spiral notebook before Friday.",
-      "how": "Tap I started this or Done on the spiral notebook before Friday.",
+      "id": "started-week-5",
+      "title": "Five-day start",
+      "description": "Started the week 5 school days in a row.",
+      "how": "Parents count a school day he opened the lobby and started something.",
       "incentive": "TEST — skip one chore",
-      "icon": "badge",
-      "test": true,
-      "reward": 15,
-      "unlock": { "type": "touch_work", "workId": "eng-notebook", "beforeDue": true }
-    },
-    {
-      "id": "band-monkey",
-      "title": "Band monkey",
-      "description": "Monday rehearsal is on the board.",
-      "how": "Open the Monday card that shows band rehearsal.",
-      "incentive": "TEST — pick dinner",
       "icon": "clarinet",
       "test": true,
-      "reward": 8,
-      "unlock": { "type": "view_event", "eventId": "band-am-0817" }
+      "reward": 15,
+      "streak": { "target": 5, "unit": "school day" }
+    },
+    {
+      "id": "asked-before-due",
+      "title": "Asked before it was due",
+      "description": "Asked a question before a due date.",
+      "how": "Parents award help-seeking, not a finished worksheet.",
+      "incentive": "TEST — high five",
+      "icon": "banana",
+      "test": true,
+      "reward": 10,
+      "streak": { "target": 1, "unit": "time" }
     },
     {
       "id": "hidden-banana",
       "title": "Hidden banana",
       "description": "You found a silly secret in the jungle.",
       "how": "Easter egg. Tap the banner band five times.",
-      "incentive": "TEST — a goofy dance from Mom",
+      "incentive": "TEST — a goofy dance from a parent",
       "icon": "banana",
       "test": true,
       "secret": true,
@@ -215,7 +227,62 @@
   ]
 }
   </script>
+  <script id="family-seed" type="application/json">
+{
+  "notes": [
+    {
+      "id": "test-note-names",
+      "targetType": "work",
+      "targetId": "eng-names",
+      "from": "parent",
+      "kind": "note",
+      "text": "TEST: Say your full name twice, then one thing you are awesome at. Keep it short.",
+      "at": "2026-08-14T20:15:00-05:00",
+      "test": true
+    },
+    {
+      "id": "test-q-comics",
+      "targetType": "work",
+      "targetId": "eng-comics",
+      "from": "bennett",
+      "kind": "question",
+      "text": "TEST: Do the comic strips need color, or is pencil okay?",
+      "at": "2026-08-14T21:04:00-05:00",
+      "test": true
+    },
+    {
+      "id": "test-note-band",
+      "targetType": "event",
+      "targetId": "band-am-0817",
+      "from": "parent",
+      "kind": "note",
+      "text": "TEST: Early call — pack the clarinet the night before.",
+      "at": "2026-08-14T19:10:00-05:00",
+      "test": true
+    }
+  ],
+  "reflections": {
+    "pool": [
+      { "id": "r-easiest", "text": "Which class felt easiest today?", "test": true },
+      { "id": "r-teacher", "text": "Name one thing a teacher did that helped", "test": true },
+      { "id": "r-weird", "text": "Anything feel weird or too fast?", "test": true }
+    ],
+    "answers": [
+      {
+        "id": "ra-test-1",
+        "promptId": "r-easiest",
+        "prompt": "Which class felt easiest today?",
+        "text": "TEST: Band — we mostly set up and tuned.",
+        "at": "2026-08-14T19:42:00-05:00",
+        "test": true
+      }
+    ]
+  },
+  "streaks": {}
+}
+  </script>
   <script src="js/game.js"></script>
+  <script src="js/tutor.js"></script>
   <script src="js/week.js"></script>
 </body>
 </html>
