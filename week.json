@@ -1,10 +1,22 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-14",
+  "as_of": "2026-08-15",
   "parenting": [
-    {"who": "Mom", "start": "2026-08-14T00:00:00", "end": "2026-08-16T18:00:00"},
-    {"who": "Dad", "start": "2026-08-16T18:00:00", "end": "2026-08-20T16:30:00"},
-    {"who": "Mom", "start": "2026-08-20T16:30:00", "end": "2026-08-22T00:00:00"}
+    {
+      "who": "Mom",
+      "start": "2026-08-14T00:00:00",
+      "end": "2026-08-16T18:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-08-16T18:00:00",
+      "end": "2026-08-20T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-08-20T16:30:00",
+      "end": "2026-08-22T00:00:00"
+    }
   ],
   "events": [
     {
@@ -16,11 +28,33 @@
     },
     {
       "id": "band-pm-0817",
-      "title": "Band",
+      "title": "Marching band",
       "start": "2026-08-17T18:30:00",
       "end": "2026-08-17T20:30:00",
       "kind": "calendar",
       "place": "Olathe East"
+    },
+    {
+      "id": "pe-touchbase-0818",
+      "title": "TouchBase PE items pickup",
+      "start": "2026-08-18T13:05:00",
+      "kind": "calendar",
+      "note": "Optional. In class."
+    },
+    {
+      "id": "schedule-change-0818",
+      "title": "Schedule-change form due",
+      "start": "2026-08-18T16:00:00",
+      "kind": "calendar",
+      "place": "Main Gym",
+      "note": "10th grade printed pickup. Calendar note, not homework."
+    },
+    {
+      "id": "pe-uniform-0819",
+      "title": "PE uniform starts",
+      "start": "2026-08-19T07:40:00",
+      "kind": "calendar",
+      "note": "Existing OE uniform is OK."
     },
     {
       "id": "forms-0820",
@@ -30,13 +64,6 @@
       "kind": "calendar",
       "place": "Band/Orchestra rooms",
       "note": "After 4:30pm handoff to Mom"
-    },
-    {
-      "id": "test-jam",
-      "title": "TEST: Monkey jam (not a real event)",
-      "start": "2026-08-19T16:00:00",
-      "kind": "calendar",
-      "note": "TEST data only — look-and-feel filler, not on any real calendar."
     }
   ],
   "work": [
@@ -44,28 +71,28 @@
       "id": "eng-names",
       "title": "English 10: Help me learn your names!",
       "due": "2026-08-17T23:59:00",
-      "note": "Canvas video: full name twice + something you are awesome at. 5 points."
+      "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points."
     },
     {
       "id": "eng-comics",
       "title": "English 10: Finish summer comic strips",
       "due": "2026-08-18T13:05:00",
-      "note": "Started 8/17 in class. From Daily Agendas sheet.",
-      "suggest_from": "2026-08-14"
+      "note": "In class Tuesday. Monday card should still say start this.",
+      "suggest_from": "2026-08-15"
     },
     {
       "id": "eng-notebook",
       "title": "English 10: Bring spiral notebook",
       "due": "2026-08-21T13:05:00",
       "note": "Spiral or composition notebook. Also highlighter and 100 index cards.",
-      "suggest_from": "2026-08-14"
+      "suggest_from": "2026-08-15"
     }
   ],
   "notes": [
     {
       "date": "2026-08-14",
-      "title": "Chemistry absence",
-      "text": "Historical note from 8/14. Unresolved, not an assignment."
+      "title": "P4 Chemistry absence",
+      "text": "Still ABSENT UNEXCUSED. Unresolved note, not an assignment."
     }
   ]
 }
