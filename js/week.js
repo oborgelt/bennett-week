@@ -370,10 +370,12 @@
 
   function bindShelf() {
     const shelf = document.getElementById("shelf");
-    document.getElementById("trophies").addEventListener("click", () => {
+    function openShelf() {
       renderShelf();
       shelf.classList.add("open");
-    });
+    }
+    document.getElementById("trophies").addEventListener("click", openShelf);
+    if (location.hash === "#trophies") openShelf();
     document.getElementById("close-shelf").addEventListener("click", () => shelf.classList.remove("open"));
     shelf.addEventListener("click", (e) => {
       if (e.target === shelf) shelf.classList.remove("open");
