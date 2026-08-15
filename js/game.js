@@ -19,7 +19,7 @@
     opens: "bw-opens"
   };
 
-  const LIBRARY_GROUPS = ["ace", "riff", "scorch", "crew", "fun"];
+  const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "crew", "fun"];
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
   const SOUND_CUES = [
     { id: "egg-end", label: "1. Egg game ends (41 eggs)" },
@@ -664,6 +664,24 @@
           status: "ready",
           video: "img/characters/scorch.mp4",
           poster: "img/characters/scorch.jpg"
+        },
+        {
+          id: "deuce",
+          name: "Deuce",
+          talent: "The Return",
+          tagline: "Send it back.",
+          status: "ready",
+          video: "img/characters/deuce.mp4",
+          poster: "img/characters/deuce.jpg"
+        },
+        {
+          id: "fuzz",
+          name: "Fuzz",
+          talent: "Unplugged",
+          tagline: "Quiet still counts.",
+          status: "ready",
+          video: "img/characters/fuzz.mp4",
+          poster: "img/characters/fuzz.jpg"
         }
       ]
     };
@@ -816,6 +834,10 @@
         { id: "riff-poster", label: "Riff poster", path: "img/characters/riff.jpg", kind: "image", character: "riff" },
         { id: "scorch-clip", label: "Scorch locker clip", path: "img/characters/scorch.mp4", poster: "img/characters/scorch.jpg", kind: "video", character: "scorch" },
         { id: "scorch-poster", label: "Scorch poster", path: "img/characters/scorch.jpg", kind: "image", character: "scorch" },
+        { id: "deuce-clip", label: "Deuce locker clip", path: "img/characters/deuce.mp4", poster: "img/characters/deuce.jpg", kind: "video", character: "deuce" },
+        { id: "deuce-poster", label: "Deuce poster", path: "img/characters/deuce.jpg", kind: "image", character: "deuce" },
+        { id: "fuzz-clip", label: "Fuzz locker clip", path: "img/characters/fuzz.mp4", poster: "img/characters/fuzz.jpg", kind: "video", character: "fuzz" },
+        { id: "fuzz-poster", label: "Fuzz poster", path: "img/characters/fuzz.jpg", kind: "image", character: "fuzz" },
         { id: "crew-hero", label: "Crew hero lineup", path: "img/library/crew-hero.jpg", kind: "image", character: "crew" },
         { id: "crew-run", label: "Crew run", path: "img/library/crew-run.jpg", kind: "image", character: "crew" },
         { id: "crew-burst", label: "Crew burst", path: "img/library/crew-burst.jpg", kind: "image", character: "crew" },

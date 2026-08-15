@@ -125,6 +125,32 @@
       "streak": { "target": 1, "unit": "time" }
     },
     {
+      "id": "test-deuce-return",
+      "title": "Meet Deuce",
+      "description": "TEST — award this to unlock Deuce for Bennett. Not auto-unlocked.",
+      "how": "Parents award this TEST streak when they want Bennett to meet Deuce. Awarding it unlocks the character; loading the site does not.",
+      "incentive": "Unlocks Deuce",
+      "icon": "tennis",
+      "test": true,
+      "reward": 10,
+      "rewardCharacter": "deuce",
+      "rewardUnlock": { "type": "character", "id": "deuce", "label": "Deuce" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-fuzz-unplugged",
+      "title": "Meet Fuzz",
+      "description": "TEST — award this to unlock Fuzz for Bennett. Not auto-unlocked.",
+      "how": "Parents award this TEST streak when they want Bennett to meet Fuzz. Awarding it unlocks the character; loading the site does not.",
+      "incentive": "Unlocks Fuzz",
+      "icon": "guitar",
+      "test": true,
+      "reward": 10,
+      "rewardCharacter": "fuzz",
+      "rewardUnlock": { "type": "character", "id": "fuzz", "label": "Fuzz" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
       "id": "test-notebook-holding",
       "title": "Notebook of Holding",
       "description": "TEST — award this to unlock the Notebook of Holding tool for the story.",
