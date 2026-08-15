@@ -1,0 +1,64 @@
+{
+  "timezone": "America/Chicago",
+  "as_of": "2026-08-14",
+  "parenting": [
+    {"who": "Mom", "start": "2026-08-14T00:00:00", "end": "2026-08-16T18:00:00"},
+    {"who": "Dad", "start": "2026-08-16T18:00:00", "end": "2026-08-20T16:30:00"},
+    {"who": "Mom", "start": "2026-08-20T16:30:00", "end": "2026-08-22T00:00:00"}
+  ],
+  "events": [
+    {
+      "id": "band-am-0817",
+      "title": "Band rehearsal",
+      "start": "2026-08-17T06:50:00",
+      "kind": "calendar",
+      "note": "Dad's time"
+    },
+    {
+      "id": "band-pm-0817",
+      "title": "Band",
+      "start": "2026-08-17T18:30:00",
+      "end": "2026-08-17T20:30:00",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "forms-0820",
+      "title": "Forms & Fees Night",
+      "start": "2026-08-20T17:30:00",
+      "end": "2026-08-20T19:00:00",
+      "kind": "calendar",
+      "place": "Band/Orchestra rooms",
+      "note": "After 4:30pm handoff to Mom"
+    }
+  ],
+  "work": [
+    {
+      "id": "eng-names",
+      "title": "English 10: Help me learn your names!",
+      "due": "2026-08-17T23:59:00",
+      "note": "Canvas video: full name twice + something you are awesome at. 5 points."
+    },
+    {
+      "id": "eng-comics",
+      "title": "English 10: Finish summer comic strips",
+      "due": "2026-08-18T13:05:00",
+      "note": "Started 8/17 in class. From Daily Agendas sheet.",
+      "suggest_from": "2026-08-14"
+    },
+    {
+      "id": "eng-notebook",
+      "title": "English 10: Bring spiral notebook",
+      "due": "2026-08-21T13:05:00",
+      "note": "Spiral or composition notebook. Also highlighter and 100 index cards.",
+      "suggest_from": "2026-08-14"
+    }
+  ],
+  "notes": [
+    {
+      "date": "2026-08-14",
+      "title": "Chemistry absence",
+      "text": "Historical note from 8/14. Unresolved, not an assignment."
+    }
+  ]
+}
