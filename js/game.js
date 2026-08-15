@@ -910,6 +910,24 @@
     notesFor,
     addNote,
     exportPack,
-    importPack
+    importPack,
+    paintBuild
   };
+
+  function paintBuild() {
+    const meta = global.BW_BUILD || { build: 0, modified: "" };
+    let el = document.getElementById("build-stamp");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "build-stamp";
+      el.className = "build-stamp";
+      document.body.appendChild(el);
+    }
+    const when = fmtStamp(meta.modified) || meta.modified || "";
+    el.innerHTML = `<span>Build ${esc(meta.build)}</span>${when ? `<span>${esc(when)}</span>` : ""}`;
+    el.title = "Build " + meta.build + (when ? " · last modified " + when : "");
+  }
+
+  if (document.body) paintBuild();
+  else document.addEventListener("DOMContentLoaded", paintBuild);
 })(window);

@@ -98,4 +98,6 @@ Wholesome only. Try tapping the banner band, the little clarinet, and a shy tenn
 - `family.json` — seed notes, questions, reflection pool
 - `serve.py` — static server + `/api/tutor`
 - `img/` — banner, day art, badge, jungle wallpaper
-- `css/theme.css`, `js/game.js`, `js/week.js`, `js/parent.js`, `js/tutor.js`, `js/progress.js`, `js/egg.js`
+- `css/theme.css`, `js/build.js`, `js/game.js`, `js/week.js`, `js/parent.js`, `js/tutor.js`, `js/progress.js`, `js/egg.js`
+
+Every page shows **Build N** and the last-modified time (America/Chicago) in the top right. Bump `build` by 1 and update `modified` in `js/build.js` on each ship. This ship is **22**.
