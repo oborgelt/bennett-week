@@ -25,6 +25,7 @@
   const KHAN = [
     { id: "ela", label: "Khan Academy — ELA", url: "https://www.khanacademy.org/ela" },
     { id: "grammar", label: "Khan Academy — Grammar", url: "https://www.khanacademy.org/humanities/grammar" },
+    { id: "hs-chemistry", label: "Khan Academy — HS Chemistry", url: "https://www.khanacademy.org/science/hs-chemistry" },
     { id: "science", label: "Khan Academy — Science", url: "https://www.khanacademy.org/science" }
   ];
 
@@ -1294,10 +1295,13 @@
 
   function khanLinksFor(title) {
     const t = String(title || "").toLowerCase();
+    if (/chem/.test(t)) {
+      return KHAN.filter((k) => k.id === "hs-chemistry" || k.id === "science");
+    }
     if (/english|ela|comic|names|notebook|grammar|panel/.test(t)) {
       return KHAN.filter((k) => k.id === "ela" || k.id === "grammar");
     }
-    if (/chem|science|bio/.test(t)) {
+    if (/science|bio/.test(t)) {
       return KHAN.filter((k) => k.id === "science");
     }
     return KHAN.slice();
@@ -1307,7 +1311,7 @@
     const links = khanLinksFor(title);
     return `
       <div class="khan-strip">
-        <p class="khan-kicker">Khan Academy — opens in a new tab</p>
+        <p class="khan-kicker">Opens on Khan. No login needed.</p>
         <div class="khan-links">
           ${links.map((k) => `<a class="khan-link" href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.label)}</a>`).join("")}
         </div>

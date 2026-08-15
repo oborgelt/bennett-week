@@ -85,13 +85,16 @@ Invincible is a *style* (comic energy, bananas in the hat). The character is a l
 
 On **A little help**, Ask AI, and the Story resources strip:
 
-- Label: **Khan Academy — opens in a new tab**
+- Label: **Opens on Khan. No login needed.**
 - `target="_blank"` `rel="noopener"`
-- Real URLs only:
+- Real public URLs only (no login, no embed, no API keys):
   - https://www.khanacademy.org/ela
   - https://www.khanacademy.org/humanities/grammar
+  - https://www.khanacademy.org/science/hs-chemistry
   - https://www.khanacademy.org/science
-- English 10 work (names, comic strips, notebook) maps to ELA + grammar. Do not invent Khan URLs.
+- English 10 work (names, comic strips, notebook) maps to ELA + grammar.
+- Chemistry / chem titles map to HS Chemistry plus the Science hub. Generic science / bio stays on the Science hub.
+- Do not invent Khan URLs.
 
 ## Ask AI — Socratic mentor
 
