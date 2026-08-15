@@ -66,10 +66,21 @@ const window = {
   matchMedia() { return { matches: true }; },
   AudioContext: undefined,
   webkitAudioContext: undefined,
-  BW_BUILD: { build: 31, modified: "2026-08-15T13:10:00-05:00" }
+  BW_BUILD: { build: 32, modified: "2026-08-15T13:50:00-05:00" }
 };
 window.window = window;
-const ctx = vm.createContext({ window, document, localStorage, console, URL, encodeURIComponent });
+const ctx = vm.createContext({
+  window,
+  document,
+  localStorage,
+  console,
+  URL,
+  Blob,
+  File,
+  btoa,
+  atob,
+  encodeURIComponent
+});
 vm.runInContext(fs.readFileSync(path.join(root, "js/game.js"), "utf8"), ctx);
 const Game = ctx.window.Game;
 assert(Game, "Game failed to load");
@@ -92,13 +103,50 @@ assert(khanHtml.indexOf("iframe") < 0, "do not embed Khan");
 
 const norm = Game.normalizeLibrary(library);
 assert(norm.items.some((item) => item.id === "banana-honk"), "normalizeLibrary dropped Banana honk");
-assert.strictEqual(Game.inferKind ? true : true, true);
+assert.strictEqual(Game.inferKind("img/library/foo.mp3", "", ""), "audio");
+assert.strictEqual(Game.labelFromFilename("my-cool_honk.mp3"), "My Cool Honk");
+assert.strictEqual(Game.labelFromFilename("TEST-beep.wav"), "TEST Beep");
+assert.strictEqual(Game.kindFromFile({ name: "clip.MP3", type: "" }), "audio");
+assert.strictEqual(Game.kindFromFile({ name: "pic.PNG", type: "image/png" }), "image");
+assert.strictEqual(Game.kindFromFile({ name: "movie.webm", type: "" }), "video");
+assert.strictEqual(Game.kindFromFile({ name: "notes.txt", type: "text/plain" }), "");
+assert.strictEqual(Game.PACK_BLOB_MAX, 2 * 1024 * 1024);
 assert.strictEqual(Game.youtubeId("https://www.youtube.com/watch?v=dQw4w9wgGcI"), "dQw4w9wgGcI");
 assert.strictEqual(Game.youtubeId("https://youtu.be/dQw4w9wgGcI"), "dQw4w9wgGcI");
 assert(Game.youtubeEmbedSrc("https://youtu.be/dQw4w9wgGcI").startsWith("https://www.youtube-nocookie.com/embed/"));
 assert.strictEqual(Game.youtubeEmbedSrc("https://evil.example/embed/nope"), "");
 assert(Game.isSafeHttpUrl("https://example.com/a.mp3"));
 assert(!Game.isSafeHttpUrl("javascript:alert(1)"));
+
+const dropped = Game.normalizeLibrary({
+  items: [{
+    id: "drop-beep",
+    label: "Test Beep",
+    kind: "audio",
+    character: "fun",
+    device: true,
+    filename: "TEST-beep.wav",
+    test: true
+  }]
+});
+assert(dropped.items.some((item) => item.id === "drop-beep" && item.device && item.character === "fun"));
+assert(Game.libraryFor(dropped, "fun", false).some((item) => item.id === "drop-beep"), "Fun shelf should see dropped audio");
+assert(Game.contentLibraryItems(dropped).some((item) => item.id === "drop-beep"), "attach picker should see dropped audio");
+
+const dirty = Game.normalizeLibrary({
+  items: [{
+    id: "blob-url",
+    label: "Nope",
+    kind: "audio",
+    character: "fun",
+    device: true,
+    url: "blob:http://localhost/1",
+    path: "data:audio/wav;base64,AA=="
+  }]
+});
+assert.strictEqual(dirty.items[0].url, "");
+assert.strictEqual(dirty.items[0].path, "");
+assert(dirty.items[0].device);
 
 const pack = {
   currency: achievements.currency,
@@ -112,12 +160,49 @@ family = awarded.family;
 assert(family.contentUnlocks["banana-honk"], "family pack should carry the content unlock");
 
 const exported = Game.exportPack(pack, family, Game.defaultCharacters(), norm);
-assert.strictEqual(exported.version, 6);
+assert.strictEqual(exported.version, 7);
+assert(exported.libraryBlobs && typeof exported.libraryBlobs === "object");
 assert(exported.contentUnlocks["banana-honk"], "export should include content unlocks");
 assert(exported.library.items.some((item) => item.id === "banana-honk" && item.kind === "audio"));
+assert(!banned.test(JSON.stringify(exported)), "family pack seed must not invent ITYSL lines");
 
 const revoked = Game.revokeAchievement(pack, family, "test-banana-honk");
 assert(revoked.revokedContent, "undo award should lock the sound again");
 assert(!Game.alreadyUnlockedContent("banana-honk"), "content should be locked after undo");
 
-console.log("check-content-library: ok");
+(async () => {
+  const beep = new File([new Uint8Array([82, 73, 70, 70, 0, 0, 0, 0])], "TEST-beep.wav", { type: "audio/wav" });
+  const added = await Game.addDeviceLibraryFile({ items: norm.items.slice() }, beep, { test: true });
+  assert(added.ok, "drop should accept a wav");
+  assert.strictEqual(added.item.character, "fun");
+  assert.strictEqual(added.item.kind, "audio");
+  assert.strictEqual(added.item.label, "TEST Beep");
+  assert(added.item.device);
+  assert(Game.librarySrc(added.item), "dropped wav should play from an object URL");
+  assert(Game.libraryFor(added.library, "fun", false).some((item) => item.id === added.item.id));
+
+  const packed = await Game.exportFamilyPack(pack, family, Game.defaultCharacters(), added.library);
+  assert(packed.pack.libraryBlobs[added.item.id], "family pack should carry the device file");
+  assert(packed.pack.libraryBlobs[added.item.id].data);
+  assert(!banned.test(JSON.stringify(packed.pack.library.items.map((item) => item.label).join(" "))));
+
+  const huge = new File([new Uint8Array(Game.PACK_BLOB_MAX + 8)], "huge-skip.wav", { type: "audio/wav" });
+  const big = await Game.addDeviceLibraryFile({ items: [] }, huge);
+  assert(big.ok);
+  const packedHuge = await Game.exportFamilyPack(pack, family, Game.defaultCharacters(), big.library);
+  assert(packedHuge.skipped.some((name) => /huge/i.test(name)), "huge files should skip instead of filling the pack");
+  assert(!packedHuge.pack.libraryBlobs[big.item.id]);
+
+  const imported = await Game.importFamilyPack(packed.pack);
+  assert(imported && imported.pack);
+  const mom = Game.getMomLibrary();
+  assert(mom.items.some((item) => item.id === added.item.id && item.device));
+  await Game.hydrateLibraryBlobs(mom);
+  const back = Game.libraryItem(mom, added.item.id);
+  assert(Game.librarySrc(back), "import should restore the device blob");
+
+  console.log("check-content-library: ok");
+})().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

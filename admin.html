@@ -16,8 +16,8 @@
         <p>Media library · sounds · links</p>
       </div>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 31</span>
-        <span>8/15, 1:10 PM</span>
+        <span>Build 32</span>
+        <span>8/15, 1:50 PM</span>
       </div>
     </div>
     <div class="hud-bar progress-hud">
@@ -37,8 +37,8 @@
   <div class="parent-wrap">
     <p class="draft-flag" id="draft-flag" hidden>This device has a library or family draft. Export the family pack to share.</p>
     <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
-      Tag stills, clips, <strong>audio</strong>, and <strong>links</strong> to Ace, Riff, Scorch, Crew, or <strong>Fun / Sounds</strong>.
-      Paths work on <code>file://</code> and Pages. Audio can be a local path or a URL you are allowed to use.
+      Drop audio you already have (mp3 / wav / ogg / m4a), or an image / video. Files stay <strong>on this device</strong> — not in the repo.
+      Default tag is <strong>Fun / Sounds</strong>. Retag anytime. Export the family pack so Mom can import the files.
       Do not re-encode the locker clips. Do not commit copyrighted soundboard rips.
     </p>
     <div class="parent-actions">
@@ -51,43 +51,52 @@
     </div>
 
     <h2 style="font-size:1rem;margin:18px 0 8px">Add a library item</h2>
-    <div class="form-grid">
-      <label>Label
-        <input id="lib-label" maxlength="80" placeholder="Banana honk">
-      </label>
-      <label>Path (local file)
-        <input id="lib-path" maxlength="200" placeholder="img/library/foo.mp3">
-      </label>
-      <label>URL (https audio or any link)
-        <input id="lib-url" maxlength="300" placeholder="https://…">
-      </label>
-      <div class="form-row">
-        <label>Character
-          <select id="lib-character">
-            <option value="ace">Ace</option>
-            <option value="riff">Riff</option>
-            <option value="scorch">Scorch</option>
-            <option value="crew">Crew</option>
-            <option value="fun" selected>Fun / Sounds</option>
-          </select>
+    <div class="lib-drop" id="lib-drop" tabindex="0" role="button" aria-label="Drop or choose audio, image, or video files">
+      <input id="lib-files" type="file" accept="audio/*,image/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.mp4,.webm,.mov,.jpg,.jpeg,.png,.gif,.webp" multiple class="sr-only">
+      <p class="lib-drop-lead">Drop a sound here</p>
+      <p class="lib-drop-hint">mp3, wav, ogg, m4a — or an image / video. Stays on this phone or laptop. Tagged Fun / Sounds unless you retag it.</p>
+      <button type="button" class="btn primary" id="lib-pick">Choose files</button>
+    </div>
+    <details class="lib-advanced">
+      <summary>Add by path or URL</summary>
+      <div class="form-grid">
+        <label>Label
+          <input id="lib-label" maxlength="80" placeholder="Banana honk">
         </label>
-        <label>Kind
-          <select id="lib-kind">
-            <option value="">Auto from path / URL</option>
-            <option value="image">Image</option>
-            <option value="video">Video</option>
-            <option value="audio">Audio</option>
-            <option value="link">Link</option>
-          </select>
+        <label>Path (local file)
+          <input id="lib-path" maxlength="200" placeholder="img/library/foo.mp3">
+        </label>
+        <label>URL (https audio or any link)
+          <input id="lib-url" maxlength="300" placeholder="https://…">
+        </label>
+        <div class="form-row">
+          <label>Character
+            <select id="lib-character">
+              <option value="ace">Ace</option>
+              <option value="riff">Riff</option>
+              <option value="scorch">Scorch</option>
+              <option value="crew">Crew</option>
+              <option value="fun" selected>Fun / Sounds</option>
+            </select>
+          </label>
+          <label>Kind
+            <select id="lib-kind">
+              <option value="">Auto from path / URL</option>
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+              <option value="audio">Audio</option>
+              <option value="link">Link</option>
+            </select>
+          </label>
+        </div>
+        <label>Poster path (videos)
+          <input id="lib-poster" maxlength="200" placeholder="img/library/crew-hero.jpg">
         </label>
       </div>
-      <label>Poster path (videos)
-        <input id="lib-poster" maxlength="200" placeholder="img/library/crew-hero.jpg">
-      </label>
-    </div>
-    <div class="parent-actions">
-      <button type="button" class="btn primary" id="add-lib">Add to library</button>
-    </div>
+      <div class="parent-actions">
+        <button type="button" class="btn" id="add-lib">Add to library</button>
+      </div>
+    </details>
 
     <h2 style="font-size:1rem;margin:18px 0 8px">Story ingredients</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">

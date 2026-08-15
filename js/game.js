@@ -21,6 +21,11 @@
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "crew", "fun"];
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
+  const PACK_BLOB_MAX = 2 * 1024 * 1024;
+  const IDB_NAME = "bennett-week";
+  const IDB_STORE = "library-blobs";
+  const blobUrlCache = Object.create(null);
+  const memoryBlobs = Object.create(null);
 
   const KHAN = [
     { id: "ela", label: "Khan Academy — ELA", url: "https://www.khanacademy.org/ela" },
@@ -755,6 +760,274 @@
     return "image";
   }
 
+  function kindFromFile(file) {
+    if (!file) return "";
+    const name = String(file.name || "");
+    const type = String(file.type || "").toLowerCase();
+    if (type.indexOf("audio/") === 0 || /\.(mp3|wav|ogg|m4a|aac)$/i.test(name)) return "audio";
+    if (type.indexOf("video/") === 0 || /\.(mp4|webm|mov)$/i.test(name)) return "video";
+    if (type.indexOf("image/") === 0 || /\.(jpe?g|png|gif|webp|svg)$/i.test(name)) return "image";
+    return "";
+  }
+
+  function labelFromFilename(name) {
+    const base = String(name || "").replace(/^.*[\\/]/, "").replace(/\.[^.]+$/, "");
+    const pretty = base.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+    if (!pretty) return "Sound";
+    return pretty.replace(/(^|\s)([a-z])/g, (_m, sp, c) => sp + c.toUpperCase());
+  }
+
+  function stripStoredSrc(value) {
+    const s = String(value || "").trim();
+    if (!s || /^blob:/i.test(s) || /^data:/i.test(s)) return "";
+    return s;
+  }
+
+  function revokeBlobUrl(id) {
+    if (!id || !blobUrlCache[id]) return;
+    try { URL.revokeObjectURL(blobUrlCache[id]); } catch (_) {}
+    delete blobUrlCache[id];
+  }
+
+  function rememberBlobUrl(id, blob) {
+    if (!id || !blob) return "";
+    revokeBlobUrl(id);
+    try {
+      blobUrlCache[id] = URL.createObjectURL(blob);
+      return blobUrlCache[id];
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function libraryBlobUrl(id) {
+    return (id && blobUrlCache[id]) || "";
+  }
+
+  function openLibraryDb() {
+    return new Promise((resolve, reject) => {
+      if (typeof indexedDB === "undefined" || !indexedDB) {
+        reject(new Error("no-idb"));
+        return;
+      }
+      const req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = () => {
+        if (!req.result.objectStoreNames.contains(IDB_STORE)) {
+          req.result.createObjectStore(IDB_STORE);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error("idb"));
+    });
+  }
+
+  async function putLibraryBlob(id, blob, meta) {
+    if (!id || !blob) return false;
+    const rec = {
+      blob,
+      mime: (meta && meta.mime) || blob.type || "",
+      name: (meta && meta.name) || "",
+      size: blob.size || 0
+    };
+    memoryBlobs[id] = rec;
+    try {
+      const db = await openLibraryDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).put(rec, id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      try { db.close(); } catch (_) {}
+    } catch (_) {}
+    return true;
+  }
+
+  async function getLibraryBlob(id) {
+    if (!id) return null;
+    try {
+      const db = await openLibraryDb();
+      const rec = await new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, "readonly");
+        const req = tx.objectStore(IDB_STORE).get(id);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+      try { db.close(); } catch (_) {}
+      if (rec && rec.blob) {
+        memoryBlobs[id] = rec;
+        return rec;
+      }
+    } catch (_) {}
+    return memoryBlobs[id] || null;
+  }
+
+  async function deleteLibraryBlob(id) {
+    revokeBlobUrl(id);
+    delete memoryBlobs[id];
+    try {
+      const db = await openLibraryDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      try { db.close(); } catch (_) {}
+    } catch (_) {}
+  }
+
+  async function clearLibraryBlobs() {
+    Object.keys(blobUrlCache).forEach(revokeBlobUrl);
+    Object.keys(memoryBlobs).forEach((key) => { delete memoryBlobs[key]; });
+    try {
+      const db = await openLibraryDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).clear();
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      try { db.close(); } catch (_) {}
+    } catch (_) {}
+  }
+
+  async function hydrateLibraryBlobs(lib) {
+    const items = (lib && lib.items) || [];
+    for (let i = 0; i < items.length; i += 1) {
+      const item = items[i];
+      if (!item || !item.device || blobUrlCache[item.id]) continue;
+      const rec = await getLibraryBlob(item.id);
+      if (rec && rec.blob) rememberBlobUrl(item.id, rec.blob);
+    }
+    return lib;
+  }
+
+  function bytesToBase64(u8) {
+    let s = "";
+    const chunk = 0x8000;
+    for (let i = 0; i < u8.length; i += chunk) {
+      s += String.fromCharCode.apply(null, u8.subarray(i, i + chunk));
+    }
+    return btoa(s);
+  }
+
+  function base64ToBytes(data) {
+    const bin = atob(String(data || ""));
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i += 1) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  async function blobToBase64(blob) {
+    if (blob && typeof blob.arrayBuffer === "function") {
+      const buf = await blob.arrayBuffer();
+      return bytesToBase64(new Uint8Array(buf));
+    }
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const s = String(reader.result || "");
+        const comma = s.indexOf(",");
+        resolve(comma >= 0 ? s.slice(comma + 1) : s);
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  function base64ToBlob(data, mime) {
+    return new Blob([base64ToBytes(data)], { type: mime || "application/octet-stream" });
+  }
+
+  async function collectLibraryBlobs(library) {
+    const blobs = {};
+    const skipped = [];
+    const items = (library && library.items) || [];
+    for (let i = 0; i < items.length; i += 1) {
+      const item = items[i];
+      if (!item || !item.device) continue;
+      const label = item.label || item.filename || item.id;
+      try {
+        const rec = await getLibraryBlob(item.id);
+        if (!rec || !rec.blob) {
+          skipped.push(label);
+          continue;
+        }
+        if ((rec.blob.size || 0) > PACK_BLOB_MAX) {
+          skipped.push(label);
+          continue;
+        }
+        blobs[item.id] = {
+          mime: rec.mime || rec.blob.type || item.mime || "",
+          name: rec.name || item.filename || "",
+          data: await blobToBase64(rec.blob)
+        };
+      } catch (_) {
+        skipped.push(label);
+      }
+    }
+    return { blobs, skipped };
+  }
+
+  async function applyLibraryBlobs(map) {
+    const blobs = map && typeof map === "object" ? map : {};
+    const stored = [];
+    const skipped = [];
+    const ids = Object.keys(blobs);
+    for (let i = 0; i < ids.length; i += 1) {
+      const id = ids[i];
+      const rec = blobs[id];
+      const label = (rec && (rec.name || rec.label)) || id;
+      if (!rec || !rec.data) {
+        skipped.push(label);
+        continue;
+      }
+      try {
+        const blob = base64ToBlob(rec.data, rec.mime || "application/octet-stream");
+        if ((blob.size || 0) > PACK_BLOB_MAX) {
+          skipped.push(label);
+          continue;
+        }
+        await putLibraryBlob(id, blob, { name: rec.name || "", mime: rec.mime || blob.type });
+        rememberBlobUrl(id, blob);
+        stored.push(id);
+      } catch (_) {
+        skipped.push(label);
+      }
+    }
+    return { stored, skipped };
+  }
+
+  async function addDeviceLibraryFile(lib, file, extras) {
+    const kind = kindFromFile(file);
+    if (!kind) return { ok: false, reason: "kind" };
+    const next = normalizeLibrary(lib || { items: [] });
+    const id = uid("lib");
+    const filename = String((file && file.name) || "").trim();
+    const mime = String((file && file.type) || "").trim();
+    const label = (extras && extras.label) || labelFromFilename(filename);
+    const test = extras && Object.prototype.hasOwnProperty.call(extras, "test")
+      ? !!extras.test
+      : /^test\b/i.test(label);
+    await putLibraryBlob(id, file, { name: filename, mime });
+    rememberBlobUrl(id, file);
+    const item = normalizeLibraryItem({
+      id,
+      label,
+      kind,
+      character: (extras && extras.character) || "fun",
+      device: true,
+      filename,
+      mime,
+      test
+    }, next.items.length);
+    next.items.push(item);
+    saveMomLibrary(next);
+    if (lib && Array.isArray(lib.items)) lib.items = next.items;
+    return { ok: true, item, library: next };
+  }
+
   function youtubeId(url) {
     try {
       const u = new URL(String(url || ""));
@@ -777,6 +1050,10 @@
 
   function librarySrc(item) {
     if (!item) return "";
+    if (item.device) {
+      const blobUrl = libraryBlobUrl(item.id);
+      if (blobUrl) return blobUrl;
+    }
     const url = String(item.url || "").trim();
     const path = String(item.path || "").trim();
     if (url === "#") return "#";
@@ -795,21 +1072,27 @@
 
   function normalizeLibraryItem(item, i) {
     const src = item && typeof item === "object" ? item : {};
-    const path = String(src.path || "").trim();
-    const url = String(src.url || "").trim();
+    const path = stripStoredSrc(src.path);
+    const url = stripStoredSrc(src.url);
     const synth = String(src.synth || "").trim();
-    const character = LIBRARY_GROUPS.indexOf(src.character) >= 0 ? src.character : "crew";
-    const kind = inferKind(path, url, src.kind);
-    const labelFallback = (path || url).split("/").pop() || (synth ? "Sound" : "Untitled");
+    const device = !!src.device;
+    const filename = String(src.filename || "").trim();
+    const mime = String(src.mime || "").trim();
+    const character = LIBRARY_GROUPS.indexOf(src.character) >= 0 ? src.character : (device ? "fun" : "crew");
+    const kind = inferKind(path || filename, url, src.kind);
+    const labelFallback = filename || (path || url).split("/").pop() || (synth ? "Sound" : (device ? "Sound" : "Untitled"));
     return {
       id: String(src.id || "").trim() || ("lib-" + (i + 1)),
-      label: String(src.label || "").trim() || labelFallback,
+      label: String(src.label || "").trim() || labelFromFilename(labelFallback),
       path,
       url,
-      poster: String(src.poster || "").trim(),
+      poster: stripStoredSrc(src.poster),
       kind,
       character,
       synth,
+      device,
+      filename,
+      mime,
       test: !!src.test
     };
   }
@@ -817,7 +1100,9 @@
   function normalizeLibrary(raw) {
     const src = raw && typeof raw === "object" ? raw : {};
     const list = Array.isArray(src.items) ? src.items : [];
-    return { items: list.map(normalizeLibraryItem).filter((item) => item.path || item.url || item.synth) };
+    return {
+      items: list.map(normalizeLibraryItem).filter((item) => item.path || item.url || item.synth || item.device)
+    };
   }
 
   function usingMomLibrary() {
@@ -835,13 +1120,16 @@
 
   function clearMomLibrary() {
     localStorage.removeItem(KEYS.library);
+    clearLibraryBlobs();
   }
 
   async function loadLibrary() {
     const seed = normalizeLibrary(parseSeed("library-seed") || defaultLibrary());
     const file = await fetchJson("library.json", null);
     const draft = getMomLibrary();
-    return normalizeLibrary(draft || file || seed);
+    const lib = normalizeLibrary(draft || file || seed);
+    await hydrateLibraryBlobs(lib);
+    return lib;
   }
 
   function libraryItem(lib, id) {
@@ -894,18 +1182,26 @@
     if (!item) return `<p class="empty">Nothing to play.</p>`;
     const src = librarySrc(item);
     if (item.kind === "video") {
-      return `<video class="lib-play" src="${esc(src)}" poster="${esc(item.poster || "")}" controls playsinline></video>`;
+      return src
+        ? `<video class="lib-play" src="${esc(src)}" poster="${esc(item.poster || "")}" controls playsinline></video>`
+        : `<p class="empty">${item.device ? "On this device — file is still loading." : "No video path."}</p>`;
     }
     if (item.kind === "image") {
-      return src ? `<img class="lib-play" src="${esc(src)}" alt="">` : `<p class="empty">No image path.</p>`;
+      return src
+        ? `<img class="lib-play" src="${esc(src)}" alt="">`
+        : `<p class="empty">${item.device ? "On this device — file is still loading." : "No image path."}</p>`;
     }
     if (item.kind === "audio") {
       if (item.synth) {
         return `<p class="empty">Generated beep — no file in the repo.</p><button type="button" class="btn primary" data-play-lib="${esc(item.id)}">Play</button>`;
       }
-      return src
-        ? `<audio class="lib-play" src="${esc(src)}" controls preload="metadata"></audio>`
-        : `<p class="empty">Add a path or URL to preview audio.</p>`;
+      if (src) {
+        return `<audio class="lib-play" src="${esc(src)}" controls preload="metadata"></audio>`;
+      }
+      if (item.device) {
+        return `<p class="empty">On this device — tap Play.</p><button type="button" class="btn primary" data-play-lib="${esc(item.id)}">Play</button>`;
+      }
+      return `<p class="empty">Add a path or URL to preview audio.</p>`;
     }
     const embed = youtubeEmbedSrc(item.url || item.path || src);
     const open = src && src !== "#"
@@ -1132,15 +1428,25 @@
   function playLibraryItem(item) {
     if (!item) return false;
     if (item.synth) return playSynth(item.synth);
-    const src = librarySrc(item);
-    if (item.kind === "audio" && src && src !== "#") {
-      try {
-        const audio = new Audio(src);
-        audio.play();
-        return true;
-      } catch (_) {
-        return false;
+    const playSrc = (src) => {
+      if (item.kind === "audio" && src && src !== "#") {
+        try {
+          const audio = new Audio(src);
+          audio.play();
+          return true;
+        } catch (_) {
+          return false;
+        }
       }
+      return false;
+    };
+    if (playSrc(librarySrc(item))) return true;
+    if (item.device && item.kind === "audio") {
+      getLibraryBlob(item.id).then((rec) => {
+        if (!rec || !rec.blob) return;
+        playSrc(rememberBlobUrl(item.id, rec.blob));
+      });
+      return true;
     }
     return false;
   }
@@ -1802,7 +2108,7 @@
     familyNext.gearUnlocks = Object.assign({}, familyNext.gearUnlocks, getGearUnlocks());
     familyNext.contentUnlocks = Object.assign({}, familyNext.contentUnlocks, getContentUnlocks());
     return {
-      version: 6,
+      version: 7,
       currency: currency(pack),
       achievements: pack.achievements || [],
       characters,
@@ -1810,6 +2116,7 @@
       gearUnlocks: getGearUnlocks(),
       contentUnlocks: getContentUnlocks(),
       library: normalizeLibrary(library || getMomLibrary() || defaultLibrary()),
+      libraryBlobs: {},
       askThread: getAskThread(),
       family: familyNext,
       unlocks: getUnlocks(),
@@ -1866,6 +2173,26 @@
     return pack;
   }
 
+  async function exportFamilyPack(pack, family, roster, library) {
+    const next = exportPack(pack, family, roster, library);
+    const collected = await collectLibraryBlobs(next.library);
+    next.libraryBlobs = collected.blobs;
+    return { pack: next, skipped: collected.skipped };
+  }
+
+  async function importFamilyPack(obj) {
+    const pack = importPack(obj);
+    if (!pack) return null;
+    const applied = await applyLibraryBlobs(obj && obj.libraryBlobs);
+    const lib = getMomLibrary();
+    if (lib) await hydrateLibraryBlobs(lib);
+    const missing = ((lib && lib.items) || [])
+      .filter((item) => item.device && !libraryBlobUrl(item.id) && !applied.stored.includes(item.id))
+      .map((item) => item.label || item.id);
+    const skipped = applied.skipped.concat(missing.filter((label) => applied.skipped.indexOf(label) < 0));
+    return { pack, skipped, stored: applied.stored };
+  }
+
   global.Game = {
     KEYS,
     esc,
@@ -1900,6 +2227,17 @@
     loadLibrary,
     defaultLibrary,
     normalizeLibrary,
+    inferKind,
+    kindFromFile,
+    labelFromFilename,
+    addDeviceLibraryFile,
+    putLibraryBlob,
+    getLibraryBlob,
+    deleteLibraryBlob,
+    clearLibraryBlobs,
+    hydrateLibraryBlobs,
+    libraryBlobUrl,
+    PACK_BLOB_MAX,
     libraryItem,
     libraryFor,
     libraryForAttach,
@@ -1974,6 +2312,8 @@
     addNote,
     exportPack,
     importPack,
+    exportFamilyPack,
+    importFamilyPack,
     defaultCharacters,
     normalizeCharacters,
     characterLabel,
