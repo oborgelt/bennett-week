@@ -1960,6 +1960,10 @@ body.egg-page {
   font-family: "Courier New", "Lucida Console", ui-monospace, monospace;
   font-weight: 800;
 }
+.feed-dead .now-playing {
+  color: #c8f5a0;
+  font-weight: 700;
+}
 
 .egg-locked {
   max-width: 420px;

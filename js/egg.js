@@ -30,11 +30,14 @@
     if (el) el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
   }
 
+  function audioCtx() {
+    return Game.getSharedAudioContext();
+  }
+
   function beep(kind) {
     try {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      const ctx = beep._ctx || new Ctx();
-      beep._ctx = ctx;
+      const ctx = audioCtx();
+      if (!ctx) return;
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.type = kind === "warn" ? "square" : "triangle";
@@ -52,9 +55,8 @@
 
   function slinky() {
     try {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      const ctx = slinky._ctx || new Ctx();
-      slinky._ctx = ctx;
+      const ctx = audioCtx();
+      if (!ctx) return;
       const notes = [196, 220, 247, 262, 247, 220, 196, 165];
       notes.forEach((f, i) => {
         const o = ctx.createOscillator();
@@ -235,9 +237,8 @@
 
   function alarm() {
     try {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      const ctx = alarm._ctx || new Ctx();
-      alarm._ctx = ctx;
+      const ctx = audioCtx();
+      if (!ctx) return;
       for (let i = 0; i < 6; i += 1) {
         const o = ctx.createOscillator();
         const g = ctx.createGain();
@@ -335,6 +336,7 @@
     fed += 1;
     if (bought) afterBuy += 1;
     if (!emptyBowl) fillPile();
+    Game.primeLibraryAudio();
     beep("eat");
     chewALittle(() => {
       busy = false;
@@ -358,9 +360,9 @@
 
   async function runWinSounds() {
     Game.primeLibraryAudio();
-    const usedEnd = Game.playSoundCue(family, library, "egg-end");
-    if (!usedEnd) slinky();
-    await Game.waitForLibraryAudio(usedEnd ? 20000 : 1400);
+    const usedWin = Game.playSoundCue(family, library, "egg-win");
+    if (!usedWin) slinky();
+    await Game.waitForLibraryAudio(usedWin ? 20000 : 1400);
     speakThen("you are looking at a nude egg", () => {
       companyShutdown();
     });
@@ -371,21 +373,27 @@
     const win = document.getElementById("win-pop");
     if (win) win.hidden = true;
     if (warn) warn.hidden = false;
+    Game.primeLibraryAudio();
     const usedClosed = Game.playSoundCue(family, library, "egg-closed");
     if (!usedClosed) alarm();
     const wait = usedClosed ? Game.waitForLibraryAudio(8000) : new Promise((resolve) => setTimeout(resolve, 1100));
     wait.then(() => {
-      killGame();
-      Game.playRandomLibraryItem(library);
+      Game.primeLibraryAudio();
+      const result = Game.resolveCuePlay(family, library, "egg-end");
+      killGame(result.item);
     });
   }
 
-  function killGame() {
+  function killGame(pick) {
     try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (_) {}
     const office = document.getElementById("office");
+    const playing = pick && pick.label
+      ? `<p class="now-playing">♪ ${Game.esc(pick.label)}</p>`
+      : "";
     office.innerHTML = `
       <div class="feed-dead" role="alert">
         <p>FEED EGGS was closed by the company.</p>
+        ${playing}
         <a class="btn primary" href="index.html">Back to this week</a>
       </div>`;
   }
@@ -465,6 +473,7 @@
       if (!document.getElementById("buy-pop").hidden) return;
       e.preventDefault();
       Game.primeLibraryAudio();
+      Game.warmupLibraryAudio(library, family);
       dragging = egg;
       dragStart.x = e.clientX;
       dragStart.y = e.clientY;

@@ -237,12 +237,30 @@ assert(dirty.items[0].device);
 
 assert(Game.emptyFamily().soundCues && typeof Game.emptyFamily().soundCues === "object");
 assert(Game.SOUND_CUES.some((c) => c.id === "egg-end"), "egg-end cue should exist");
+assert(Game.SOUND_CUES.some((c) => c.id === "egg-win"), "egg-win cue should exist");
+assert(Game.SOUND_CUES.some((c) => c.id === "egg-closed"), "egg-closed cue should exist");
+assert.strictEqual(Game.RANDOM_CUE, "__random__");
 const cued = Game.setSoundCue(Game.emptyFamily(), "egg-end", "banana-honk");
 assert.strictEqual(cued.soundCues["egg-end"], "banana-honk");
 assert.strictEqual(Game.cueLibraryItem(cued, Game.normalizeLibrary(library), "egg-end").id, "banana-honk");
 assert.strictEqual(Game.playSoundCue(Game.emptyFamily(), Game.normalizeLibrary(library), "missing-cue"), false);
 assert(Game.audioLibraryItems(Game.normalizeLibrary(library)).some((item) => item.id === "banana-honk"));
 assert(Game.playRandomLibraryItem(Game.normalizeLibrary(library)), "random clip should pick an audio item");
+const shuffled = Game.setSoundCue(Game.emptyFamily(), "egg-end", Game.RANDOM_CUE);
+assert.strictEqual(shuffled.soundCues["egg-end"], Game.RANDOM_CUE);
+assert.strictEqual(Game.cueSoundLabel(shuffled, Game.normalizeLibrary(library), "egg-end"), "Shuffle — random clip");
+assert(!Game.cueLibraryItem(shuffled, Game.normalizeLibrary(library), "egg-end"), "shuffle is not a library file");
+assert(Game.playSoundCue(shuffled, Game.normalizeLibrary(library), "egg-end"), "shuffle cue should pick a clip");
+const libWithRandom = Game.normalizeLibrary({
+  items: [
+    { id: "random", label: "Random", kind: "audio", character: "fun", filename: "random.mp3", device: true },
+    { id: "banana-honk", label: "Banana honk", kind: "audio", character: "fun", synth: "honk" }
+  ]
+});
+const namedRandom = Game.setSoundCue(Game.emptyFamily(), "egg-end", "random");
+const resolved = Game.resolveCuePlay(namedRandom, libWithRandom, "egg-end");
+assert(resolved.played && resolved.item, "resolveCuePlay should return the shuffled clip");
+assert.notStrictEqual(resolved.item.id, "random", "shuffle should skip the Random filename when another clip exists");
 const cleared = Game.setSoundCue(cued, "egg-end", "");
 assert(!cleared.soundCues["egg-end"], "clearing a cue should drop it");
 

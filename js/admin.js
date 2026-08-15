@@ -209,92 +209,13 @@
     renderCues();
   }
 
-  function audioOptions(selected) {
-    const items = ((library && library.items) || []).filter((item) => item.kind === "audio" || item.synth);
-    items.sort((a, b) => String(a.label || "").localeCompare(String(b.label || ""), undefined, { sensitivity: "base" }));
-    const opts = ['<option value="">None</option>'].concat(items.map((item) => {
-      const on = item.id === selected ? " selected" : "";
-      return `<option value="${Game.esc(item.id)}"${on}>${Game.esc(item.label)}</option>`;
-    }));
-    return opts.join("");
-  }
-
-  function cueRows() {
-    const rows = Game.SOUND_CUES.slice();
-    (week.work || []).forEach((w) => {
-      if (w && w.id) rows.push({ id: "work:" + w.id, label: "Start · " + w.title });
-    });
-    (week.events || []).forEach((e) => {
-      if (e && e.id) rows.push({ id: "event:" + e.id, label: "Event · " + e.title });
-    });
-    return rows;
-  }
-
   function renderCues() {
-    const host = document.getElementById("sound-cues");
-    if (!host) return;
-    const cues = family.soundCues || {};
-    const rows = cueRows();
-    host.innerHTML = `
-      <div class="form-grid cue-assign">
-        <label>Moment
-          <select id="cue-event">${rows.map((row) => `<option value="${Game.esc(row.id)}">${Game.esc(row.label)}</option>`).join("")}</select>
-        </label>
-        <label>Sound
-          <select id="cue-sound">${audioOptions("")}</select>
-        </label>
-      </div>
-      <div class="parent-actions">
-        <button type="button" class="btn primary" id="cue-save">Assign sound</button>
-        <button type="button" class="tiny" id="cue-play">Play</button>
-      </div>
-      <div class="cue-list">${rows.filter((row) => cues[row.id]).map((row) => {
-        const item = Game.cueLibraryItem(family, library, row.id);
-        return `
-          <article class="ach-card">
-            <h3>${Game.esc(row.label)}</h3>
-            <p>${Game.esc(item ? item.label : "Missing file")}</p>
-            <div class="parent-actions">
-              <button type="button" class="tiny primary" data-cue-play="${Game.esc(row.id)}">Play</button>
-              <button type="button" class="tiny danger" data-cue-clear="${Game.esc(row.id)}">Clear</button>
-            </div>
-          </article>`;
-      }).join("") || `<p class="empty">No sounds assigned yet. Pick a moment, pick a clip, Assign sound.</p>`}</div>`;
-    const eventSel = document.getElementById("cue-event");
-    const soundSel = document.getElementById("cue-sound");
-    function syncSoundSelect() {
-      const current = (family.soundCues || {})[eventSel.value] || "";
-      soundSel.innerHTML = audioOptions(current);
-    }
-    eventSel.addEventListener("change", syncSoundSelect);
-    syncSoundSelect();
-    document.getElementById("cue-save").addEventListener("click", () => {
-      family = Game.setSoundCue(family, eventSel.value, soundSel.value);
-      document.getElementById("draft-flag").hidden = false;
-      renderCues();
-      Game.toast(soundSel.value ? "Assigned on this device. Export the family pack to share." : "Cleared that moment.");
-    });
-    document.getElementById("cue-play").addEventListener("click", () => {
-      const id = soundSel.value || (family.soundCues || {})[eventSel.value];
-      const item = Game.libraryItem(library, id);
-      if (!item) {
-        Game.toast("Pick a sound first.");
-        return;
-      }
-      Game.playLibraryItem(item);
-    });
-    host.querySelectorAll("[data-cue-play]").forEach((b) => {
-      b.addEventListener("click", () => {
-        if (!Game.playSoundCue(family, library, b.dataset.cuePlay)) Game.toast("That clip is missing.");
-      });
-    });
-    host.querySelectorAll("[data-cue-clear]").forEach((b) => {
-      b.addEventListener("click", () => {
-        family = Game.setSoundCue(family, b.dataset.cueClear, "");
-        document.getElementById("draft-flag").hidden = false;
-        renderCues();
-        Game.toast("Cleared.");
-      });
+    Game.bindSoundCues({
+      host: "sound-cues",
+      family,
+      library,
+      week,
+      onFamily(next) { family = next; }
     });
   }
 

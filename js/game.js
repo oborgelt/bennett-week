@@ -22,10 +22,12 @@
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "crew", "fun"];
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
   const SOUND_CUES = [
-    { id: "egg-end", label: "1. Egg game ends (41 eggs)" },
-    { id: "egg-closed", label: "Egg game closed by the company" },
+    { id: "egg-win", label: "Egg game — 41 eggs win" },
+    { id: "egg-closed", label: "Egg game — company shutdown" },
+    { id: "egg-end", label: "Egg game — closed by the company" },
     { id: "streak-award", label: "A streak is awarded" }
   ];
+  const RANDOM_CUE = "__random__";
   const PACK_BLOB_MAX = 2 * 1024 * 1024;
   const IDB_NAME = "bennett-week";
   const IDB_STORE = "library-blobs";
@@ -1577,52 +1579,213 @@
     return true;
   }
 
+  let sharedAudioCtx = null;
+  let keepAliveOsc = null;
   let activeLibraryAudio = null;
+  let activeSource = null;
   let lastLibraryItemId = "";
+  let libraryPlayPending = 0;
+  const decodedBuffers = Object.create(null);
+  const playbackEnded = [];
+
+  function onPlaybackEnded(fn) {
+    playbackEnded.push(fn);
+  }
+
+  function firePlaybackEnded() {
+    const list = playbackEnded.splice(0, playbackEnded.length);
+    list.forEach((fn) => {
+      try { fn(); } catch (_) {}
+    });
+  }
+
+  function getSharedAudioContext() {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    if (!sharedAudioCtx) {
+      try { sharedAudioCtx = new Ctx(); } catch (_) { return null; }
+    }
+    if (sharedAudioCtx.state === "suspended") {
+      try { sharedAudioCtx.resume(); } catch (_) {}
+    }
+    if (!keepAliveOsc && sharedAudioCtx) {
+      try {
+        const osc = sharedAudioCtx.createOscillator();
+        const gain = sharedAudioCtx.createGain();
+        gain.gain.value = 0;
+        osc.connect(gain);
+        gain.connect(sharedAudioCtx.destination);
+        osc.start();
+        keepAliveOsc = osc;
+      } catch (_) {}
+    }
+    return sharedAudioCtx;
+  }
+
+  function decodeAudioBuffer(ctx, raw) {
+    try {
+      const ret = ctx.decodeAudioData(raw.slice(0));
+      if (ret && typeof ret.then === "function") return ret;
+    } catch (_) {}
+    return new Promise((resolve, reject) => {
+      try {
+        ctx.decodeAudioData(raw.slice(0), resolve, reject);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  function startBuffer(buf) {
+    const ctx = getSharedAudioContext();
+    if (!ctx || !buf) return false;
+    stopLibraryAudio();
+    try {
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      activeSource = src;
+      src.onended = () => {
+        if (activeSource === src) activeSource = null;
+        firePlaybackEnded();
+      };
+      src.start();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function playHtmlAudio(src) {
+    if (!src || src === "#") return false;
+    try {
+      if (!activeLibraryAudio) activeLibraryAudio = new Audio();
+      stopLibraryAudio();
+      activeLibraryAudio.src = src;
+      activeLibraryAudio.onended = firePlaybackEnded;
+      activeLibraryAudio.onerror = firePlaybackEnded;
+      const p = activeLibraryAudio.play();
+      if (p && p.catch) p.catch(function () { firePlaybackEnded(); });
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   function stopLibraryAudio() {
+    if (activeSource) {
+      try { activeSource.stop(); } catch (_) {}
+      activeSource = null;
+    }
     if (!activeLibraryAudio) return;
     try {
+      activeLibraryAudio.onended = null;
+      activeLibraryAudio.onerror = null;
       activeLibraryAudio.pause();
       activeLibraryAudio.currentTime = 0;
     } catch (_) {}
   }
 
   function primeLibraryAudio() {
+    getSharedAudioContext();
     if (!activeLibraryAudio) {
-      try { activeLibraryAudio = new Audio(); } catch (_) { return false; }
+      try { activeLibraryAudio = new Audio(); } catch (_) {}
     }
-    try {
-      if (activeLibraryAudio.paused) {
+    if (activeLibraryAudio) {
+      try {
+        activeLibraryAudio.muted = true;
         const p = activeLibraryAudio.play();
-        if (p && p.catch) p.catch(function () {});
-        activeLibraryAudio.pause();
+        if (p && p.then) {
+          p.then(function () {
+            try {
+              activeLibraryAudio.pause();
+              activeLibraryAudio.muted = false;
+            } catch (_) {}
+          }).catch(function () {
+            try { activeLibraryAudio.muted = false; } catch (_) {}
+          });
+        } else {
+          activeLibraryAudio.pause();
+          activeLibraryAudio.muted = false;
+        }
+      } catch (_) {
+        try { activeLibraryAudio.muted = false; } catch (_) {}
       }
-    } catch (_) {}
+    }
     return true;
   }
 
   function waitForLibraryAudio(ms) {
     return new Promise((resolve) => {
-      const a = activeLibraryAudio;
       let settled = false;
       const done = () => {
         if (settled) return;
         settled = true;
-        if (a) {
-          a.removeEventListener("ended", done);
-          a.removeEventListener("error", done);
-        }
         resolve();
       };
-      if (!a || a.paused || a.ended) {
-        resolve();
-        return;
-      }
-      a.addEventListener("ended", done);
-      a.addEventListener("error", done);
+      onPlaybackEnded(done);
       setTimeout(done, Math.max(400, Number(ms) || 20000));
+      const poll = () => {
+        if (settled) return;
+        if (libraryPlayPending > 0 || activeSource) return;
+        if (activeLibraryAudio && !activeLibraryAudio.paused && !activeLibraryAudio.ended) return;
+        done();
+      };
+      setTimeout(poll, 80);
+      setTimeout(poll, 500);
+      setTimeout(poll, 1500);
     });
+  }
+
+  async function blobForLibraryItem(item) {
+    if (!item) return null;
+    const rec = await getLibraryBlob(item.id);
+    if (rec && rec.blob) return rec.blob;
+    const src = librarySrc(item);
+    if (!src || src === "#") return null;
+    try {
+      const res = await fetch(src);
+      if (res.ok) return await res.blob();
+    } catch (_) {}
+    return null;
+  }
+
+  async function decodeLibraryItem(item) {
+    if (!item || item.synth) return null;
+    if (decodedBuffers[item.id]) return decodedBuffers[item.id];
+    const ctx = getSharedAudioContext();
+    if (!ctx) return null;
+    const blob = await blobForLibraryItem(item);
+    if (!blob) return null;
+    try {
+      const raw = await blob.arrayBuffer();
+      const buf = await decodeAudioBuffer(ctx, raw);
+      decodedBuffers[item.id] = buf;
+      return buf;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function playLibraryItemNow(item) {
+    libraryPlayPending += 1;
+    try {
+      const buf = await decodeLibraryItem(item);
+      if (buf && startBuffer(buf)) return true;
+      let src = librarySrc(item);
+      if (!src && item.device) {
+        const rec = await getLibraryBlob(item.id);
+        if (rec && rec.blob) src = rememberBlobUrl(item.id, rec.blob);
+      }
+      if (playHtmlAudio(src)) return true;
+      firePlaybackEnded();
+      return false;
+    } catch (_) {
+      firePlaybackEnded();
+      return false;
+    } finally {
+      libraryPlayPending -= 1;
+    }
   }
 
   function playLibraryItem(item) {
@@ -1632,49 +1795,68 @@
       stopLibraryAudio();
       return playSynth(item.synth);
     }
-    const playSrc = (src) => {
-      if (item.kind === "audio" && src && src !== "#") {
-        try {
-          primeLibraryAudio();
-          stopLibraryAudio();
-          if (!activeLibraryAudio) activeLibraryAudio = new Audio();
-          activeLibraryAudio.src = src;
-          const p = activeLibraryAudio.play();
-          if (p && p.catch) p.catch(function () {});
-          return true;
-        } catch (_) {
-          return false;
-        }
-      }
-      return false;
-    };
-    if (playSrc(librarySrc(item))) return true;
-    if (item.device && item.kind === "audio") {
-      getLibraryBlob(item.id).then((rec) => {
-        if (!rec || !rec.blob) return;
-        playSrc(rememberBlobUrl(item.id, rec.blob));
-      });
-      return true;
-    }
-    return false;
+    if (item.kind !== "audio") return false;
+    const src = librarySrc(item);
+    if (!src && !item.device) return false;
+    void playLibraryItemNow(item);
+    return true;
   }
 
   function audioLibraryItems(lib) {
     return ((lib && lib.items) || []).filter((item) => item && (item.kind === "audio" || item.synth));
   }
 
+  function pickRandomLibraryItem(lib, exceptId) {
+    const all = audioLibraryItems(lib);
+    const notExcept = exceptId ? all.filter((item) => item.id !== exceptId) : all;
+    const notLast = notExcept.filter((item) => item.id !== lastLibraryItemId);
+    const files = notLast.filter((item) => !item.synth);
+    const use = files.length ? files : (notLast.length ? notLast : (notExcept.length ? notExcept : all));
+    if (!use.length) return null;
+    return use[Math.floor(Math.random() * use.length)];
+  }
+
   function playRandomLibraryItem(lib, exceptId) {
-    const items = audioLibraryItems(lib).filter((item) => item.id !== exceptId && item.id !== lastLibraryItemId);
-    const pool = items.length ? items : audioLibraryItems(lib);
-    if (!pool.length) return null;
-    const pick = pool[Math.floor(Math.random() * pool.length)];
+    const pick = pickRandomLibraryItem(lib, exceptId);
+    if (!pick) return null;
     playLibraryItem(pick);
     return pick;
   }
 
+  function warmupLibraryAudio(lib, family) {
+    getSharedAudioContext();
+    const ids = [];
+    const cues = family && family.soundCues;
+    if (cues) {
+      Object.keys(cues).forEach((key) => {
+        const id = cues[key];
+        if (id && id !== RANDOM_CUE) ids.push(id);
+      });
+    }
+    const pick = pickRandomLibraryItem(lib);
+    if (pick && !pick.synth) ids.push(pick.id);
+    ids.forEach((id) => {
+      const item = libraryItem(lib, id);
+      if (item) decodeLibraryItem(item).catch(function () {});
+    });
+  }
+
+  function cueStoredId(family, cueId) {
+    return family && family.soundCues && cueId ? family.soundCues[cueId] : "";
+  }
+
   function cueLibraryItem(family, lib, cueId) {
-    const id = family && family.soundCues && cueId ? family.soundCues[cueId] : "";
-    return id ? libraryItem(lib, id) : null;
+    const id = cueStoredId(family, cueId);
+    if (!id || id === RANDOM_CUE) return null;
+    return libraryItem(lib, id);
+  }
+
+  function cueSoundLabel(family, lib, cueId) {
+    const id = cueStoredId(family, cueId);
+    if (!id) return "";
+    if (id === RANDOM_CUE) return "Shuffle — random clip";
+    const item = libraryItem(lib, id);
+    return item ? item.label : "Missing file";
   }
 
   function setSoundCue(family, cueId, itemId) {
@@ -1688,8 +1870,141 @@
     return next;
   }
 
+  function looksLikeShuffleItem(item) {
+    if (!item) return false;
+    const file = String(item.filename || "").toLowerCase();
+    const stem = file.replace(/\.[a-z0-9]+$/, "");
+    const label = String(item.label || "").trim().toLowerCase().replace(/!+$/, "");
+    const id = String(item.id || "").toLowerCase();
+    return stem === "random" || file === "random.mp3" || label === "random" || id === "random";
+  }
+
+  function resolveCuePlay(family, lib, cueId) {
+    const id = cueStoredId(family, cueId);
+    if (!id) return { played: false, item: null };
+    if (id === RANDOM_CUE) {
+      const pick = playRandomLibraryItem(lib);
+      return { played: !!pick, item: pick };
+    }
+    const item = libraryItem(lib, id);
+    if (looksLikeShuffleItem(item)) {
+      const pick = playRandomLibraryItem(lib, item.id);
+      return { played: !!pick, item: pick };
+    }
+    return { played: playLibraryItem(item), item: item };
+  }
+
   function playSoundCue(family, lib, cueId) {
-    return playLibraryItem(cueLibraryItem(family, lib, cueId));
+    return resolveCuePlay(family, lib, cueId).played;
+  }
+
+  function audioCueOptions(lib, selected) {
+    const items = audioLibraryItems(lib).slice().sort((a, b) =>
+      String(a.label || "").localeCompare(String(b.label || ""), undefined, { sensitivity: "base" })
+    );
+    const shuffleOn = selected === RANDOM_CUE ? " selected" : "";
+    const opts = [
+      '<option value="">None</option>',
+      `<option value="${esc(RANDOM_CUE)}"${shuffleOn}>Shuffle — random clip</option>`
+    ].concat(items.map((item) => {
+      const on = item.id === selected ? " selected" : "";
+      return `<option value="${esc(item.id)}"${on}>${esc(item.label)}</option>`;
+    }));
+    return opts.join("");
+  }
+
+  function soundCueRows(week) {
+    const rows = SOUND_CUES.slice();
+    ((week && week.work) || []).forEach((w) => {
+      if (w && w.id) rows.push({ id: "work:" + w.id, label: "Start · " + w.title });
+    });
+    ((week && week.events) || []).forEach((e) => {
+      if (e && e.id) rows.push({ id: "event:" + e.id, label: "Event · " + e.title });
+    });
+    return rows;
+  }
+
+  function bindSoundCues(opts) {
+    const host = typeof opts.host === "string" ? document.getElementById(opts.host) : opts.host;
+    if (!host) return;
+    let family = opts.family;
+    const library = opts.library;
+    const week = opts.week || { work: [], events: [] };
+    const onFamily = opts.onFamily || function () {};
+    const draft = document.getElementById(opts.draftFlag || "draft-flag");
+
+    function render() {
+      const cues = (family && family.soundCues) || {};
+      const rows = soundCueRows(week);
+      host.innerHTML = `
+        <div class="form-grid cue-assign">
+          <label>Moment
+            <select data-cue-event>${rows.map((row) => `<option value="${esc(row.id)}">${esc(row.label)}</option>`).join("")}</select>
+          </label>
+          <label>Sound
+            <select data-cue-sound>${audioCueOptions(library, "")}</select>
+          </label>
+        </div>
+        <div class="parent-actions">
+          <button type="button" class="btn primary" data-cue-save>Assign sound</button>
+          <button type="button" class="tiny" data-cue-preview>Play</button>
+        </div>
+        <div class="cue-list">${rows.filter((row) => cues[row.id]).map((row) => {
+          const label = cueSoundLabel(family, library, row.id) || "Missing file";
+          return `
+            <article class="ach-card">
+              <h3>${esc(row.label)}</h3>
+              <p>${esc(label)}</p>
+              <div class="parent-actions">
+                <button type="button" class="tiny primary" data-cue-play="${esc(row.id)}">Play</button>
+                <button type="button" class="tiny danger" data-cue-clear="${esc(row.id)}">Clear</button>
+              </div>
+            </article>`;
+        }).join("") || `<p class="empty">No sounds assigned yet. Pick a moment, pick a clip, Assign sound.</p>`}</div>`;
+      const eventSel = host.querySelector("[data-cue-event]");
+      const soundSel = host.querySelector("[data-cue-sound]");
+      function syncSoundSelect() {
+        const current = ((family && family.soundCues) || {})[eventSel.value] || "";
+        soundSel.innerHTML = audioCueOptions(library, current);
+      }
+      eventSel.addEventListener("change", syncSoundSelect);
+      syncSoundSelect();
+      host.querySelector("[data-cue-save]").addEventListener("click", () => {
+        family = setSoundCue(family, eventSel.value, soundSel.value);
+        onFamily(family);
+        if (draft) draft.hidden = false;
+        render();
+        toast(soundSel.value ? "Assigned on this device. Export the family pack to share." : "Cleared that moment.");
+      });
+      host.querySelector("[data-cue-preview]").addEventListener("click", () => {
+        const id = soundSel.value || ((family && family.soundCues) || {})[eventSel.value];
+        if (id === RANDOM_CUE) {
+          if (!playRandomLibraryItem(library)) toast("No clips in the library.");
+          return;
+        }
+        const item = libraryItem(library, id);
+        if (!item) {
+          toast("Pick a sound first.");
+          return;
+        }
+        playLibraryItem(item);
+      });
+      host.querySelectorAll("[data-cue-play]").forEach((b) => {
+        b.addEventListener("click", () => {
+          if (!playSoundCue(family, library, b.dataset.cuePlay)) toast("That clip is missing.");
+        });
+      });
+      host.querySelectorAll("[data-cue-clear]").forEach((b) => {
+        b.addEventListener("click", () => {
+          family = setSoundCue(family, b.dataset.cueClear, "");
+          onFamily(family);
+          if (draft) draft.hidden = false;
+          render();
+          toast("Cleared.");
+        });
+      });
+    }
+    render();
   }
 
   function closeContentCelebrate() {
@@ -2346,9 +2661,8 @@
 
   function honk() {
     try {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      const ctx = honk._ctx || new Ctx();
-      honk._ctx = ctx;
+      const ctx = getSharedAudioContext();
+      if (!ctx) return;
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.type = "square";
@@ -2706,12 +3020,18 @@
     stopLibraryAudio,
     primeLibraryAudio,
     waitForLibraryAudio,
+    warmupLibraryAudio,
+    getSharedAudioContext,
     playRandomLibraryItem,
     audioLibraryItems,
     SOUND_CUES,
+    RANDOM_CUE,
     cueLibraryItem,
+    cueSoundLabel,
     setSoundCue,
+    resolveCuePlay,
     playSoundCue,
+    bindSoundCues,
     playSynth,
     playContentReward,
     maybePlayContentCelebration,

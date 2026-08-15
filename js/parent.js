@@ -46,6 +46,7 @@
     renderAskInbox();
     renderPool();
     renderIngredients();
+    renderCues();
     renderAchievements();
     renderCharacters();
     renderCharLibrary();
@@ -583,6 +584,16 @@
       </article>`;
   }
 
+  function renderCues() {
+    Game.bindSoundCues({
+      host: "sound-cues",
+      family,
+      library,
+      week,
+      onFamily(next) { family = next; }
+    });
+  }
+
   function renderIngredients() {
     const box = document.getElementById("ingredients");
     if (!box) return;
@@ -978,6 +989,7 @@
           renderAskInbox();
           renderPool();
           renderIngredients();
+          renderCues();
           renderClassRoster();
           fillTargets();
           document.getElementById("draft-flag").hidden = false;
@@ -1017,6 +1029,7 @@
       renderAskInbox();
       renderPool();
       renderIngredients();
+      renderCues();
       renderClassRoster();
       fillTargets();
       closeForm();
@@ -1032,6 +1045,7 @@
     renderAskInbox();
     renderPool();
     renderIngredients();
+    renderCues();
     renderClassRoster();
     document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomCharacters() || Game.usingMomLibrary());
   }
