@@ -1546,266 +1546,229 @@ body:has(.sheet.open) .clarinet {
   .hud-bar { padding-top: 4px; }
 }
 
-/* Office egg game */
+/* FEED EGGS — ITYSL */
 body.egg-page {
   min-height: 100dvh;
   background:
-    linear-gradient(180deg, rgba(196, 184, 154, 0.35), rgba(7, 22, 24, 0.55)),
+    linear-gradient(180deg, rgba(7, 22, 24, 0.55), rgba(7, 22, 24, 0.72)),
     url("../img/monkey-bg.png") center / cover no-repeat;
 }
 
 .office {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   padding: 8px 12px 20px;
   padding-bottom: max(20px, env(safe-area-inset-bottom));
 }
 
-.boss-col {
-  display: grid;
-  grid-template-columns: 72px 1fr;
-  gap: 8px 12px;
-  align-items: start;
-}
-
-.boss {
-  width: 72px;
-  height: 96px;
+.feed-window {
+  --feed-ink: #111111;
+  --feed-bg: #8aa8b0;
   position: relative;
-}
-
-.boss-head {
-  width: 36px;
-  height: 36px;
+  max-width: 760px;
   margin: 0 auto;
-  border-radius: 50%;
-  background: #e8c4a8;
-  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.08);
+  min-height: min(68dvh, 560px);
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.055) 0 1px, transparent 1px 3px),
+    var(--feed-bg);
+  border: 3px solid var(--feed-ink);
+  color: var(--feed-ink);
+  font-family: "Courier New", "Lucida Console", ui-monospace, monospace;
+  touch-action: none;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath fill='%23fff' stroke='%23111' stroke-width='1.7' stroke-linejoin='round' d='M8 16 V8.2 a2.3 2.3 0 0 1 4.6 0 V15.2 M12.6 15.2 V6.6 a2.3 2.3 0 0 1 4.6 0 V15 M17.2 15 V7.4 a2.3 2.3 0 0 1 4.6 0 V16.2 L23 17.4 a3.1 3.1 0 0 1 0 4.4 L21.2 23.6 V27.2 a3.2 3.2 0 0 1-3.2 3.2 H12.4 a4.2 4.2 0 0 1-4.2-4.2 V16 z'/%3E%3C/svg%3E") 7 2, pointer;
 }
 
-.boss-head::after {
-  content: "";
-  display: block;
-  width: 40px;
-  height: 10px;
-  margin: -6px auto 0;
-  background: #2b2b2b;
-  border-radius: 4px 4px 0 0;
-}
-
-.boss-body {
-  width: 54px;
-  height: 52px;
-  margin: 4px auto 0;
-  background: #3d5a80;
-  border-radius: 10px 10px 4px 4px;
-  box-shadow: inset 0 8px 0 #4f6d96;
-}
-
-.speech {
-  background: #fff8e7;
-  color: #1b1b1b;
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.3;
-  box-shadow: var(--shadow);
-}
-
-.tim-line {
-  grid-column: 2;
-  margin: 0;
-  color: var(--banana);
-  font-size: 0.78rem;
-  font-weight: 650;
-}
-
-.crt-bezel {
-  background: #2a2a2a;
-  border-radius: 18px;
-  padding: 14px 14px 22px;
-  box-shadow: inset 0 0 0 4px #1a1a1a, 0 16px 30px rgba(0, 0, 0, 0.4);
-}
-
-.crt-bezel.shake { animation: egg-shake 0.35s ease; }
-
-.win95 {
-  background: #c3c7cb;
-  border: 2px solid #fff;
-  border-right-color: #5a5a5a;
-  border-bottom-color: #5a5a5a;
-  min-height: 320px;
-}
-
-.win95-bar {
+.feed-titlebar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #000080;
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 800;
-  padding: 4px 8px;
-}
-
-.win95-x {
-  width: 16px;
-  height: 16px;
-  background: #c3c7cb;
-  color: #000;
-  text-align: center;
-  line-height: 14px;
-  font-size: 0.7rem;
-}
-
-.win95-body { padding: 10px; color: #111; }
-
-.egg-goal {
-  margin: 0 0 8px;
-  font-size: 0.95rem;
-  font-weight: 750;
-}
-
-.egg-stage {
-  display: grid;
-  grid-template-columns: 1fr 110px;
-  gap: 10px;
-  min-height: 180px;
-}
-
-.egg-table, .egg-basket {
-  background: #d6c39a;
-  border: 2px inset #8a7a55;
-  border-radius: 8px;
-  min-height: 180px;
-  padding: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  gap: 8px;
-}
-
-.egg-basket {
-  background: #8b5a2b;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
+  height: 18px;
+  margin: 7px 8px 0;
 }
+.feed-titlebar i {
+  display: block;
+  height: 2px;
+  background: var(--feed-ink);
+}
+.feed-titlebar.thin {
+  height: 14px;
+  margin: 5px 7px 0;
+}
+.feed-titlebar.thin i { height: 1.5px; }
 
-.basket-label {
-  color: #f3e2c4;
-  font-size: 0.68rem;
+.feed-title {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: clamp(1.55rem, 4.4vw, 2.15rem);
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.egg {
-  width: 44px;
-  height: 56px;
+.feed-stage {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  min-height: 300px;
+  padding: 18px 16px 22px;
+}
+
+.eater {
+  position: relative;
+  width: 44%;
+  max-width: 240px;
+}
+
+.eater-svg { width: 100%; height: auto; display: block; }
+.eater-body { fill: #fff; stroke: var(--feed-ink); stroke-width: 3; }
+.eater-eye { fill: #fff; stroke: var(--feed-ink); stroke-width: 2.5; }
+.eater-pupil { fill: var(--feed-ink); }
+.eater-mouth { fill: var(--feed-ink); }
+.eater-squint, .eater-line, .eater-foot {
+  fill: none;
+  stroke: var(--feed-ink);
+  stroke-width: 3.2;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+.eater-face-chew,
+.eater-butt { display: none; }
+.eater-butt ellipse { fill: #fff; stroke: var(--feed-ink); stroke-width: 2.6; }
+
+.eater.chew .eater-face-open { display: none; }
+.eater.chew .eater-face-chew { display: block; }
+.eater.butt .eater-face-open,
+.eater.butt .eater-face-chew { display: none; }
+.eater.butt .eater-butt { display: block; }
+
+.mouth-hit {
+  position: absolute;
+  left: 26%;
+  top: 40%;
+  width: 48%;
+  height: 30%;
+  border: 0;
+  background: transparent;
+  cursor: inherit;
+}
+
+.bowl-wrap {
+  width: 40%;
+  max-width: 220px;
+  align-self: flex-end;
+  margin-bottom: 8px;
+}
+
+.bowl { position: relative; }
+.bowl-svg { width: 100%; height: auto; display: block; }
+.bowl-body { fill: #5a6a72; stroke: var(--feed-ink); stroke-width: 3; }
+.bowl-stripe { fill: none; stroke: var(--feed-ink); stroke-width: 2.2; }
+
+.nugget-pile {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -28%;
+  bottom: 18%;
+}
+
+.nugget {
+  position: absolute;
+  width: 36px;
+  height: 46px;
   border: 0;
   padding: 0;
   background: transparent;
-  cursor: grab;
+  cursor: inherit;
   touch-action: none;
 }
 
-.egg.dragging { cursor: grabbing; }
+.nugget svg { width: 100%; height: 100%; display: block; }
+.nugget ellipse { fill: #fff; stroke: var(--feed-ink); stroke-width: 2.2; }
+.nugget.flying { filter: drop-shadow(-12px 0 0 rgba(255, 255, 255, 0.4)); }
+.nugget.near { transform: scale(0.9); }
 
-.egg-shell {
+.egg-trail {
+  position: fixed;
+  width: 26px;
+  height: 34px;
+  border: 2px solid rgba(17, 17, 17, 0.22);
+  background: rgba(255, 255, 255, 0.32);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.feed-popup {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  min-width: 168px;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 0 1px, transparent 1px 3px),
+    var(--feed-bg);
+  border: 3px solid var(--feed-ink);
+  text-align: center;
+  z-index: 6;
+}
+
+.feed-popup.count { min-width: 148px; }
+.feed-popup.count p,
+.feed-popup.win p {
+  margin: 10px 14px 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.feed-popup.buy { min-width: min(88%, 300px); top: 46%; }
+.feed-popup.buy p {
+  margin: 3px 16px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.feed-popup.buy p:first-of-type { margin-top: 12px; }
+.feed-popup.buy p:nth-of-type(2) { margin-top: 12px; }
+
+.feed-popup.buy input {
   display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
-  background: radial-gradient(circle at 30% 28%, #fffdf6, #f3e0b0 55%, #e2c57a);
-  box-shadow: inset -4px -6px 0 rgba(160, 120, 40, 0.18), 0 4px 0 rgba(0, 0, 0, 0.15);
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.45s ease;
+  width: calc(100% - 32px);
+  margin: 14px 16px 16px;
+  min-height: 26px;
+  border: 2px solid var(--feed-ink);
+  background: var(--feed-bg);
+  color: var(--feed-ink);
+  font: inherit;
+  padding: 2px 6px;
+  border-radius: 0;
 }
 
-.egg-face, .egg-butt {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
+.warn-tri {
+  width: 72px;
+  height: 62px;
+  margin: 14px auto 16px;
+  background: var(--feed-ink);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  color: var(--feed-bg);
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 78px;
 }
 
-.egg-face i {
-  position: absolute;
-  top: 18px;
-  width: 6px;
-  height: 8px;
-  background: #2b2b2b;
-  border-radius: 50%;
-}
-
-.egg-face i:first-child { left: 12px; }
-.egg-face i:nth-child(2) { right: 12px; }
-
-.egg-face b {
-  position: absolute;
-  left: 16px;
-  bottom: 14px;
-  width: 12px;
-  height: 6px;
-  border: 2px solid #c07a3a;
-  border-top: 0;
-  border-radius: 0 0 10px 10px;
-}
-
-.egg-butt {
-  transform: rotateY(180deg);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 2px;
-  padding-bottom: 10px;
-}
-
-.egg-butt em {
-  width: 14px;
-  height: 16px;
-  background: #f0cfd0;
-  border-radius: 50%;
-  box-shadow: inset 0 -3px 0 rgba(180, 80, 90, 0.2);
-}
-
-.egg.is-butt .egg-shell { transform: rotateY(180deg); }
-
-.egg-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.egg-actions .act {
-  flex: 0 0 auto;
-  background: #c3c7cb;
-  color: #111;
-  border-color: #fff;
-  border-right-color: #5a5a5a;
-  border-bottom-color: #5a5a5a;
-}
-
-.egg-count { font-size: 0.8rem; font-weight: 800; }
-
-.egg-msg {
-  min-height: 1.4em;
-  margin: 8px 0 0;
+.butt-line {
+  margin: 10px 12px 8px;
   font-weight: 800;
 }
 
-.egg-msg.yell {
-  color: #b00000;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-}
-
-.egg-msg.butt-line {
-  color: #5a2a00;
-  font-size: 1.2rem;
+.feed-again {
+  margin: 0 12px 14px;
+  border: 2px solid var(--feed-ink);
+  background: var(--feed-bg);
+  color: var(--feed-ink);
+  font: inherit;
+  font-weight: 800;
+  padding: 4px 12px;
+  cursor: inherit;
 }
 
 .egg-locked {
@@ -1817,20 +1780,8 @@ body.egg-page {
   padding: 22px 16px;
 }
 
-.egg-locked .egg { margin: 0 auto 12px; }
-
-@keyframes egg-shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
 @media (min-width: 720px) {
-  .office {
-    flex-direction: row;
-    align-items: stretch;
-  }
-  .boss-col { flex: 0 0 240px; display: block; }
-  .crt { flex: 1; }
-  .boss { margin-bottom: 10px; }
+  .feed-window { min-height: 560px; }
+  .nugget { width: 42px; height: 54px; }
+  .feed-stage { min-height: 360px; padding: 24px 28px 28px; }
 }
