@@ -66,13 +66,29 @@ const window = {
   matchMedia() { return { matches: true }; },
   AudioContext: undefined,
   webkitAudioContext: undefined,
-  BW_BUILD: { build: 30, modified: "2026-08-15T13:20:00-05:00" }
+  BW_BUILD: { build: 31, modified: "2026-08-15T13:10:00-05:00" }
 };
 window.window = window;
 const ctx = vm.createContext({ window, document, localStorage, console, URL, encodeURIComponent });
 vm.runInContext(fs.readFileSync(path.join(root, "js/game.js"), "utf8"), ctx);
 const Game = ctx.window.Game;
 assert(Game, "Game failed to load");
+
+const khanChem = Game.khanLinksFor("Chemistry homework");
+assert(khanChem.some((k) => k.url === "https://www.khanacademy.org/science/hs-chemistry"), "chem titles should link HS Chemistry");
+assert(khanChem.some((k) => /HS Chemistry/i.test(k.label)), "HS Chemistry label should be public-course wording");
+assert(khanChem.every((k) => k.url.indexOf("khanacademy.org") >= 0), "Khan links stay on Khan");
+const khanEla = Game.khanLinksFor("English 10: Finish summer comic strips");
+assert(khanEla.every((k) => k.id === "ela" || k.id === "grammar"), "English titles stay on ELA + grammar");
+assert(!khanEla.some((k) => k.id === "hs-chemistry"), "English titles should not get HS Chemistry");
+const khanSci = Game.khanLinksFor("Biology lab");
+assert.strictEqual(khanSci.length, 1, "generic science/bio stays on the Science hub");
+assert.strictEqual(khanSci[0].id, "science", "generic science/bio stays on the Science hub");
+const khanHtml = Game.khanStripHtml("Chem quiz");
+assert(khanHtml.indexOf("https://www.khanacademy.org/science/hs-chemistry") >= 0, "strip HTML should include HS Chemistry");
+assert(khanHtml.indexOf("target=\"_blank\"") >= 0 && khanHtml.indexOf("rel=\"noopener\"") >= 0, "Khan links open in a new tab");
+assert(khanHtml.indexOf("No login needed") >= 0, "strip should say no login is needed");
+assert(khanHtml.indexOf("iframe") < 0, "do not embed Khan");
 
 const norm = Game.normalizeLibrary(library);
 assert(norm.items.some((item) => item.id === "banana-honk"), "normalizeLibrary dropped Banana honk");
