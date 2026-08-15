@@ -586,6 +586,7 @@
     pack = await Game.loadAchievements() || { currency: Game.currency({}), achievements: [] };
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    family = Game.maybeAutoPreviewAll(pack, family).family;
     baseSeed = await Game.loadProgress();
     syncViews();
     document.getElementById("close-sheet").addEventListener("click", closeSheet);

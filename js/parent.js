@@ -794,6 +794,7 @@
   async function boot() {
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
+    family = Game.maybeAutoPreviewAll(pack, family).family;
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
     baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
@@ -813,6 +814,18 @@
       if (e.target.id === "sheet") closeSheet();
     });
 
+    document.getElementById("preview-unlock-all").addEventListener("click", () => {
+      const result = Game.awardAllPreview(pack, family);
+      family = result.family;
+      persistFamily();
+      Game.toast("Preview on. Every reward is unlocked on this device. Walk the trophy room, then lock them back.");
+    });
+    document.getElementById("preview-lock-back").addEventListener("click", () => {
+      const result = Game.revokeAllPreview(pack, family);
+      family = result.family;
+      persistFamily();
+      Game.toast("Preview off. Bennett is back to earned-only on this device.");
+    });
     document.getElementById("add").addEventListener("click", () => openForm(null));
     document.getElementById("cancel").addEventListener("click", closeForm);
     document.getElementById("add-char").addEventListener("click", () => openCharForm(null));

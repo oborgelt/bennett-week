@@ -16,7 +16,8 @@
     contentSeen: "bw-content-seen",
     ask: "bw-ask-thread",
     opened: "bw-opened",
-    opens: "bw-opens"
+    opens: "bw-opens",
+    previewAll: "bw-preview-all"
   };
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "crew", "fun"];
@@ -2899,6 +2900,113 @@
     return { pack: next, skipped: collected.skipped };
   }
 
+  const PREVIEW_AWARD_IDS = [
+    "test-ace-closer", "test-riff-reps", "test-scorch-recover", "test-deuce-return", "test-fuzz-unplugged",
+    "test-notebook-holding", "test-first-serve", "test-angle-finder", "test-field-kit", "test-unplugged-strap", "test-daily-pick",
+    "straight-as-3w", "no-late-4w", "flash-cards-first", "started-week-5", "asked-before-due", "hidden-banana", "wrong-number-eggs"
+  ];
+
+  const PREVIEW_FALLBACKS = [
+    { id: "test-ace-closer", title: "Meet Ace", reward: 10, rewardCharacter: "ace", rewardUnlock: { type: "character", id: "ace", label: "Ace" } },
+    { id: "test-riff-reps", title: "Meet Riff", reward: 10, rewardCharacter: "riff", rewardUnlock: { type: "character", id: "riff", label: "Riff" } },
+    { id: "test-scorch-recover", title: "Meet Scorch", reward: 10, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" } },
+    { id: "test-deuce-return", title: "Meet Deuce", reward: 10, rewardCharacter: "deuce", rewardUnlock: { type: "character", id: "deuce", label: "Deuce" } },
+    { id: "test-fuzz-unplugged", title: "Meet Fuzz", reward: 10, rewardCharacter: "fuzz", rewardUnlock: { type: "character", id: "fuzz", label: "Fuzz" } },
+    { id: "test-notebook-holding", title: "Notebook of Holding", bananas: 10, reward: { type: "tool", id: "notebook-holding", label: "Notebook of Holding" } },
+    { id: "test-first-serve", title: "First Serve", bananas: 10, reward: { type: "ability", id: "first-serve", label: "First Serve" } },
+    { id: "test-angle-finder", title: "Angle Finder", reward: 10, rewardUnlock: { type: "tool", id: "angle-finder", label: "Angle Finder" } },
+    { id: "test-field-kit", title: "Field Kit", reward: 10, rewardUnlock: { type: "tool", id: "field-kit", label: "Field Kit" } },
+    { id: "test-unplugged-strap", title: "Unplugged Strap", reward: 10, rewardUnlock: { type: "outfit", id: "unplugged-strap", label: "Unplugged Strap" } },
+    { id: "test-daily-pick", title: "Daily Pick", reward: 10, rewardUnlock: { type: "tool", id: "daily-pick", label: "Daily Pick" } },
+    { id: "straight-as-3w", title: "Straight A's", reward: 20 },
+    { id: "no-late-4w", title: "On-time streak", reward: 20 },
+    { id: "flash-cards-first", title: "Flash-card first test", reward: 10 },
+    { id: "started-week-5", title: "Five-day start", reward: 15 },
+    { id: "asked-before-due", title: "Asked before it was due", reward: 10 },
+    { id: "hidden-banana", title: "Hidden banana", reward: 25, unlocksGame: "egg" },
+    { id: "wrong-number-eggs", title: "Wrong number of eggs", reward: 15, unlocksGame: "egg" }
+  ];
+
+  function hasPreviewAllFlag() {
+    try {
+      const raw = localStorage.getItem(KEYS.previewAll);
+      return raw === "1" || raw === "true";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function setPreviewAllFlag() {
+    try {
+      localStorage.setItem(KEYS.previewAll, "1");
+    } catch (_) {}
+  }
+
+  function previewAwardPack(pack) {
+    const list = ((pack && pack.achievements) || []).slice();
+    const have = new Set(list.map((ach) => ach && ach.id));
+    PREVIEW_FALLBACKS.forEach((row) => {
+      if (!have.has(row.id)) list.push(row);
+    });
+    return Object.assign({}, pack || {}, { achievements: list });
+  }
+
+  function previewAwardIds(pack) {
+    const ids = [];
+    const seen = Object.create(null);
+    ((pack && pack.achievements) || []).forEach((ach) => {
+      if (ach && ach.id && !seen[ach.id]) {
+        seen[ach.id] = true;
+        ids.push(ach.id);
+      }
+    });
+    PREVIEW_AWARD_IDS.forEach((id) => {
+      if (!seen[id]) {
+        seen[id] = true;
+        ids.push(id);
+      }
+    });
+    return ids;
+  }
+
+  function awardAllPreview(pack, family) {
+    const working = previewAwardPack(pack);
+    let next = normalizeFamily(family);
+    let awarded = 0;
+    previewAwardIds(working).forEach((id) => {
+      if (alreadyUnlocked(id)) return;
+      const result = awardStreak(working, next, id);
+      next = result.family;
+      if (result.achievement) awarded += 1;
+    });
+    setPreviewAllFlag();
+    return { family: next, awarded };
+  }
+
+  function revokeAllPreview(pack, family) {
+    const working = previewAwardPack(pack);
+    let next = normalizeFamily(family);
+    let revoked = 0;
+    previewAwardIds(working).forEach((id) => {
+      const result = revokeAchievement(working, next, id);
+      next = result.family;
+      if (result.revoked) revoked += 1;
+    });
+    setPreviewAllFlag();
+    return { family: next, revoked };
+  }
+
+  function maybeAutoPreviewAll(pack, family) {
+    const next = normalizeFamily(family);
+    if (hasPreviewAllFlag()) return { family: next, ran: false };
+    if (Object.keys(getCharacterUnlocks()).length || Object.keys(getGearUnlocks()).length) {
+      setPreviewAllFlag();
+      return { family: next, ran: false };
+    }
+    const result = awardAllPreview(pack, next);
+    return { family: result.family, ran: true, awarded: result.awarded };
+  }
+
   async function importFamilyPack(obj) {
     const pack = importPack(obj);
     if (!pack) return null;
@@ -3055,6 +3163,9 @@
     grantCharacter,
     grantGear,
     grantContent,
+    awardAllPreview,
+    revokeAllPreview,
+    maybeAutoPreviewAll,
     bananasOf,
     rewardUnlockOf,
     rewardCharacterId,

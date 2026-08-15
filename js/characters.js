@@ -67,27 +67,42 @@
   function renderLoadout() {
     const grid = document.getElementById("loadout-grid");
     if (!grid) return;
-    const gear = Game.unlockedGear();
-    const cards = gear.map((g) => {
+    const catalog = Game.gearLibraryItems(library);
+    const seen = new Set(catalog.map((item) => item.id));
+    const extras = Game.unlockedGear().filter((g) => !seen.has(g.id));
+    const cards = catalog.map((item) => {
+      if (!Game.alreadyUnlockedGear(item.id)) {
+        return `
+        <article class="loadout-card locked">
+          <div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>???</p></div>
+        </article>`;
+      }
+      const art = Game.gearThumbHtml(library, item.id, "lib-thumb")
+        || `<img class="lib-thumb" src="${Game.esc(item.path || item.poster || "")}" alt="">`;
+      return `
+      <article class="loadout-card ready">
+        <div class="loadout-media">${art}</div>
+        <p class="loadout-type">${Game.esc(item.slot || "gear")}</p>
+        <h3>${Game.esc(item.label || item.id)}</h3>
+      </article>`;
+    });
+    extras.forEach((g) => {
       const item = Game.libraryItem(library, g.id);
       const art = item
         ? `<div class="loadout-media">${Game.libraryThumbHtml(item)}</div>`
-        : "";
-      return `
+        : `<div class="loadout-media"><img class="lib-thumb" src="${Game.esc("img/library/" + g.id + ".png")}" alt=""></div>`;
+      cards.push(`
       <article class="loadout-card ready">
         ${art}
-        <p class="loadout-type">${Game.esc(g.type)}</p>
+        <p class="loadout-type">${Game.esc(g.type || "gear")}</p>
         <h3>${Game.esc(g.label || g.id)}</h3>
-      </article>
-    `;
+      </article>`);
     });
-    const lockedSlots = Math.max(0, 2 - gear.length);
-    for (let i = 0; i < lockedSlots; i += 1) {
+    if (!cards.length) {
       cards.push(`
         <article class="loadout-card locked">
           <div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>???</p></div>
-        </article>
-      `);
+        </article>`);
     }
     grid.innerHTML = cards.join("");
   }
@@ -142,10 +157,13 @@
   async function boot() {
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
-    await Game.loadFamily();
+    const preview = Game.maybeAutoPreviewAll(pack, await Game.loadFamily());
     library = await Game.loadLibrary();
     hud();
     render();
+    if (preview.ran) {
+      Game.toast("Parent preview: all rewards unlocked on this device.");
+    }
     if (!Game.maybePlayUnlockCelebration(roster)) {
       Game.maybePlayContentCelebration(library);
     }
