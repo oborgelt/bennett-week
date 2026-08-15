@@ -5,6 +5,7 @@
   let baseWeek = null;
   let week = null;
   let pack = null;
+  let roster = null;
   let family = null;
   let viewedEvents = {};
   let pickedTrophy = null;
@@ -492,7 +493,7 @@
     const cur = Game.currency(pack);
     const earned = orderedTrophies();
     if (!earned.length) {
-      grid.innerHTML = `<p class="trophy-empty">No trophies yet — keep the streak going</p>`;
+      grid.innerHTML = `<p class="trophy-empty">No trophies yet — keep the streak going. <a class="crew-inline" href="characters.html">Characters stay locked until you earn them.</a></p>`;
       return;
     }
     grid.innerHTML = earned.map((ach) => `
@@ -950,6 +951,7 @@
     Game.markOpened();
     baseWeek = Game.ensureWeekIds(await Game.loadWeek());
     pack = await Game.loadAchievements();
+    roster = await Game.loadCharacters();
     family = await Game.loadFamily();
     syncWeek();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
@@ -963,6 +965,7 @@
     hud();
     goTo(0, true);
     runUnlocks();
+    if (roster) Game.maybePlayUnlockCelebration(roster);
   }
 
   boot();

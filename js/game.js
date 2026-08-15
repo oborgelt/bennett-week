@@ -5,8 +5,11 @@
     bananas: "bw-bananas",
     eggs: "bw-eggs",
     mom: "bw-mom-achievements",
+    characters: "bw-mom-characters",
     family: "bw-family",
     trophyOrder: "bw-trophy-order",
+    characterUnlocks: "bw-character-unlocks",
+    characterSeen: "bw-character-seen",
     opened: "bw-opened",
     opens: "bw-opens"
   };
@@ -219,7 +222,16 @@
   }
 
   function emptyFamily() {
-    return { notes: [], reflections: { pool: [], answers: [] }, streaks: {}, overlay: emptyOverlay() };
+    return { notes: [], reflections: { pool: [], answers: [] }, streaks: {}, characterUnlocks: {}, overlay: emptyOverlay() };
+  }
+
+  function asUnlockMap(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    const out = {};
+    Object.keys(value).forEach((id) => {
+      if (value[id]) out[id] = value[id];
+    });
+    return out;
   }
 
   function normalizeFamily(raw) {
@@ -232,6 +244,7 @@
         answers: Array.isArray(reflections.answers) ? reflections.answers : []
       },
       streaks: f.streaks && typeof f.streaks === "object" && !Array.isArray(f.streaks) ? f.streaks : {},
+      characterUnlocks: asUnlockMap(f.characterUnlocks),
       overlay: normalizeOverlay(f.overlay)
     };
   }
@@ -476,12 +489,252 @@
     return draft || file || { currency: currency({}), achievements: [] };
   }
 
+  function defaultCharacters() {
+    return {
+      comicStartsAfter: 3,
+      characters: [
+        {
+          id: "ace",
+          name: "Ace",
+          talent: "The Closer",
+          tagline: "Last point counts.",
+          status: "ready",
+          video: "img/characters/ace.mp4",
+          poster: "img/characters/ace.jpg"
+        },
+        {
+          id: "riff",
+          name: "Riff",
+          talent: "Daily Reps",
+          tagline: "Again. Louder.",
+          status: "coming"
+        },
+        {
+          id: "slot-3",
+          name: "",
+          talent: "",
+          tagline: "",
+          status: "coming"
+        }
+      ]
+    };
+  }
+
+  function normalizeCharacter(ch, i) {
+    const src = ch && typeof ch === "object" ? ch : {};
+    const id = String(src.id || "").trim() || ("slot-" + (i + 1));
+    const video = String(src.video || "").trim();
+    const poster = String(src.poster || "").trim();
+    const status = src.status === "ready" || src.status === "coming"
+      ? src.status
+      : (video ? "ready" : "coming");
+    return {
+      id,
+      name: String(src.name || "").trim(),
+      talent: String(src.talent || "").trim(),
+      tagline: String(src.tagline || src.tagLine || "").trim(),
+      status,
+      video,
+      poster,
+      test: !!src.test
+    };
+  }
+
+  function normalizeCharacters(raw) {
+    const src = raw && typeof raw === "object" ? raw : {};
+    const list = Array.isArray(src.characters) ? src.characters : [];
+    return {
+      comicStartsAfter: Number(src.comicStartsAfter) > 0 ? Number(src.comicStartsAfter) : 3,
+      characters: list.map(normalizeCharacter)
+    };
+  }
+
+  function usingMomCharacters() {
+    return !!localStorage.getItem(KEYS.characters);
+  }
+
+  function getMomCharacters() {
+    const stored = read(KEYS.characters, null);
+    return stored ? normalizeCharacters(stored) : null;
+  }
+
+  function saveMomCharacters(roster) {
+    write(KEYS.characters, normalizeCharacters(roster));
+  }
+
+  function clearMomCharacters() {
+    localStorage.removeItem(KEYS.characters);
+  }
+
+  async function loadCharacters() {
+    const seed = normalizeCharacters(parseSeed("char-seed") || defaultCharacters());
+    const file = await fetchJson("characters.json", null);
+    const draft = getMomCharacters();
+    return normalizeCharacters(draft || file || seed);
+  }
+
+  function characterLabel(ch, fallback) {
+    if (!ch) return fallback || "Character";
+    if (ch.name) return ch.name;
+    if (ch.id === "slot-3") return "#3";
+    if (/^slot-/.test(ch.id)) return "#" + String(ch.id).replace("slot-", "");
+    return fallback || ch.id;
+  }
+
+  function getCharacterUnlocks() {
+    return asUnlockMap(read(KEYS.characterUnlocks, {}));
+  }
+
+  function saveCharacterUnlocks(map) {
+    write(KEYS.characterUnlocks, asUnlockMap(map));
+  }
+
+  function mergeCharacterUnlocks(extra) {
+    const next = Object.assign({}, getCharacterUnlocks(), asUnlockMap(extra));
+    saveCharacterUnlocks(next);
+    return next;
+  }
+
+  function alreadyUnlockedCharacter(id) {
+    return !!(id && getCharacterUnlocks()[id]);
+  }
+
+  function markCharacterUnlocked(id) {
+    if (!id) return false;
+    const all = getCharacterUnlocks();
+    if (all[id]) return false;
+    all[id] = Date.now();
+    saveCharacterUnlocks(all);
+    return true;
+  }
+
+  function revokeCharacterUnlock(id) {
+    if (!id) return false;
+    const all = getCharacterUnlocks();
+    if (!all[id]) return false;
+    delete all[id];
+    saveCharacterUnlocks(all);
+    return true;
+  }
+
+  function unlockedCharacters(roster) {
+    const unlocks = getCharacterUnlocks();
+    return ((roster && roster.characters) || []).filter((ch) => unlocks[ch.id]);
+  }
+
+  function comicUnlocked(roster) {
+    const need = (roster && roster.comicStartsAfter) || 3;
+    return unlockedCharacters(roster).length >= need;
+  }
+
+  function getCharacterSeen() {
+    return asUnlockMap(read(KEYS.characterSeen, {}));
+  }
+
+  function markCharacterSeen(id) {
+    if (!id) return;
+    const seen = getCharacterSeen();
+    seen[id] = Date.now();
+    write(KEYS.characterSeen, seen);
+  }
+
+  function pendingCharacterCelebrations(roster) {
+    const seen = getCharacterSeen();
+    return unlockedCharacters(roster).filter((ch) => !seen[ch.id]);
+  }
+
+  function aceMedia(roster) {
+    const ace = ((roster && roster.characters) || []).find((ch) => ch.id === "ace");
+    return {
+      video: (ace && ace.video) || "img/characters/ace.mp4",
+      poster: (ace && ace.poster) || "img/characters/ace.jpg"
+    };
+  }
+
+  function closeCharacterCelebrate() {
+    const layer = document.getElementById("char-celebrate");
+    if (!layer) return;
+    const video = layer.querySelector("video");
+    if (video) {
+      try { video.pause(); } catch (_) {}
+    }
+    layer.classList.remove("open");
+  }
+
+  function playUnlockClip(roster, unlockedChar) {
+    const ace = aceMedia(roster);
+    const name = characterLabel(unlockedChar, "New teammate");
+    let layer = document.getElementById("char-celebrate");
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.id = "char-celebrate";
+      layer.className = "char-celebrate";
+      document.body.appendChild(layer);
+    }
+    layer.innerHTML = `
+      <div class="char-celebrate-panel" role="dialog" aria-labelledby="char-celebrate-title">
+        <p class="char-celebrate-kicker">New teammate</p>
+        <h2 id="char-celebrate-title">${esc(name)} unlocked!</h2>
+        <video src="${esc(ace.video)}" poster="${esc(ace.poster)}" playsinline ${prefersReducedMotion() ? "" : "autoplay"} controls></video>
+        <button type="button" class="btn primary" id="char-celebrate-close">Nice</button>
+      </div>`;
+    layer.classList.add("open");
+    const close = () => closeCharacterCelebrate();
+    document.getElementById("char-celebrate-close").addEventListener("click", close);
+    layer.onclick = (e) => {
+      if (e.target === layer) close();
+    };
+    if (unlockedChar && unlockedChar.id) markCharacterSeen(unlockedChar.id);
+    confetti();
+  }
+
+  function maybePlayUnlockCelebration(roster) {
+    const pending = pendingCharacterCelebrations(roster);
+    if (!pending.length) return false;
+    playUnlockClip(roster, pending[0]);
+    pending.slice(1).forEach((ch) => markCharacterSeen(ch.id));
+    return true;
+  }
+
+  function applyFamilyCharacterUnlocks(family) {
+    const next = normalizeFamily(family);
+    mergeCharacterUnlocks(next.characterUnlocks);
+    return next;
+  }
+
+  function grantCharacter(family, characterId) {
+    const next = normalizeFamily(family);
+    if (!characterId) return { family: next, fresh: false };
+    const fresh = markCharacterUnlocked(characterId);
+    if (!next.characterUnlocks[characterId]) {
+      next.characterUnlocks[characterId] = nowIso();
+      saveFamily(next);
+    } else if (fresh) {
+      saveFamily(next);
+    }
+    return { family: next, fresh };
+  }
+
+  function otherAwardGrantsCharacter(pack, family, characterId, exceptId) {
+    return (pack.achievements || []).some((ach) => {
+      if (!ach || ach.id === exceptId) return false;
+      const grant = (family.streaks[ach.id] && family.streaks[ach.id].grantedCharacter) || ach.rewardCharacter;
+      if (grant !== characterId) return false;
+      return !!(family.streaks[ach.id] && family.streaks[ach.id].awarded) || alreadyUnlocked(ach.id);
+    });
+  }
+
   async function loadFamily() {
     const seed = normalizeFamily(parseSeed("family-seed") || emptyFamily());
     const stored = getFamilyDraft();
-    if (stored) return stored;
+    if (stored) {
+      applyFamilyCharacterUnlocks(stored);
+      return stored;
+    }
     const file = await fetchJson("family.json", null);
-    return normalizeFamily(file || seed);
+    const next = normalizeFamily(file || seed);
+    applyFamilyCharacterUnlocks(next);
+    return next;
   }
 
   function emptyProgressSeed() {
@@ -618,6 +871,27 @@
     return ach;
   }
 
+  function awardStreak(pack, family, id) {
+    const ach = awardAchievement(pack, id);
+    const next = normalizeFamily(family);
+    const st = next.streaks[id] || { count: 0 };
+    const granted = (ach && ach.rewardCharacter) || st.grantedCharacter || "";
+    next.streaks[id] = Object.assign({}, st, {
+      awarded: true,
+      awardedAt: nowIso(),
+      grantedCharacter: granted || undefined
+    });
+    let freshCharacter = false;
+    if (granted) {
+      const grant = grantCharacter(next, granted);
+      freshCharacter = grant.fresh;
+      Object.assign(next, grant.family);
+    } else {
+      saveFamily(next);
+    }
+    return { family: next, achievement: ach, grantedCharacter: granted || "", freshCharacter };
+  }
+
   function revokeUnlock(id) {
     const all = getUnlocks();
     if (!all[id]) return false;
@@ -631,12 +905,20 @@
     const was = revokeUnlock(id);
     const next = normalizeFamily(family);
     const st = next.streaks[id] || { count: 0 };
+    const granted = st.grantedCharacter || (ach && ach.rewardCharacter) || "";
     next.streaks[id] = Object.assign({}, st, { awarded: false });
+    let revokedCharacter = false;
+    if (granted && !otherAwardGrantsCharacter(pack, next, granted, id)) {
+      revokedCharacter = revokeCharacterUnlock(granted);
+      if (next.characterUnlocks[granted]) {
+        delete next.characterUnlocks[granted];
+      }
+    }
     saveFamily(next);
     if (was && ach && ach.reward) {
       write(KEYS.bananas, Math.max(0, getBananas() - (Number(ach.reward) || 0)));
     }
-    return { family: next, revoked: was, achievement: ach || null };
+    return { family: next, revoked: was, achievement: ach || null, revokedCharacter };
   }
 
   function recordEgg(egg) {
@@ -714,7 +996,8 @@
     const prize = ach.incentive ? " · " + ach.incentive : "";
     const extra = ach.reward ? " · +" + ach.reward + " " + cur.name : "";
     const game = ach.unlocksGame === "egg" ? " · Egg game unlocked" : "";
-    toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game);
+    const mate = ach.rewardCharacter ? " · teammate unlocked" : "";
+    toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game + mate);
     confetti();
   }
 
@@ -797,12 +1080,17 @@
     return next;
   }
 
-  function exportPack(pack, family) {
+  function exportPack(pack, family, roster) {
+    const characters = normalizeCharacters(roster || getMomCharacters() || defaultCharacters());
+    const familyNext = normalizeFamily(family);
+    familyNext.characterUnlocks = Object.assign({}, familyNext.characterUnlocks, getCharacterUnlocks());
     return {
-      version: 3,
+      version: 4,
       currency: currency(pack),
       achievements: pack.achievements || [],
-      family: normalizeFamily(family),
+      characters,
+      characterUnlocks: getCharacterUnlocks(),
+      family: familyNext,
       unlocks: getUnlocks(),
       trophyOrder: getTrophyOrder(),
       progress: getProgress()
@@ -821,11 +1109,20 @@
       pack.currency = obj.achievementsPack.currency;
     }
     saveMomDraft(pack);
+    if (obj.characters) saveMomCharacters(obj.characters);
     if (obj.family) saveFamily(obj.family);
     if (obj.unlocks && typeof obj.unlocks === "object") write(KEYS.unlocks, obj.unlocks);
     if (Array.isArray(obj.trophyOrder)) saveTrophyOrder(obj.trophyOrder);
     if (obj.progress && typeof obj.progress === "object" && !Array.isArray(obj.progress)) {
       write(KEYS.progress, obj.progress);
+    }
+    const importedUnlocks = Object.assign(
+      {},
+      asUnlockMap(obj.characterUnlocks),
+      asUnlockMap(obj.family && obj.family.characterUnlocks)
+    );
+    if (obj.characterUnlocks || (obj.family && obj.family.characterUnlocks)) {
+      saveCharacterUnlocks(importedUnlocks);
     }
     return pack;
   }
@@ -842,6 +1139,7 @@
     loadWeek,
     loadAchievements,
     loadFamily,
+    loadCharacters,
     loadProgress,
     getProgress,
     getUnlocks,
@@ -852,6 +1150,10 @@
     getMomDraft,
     saveMomDraft,
     clearMomDraft,
+    usingMomCharacters,
+    getMomCharacters,
+    saveMomCharacters,
+    clearMomCharacters,
     getFamilyDraft,
     saveFamily,
     clearFamilyDraft,
@@ -889,6 +1191,7 @@
     helpOpens,
     checkUnlocks,
     awardAchievement,
+    awardStreak,
     revokeUnlock,
     revokeAchievement,
     recordEgg,
@@ -911,6 +1214,22 @@
     addNote,
     exportPack,
     importPack,
+    defaultCharacters,
+    normalizeCharacters,
+    characterLabel,
+    getCharacterUnlocks,
+    alreadyUnlockedCharacter,
+    markCharacterUnlocked,
+    revokeCharacterUnlock,
+    unlockedCharacters,
+    comicUnlocked,
+    pendingCharacterCelebrations,
+    markCharacterSeen,
+    aceMedia,
+    playUnlockClip,
+    maybePlayUnlockCelebration,
+    applyFamilyCharacterUnlocks,
+    grantCharacter,
     paintBuild
   };
 

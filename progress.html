@@ -17,8 +17,8 @@
         <p>Bennett’s activity · class dashboard</p>
       </div>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 23</span>
-        <span>8/15, 8:59 AM</span>
+        <span>Build 24</span>
+        <span>8/15, 9:45 AM</span>
       </div>
     </div>
     <div class="hud-bar progress-hud">
@@ -27,6 +27,7 @@
       <div class="hud-nav">
         <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
         <a class="progress-chip on" href="progress.html" aria-current="page"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="crew-chip" href="characters.html" aria-label="Characters"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
         <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
         <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
@@ -84,7 +85,18 @@
     {"id": "started-week-5", "title": "Five-day start", "test": true},
     {"id": "asked-before-due", "title": "Asked before it was due", "test": true},
     {"id": "hidden-banana", "title": "Hidden banana", "test": true, "secret": true, "unlocksGame": "egg"},
-    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "test": true, "unlocksGame": "egg"}
+    {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "test": true, "unlocksGame": "egg"},
+    {"id": "test-ace-closer", "title": "Meet Ace", "test": true, "rewardCharacter": "ace"}
+  ]
+}
+  </script>
+  <script id="char-seed" type="application/json">
+{
+  "comicStartsAfter": 3,
+  "characters": [
+    {"id": "ace", "name": "Ace", "talent": "The Closer", "tagline": "Last point counts.", "status": "ready", "video": "img/characters/ace.mp4", "poster": "img/characters/ace.jpg"},
+    {"id": "riff", "name": "Riff", "talent": "Daily Reps", "tagline": "Again. Louder.", "status": "coming"},
+    {"id": "slot-3", "name": "", "status": "coming"}
   ]
 }
   </script>

@@ -84,6 +84,18 @@
       "reward": 15,
       "unlocksGame": "egg",
       "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-ace-closer",
+      "title": "Meet Ace",
+      "description": "TEST — award this to unlock Ace for Bennett. Not auto-unlocked.",
+      "how": "Parents award this TEST streak when they want Bennett to meet Ace. Awarding it unlocks the character; loading the site does not.",
+      "incentive": "Unlocks Ace",
+      "icon": "tennis",
+      "test": true,
+      "reward": 10,
+      "rewardCharacter": "ace",
+      "streak": { "target": 1, "unit": "time" }
     }
   ]
 }

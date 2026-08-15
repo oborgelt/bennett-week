@@ -3,9 +3,11 @@
 
   let pack = null;
   let family = null;
+  let roster = null;
   let baseWeek = null;
   let week = null;
   let editingId = null;
+  let editingCharId = null;
 
   function hud() {
     const el = document.getElementById("bananas");
@@ -18,7 +20,17 @@
   function persistAch() {
     Game.saveMomDraft(pack);
     renderAchievements();
+    renderCharacters();
+    fillRewardSelect();
     hud();
+    Game.toast("Saved on this device. Export JSON to share with the other parent.");
+  }
+
+  function persistChars() {
+    Game.saveMomCharacters(roster);
+    renderCharacters();
+    fillRewardSelect();
+    renderAchievements();
     Game.toast("Saved on this device. Export JSON to share with the other parent.");
   }
 
@@ -28,8 +40,33 @@
     renderInbox();
     renderPool();
     renderAchievements();
+    renderCharacters();
     fillTargets();
     hud();
+  }
+
+  function fillRewardSelect(selected) {
+    const sel = document.getElementById("reward-character");
+    if (!sel) return;
+    const current = selected != null ? selected : sel.value;
+    const opts = [`<option value="">None</option>`].concat(
+      (roster.characters || []).map((ch) => {
+        const label = Game.characterLabel(ch);
+        return `<option value="${Game.esc(ch.id)}">${Game.esc(label)}</option>`;
+      })
+    );
+    sel.innerHTML = opts.join("");
+    sel.value = current || "";
+  }
+
+  function findChar(id) {
+    return (roster.characters || []).find((ch) => ch.id === id) || null;
+  }
+
+  function rewardLabel(ach) {
+    const id = ach && ach.rewardCharacter;
+    if (!id) return "";
+    return Game.characterLabel(findChar(id), id);
   }
 
   function fillTargets() {
@@ -269,6 +306,7 @@
           <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title || "Untitled")}</h3>
           <p>${Game.esc(ach.description || "")}</p>
           <p>Incentive: ${Game.esc(ach.incentive || "—")} · ${ach.reward || 0} ${cur.name}</p>
+          <p>Reward character: ${ach.rewardCharacter ? Game.esc(rewardLabel(ach)) : "None"}</p>
           <p>Streak: ${st.count} / ${target} ${Game.esc(unit)}${st.awarded ? " · awarded" : ""}</p>
           <div class="parent-actions">
             <button type="button" class="btn" data-count="${Game.esc(ach.id)}">Count this week</button>
@@ -297,12 +335,20 @@
     }));
     list.querySelectorAll("[data-award]").forEach((b) => b.addEventListener("click", () => {
       const id = b.dataset.award;
-      const ach = Game.awardAchievement(pack, id);
       const curSt = streakOf(pack.achievements.find((a) => a.id === id) || { id });
-      family.streaks[id] = { count: curSt.count, awarded: true, awardedAt: Game.nowIso() };
+      family.streaks[id] = Object.assign({}, family.streaks[id] || {}, { count: curSt.count });
+      const result = Game.awardStreak(pack, family, id);
+      family = result.family;
       persistFamily();
-      if (ach) Game.celebrate(ach, pack);
-      else Game.toast("Already awarded on this device.");
+      if (result.achievement) {
+        Game.celebrate(result.achievement, pack);
+        if (result.freshCharacter) {
+          const ch = findChar(result.grantedCharacter);
+          Game.toast((ch ? Game.characterLabel(ch) : "Character") + " unlocked for Bennett.");
+        }
+      } else {
+        Game.toast("Already awarded on this device.");
+      }
     }));
     list.querySelectorAll("[data-revoke]").forEach((b) => b.addEventListener("click", () => {
       const result = Game.revokeAchievement(pack, family, b.dataset.revoke);
@@ -310,6 +356,93 @@
       Game.toast("Award undone. Bennett’s trophy room updates on this device.");
       persistFamily();
     }));
+  }
+
+  function renderCharacters() {
+    const list = document.getElementById("char-list");
+    if (!list) return;
+    const chars = roster.characters || [];
+    if (!chars.length) {
+      list.innerHTML = `<p class="empty">No character slots yet. Add Ace, Riff, or #3.</p>`;
+      return;
+    }
+    list.innerHTML = chars.map((ch) => {
+      const label = Game.characterLabel(ch);
+      const unlocked = Game.alreadyUnlockedCharacter(ch.id);
+      const coming = ch.status !== "ready" || !ch.video;
+      const media = ch.video
+        ? `<video class="char-preview" src="${Game.esc(ch.video)}" poster="${Game.esc(ch.poster || "")}" controls playsinline preload="metadata"></video>`
+        : ch.poster
+          ? `<img class="char-preview" src="${Game.esc(ch.poster)}" alt="">`
+          : `<div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>${coming ? "Coming — empty slot" : "No clip yet"}</p></div>`;
+      return `
+        <article class="char-card ${coming ? "coming" : "ready"}">
+          <div class="char-media">${media}</div>
+          <h3>${ch.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(label)}</h3>
+          <p>${ch.talent ? Game.esc(ch.talent) : "Talent TBD"}</p>
+          <p>${ch.tagline ? "“" + Game.esc(ch.tagline) + "”" : "Tag line later"}</p>
+          <p>${unlocked ? "Unlocked for Bennett" : "Locked for Bennett until a streak awards them"}</p>
+          <div class="parent-actions">
+            <button type="button" class="tiny" data-edit-char="${Game.esc(ch.id)}">Edit</button>
+            <button type="button" class="tiny danger" data-del-char="${Game.esc(ch.id)}">Delete</button>
+          </div>
+        </article>`;
+    }).join("");
+    list.querySelectorAll("[data-edit-char]").forEach((b) => {
+      b.addEventListener("click", () => openCharForm(b.dataset.editChar));
+    });
+    list.querySelectorAll("[data-del-char]").forEach((b) => {
+      b.addEventListener("click", () => {
+        if (!confirm("Delete this character slot?")) return;
+        roster.characters = roster.characters.filter((c) => c.id !== b.dataset.delChar);
+        persistChars();
+        closeCharForm();
+      });
+    });
+    const comic = document.getElementById("parent-comic-soon");
+    if (comic) comic.hidden = !Game.comicUnlocked(roster);
+  }
+
+  function blankChar() {
+    return { id: "", name: "", talent: "", tagline: "", status: "coming", video: "", poster: "", test: false };
+  }
+
+  function fillCharForm(ch) {
+    document.getElementById("char-name").value = ch.name || "";
+    document.getElementById("char-talent").value = ch.talent || "";
+    document.getElementById("char-tagline").value = ch.tagline || "";
+    document.getElementById("char-status").value = ch.status || "coming";
+    document.getElementById("char-video").value = ch.video || "";
+    document.getElementById("char-poster").value = ch.poster || "";
+    document.getElementById("char-test").checked = !!ch.test;
+  }
+
+  function collectChar() {
+    const prev = editingCharId ? findChar(editingCharId) || {} : {};
+    const name = document.getElementById("char-name").value.trim();
+    return Object.assign({}, prev, {
+      id: editingCharId || slug(name || "character") + "-" + Date.now().toString(36),
+      name,
+      talent: document.getElementById("char-talent").value.trim(),
+      tagline: document.getElementById("char-tagline").value.trim(),
+      status: document.getElementById("char-status").value || "coming",
+      video: document.getElementById("char-video").value.trim(),
+      poster: document.getElementById("char-poster").value.trim(),
+      test: document.getElementById("char-test").checked
+    });
+  }
+
+  function openCharForm(id) {
+    editingCharId = id || null;
+    fillCharForm(id ? (findChar(id) || blankChar()) : blankChar());
+    document.getElementById("char-editor").hidden = false;
+    document.getElementById("char-editor-title").textContent = id ? "Edit character" : "New character";
+    document.getElementById("char-name").focus();
+  }
+
+  function closeCharForm() {
+    editingCharId = null;
+    document.getElementById("char-editor").hidden = true;
   }
 
   function blank() {
@@ -322,6 +455,7 @@
       icon: "badge",
       test: true,
       reward: 10,
+      rewardCharacter: "",
       streak: { target: 3, unit: "week" }
     };
   }
@@ -336,6 +470,7 @@
     document.getElementById("test").checked = !!ach.test;
     document.getElementById("target").value = (ach.streak && ach.streak.target) || 1;
     document.getElementById("unit").value = (ach.streak && ach.streak.unit) || "week";
+    fillRewardSelect(ach.rewardCharacter || "");
   }
 
   function slug(title) {
@@ -347,7 +482,9 @@
   }
 
   function collect() {
-    return {
+    const prev = editingId ? pack.achievements.find((a) => a.id === editingId) || {} : {};
+    const rewardCharacter = document.getElementById("reward-character").value || "";
+    const next = Object.assign({}, prev, {
       id: editingId || slug(document.getElementById("title").value) + "-" + Date.now().toString(36),
       title: document.getElementById("title").value.trim(),
       description: document.getElementById("description").value.trim(),
@@ -360,7 +497,10 @@
         target: Number(document.getElementById("target").value) || 1,
         unit: document.getElementById("unit").value.trim() || "week"
       }
-    };
+    });
+    if (rewardCharacter) next.rewardCharacter = rewardCharacter;
+    else delete next.rewardCharacter;
+    return next;
   }
 
   function openForm(id) {
@@ -380,12 +520,14 @@
   async function boot() {
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
+    roster = await Game.loadCharacters();
     baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
     week = Game.applyWeekOverlay(baseWeek, family);
     if (!pack.currency) pack.currency = { name: "bananas", singular: "banana", emoji: "🍌" };
     if (!Array.isArray(pack.achievements)) pack.achievements = [];
     family = Game.normalizeFamily(family);
     hud();
+    fillRewardSelect("");
 
     document.getElementById("icon").innerHTML = ICONS.map((i) => `<option value="${i}">${i}</option>`).join("");
     fillTargets();
@@ -396,6 +538,24 @@
 
     document.getElementById("add").addEventListener("click", () => openForm(null));
     document.getElementById("cancel").addEventListener("click", closeForm);
+    document.getElementById("add-char").addEventListener("click", () => openCharForm(null));
+    document.getElementById("cancel-char").addEventListener("click", closeCharForm);
+    document.getElementById("save-char").addEventListener("click", () => {
+      const next = collectChar();
+      if (!next.name && next.id !== "slot-3") {
+        Game.toast("Add a name, or keep the #3 slot.");
+        return;
+      }
+      const idx = roster.characters.findIndex((c) => c.id === next.id);
+      if (idx >= 0) roster.characters[idx] = next;
+      else roster.characters.push(next);
+      persistChars();
+      closeCharForm();
+    });
+    document.getElementById("download-chars").addEventListener("click", () => {
+      Game.downloadJson("characters.json", roster);
+      Game.toast("Downloaded the character roster.");
+    });
     document.getElementById("save").addEventListener("click", () => {
       const next = collect();
       if (!next.title) {
@@ -448,7 +608,7 @@
     });
 
     document.getElementById("export").addEventListener("click", () => {
-      Game.downloadJson("bennett-week-export.json", Game.exportPack(pack, family));
+      Game.downloadJson("bennett-week-export.json", Game.exportPack(pack, family, roster));
       Game.toast("Downloaded the family pack. The other parent can import it.");
     });
 
@@ -463,8 +623,11 @@
           if (!next) throw new Error("bad pack");
           pack = next;
           family = Game.getFamilyDraft() || family;
+          roster = Game.getMomCharacters() || roster;
           week = Game.applyWeekOverlay(baseWeek, family);
+          fillRewardSelect("");
           renderAchievements();
+          renderCharacters();
           renderInbox();
           renderPool();
           fillTargets();
@@ -481,22 +644,28 @@
       if (!confirm("Clear this device's parent-desk draft and reload the repo files?")) return;
       Game.clearMomDraft();
       Game.clearFamilyDraft();
+      Game.clearMomCharacters();
       pack = await Game.loadAchievements();
       family = await Game.loadFamily();
+      roster = await Game.loadCharacters();
       week = Game.applyWeekOverlay(baseWeek, family);
+      fillRewardSelect("");
       renderAchievements();
+      renderCharacters();
       renderInbox();
       renderPool();
       fillTargets();
       closeForm();
+      closeCharForm();
       document.getElementById("draft-flag").hidden = true;
       Game.toast("Back to the repo files.");
     });
 
     renderAchievements();
+    renderCharacters();
     renderInbox();
     renderPool();
-    document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft());
+    document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomCharacters());
   }
 
   boot();

@@ -2,6 +2,7 @@
   let baseWeek = null;
   let week = null;
   let pack = null;
+  let roster = null;
   let family = null;
   let baseSeed = null;
   let seed = null;
@@ -192,6 +193,7 @@
       parentNotes,
       reflections,
       trophies,
+      mates: roster ? Game.unlockedCharacters(roster) : [],
       eggs,
       bananas: Game.getBananas()
     };
@@ -266,6 +268,9 @@
     const trophyList = trophies.length
       ? trophies.map((ach) => `<li class="entry-row">${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)} <span class="entry-tools">${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}<button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button><button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button></span></li>`).join("")
       : `<li class="empty">No trophies yet — keep the streak going.</li>`;
+    const mateList = totals.mates.length
+      ? totals.mates.map((ch) => `<li><a href="characters.html">${Game.esc(Game.characterLabel(ch))}</a>${ch.talent ? " · " + Game.esc(ch.talent) : ""}</li>`).join("")
+      : `<li class="empty">No teammates yet — parents award a streak to unlock Ace.</li>`;
     return `
       <article class="stat-card finds-card">
         <h3>Bananas &amp; finds</h3>
@@ -282,11 +287,17 @@
             <div class="stat-num">${eggs.length}</div>
             <div class="stat-label">eggs found</div>
           </div>
+          <div>
+            <div class="stat-num">${totals.mates.length}</div>
+            <div class="stat-label">teammates</div>
+          </div>
         </div>
         <h4>Eggs found</h4>
         <ul class="open-list">${eggList}</ul>
         <h4>Trophies awarded</h4>
         <ul class="open-list">${trophyList}</ul>
+        <h4>Teammates unlocked</h4>
+        <ul class="open-list">${mateList}</ul>
       </article>`;
   }
 
@@ -532,6 +543,7 @@
   async function boot() {
     baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [] });
     pack = await Game.loadAchievements() || { currency: Game.currency({}), achievements: [] };
+    roster = await Game.loadCharacters();
     family = await Game.loadFamily();
     baseSeed = await Game.loadProgress();
     syncViews();
