@@ -1,0 +1,28 @@
+{
+  "comicStartsAfter": 3,
+  "characters": [
+    {
+      "id": "ace",
+      "name": "Ace",
+      "talent": "The Closer",
+      "tagline": "Last point counts.",
+      "status": "ready",
+      "video": "img/characters/ace.mp4",
+      "poster": "img/characters/ace.jpg"
+    },
+    {
+      "id": "riff",
+      "name": "Riff",
+      "talent": "Daily Reps",
+      "tagline": "Again. Louder.",
+      "status": "coming"
+    },
+    {
+      "id": "slot-3",
+      "name": "",
+      "talent": "",
+      "tagline": "",
+      "status": "coming"
+    }
+  ]
+}
