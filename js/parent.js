@@ -532,7 +532,7 @@
     ` : "";
     grid.innerHTML = (items.length
       ? items.map((item) => libPickCard(item, false)).join("")
-      : `<p class="empty">${funMode ? "No Fun sounds yet. Add audio or a link on Admin." : "No files tagged to this teammate yet. Add them on Admin."}</p>`) + showFun + showCrew;
+      : `<p class="empty">${funMode ? "No Fun sounds yet. Drop audio on Admin." : "No files tagged to this teammate yet. Add them on Admin."}</p>`) + showFun + showCrew;
     box.querySelectorAll("[data-pick-lib]").forEach((b) => {
       b.addEventListener("click", () => {
         selectedLibId = b.dataset.pickLib;
@@ -895,24 +895,30 @@
       Game.toast("Attached on this device. Export the family pack to share.");
     });
 
-    document.getElementById("export").addEventListener("click", () => {
-      Game.downloadJson("bennett-week-export.json", Game.exportPack(pack, family, roster, library));
-      Game.toast("Downloaded the family pack. The other parent can import it.");
+    document.getElementById("export").addEventListener("click", async () => {
+      const result = await Game.exportFamilyPack(pack, family, roster, library);
+      Game.downloadJson("bennett-week-export.json", result.pack);
+      if (result.skipped.length) {
+        Game.toast("Pack saved. Skipped huge files (over 2 MB): " + result.skipped.join(", "));
+      } else {
+        Game.toast("Downloaded the family pack. The other parent can import it.");
+      }
     });
 
     document.getElementById("import").addEventListener("change", (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         try {
           const obj = JSON.parse(reader.result);
-          const next = Game.importPack(obj);
-          if (!next) throw new Error("bad pack");
-          pack = next;
+          const next = await Game.importFamilyPack(obj);
+          if (!next || !next.pack) throw new Error("bad pack");
+          pack = next.pack;
           family = Game.getFamilyDraft() || family;
           roster = Game.getMomCharacters() || roster;
           library = Game.getMomLibrary() || library;
+          await Game.hydrateLibraryBlobs(library);
           week = Game.applyWeekOverlay(baseWeek, family);
           fillRewardSelect("");
           fillRewardContent("");
@@ -925,7 +931,11 @@
           renderIngredients();
           fillTargets();
           document.getElementById("draft-flag").hidden = false;
-          Game.toast("Imported on this device.");
+          if (next.skipped.length) {
+            Game.toast("Imported. Some device files were too big or missing.");
+          } else {
+            Game.toast("Imported on this device.");
+          }
         } catch (_) {
           Game.toast("Could not read that JSON file.");
         }

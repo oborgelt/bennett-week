@@ -51,7 +51,9 @@
     const src = Game.librarySrc(item);
     const where = item.synth
       ? "Generated beep (Web Audio) — no file in the repo"
-      : (src || item.path || item.url || "No path or URL");
+      : item.device
+        ? ("On this device" + (item.filename ? " · " + item.filename : ""))
+        : (src || item.path || item.url || "No path or URL");
     openSheet(item.label || "Preview", `
       <p class="empty">${Game.esc(where)}</p>
       ${Game.libraryPlayerHtml(item)}
@@ -73,7 +75,11 @@
 
   function cardHtml(item) {
     const src = Game.librarySrc(item);
-    const detail = item.synth ? "Generated beep" : (src || item.path || item.url || "—");
+    const detail = item.synth
+      ? "Generated beep"
+      : item.device
+        ? ("On this device" + (item.filename ? " · " + item.filename : ""))
+        : (src || item.path || item.url || "—");
     const badge = item.kind === "video" || item.kind === "audio"
       ? '<span class="lib-play-badge">Play</span>'
       : item.kind === "link" ? '<span class="lib-play-badge">Open</span>' : "";
@@ -125,9 +131,11 @@
       });
     });
     host.querySelectorAll("[data-del-lib]").forEach((b) => {
-      b.addEventListener("click", () => {
+      b.addEventListener("click", async () => {
         if (!Game.confirmDelete("library item")) return;
-        library.items = library.items.filter((item) => item.id !== b.dataset.delLib);
+        const id = b.dataset.delLib;
+        library.items = library.items.filter((item) => item.id !== id);
+        await Game.deleteLibraryBlob(id);
         persistLib();
       });
     });
@@ -173,6 +181,70 @@
     document.getElementById("sheet").addEventListener("click", (e) => {
       if (e.target.id === "sheet") closeSheet();
     });
+
+    async function ingestFiles(fileList) {
+      const files = Array.prototype.slice.call(fileList || []);
+      if (!files.length) return;
+      let last = null;
+      let added = 0;
+      for (let i = 0; i < files.length; i += 1) {
+        const file = files[i];
+        const result = await Game.addDeviceLibraryFile(library, file);
+        if (!result.ok) {
+          Game.toast("Skip " + (file.name || "that file") + " — use mp3, wav, ogg, m4a, or an image/video.");
+          continue;
+        }
+        library = result.library;
+        last = result.item;
+        added += 1;
+      }
+      document.getElementById("lib-files").value = "";
+      if (!added) return;
+      persistLib();
+      if (last) previewItem(last);
+    }
+
+    const drop = document.getElementById("lib-drop");
+    const picker = document.getElementById("lib-files");
+    const pickBtn = document.getElementById("lib-pick");
+    function openPicker() {
+      picker.click();
+    }
+    pickBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openPicker();
+    });
+    drop.addEventListener("click", (e) => {
+      if (e.target === pickBtn || pickBtn.contains(e.target)) return;
+      openPicker();
+    });
+    drop.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openPicker();
+      }
+    });
+    ["dragenter", "dragover"].forEach((name) => {
+      drop.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        drop.classList.add("drag");
+      });
+    });
+    ["dragleave", "dragend"].forEach((name) => {
+      drop.addEventListener(name, (e) => {
+        e.preventDefault();
+        drop.classList.remove("drag");
+      });
+    });
+    drop.addEventListener("drop", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      drop.classList.remove("drag");
+      ingestFiles(e.dataTransfer && e.dataTransfer.files);
+    });
+    picker.addEventListener("change", () => ingestFiles(picker.files));
 
     document.getElementById("add-lib").addEventListener("click", () => {
       const label = document.getElementById("lib-label").value.trim();
@@ -232,9 +304,14 @@
       Game.toast(family.story.includeNote ? "Story will include that parent note." : "No parent note — story will skip it.");
     });
 
-    document.getElementById("export").addEventListener("click", () => {
-      Game.downloadJson("bennett-week-export.json", Game.exportPack(pack, family, roster, library));
-      Game.toast("Downloaded the family pack.");
+    document.getElementById("export").addEventListener("click", async () => {
+      const result = await Game.exportFamilyPack(pack, family, roster, library);
+      Game.downloadJson("bennett-week-export.json", result.pack);
+      if (result.skipped.length) {
+        Game.toast("Pack saved. Skipped huge files (over 2 MB): " + result.skipped.join(", "));
+      } else {
+        Game.toast("Downloaded the family pack.");
+      }
     });
 
     document.getElementById("import").addEventListener("change", (e) => {
@@ -244,16 +321,21 @@
       reader.onload = async () => {
         try {
           const obj = JSON.parse(reader.result);
-          const next = Game.importPack(obj);
-          if (!next) throw new Error("bad pack");
-          pack = next;
+          const next = await Game.importFamilyPack(obj);
+          if (!next || !next.pack) throw new Error("bad pack");
+          pack = next.pack;
           family = Game.getFamilyDraft() || family;
           roster = Game.getMomCharacters() || roster;
           library = Game.getMomLibrary() || library;
+          await Game.hydrateLibraryBlobs(library);
           renderLibrary();
           renderIngredients();
           document.getElementById("draft-flag").hidden = false;
-          Game.toast("Imported on this device.");
+          if (next.skipped.length) {
+            Game.toast("Imported. Some device files were too big or missing.");
+          } else {
+            Game.toast("Imported on this device.");
+          }
         } catch (_) {
           Game.toast("Could not read that JSON file.");
         }

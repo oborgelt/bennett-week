@@ -31,7 +31,7 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. If that streak grants a character, gear, or a library item, Bennett unlocks it. Award **Meet Ace / Meet Riff / Meet Scorch** (TEST) to unlock the crew. Award **Notebook of Holding** or **First Serve** (TEST) for story tools / abilities. Award **Banana honk** (TEST) for a Fun sound. Award **Wrong number of eggs** (or let him find the banner-band secret) to unlock the office egg game. Bennett never sees the catalog or locked tile names.
 4. Inbox: Bennett’s questions and check-ins. Reply with a note on that item. **Ask AI mentor** shows what he asked the Socratic mentor.
 5. Add reflection prompts (how class / teachers felt — celebrate and catch early warnings, not a psych eval).
-6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file (asks, notes, reflections, streaks, awarded trophies, character unlocks, gear unlocks, **content unlocks**, library tags including audio/links, story ingredients, Ask AI thread, which streak grants which unlock, Done/Started, and week/progress overlays). Week.json is not rewritten in the browser — edits and deletes live in that overlay. **Download achievements.json** / **Download characters.json** to drop catalogs into the repo. **Undo award** on a streak takes the trophy out of Bennett’s room and locks that reward again if nothing else granted it.
+6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file (asks, notes, reflections, streaks, awarded trophies, character unlocks, gear unlocks, **content unlocks**, library tags including audio/links, **device-dropped files** under 2 MB each, story ingredients, Ask AI thread, which streak grants which unlock, Done/Started, and week/progress overlays). Week.json is not rewritten in the browser — edits and deletes live in that overlay. **Download achievements.json** / **Download characters.json** to drop catalogs into the repo. **Undo award** on a streak takes the trophy out of Bennett’s room and locks that reward again if nothing else granted it.
 7. **Progress** is the same dashboard Bennett sees (activity + class grades). It does not show the locked trophy catalog.
 8. **Characters** on the parent desk: tap Ace / Riff / Scorch to see **that** character’s library (not the whole dump), or **Fun / Sounds**. Attach a still, clip, audio, or link to a streak reward or a future story / week beat. Crew comic art is available when you build a team beat. After Bennett earns 3 characters, Story is a real page.
 
@@ -39,17 +39,18 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 
 Open `admin.html` from the parent desk **Admin** chip.
 
-- Library kinds: **image**, **video** (local path), **audio** (local path like `img/library/foo.mp3` or a URL), **link** (YouTube / any https URL).
+- Library kinds: **image**, **video**, **audio**, **link** (YouTube / any https URL).
 - Grouped **Ace / Riff / Scorch / Crew / Fun / Sounds**.
 - Preview stills, play videos, play audio (`<audio controls>`), and open links (YouTube can embed).
 - Seed: locker clips stay on their character. Comic files stay **Crew**. TEST **Banana honk** is a Fun sound generated in the browser — no third-party audio file.
-- Add an item by **label + kind + character + path and/or URL** (path-based for `file://` / Pages). No upload server.
+- **Drop or choose files** on Admin (mp3 / wav / ogg / m4a, plus image / video). Label and kind come from the filename. Default tag is Fun / Sounds. The file stays on this device (IndexedDB) — nothing is written into `img/library` or git.
+- Path / URL add is still there as an advanced row for `file://` / Pages links. No upload server.
 - **Story ingredients** box: topics to fold into the comic (TEST: “finish what you start”, “ask before you’re sunk”) plus an optional parent “include in story” note.
-- Export / import rides the same family pack.
+- Export / import rides the same family pack. Device files ride along as base64 under a 2 MB-per-file cap; bigger files are skipped with a toast.
 
 ### How to attach media to a character
 
-1. Admin: set the file’s **Tag** to Ace, Riff, Scorch, Crew, or Fun.
+1. Admin: drop the file (or retag it) to Ace, Riff, Scorch, Crew, or Fun.
 2. Parent desk: tap that character (or **Fun / Sounds**) → that locker library appears.
 3. Select a file → **Attach** to a streak or a story / week beat (start, English 10 board, Scorch recover, Ace serve, notebook, finale, or a work/event on this week).
 4. Audio / link / Fun items attached to a streak become a **content** unlock. Award that streak so Bennett can play them.
@@ -61,10 +62,11 @@ Do not re-encode `img/characters/ace.mp4`, `riff.mp4`, or `scorch.mp4`.
 
 Orin can grow a meme soundboard the same way — **without putting copyrighted I Think You Should Leave clips in this public repo**.
 
-- Best: files he owns, or links he is allowed to use.
-- Admin → kind **audio** → paste a URL, or drop a file into `img/library/` and set the path (`img/library/foo.mp3`).
-- Kind **link** stores a YouTube / https URL (open in a new tab; YouTube can embed).
+- Best: files he already owns on this phone or laptop, or links he is allowed to use.
+- Admin → drop the file (or **Choose files**). No path typing. It lands under Fun / Sounds and plays from this device.
+- Kind **link** (advanced row) stores a YouTube / https URL (open in a new tab; YouTube can embed).
 - Attach that item to a streak as a content reward, then Award. Bennett sees the name only after it unlocks. Locked sounds stay **???** — not a catalog dump.
+- Export the family pack so Mom gets the sound. Files over 2 MB are skipped with a toast.
 - Do **not** download, scrape, or commit the ITYSL soundboard rips. This GitHub repo is public.
 - No TEST ITYSL quotes in the seed. Banana honk is an original generated beep.
 
@@ -194,4 +196,4 @@ Parents assign a teammate (or a tool / ability) on a streak, then award that str
 4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / abilities only. **Sounds** shows earned audio / links; locked names stay **???**.
 5. After 3 character unlocks, **Story** is available — a choose-your-own-adventure, not a toast. An attached unlocked sound can play on a story or week beat.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **30**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **32**.
