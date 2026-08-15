@@ -20,11 +20,13 @@
       "poster": "img/characters/riff.jpg"
     },
     {
-      "id": "slot-3",
-      "name": "",
-      "talent": "",
-      "tagline": "",
-      "status": "coming"
+      "id": "scorch",
+      "name": "Scorch",
+      "talent": "The Recover",
+      "tagline": "Burned. Not out.",
+      "status": "ready",
+      "video": "img/characters/scorch.mp4",
+      "poster": "img/characters/scorch.jpg"
     }
   ]
 }
