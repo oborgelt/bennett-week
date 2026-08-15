@@ -46,6 +46,36 @@
       "character": "scorch"
     },
     {
+      "id": "deuce-clip",
+      "label": "Deuce locker clip",
+      "path": "img/characters/deuce.mp4",
+      "poster": "img/characters/deuce.jpg",
+      "kind": "video",
+      "character": "deuce"
+    },
+    {
+      "id": "deuce-poster",
+      "label": "Deuce poster",
+      "path": "img/characters/deuce.jpg",
+      "kind": "image",
+      "character": "deuce"
+    },
+    {
+      "id": "fuzz-clip",
+      "label": "Fuzz locker clip",
+      "path": "img/characters/fuzz.mp4",
+      "poster": "img/characters/fuzz.jpg",
+      "kind": "video",
+      "character": "fuzz"
+    },
+    {
+      "id": "fuzz-poster",
+      "label": "Fuzz poster",
+      "path": "img/characters/fuzz.jpg",
+      "kind": "image",
+      "character": "fuzz"
+    },
+    {
       "id": "crew-hero",
       "label": "Crew hero lineup",
       "path": "img/library/crew-hero.jpg",

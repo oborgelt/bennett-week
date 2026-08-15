@@ -3,6 +3,8 @@
     { id: "ace", title: "Ace" },
     { id: "riff", title: "Riff" },
     { id: "scorch", title: "Scorch" },
+    { id: "deuce", title: "Deuce" },
+    { id: "fuzz", title: "Fuzz" },
     { id: "crew", title: "Crew" },
     { id: "fun", title: "Fun / Sounds" }
   ];
@@ -11,6 +13,8 @@
     ace: "Locker clip and stills for this teammate.",
     riff: "Locker clip and stills for this teammate.",
     scorch: "Locker clip and stills for this teammate.",
+    deuce: "Locker clip and stills for this teammate.",
+    fuzz: "Locker clip and stills for this teammate.",
     crew: "Ace + Riff + Scorch together. Comic stills and the adventure clip.",
     fun: "Meme-style unlocks and sounds. Award a streak so Bennett can play them later."
   };

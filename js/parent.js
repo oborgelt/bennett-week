@@ -469,7 +469,7 @@
     if (!list) return;
     const chars = roster.characters || [];
     if (!chars.length) {
-      list.innerHTML = `<p class="empty">No character slots yet. Add Ace, Riff, or #3.</p>`;
+      list.innerHTML = `<p class="empty">No character slots yet. Add Ace, Riff, Scorch, Deuce, or Fuzz.</p>`;
       return;
     }
     list.innerHTML = chars.map((ch) => {

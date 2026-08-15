@@ -16,7 +16,7 @@ const library = readJson("library.json");
 const achievements = readJson("achievements.json");
 
 const kinds = new Set(["image", "video", "audio", "link"]);
-const groups = new Set(["ace", "riff", "scorch", "crew", "fun"]);
+const groups = new Set(["ace", "riff", "scorch", "deuce", "fuzz", "crew", "fun"]);
 const banned = /i think you should leave|itysl|ithinkyoushouldquote|hot dog car|were you trying to sex me/i;
 
 assert(Array.isArray(library.items), "library.json needs items");
@@ -31,6 +31,21 @@ library.items.forEach((item) => {
     assert(item.path, item.id + " needs a path");
   }
 });
+
+["deuce", "fuzz"].forEach((id) => {
+  const clip = library.items.find((item) => item.id === id + "-clip");
+  const poster = library.items.find((item) => item.id === id + "-poster");
+  assert(clip && clip.kind === "video" && clip.character === id, id + "-clip should be a locker video");
+  assert(poster && poster.kind === "image" && poster.character === id, id + "-poster should be a locker still");
+  assert(clip.path === "img/characters/" + id + ".mp4", id + " clip path");
+  assert(poster.path === "img/characters/" + id + ".jpg", id + " poster path");
+});
+
+const meetDeuce = (achievements.achievements || []).find((a) => a.id === "test-deuce-return");
+const meetFuzz = (achievements.achievements || []).find((a) => a.id === "test-fuzz-unplugged");
+assert(meetDeuce && meetDeuce.rewardUnlock && meetDeuce.rewardUnlock.id === "deuce", "Meet Deuce should unlock character deuce");
+assert(meetFuzz && meetFuzz.rewardUnlock && meetFuzz.rewardUnlock.id === "fuzz", "Meet Fuzz should unlock character fuzz");
+assert(meetDeuce.rewardCharacter === "deuce" && meetFuzz.rewardCharacter === "fuzz", "Meet streaks keep rewardCharacter");
 
 const honk = library.items.find((item) => item.id === "banana-honk");
 assert(honk, "TEST Banana honk seed is missing");
@@ -231,11 +246,27 @@ assert(Game.playRandomLibraryItem(Game.normalizeLibrary(library)), "random clip 
 const cleared = Game.setSoundCue(cued, "egg-end", "");
 assert(!cleared.soundCues["egg-end"], "clearing a cue should drop it");
 
+const roster = Game.defaultCharacters();
+assert.strictEqual(roster.comicStartsAfter, 3, "comicStartsAfter stays 3");
+const rosterIds = (roster.characters || []).map((ch) => String(ch.id));
+assert.strictEqual(rosterIds.join(","), "ace,riff,scorch,deuce,fuzz", "roster appends Deuce and Fuzz after the original trio");
+assert(Game.LIBRARY_GROUPS.indexOf("deuce") >= 0 && Game.LIBRARY_GROUPS.indexOf("fuzz") >= 0, "library groups include Deuce and Fuzz shelves");
+assert(Game.LIBRARY_GROUPS.indexOf("fun") > Game.LIBRARY_GROUPS.indexOf("fuzz"), "Deuce/Fuzz shelves sit with characters, not Fun");
+
 const pack = {
   currency: achievements.currency,
   achievements: achievements.achievements
 };
 let family = Game.emptyFamily();
+const awardedDeuce = Game.awardStreak(pack, family, "test-deuce-return");
+assert(awardedDeuce.freshCharacter, "awarding Meet Deuce should unlock Deuce");
+assert(Game.alreadyUnlockedCharacter("deuce"), "Deuce unlock should persist");
+family = awardedDeuce.family;
+const awardedFuzz = Game.awardStreak(pack, family, "test-fuzz-unplugged");
+assert(awardedFuzz.freshCharacter, "awarding Meet Fuzz should unlock Fuzz");
+assert(Game.alreadyUnlockedCharacter("fuzz"), "Fuzz unlock should persist");
+family = awardedFuzz.family;
+
 const awarded = Game.awardStreak(pack, family, "test-banana-honk");
 assert(awarded.freshContent, "awarding Banana honk should unlock content");
 assert(Game.alreadyUnlockedContent("banana-honk"), "content unlock should persist");
