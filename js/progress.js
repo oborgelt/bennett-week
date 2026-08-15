@@ -8,10 +8,7 @@
   let seed = null;
 
   function classIdForTitle(title) {
-    const t = title || "";
-    if (/^English 10/i.test(t)) return "english-10";
-    if (/^Band\b/i.test(t)) return "band";
-    return null;
+    return Game.classIdForTitle(title) || null;
   }
 
   function stripClassPrefix(title) {
@@ -19,7 +16,17 @@
       .replace(/^TEST:\s*/i, "")
       .replace(/^English 10:\s*/i, "")
       .replace(/^Band:\s*/i, "")
+      .replace(/^Chemistry:\s*/i, "")
+      .replace(/^PE:\s*/i, "")
       .trim();
+  }
+
+  function wantedClass() {
+    try {
+      return String(new URLSearchParams(location.search).get("class") || "").toLowerCase();
+    } catch (_) {
+      return "";
+    }
   }
 
   function mergeClasses() {
@@ -29,7 +36,8 @@
         id: cls.id,
         name: cls.name,
         test: !!cls.test,
-        grade: cls.grade || { display: "—", test: true },
+        khan: cls.khan,
+        grade: cls.grade || null,
         items: (cls.items || []).map((item) => Object.assign({}, item))
       });
     });
@@ -97,7 +105,7 @@
 
   function gradeHtml(grade, extraTest) {
     if (!grade || (!grade.display && !grade.detail)) {
-      return `<span class="grade-pill empty">—</span>`;
+      return "";
     }
     const test = !!(grade.test || extraTest);
     return `<span class="grade-pill${test ? " is-test" : ""}">${test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(grade.display || "—")}${grade.detail && grade.detail !== grade.display ? `<span class="grade-detail">${Game.esc(grade.detail)}</span>` : ""}</span>`;
@@ -304,6 +312,9 @@
   function renderClass(cls, open) {
     const stats = classStats(cls);
     const items = cls.items || [];
+    const khan = Game.khanStripHtmlForClass(cls);
+    const summaryKhan = !items.length ? Game.khanInlineHtml(Game.khanLinksForClass(cls)) : "";
+    const askHref = `ask.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
     const itemHtml = items.length
       ? items.map((item) => {
         const status = itemStatus(item);
@@ -314,12 +325,12 @@
                 <div class="title">${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.title)}</div>
                 <div class="meta">${Game.esc(kindLabel(item.kind))} · <span class="status ${status.kind}">${Game.esc(status.label)}</span></div>
               </div>
-              ${item.grade ? gradeHtml(item.grade, item.test) : (item.kind === "event" ? "" : `<span class="grade-pill empty">—</span>`)}
+              ${item.grade ? gradeHtml(item.grade, item.test) : ""}
             </div>
             <div class="entry-tools">${Game.entryButtons("pitem:" + item.id, "pitem:" + item.id)}</div>
           </li>`;
       }).join("")
-      : `<li class="empty">No assignments or tests on the board yet. Band lives on the week calendar.</li>`;
+      : `<li class="empty">No assignments yet</li>`;
 
     return `
       <details class="class-card" ${open ? "open" : ""} data-class="${Game.esc(cls.id)}">
@@ -327,11 +338,14 @@
           <span class="chev" aria-hidden="true"></span>
           <span class="class-copy">
             <span class="class-name">${cls.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(cls.name)}</span>
-            <span class="class-actions">${Game.esc(actionBits(stats))}</span>
+            <span class="class-actions">${items.length ? Game.esc(actionBits(stats)) : "No assignments yet"}</span>
+            ${summaryKhan ? `<span class="class-summary-khan">${summaryKhan}</span>` : ""}
           </span>
           ${gradeHtml(cls.grade, cls.test)}
         </summary>
         <ul class="class-items">${itemHtml}</ul>
+        ${khan}
+        <p class="ask-help-link class-ask"><a href="${Game.esc(askHref)}">Ask AI</a></p>
         <div class="class-card-tools">${Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id)}</div>
       </details>`;
   }
@@ -434,14 +448,18 @@
           Game.toast("Add a class name first.");
           return;
         }
+        const gradeDisplay = fieldValue("grade");
+        const gradeDetail = fieldValue("detail");
         family = Game.editProgressClass(family, id, {
           name,
           test: fieldValue("test", "checkbox"),
-          grade: {
-            display: fieldValue("grade") || "—",
-            detail: fieldValue("detail"),
-            test: fieldValue("test", "checkbox")
-          }
+          grade: gradeDisplay || gradeDetail
+            ? {
+              display: gradeDisplay,
+              detail: gradeDetail,
+              test: fieldValue("test", "checkbox")
+            }
+            : null
         });
         closeSheet();
         Game.toast("Saved on this device. Export the family pack to share.");
@@ -499,6 +517,9 @@
   }
 
   function bindDash() {
+    document.querySelectorAll(".class-summary-khan a, .class-card .khan-strip a").forEach((a) => {
+      a.addEventListener("click", (e) => e.stopPropagation());
+    });
     document.querySelectorAll("[data-edit]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
@@ -533,7 +554,15 @@
     Game.paintStoryChip(roster);
     document.getElementById("stat-strip").innerHTML =
       renderOpens(opens) + renderActions(totals) + renderFinds(totals);
-    document.getElementById("class-list").innerHTML = classes.map((cls, i) => renderClass(cls, i === 0)).join("");
+    const want = wantedClass();
+    document.getElementById("class-list").innerHTML = classes.map((cls, i) => {
+      const open = want ? cls.id === want : i === 0;
+      return renderClass(cls, open);
+    }).join("");
+    if (want) {
+      const card = document.querySelector(`.class-card[data-class="${CSS.escape(want)}"]`);
+      if (card && card.scrollIntoView) card.scrollIntoView({ block: "nearest" });
+    }
     const note = document.getElementById("grades-note");
     if (note) {
       note.textContent = seed.gradesNote || "Grades are TEST seed until a real feed exists.";

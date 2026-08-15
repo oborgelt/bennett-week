@@ -101,6 +101,46 @@ assert(khanHtml.indexOf("target=\"_blank\"") >= 0 && khanHtml.indexOf("rel=\"noo
 assert(khanHtml.indexOf("No login needed") >= 0, "strip should say no login is needed");
 assert(khanHtml.indexOf("iframe") < 0, "do not embed Khan");
 
+const progress = readJson("progress.json");
+const week = readJson("week.json");
+const classIds = (progress.classes || []).map((cls) => cls.id);
+assert.deepStrictEqual(classIds, ["english-10", "band", "chemistry", "pe"], "known classes only — no invented roster");
+const chem = progress.classes.find((cls) => cls.id === "chemistry");
+const pe = progress.classes.find((cls) => cls.id === "pe");
+assert(chem && Array.isArray(chem.items) && chem.items.length === 0, "Chemistry has no assignments");
+assert(pe && Array.isArray(pe.items) && pe.items.length === 0, "PE has no assignments");
+assert(!chem.grade, "Chemistry must not invent a grade");
+assert(!pe.grade, "PE must not invent a grade");
+assert.deepStrictEqual(chem.khan, ["hs-chemistry"], "Chemistry maps to HS Chemistry");
+const english = progress.classes.find((cls) => cls.id === "english-10");
+const band = progress.classes.find((cls) => cls.id === "band");
+assert(english.grade && english.grade.display, "keep English TEST grade");
+assert(band.grade && band.grade.display, "keep Band TEST grade");
+assert.deepStrictEqual(english.khan, ["ela", "grammar"], "English maps to ELA + grammar");
+assert(!band.khan, "Band has no Khan course");
+assert(!pe.khan, "PE has no Khan course");
+assert(!(week.work || []).some((w) => /chem|algebra|history|spanish/i.test(w.title || "")), "do not invent homework in week.json");
+
+const khanClassChem = Game.khanLinksForClass(chem);
+assert.strictEqual(khanClassChem.length, 1, "Chemistry class strip is HS Chemistry only");
+assert.strictEqual(khanClassChem[0].id, "hs-chemistry", "Chemistry class strip is HS Chemistry");
+assert.strictEqual(Game.khanLinksForClass(band).length, 0, "Band omits Khan");
+assert.strictEqual(Game.khanLinksForClass(pe).length, 0, "PE omits Khan");
+const khanAskChem = Game.khanLinksFor("Chemistry", { classId: "chemistry" });
+assert(khanAskChem.some((k) => k.id === "hs-chemistry"), "Ask ?class=chemistry shows HS Chemistry");
+assert(!khanAskChem.some((k) => k.id === "ela"), "Ask chemistry should not dump ELA");
+assert.strictEqual(Game.classDueLabel(3), "3 due");
+assert.strictEqual(Game.classDueLabel(0), "Nothing due yet");
+assert.strictEqual(Game.classDueCount(english, week), 3, "English has 3 due from week.json");
+assert.strictEqual(Game.classDueCount(chem, week), 0, "Chemistry has nothing due");
+
+let classFamily = Game.emptyFamily();
+classFamily = Game.addProgressClass(classFamily, "Study hall", progress);
+const overlayClasses = Game.applyProgressOverlay(progress, classFamily).classes;
+assert(overlayClasses.some((cls) => cls.id === "chemistry" && cls.items.length === 0), "overlay keeps empty Chemistry");
+assert(overlayClasses.some((cls) => cls.name === "Study hall" && (!cls.items || !cls.items.length) && !cls.grade), "parent-added class has no fake work or grade");
+assert(classFamily.overlay.progress.addedClasses.some((cls) => cls.name === "Study hall"), "added class exports in the family overlay");
+
 const norm = Game.normalizeLibrary(library);
 assert(norm.items.some((item) => item.id === "banana-honk"), "normalizeLibrary dropped Banana honk");
 assert.strictEqual(Game.inferKind("img/library/foo.mp3", "", ""), "audio");

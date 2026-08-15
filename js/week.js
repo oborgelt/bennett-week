@@ -8,6 +8,8 @@
   let roster = null;
   let family = null;
   let library = null;
+  let baseSeed = null;
+  let seed = null;
   let viewedEvents = {};
   let pickedTrophy = null;
   let trackBound = false;
@@ -147,7 +149,52 @@
 
   function syncWeek() {
     week = Game.applyWeekOverlay(baseWeek, family);
+    if (baseSeed) seed = Game.applyProgressOverlay(baseSeed, family);
     return week;
+  }
+
+  function standingClasses() {
+    return ((seed && seed.classes) || []).filter((cls) => cls && cls.id);
+  }
+
+  function renderStandingClasses() {
+    const host = document.getElementById("standing-class-list");
+    if (!host) return;
+    const classes = standingClasses();
+    if (!classes.length) {
+      host.innerHTML = `<p class="empty">No classes on the roster yet.</p>`;
+      return;
+    }
+    host.innerHTML = classes.map((cls) => {
+      const due = Game.classDueCount(cls, week);
+      const status = Game.classDueLabel(due);
+      const links = Game.khanLinksForClass(cls);
+      const khan = Game.khanInlineHtml(links);
+      return `
+        <article class="standing-class" data-class="${Game.esc(cls.id)}">
+          <button type="button" class="standing-class-name" data-open-class="${Game.esc(cls.id)}">${Game.esc(cls.name)}</button>
+          <span class="standing-class-status">${Game.esc(status)}</span>
+          ${khan ? `<span class="standing-class-khan">${khan}</span>` : ""}
+        </article>`;
+    }).join("");
+    host.querySelectorAll("[data-open-class]").forEach((btn) => {
+      btn.addEventListener("click", () => openClassSheet(btn.dataset.openClass));
+    });
+  }
+
+  function openClassSheet(id) {
+    const cls = standingClasses().find((c) => c.id === id);
+    if (!cls) return;
+    const due = Game.classDueCount(cls, week);
+    const khan = Game.khanStripHtmlForClass(cls);
+    const askHref = `ask.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
+    const progressHref = `progress.html?class=${encodeURIComponent(cls.id)}`;
+    openSheet(cls.name, `
+      <p class="standing-class-sheet-status">${Game.esc(Game.classDueLabel(due))}</p>
+      ${khan || `<p class="empty">No Khan course for this class.</p>`}
+      <p class="ask-help-link"><a href="${Game.esc(askHref)}">Ask AI — Socratic mentor</a></p>
+      <p class="ask-help-link"><a href="${Game.esc(progressHref)}">See Progress for ${Game.esc(cls.name)}</a></p>
+    `);
   }
 
   function workButtons(w) {
@@ -613,6 +660,7 @@
 
   function refreshBoard() {
     syncWeek();
+    renderStandingClasses();
     renderCards();
     goTo(dayIndex, true);
     hud();
@@ -1003,7 +1051,9 @@
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
     library = await Game.loadLibrary();
+    baseSeed = await Game.loadProgress();
     syncWeek();
+    renderStandingClasses();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
       document.getElementById("draft-flag").hidden = false;
     }

@@ -301,6 +301,86 @@ header.week-head {
   font-weight: 650;
 }
 
+.standing-classes {
+  flex: 0 0 auto;
+  margin: 2px 12px 4px;
+  padding: 6px 8px 6px;
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid rgba(198, 224, 58, 0.18);
+  box-shadow: var(--shadow);
+}
+
+.standing-classes h2 {
+  margin: 0 0 4px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.standing-class-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.standing-class {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 2px 4px;
+}
+
+.standing-class-name {
+  flex: 0 1 auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 750;
+  font-size: 0.84rem;
+  text-align: left;
+  cursor: pointer;
+  min-height: 28px;
+}
+
+.standing-class-name:focus-visible {
+  outline: 2px solid var(--start);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.standing-class-status {
+  flex: 1 1 auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.standing-class-khan {
+  flex: 0 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+.standing-class-khan .khan-link {
+  font-size: 0.72rem;
+}
+
+.standing-class-sheet-status {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
 .dots {
   display: flex;
   gap: 8px;
@@ -610,6 +690,15 @@ a.tiny {
   flex-wrap: wrap;
   gap: 6px;
   padding: 0 12px 10px;
+}
+
+.class-card .khan-strip {
+  margin: 0 12px 8px;
+  padding: 8px 10px;
+}
+
+.class-card .class-ask {
+  margin: 0 12px 8px;
 }
 
 .entry-row .entry-tools {
@@ -1244,6 +1333,16 @@ body.progress-page .peek-monkey {
   font-weight: 650;
 }
 
+.class-summary-khan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.class-summary-khan .khan-link {
+  font-size: 0.72rem;
+}
+
 .grade-pill {
   flex: 0 0 auto;
   display: inline-flex;
@@ -1522,6 +1621,7 @@ body:has(.sheet.open) .clarinet {
   .track,
   nav.week-nav,
   .draft-flag,
+  .standing-classes,
   .dash,
   .office {
     max-width: var(--desk);
