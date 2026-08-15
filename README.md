@@ -12,7 +12,7 @@ Orin’s DNA: **high learning + high silliness**. Story, unlocks, and school wor
 2. Open `index.html` in a browser. Works on a phone or laptop, including `file://`.
 3. Swipe the cards, tap the dots, or use **Prev / Next** (arrow keys work on a laptop).
 4. Tap **I started this** / **Done** on work items. **Undo**, **Edit**, and **Delete** are the small buttons. Done stays the big lime control. No confirm on undo. Scroll a day card if notes sit below the fold. The **Classes** strip is Bennett’s S1 ParentVUE roster (period + name + time) — all 8 classes, even with nothing due, plus Khan links where we have a real public course.
-5. Open **Trophy room** for earned trophies only. Drag or tap to rearrange. Empty room: “No trophies yet — keep the streak going.” Open **Characters** (HUD **Crew** on a phone) for teammates. Locked slots are silhouettes — no talent spoilers. Bennett (his own avatar) unlocks the first time he opens the lobby or Characters. When Ace / Riff / Scorch / Deuce / Fuzz is awarded, play that locker clip. After 3 teammate unlocks, **Story** appears on the HUD (not just a toast). Bennett does not count toward that 3.
+5. Tap **🏆** to walk into the treehouse. The still is the room — look around, tap a glowing spot to walk up. Earned trophies sit in the scene; tap one for a small plaque. Empty room is still the treehouse. Edit / Undo / drag-reorder live on the **Parent desk**, not in Bennett’s room. Open **Characters** (HUD **Crew** on a phone) for teammates. Locked slots are silhouettes — no talent spoilers. Bennett (his own avatar) unlocks the first time he opens the lobby or Characters. When Ace / Riff / Scorch / Deuce / Fuzz is awarded, play that locker clip. After 3 teammate unlocks, **Story** appears on the HUD (not just a toast). Bennett does not count toward that 3.
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
 8. **A little help** on due / start-this work: notecards, a short explanation, optional quiz, optional proofread, **Ask AI**, and Khan Academy links. Additive help — not a finished assignment.
@@ -205,8 +205,8 @@ Parents assign a teammate (or a tool / ability) on a streak, then award that str
 4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / outfits / abilities with the gear PNG. Locked gear stays **???**. **Sounds** shows earned audio / links; locked names stay **???**.
 5. After 3 character unlocks, **Story** is available — a choose-your-own-adventure, not a toast. An attached unlocked sound can play on a story or week beat.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **43**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **44**.
 
 ## Locker refs (Orin)
 
-Open `refs.html` (HUD **Locker refs** on Admin and Characters, or https://oborgelt.github.io/bennett-week/refs.html). Five large locker stills already on the site — 1 Ace, 2 Riff, 3 Scorch, 4 Deuce, 5 Fuzz. Drag them into Imagine (Quality / Image). Do not redesign. No new media files.
+Open `refs.html` (HUD **Locker refs** on Admin and Characters, or https://oborgelt.github.io/bennett-week/refs.html). Six large locker stills already on the site — 1 Ace, 2 Riff, 3 Scorch, 4 Deuce, 5 Fuzz, 6 Bennett. Drag them into Imagine (Quality / Image). Do not redesign. No new media files.
