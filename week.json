@@ -30,6 +30,13 @@
       "kind": "calendar",
       "place": "Band/Orchestra rooms",
       "note": "After 4:30pm handoff to Mom"
+    },
+    {
+      "id": "test-jam",
+      "title": "TEST: Monkey jam (not a real event)",
+      "start": "2026-08-19T16:00:00",
+      "kind": "calendar",
+      "note": "TEST data only — look-and-feel filler, not on any real calendar."
     }
   ],
   "work": [

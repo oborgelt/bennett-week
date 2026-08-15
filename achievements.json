@@ -1,0 +1,76 @@
+{
+  "currency": {
+    "name": "bananas",
+    "singular": "banana",
+    "emoji": "🍌"
+  },
+  "achievements": [
+    {
+      "id": "first-serve",
+      "title": "First serve",
+      "description": "Walk into the week lobby.",
+      "how": "Open Bennett Week.",
+      "incentive": "TEST — high five",
+      "icon": "tennis",
+      "test": true,
+      "reward": 5,
+      "unlock": { "type": "open_week" }
+    },
+    {
+      "id": "name-game",
+      "title": "Name game",
+      "description": "Start the English names video.",
+      "how": "Tap I started this on Help me learn your names.",
+      "incentive": "TEST — pick a snack",
+      "icon": "badge",
+      "test": true,
+      "reward": 10,
+      "unlock": { "type": "start_work", "workId": "eng-names" }
+    },
+    {
+      "id": "comic-warmup",
+      "title": "Comic warm-up",
+      "description": "Start summer comic strips before Tuesday.",
+      "how": "Tap I started this on the comic strips before they are due.",
+      "incentive": "TEST — extra 10 min screen time",
+      "icon": "guitar",
+      "test": true,
+      "reward": 10,
+      "unlock": { "type": "start_work", "workId": "eng-comics", "beforeDue": true }
+    },
+    {
+      "id": "notebook-scout",
+      "title": "Notebook scout",
+      "description": "Get the spiral notebook before Friday.",
+      "how": "Tap I started this or Done on the spiral notebook before Friday.",
+      "incentive": "TEST — skip one chore",
+      "icon": "badge",
+      "test": true,
+      "reward": 15,
+      "unlock": { "type": "touch_work", "workId": "eng-notebook", "beforeDue": true }
+    },
+    {
+      "id": "band-monkey",
+      "title": "Band monkey",
+      "description": "Monday rehearsal is on the board.",
+      "how": "Open the Monday card that shows band rehearsal.",
+      "incentive": "TEST — pick dinner",
+      "icon": "clarinet",
+      "test": true,
+      "reward": 8,
+      "unlock": { "type": "view_event", "eventId": "band-am-0817" }
+    },
+    {
+      "id": "hidden-banana",
+      "title": "Hidden banana",
+      "description": "You found a silly secret in the jungle.",
+      "how": "Easter egg. Tap the banner band five times.",
+      "incentive": "TEST — a goofy dance from Mom",
+      "icon": "banana",
+      "test": true,
+      "secret": true,
+      "reward": 25,
+      "unlock": { "type": "easter_egg", "egg": "banner-monkey" }
+    }
+  ]
+}
