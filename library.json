@@ -76,6 +76,21 @@
       "character": "fuzz"
     },
     {
+      "id": "bennett-clip",
+      "label": "Bennett locker clip",
+      "path": "img/characters/bennett.mp4",
+      "poster": "img/characters/bennett.jpg",
+      "kind": "video",
+      "character": "bennett"
+    },
+    {
+      "id": "bennett-poster",
+      "label": "Bennett poster",
+      "path": "img/characters/bennett.jpg",
+      "kind": "image",
+      "character": "bennett"
+    },
+    {
       "id": "crew-hero",
       "label": "Crew hero lineup",
       "path": "img/library/crew-hero.jpg",

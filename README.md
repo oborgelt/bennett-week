@@ -12,7 +12,7 @@ Orin’s DNA: **high learning + high silliness**. Story, unlocks, and school wor
 2. Open `index.html` in a browser. Works on a phone or laptop, including `file://`.
 3. Swipe the cards, tap the dots, or use **Prev / Next** (arrow keys work on a laptop).
 4. Tap **I started this** / **Done** on work items. **Undo**, **Edit**, and **Delete** are the small buttons. Done stays the big lime control. No confirm on undo. Scroll a day card if notes sit below the fold. The **Classes** strip is Bennett’s S1 ParentVUE roster (period + name + time) — all 8 classes, even with nothing due, plus Khan links where we have a real public course.
-5. Open **Trophy room** for earned trophies only. Drag or tap to rearrange. Empty room: “No trophies yet — keep the streak going.” Open **Characters** (HUD **Crew** on a phone) for teammates. Locked slots are silhouettes — no talent spoilers. When Ace / Riff / Scorch / Deuce / Fuzz is awarded, play that locker clip. After 3 unlocks, **Story** appears on the HUD (not just a toast).
+5. Open **Trophy room** for earned trophies only. Drag or tap to rearrange. Empty room: “No trophies yet — keep the streak going.” Open **Characters** (HUD **Crew** on a phone) for teammates. Locked slots are silhouettes — no talent spoilers. Bennett (his own avatar) unlocks the first time he opens the lobby or Characters. When Ace / Riff / Scorch / Deuce / Fuzz is awarded, play that locker clip. After 3 teammate unlocks, **Story** appears on the HUD (not just a toast). Bennett does not count toward that 3.
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
 8. **A little help** on due / start-this work: notecards, a short explanation, optional quiz, optional proofread, **Ask AI**, and Khan Academy links. Additive help — not a finished assignment.
@@ -28,20 +28,20 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 
 1. Open `parent.html` (or tap **Parent desk** in the HUD — same **This week / Progress / Characters / Parent desk** chips as the other screens). Old `mom.html` links redirect here. Quiet **Admin** is on the parent desk only — not on Bennett’s main HUD.
 2. Add / edit / delete **streak** achievements: title, how to count, incentive, bananas, target (e.g. 3 weeks), and a **Reward unlock** (character, tool, weapon, ability, outfit, or **content** — a library sound or link).
-3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. If that streak grants a character, gear, or a library item, Bennett unlocks it. Award **Meet Ace / Meet Riff / Meet Scorch / Meet Deuce / Meet Fuzz** (TEST) to unlock a teammate. Award **Angle Finder**, **Field Kit**, **Unplugged Strap**, or **Daily Pick** (TEST) for teammate gear. Award **Notebook of Holding** or **First Serve** (TEST) for story tools / abilities. Award **Wrong number of eggs** (or let him find the banner-band secret) to unlock the office egg game. Bennett never sees the catalog or locked tile names.
+3. **Count this week** bumps progress. **Award** unlocks the trophy on this device. If that streak grants a character, gear, or a library item, Bennett unlocks it. **Signed in** unlocks Bennett the first time he opens the site — no parent Award click. Award **Meet Ace / Meet Riff / Meet Scorch / Meet Deuce / Meet Fuzz** (TEST) to unlock a teammate. **Meet Bennett** (TEST) can re-award him from the desk. Award **Angle Finder**, **Field Kit**, **Unplugged Strap**, or **Daily Pick** (TEST) for teammate gear. Award **Notebook of Holding** or **First Serve** (TEST) for story tools / abilities. Award **Wrong number of eggs** (or let him find the banner-band secret) to unlock the office egg game. Bennett never sees the catalog or locked tile names.
 4. Inbox: Bennett’s questions and check-ins. Reply with a note on that item. **Ask AI mentor** shows what he asked the Socratic mentor.
 5. Add reflection prompts (how class / teachers felt — celebrate and catch early warnings, not a psych eval).
 6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file (asks, notes, reflections, streaks, awarded trophies, character unlocks, gear unlocks, **content unlocks**, library tags including audio/links, **device-dropped files** under 2 MB each, story ingredients, Ask AI thread, which streak grants which unlock, Done/Started, week/progress overlays, and parent-added classes). Week.json is not rewritten in the browser — edits and deletes live in that overlay. **Download achievements.json** / **Download characters.json** to drop catalogs into the repo. **Undo award** on a streak takes the trophy out of Bennett’s room and locks that reward again if nothing else granted it.
 7. **Add a class** is a name field only. It saves on this device (progress overlay) with no fake assignments or grades. The S1 ParentVUE roster already ships in `progress.json` — use this if a later term changes.
 8. **Progress** is the same dashboard Bennett sees (activity + class grades). It does not show the locked trophy catalog.
-9. **Characters** on the parent desk: tap Ace / Riff / Scorch / Deuce / Fuzz to see **that** character’s library (not the whole dump), or **Fun / Sounds**. Attach a still, clip, audio, or link to a streak reward or a future story / week beat. Crew comic art is available when you build a team beat. After Bennett earns 3 characters, Story is a real page.
+9. **Characters** on the parent desk: tap Ace / Riff / Scorch / Deuce / Fuzz / Bennett to see **that** character’s library (not the whole dump), or **Fun / Sounds**. Attach a still, clip, audio, or link to a streak reward or a future story / week beat. Crew comic art is available when you build a team beat. After Bennett earns 3 teammates, Story is a real page.
 
 ## Admin library
 
-Open `admin.html` from the parent desk **Admin** chip. **Locker refs** opens the five locker stills for Imagine.
+Open `admin.html` from the parent desk **Admin** chip. **Locker refs** opens the six locker stills for Imagine.
 
 - Library kinds: **image**, **video**, **audio**, **link** (YouTube / any https URL).
-- Grouped **Ace / Riff / Scorch / Deuce / Fuzz / Gear / Crew / Fun / Sounds**. Gear stills also sit on the matching teammate shelf.
+- Grouped **Ace / Riff / Scorch / Deuce / Fuzz / Bennett / Gear / Crew / Fun / Sounds**. Gear stills also sit on the matching teammate shelf.
 - Preview stills, play videos, play audio (`<audio controls>`), and open links (YouTube can embed).
 - Seed: locker clips stay on their character. Comic files stay **Crew**. Gear stills (`angle-finder`, `field-kit`, `unplugged-strap`, `daily-pick`, `notebook-holding`, `first-serve`) stay on the teammate plus the Gear group. Do not re-upload those PNGs.
 - **Drop or choose files** on Admin (mp3 / wav / ogg / m4a, plus image / video). Label and kind come from the filename. Default tag is Fun / Sounds. The file stays on this device (IndexedDB) — nothing is written into `img/library` or git.
@@ -51,13 +51,13 @@ Open `admin.html` from the parent desk **Admin** chip. **Locker refs** opens the
 
 ### How to attach media to a character
 
-1. Admin: drop the file (or retag it) to Ace, Riff, Scorch, Deuce, Fuzz, Crew, or Fun.
+1. Admin: drop the file (or retag it) to Ace, Riff, Scorch, Deuce, Fuzz, Bennett, Crew, or Fun.
 2. Parent desk: tap that character (or **Fun / Sounds**) → that locker library appears.
 3. Select a file → **Attach** to a streak or a story / week beat (start, English 10 board, Scorch recover, Ace serve, notebook, finale, or a work/event on this week).
 4. Audio / link / Fun items attached to a streak become a **content** unlock. Award that streak so Bennett can play them.
 5. Export the family pack so the other parent gets tags, attachments, and content unlocks.
 
-Do not re-encode `img/characters/ace.mp4`, `riff.mp4`, `scorch.mp4`, `deuce.mp4`, or `fuzz.mp4`.
+Do not re-encode `img/characters/ace.mp4`, `riff.mp4`, `scorch.mp4`, `deuce.mp4`, `fuzz.mp4`, or `bennett.mp4`.
 
 ### How to add ITYSL-style sounds later
 

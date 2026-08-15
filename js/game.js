@@ -20,7 +20,9 @@
     previewAll: "bw-preview-all"
   };
 
-  const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "crew", "fun"];
+  const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew", "fun"];
+  const TEAMMATE_IDS = ["ace", "riff", "scorch", "deuce", "fuzz"];
+  const SIGNIN_ACHIEVEMENT = "signin-bennett";
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
   const GEAR_SLOTS = ["tool", "weapon", "ability", "outfit"];
   const SOUND_CUES = [
@@ -724,6 +726,15 @@
           status: "ready",
           video: "img/characters/fuzz.mp4",
           poster: "img/characters/fuzz.jpg"
+        },
+        {
+          id: "bennett",
+          name: "Bennett",
+          talent: "The Show-Up",
+          tagline: "I'm in.",
+          status: "ready",
+          video: "img/characters/bennett.mp4",
+          poster: "img/characters/bennett.jpg"
         }
       ]
     };
@@ -831,9 +842,17 @@
     return ((roster && roster.characters) || []).filter((ch) => unlocks[ch.id]);
   }
 
+  function isTeammate(ch) {
+    return !!(ch && TEAMMATE_IDS.indexOf(ch.id) >= 0);
+  }
+
+  function unlockedTeammates(roster) {
+    return unlockedCharacters(roster).filter(isTeammate);
+  }
+
   function comicUnlocked(roster) {
     const need = (roster && roster.comicStartsAfter) || 3;
-    return unlockedCharacters(roster).length >= need;
+    return unlockedTeammates(roster).length >= need;
   }
 
   function getCharacterSeen() {
@@ -880,6 +899,8 @@
         { id: "deuce-poster", label: "Deuce poster", path: "img/characters/deuce.jpg", kind: "image", character: "deuce" },
         { id: "fuzz-clip", label: "Fuzz locker clip", path: "img/characters/fuzz.mp4", poster: "img/characters/fuzz.jpg", kind: "video", character: "fuzz" },
         { id: "fuzz-poster", label: "Fuzz poster", path: "img/characters/fuzz.jpg", kind: "image", character: "fuzz" },
+        { id: "bennett-clip", label: "Bennett locker clip", path: "img/characters/bennett.mp4", poster: "img/characters/bennett.jpg", kind: "video", character: "bennett" },
+        { id: "bennett-poster", label: "Bennett poster", path: "img/characters/bennett.jpg", kind: "image", character: "bennett" },
         { id: "crew-hero", label: "Crew hero lineup", path: "img/library/crew-hero.jpg", kind: "image", character: "crew" },
         { id: "crew-run", label: "Crew run", path: "img/library/crew-run.jpg", kind: "image", character: "crew" },
         { id: "crew-burst", label: "Crew burst", path: "img/library/crew-burst.jpg", kind: "image", character: "crew" },
@@ -2360,7 +2381,8 @@
 
   function playUnlockClip(roster, unlockedChar) {
     const media = characterMedia(roster, unlockedChar);
-    const name = characterLabel(unlockedChar, "New teammate");
+    const name = characterLabel(unlockedChar, unlockedChar && unlockedChar.id === "bennett" ? "Bennett" : "New teammate");
+    const kicker = unlockedChar && unlockedChar.id === "bennett" ? "You're in" : "New teammate";
     let layer = document.getElementById("char-celebrate");
     if (!layer) {
       layer = document.createElement("div");
@@ -2370,7 +2392,7 @@
     }
     layer.innerHTML = `
       <div class="char-celebrate-panel" role="dialog" aria-labelledby="char-celebrate-title">
-        <p class="char-celebrate-kicker">New teammate</p>
+        <p class="char-celebrate-kicker">${kicker}</p>
         <h2 id="char-celebrate-title">${esc(name)} unlocked!</h2>
         <video src="${esc(media.video)}" poster="${esc(media.poster)}" playsinline ${prefersReducedMotion() ? "" : "autoplay"} controls></video>
         <button type="button" class="btn primary" id="char-celebrate-close">Nice</button>
@@ -2735,7 +2757,9 @@
     const extra = bananasOf(ach) ? " · +" + bananasOf(ach) + " " + cur.name : "";
     const game = ach.unlocksGame === "egg" ? " · Egg game unlocked" : "";
     const unlock = rewardUnlockOf(ach);
-    const mate = unlock && unlock.type === "character" ? " · teammate unlocked" : "";
+    const mate = unlock && unlock.type === "character"
+      ? (unlock.id === "bennett" ? " · Bennett unlocked" : " · teammate unlocked")
+      : "";
     const content = unlock && unlock.type === "content" ? " · sound unlocked" : "";
     const gear = unlock && unlock.type !== "character" && unlock.type !== "content" ? " · " + (unlock.label || unlock.type) + " unlocked" : "";
     toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game + mate + content + gear);
@@ -2796,6 +2820,46 @@
       write(KEYS.opens, opens);
     }
     return opens;
+  }
+
+  function signInAchievement(pack) {
+    const found = ((pack && pack.achievements) || []).find((ach) => ach && ach.id === SIGNIN_ACHIEVEMENT);
+    if (found) return found;
+    return {
+      id: SIGNIN_ACHIEVEMENT,
+      title: "Signed in",
+      description: "Opened Jungle Jam.",
+      incentive: "Unlocks Bennett",
+      reward: 10,
+      rewardCharacter: "bennett",
+      rewardUnlock: { type: "character", id: "bennett", label: "Bennett" },
+      streak: { target: 1, unit: "time" }
+    };
+  }
+
+  function maybeAwardSignIn(pack, family) {
+    const next = normalizeFamily(family);
+    if (alreadyUnlocked(SIGNIN_ACHIEVEMENT) || alreadyUnlockedCharacter("bennett")) {
+      return { family: next, awarded: false, freshCharacter: false, achievement: null };
+    }
+    const st = next.streaks[SIGNIN_ACHIEVEMENT];
+    if (st && st.awarded === false && st.awardedAt) {
+      return { family: next, awarded: false, freshCharacter: false, achievement: null };
+    }
+    const working = Object.assign({}, pack || {}, {
+      achievements: ((pack && pack.achievements) || []).concat(
+        ((pack && pack.achievements) || []).some((ach) => ach && ach.id === SIGNIN_ACHIEVEMENT)
+          ? []
+          : [signInAchievement(pack)]
+      )
+    });
+    const result = awardStreak(working, next, SIGNIN_ACHIEVEMENT);
+    return {
+      family: result.family,
+      awarded: !!result.achievement,
+      freshCharacter: result.freshCharacter,
+      achievement: result.achievement
+    };
   }
 
   function foundEggs(eggNames) {
@@ -2901,12 +2965,15 @@
   }
 
   const PREVIEW_AWARD_IDS = [
+    "signin-bennett", "test-bennett-showup",
     "test-ace-closer", "test-riff-reps", "test-scorch-recover", "test-deuce-return", "test-fuzz-unplugged",
     "test-notebook-holding", "test-first-serve", "test-angle-finder", "test-field-kit", "test-unplugged-strap", "test-daily-pick",
     "straight-as-3w", "no-late-4w", "flash-cards-first", "started-week-5", "asked-before-due", "hidden-banana", "wrong-number-eggs"
   ];
 
   const PREVIEW_FALLBACKS = [
+    { id: "signin-bennett", title: "Signed in", reward: 10, rewardCharacter: "bennett", rewardUnlock: { type: "character", id: "bennett", label: "Bennett" } },
+    { id: "test-bennett-showup", title: "Meet Bennett", reward: 10, rewardCharacter: "bennett", rewardUnlock: { type: "character", id: "bennett", label: "Bennett" } },
     { id: "test-ace-closer", title: "Meet Ace", reward: 10, rewardCharacter: "ace", rewardUnlock: { type: "character", id: "ace", label: "Ace" } },
     { id: "test-riff-reps", title: "Meet Riff", reward: 10, rewardCharacter: "riff", rewardUnlock: { type: "character", id: "riff", label: "Riff" } },
     { id: "test-scorch-recover", title: "Meet Scorch", reward: 10, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" } },
@@ -2999,7 +3066,8 @@
   function maybeAutoPreviewAll(pack, family) {
     const next = normalizeFamily(family);
     if (hasPreviewAllFlag()) return { family: next, ran: false };
-    if (Object.keys(getCharacterUnlocks()).length || Object.keys(getGearUnlocks()).length) {
+    const crewUnlocks = Object.keys(getCharacterUnlocks()).filter((id) => id !== "bennett");
+    if (crewUnlocks.length || Object.keys(getGearUnlocks()).length) {
       setPreviewAllFlag();
       return { family: next, ran: false };
     }
@@ -3081,6 +3149,7 @@
     youtubeId,
     youtubeEmbedSrc,
     LIBRARY_GROUPS,
+    TEAMMATE_IDS,
     LIBRARY_KINDS,
     getFamilyDraft,
     saveFamily,
@@ -3131,6 +3200,7 @@
     celebrate,
     downloadJson,
     markOpened,
+    maybeAwardSignIn,
     getOpens,
     chicagoYmd,
     lastNChicagoDays,
@@ -3153,6 +3223,8 @@
     markCharacterUnlocked,
     revokeCharacterUnlock,
     unlockedCharacters,
+    unlockedTeammates,
+    isTeammate,
     comicUnlocked,
     pendingCharacterCelebrations,
     markCharacterSeen,

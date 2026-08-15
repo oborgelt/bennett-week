@@ -212,7 +212,7 @@
       parentNotes,
       reflections,
       trophies,
-      mates: roster ? Game.unlockedCharacters(roster) : [],
+      mates: roster ? Game.unlockedTeammates(roster) : [],
       eggs,
       bananas: Game.getBananas()
     };
