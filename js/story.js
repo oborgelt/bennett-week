@@ -21,10 +21,14 @@
     return nodes()[id] || null;
   }
 
-  function attachedImage(node) {
-    const attach = family.story && family.story.attachments && node && family.story.attachments[node.id];
-    const key = attach || (node && node.image) || "";
-    return Game.libraryItem(library, key);
+  function attachedItem(node) {
+    return Game.attachedLibraryItem(family, library, node && node.id);
+  }
+
+  function nodeArt(node) {
+    const attach = attachedItem(node);
+    if (attach && (attach.kind === "image" || attach.kind === "video")) return attach;
+    return Game.libraryItem(library, (node && node.image) || "");
   }
 
   function choiceReady(choice) {
@@ -56,17 +60,33 @@
     return bits.join("");
   }
 
-  function renderArt(item) {
+  function renderArt(node) {
     const host = document.getElementById("story-art");
+    const item = nodeArt(node);
+    const sound = attachedItem(node);
+    const playable = sound && (sound.kind === "audio" || sound.kind === "link") && Game.canPlayLibraryItem(sound, preview);
+    let art = "";
     if (!item) {
-      host.innerHTML = `<div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>Art coming</p></div>`;
-      return;
-    }
-    if (item.kind === "video") {
-      host.innerHTML = `<video src="${Game.esc(item.path)}" poster="${Game.esc(item.poster || "")}" controls playsinline ${Game.prefersReducedMotion() ? "" : "autoplay"} muted></video>`;
+      art = `<div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>Art coming</p></div>`;
+    } else if (item.kind === "video") {
+      art = `<video src="${Game.esc(Game.librarySrc(item))}" poster="${Game.esc(item.poster || "")}" controls playsinline ${Game.prefersReducedMotion() ? "" : "autoplay"} muted></video>`;
+    } else if (item.kind === "image") {
+      art = `<img src="${Game.esc(Game.librarySrc(item))}" alt="${Game.esc(item.label || "")}">`;
     } else {
-      host.innerHTML = `<img src="${Game.esc(item.path)}" alt="${Game.esc(item.label || "")}">`;
+      art = Game.libraryThumbHtml(item, "lib-play");
     }
+    const soundBar = playable
+      ? `<div class="story-sound">${sound.kind === "link"
+        ? `<a class="btn" href="${Game.esc(Game.librarySrc(sound))}" target="_blank" rel="noopener">Open</a>`
+        : `<button type="button" class="btn primary" data-play-story="${Game.esc(sound.id)}">Play sound</button>`}</div>`
+      : "";
+    host.innerHTML = art + soundBar;
+    host.querySelectorAll("[data-play-story]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const row = Game.libraryItem(library, b.dataset.playStory);
+        if (row) Game.playLibraryItem(row);
+      });
+    });
   }
 
   function go(id) {
@@ -80,7 +100,7 @@
     document.getElementById("story-title").textContent = node.title || "";
     document.getElementById("story-text").textContent = node.text || "";
     document.getElementById("story-extras").innerHTML = (node.id === "start" || node.end) ? extrasHtml() : "";
-    renderArt(attachedImage(node));
+    renderArt(node);
     renderSchool(node);
     renderChoices(node);
   }

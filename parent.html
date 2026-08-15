@@ -16,8 +16,8 @@
         <p>Mom and Orin · streaks, notes, export</p>
       </div>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 29</span>
-        <span>8/15, 12:02 PM</span>
+        <span>Build 30</span>
+        <span>8/15, 1:20 PM</span>
       </div>
     </div>
     <div class="hud-bar progress-hud">
@@ -51,12 +51,13 @@
 
     <h2 style="font-size:1rem;margin:18px 0 8px">Characters</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
-      Pick Ace, Riff, or Scorch to see that locker’s library. Crew art is for team story beats.
-      Award a streak to unlock a teammate, tool, weapon, or ability. After 3 character unlocks, Story is a real page.
+      Pick Ace, Riff, Scorch, or <strong>Fun / Sounds</strong> to see that library. Crew art is for team story beats.
+      Award a streak to unlock a teammate, tool, weapon, ability, or a library sound/link. After 3 character unlocks, Story is a real page.
     </p>
     <div class="parent-actions">
       <button type="button" class="btn primary" id="add-char">Add / edit character</button>
       <button type="button" class="btn" id="download-chars">Download characters.json</button>
+      <button type="button" class="btn" id="pick-fun">Fun / Sounds</button>
     </div>
     <div class="char-grid" id="char-list"></div>
     <section class="char-library" id="char-library" hidden>
@@ -67,15 +68,18 @@
         <label>Attach selected file to streak
           <select id="attach-streak"></select>
         </label>
-        <label>Or to a story beat
+        <label>Or to a story / week beat
           <select id="attach-beat">
             <option value="">None</option>
-            <option value="start">Start</option>
-            <option value="panel-check">English 10 board</option>
-            <option value="scorch-recover">Scorch recover</option>
-            <option value="ace-serve">Ace serve</option>
-            <option value="notebook">Notebook</option>
-            <option value="finale">Finale</option>
+            <optgroup label="Story">
+              <option value="start">Start</option>
+              <option value="panel-check">English 10 board</option>
+              <option value="scorch-recover">Scorch recover</option>
+              <option value="ace-serve">Ace serve</option>
+              <option value="notebook">Notebook</option>
+              <option value="finale">Finale</option>
+            </optgroup>
+            <optgroup label="This week" id="attach-week-group"></optgroup>
           </select>
         </label>
       </div>
@@ -221,6 +225,7 @@
             <option value="tool">Tool</option>
             <option value="weapon">Weapon</option>
             <option value="ability">Ability</option>
+            <option value="content">Content (sound / link)</option>
           </select>
         </label>
         <label>Reward character
@@ -236,7 +241,12 @@
             <input id="reward-unlock-label" maxlength="60" placeholder="Notebook of Holding">
           </label>
         </div>
-        <label>Attach library file (filtered by character)
+        <label id="reward-content-row" hidden>Unlock library item
+          <select id="reward-content">
+            <option value="">None</option>
+          </select>
+        </label>
+        <label>Attach library file (character + Fun)
           <select id="reward-media">
             <option value="">None</option>
           </select>
@@ -299,7 +309,8 @@
     {"id": "test-riff-reps", "title": "Meet Riff", "test": true, "reward": 10, "rewardCharacter": "riff", "rewardUnlock": {"type": "character", "id": "riff", "label": "Riff"}, "streak": {"target": 1, "unit": "time"}},
     {"id": "test-scorch-recover", "title": "Meet Scorch", "test": true, "reward": 10, "rewardCharacter": "scorch", "rewardUnlock": {"type": "character", "id": "scorch", "label": "Scorch"}, "streak": {"target": 1, "unit": "time"}},
     {"id": "test-notebook-holding", "title": "Notebook of Holding", "test": true, "bananas": 10, "reward": {"type": "tool", "id": "notebook-holding", "label": "Notebook of Holding"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-first-serve", "title": "First Serve", "test": true, "bananas": 10, "reward": {"type": "ability", "id": "first-serve", "label": "First Serve"}, "streak": {"target": 1, "unit": "time"}}
+    {"id": "test-first-serve", "title": "First Serve", "test": true, "bananas": 10, "reward": {"type": "ability", "id": "first-serve", "label": "First Serve"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "test-banana-honk", "title": "Banana honk", "description": "TEST — award this to unlock a silly original honk.", "how": "Parents award this TEST streak.", "incentive": "Unlocks a Fun sound", "icon": "banana", "test": true, "reward": 5, "rewardUnlock": {"type": "content", "id": "banana-honk", "label": "Banana honk"}, "streak": {"target": 1, "unit": "time"}}
   ]
 }
   </script>

@@ -147,6 +147,18 @@
       "bananas": 10,
       "reward": { "type": "ability", "id": "first-serve", "label": "First Serve" },
       "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-banana-honk",
+      "title": "Banana honk",
+      "description": "TEST — award this to unlock a silly original honk. No third-party audio.",
+      "how": "Parents award this TEST streak. It unlocks a Fun sound generated in the browser.",
+      "incentive": "Unlocks a Fun sound",
+      "icon": "banana",
+      "test": true,
+      "reward": 5,
+      "rewardUnlock": { "type": "content", "id": "banana-honk", "label": "Banana honk" },
+      "streak": { "target": 1, "unit": "time" }
     }
   ]
 }

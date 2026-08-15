@@ -1,6 +1,7 @@
 (function () {
   let pack = null;
   let roster = null;
+  let library = null;
 
   function hud() {
     const el = document.getElementById("bananas");
@@ -60,6 +61,7 @@
     if (comic) comic.hidden = !Game.comicUnlocked(roster);
     Game.paintStoryChip(roster);
     renderLoadout();
+    renderSounds();
   }
 
   function renderLoadout() {
@@ -83,13 +85,63 @@
     grid.innerHTML = cards.join("");
   }
 
+  function renderSounds() {
+    const grid = document.getElementById("sound-grid");
+    if (!grid) return;
+    const earned = Game.unlockedContent(library).filter((row) => row.item);
+    const locked = Game.lockedContentCount(library);
+    const cards = earned.map((row) => {
+      const item = row.item;
+      const play = item.kind === "link"
+        ? `<button type="button" class="tiny primary" data-open-lib="${Game.esc(item.id)}">Open</button>`
+        : `<button type="button" class="tiny primary" data-play-lib="${Game.esc(item.id)}">Play</button>`;
+      return `
+        <article class="sound-card ready">
+          <div class="sound-thumb">${Game.libraryThumbHtml(item)}</div>
+          <p class="loadout-type">${Game.esc(Game.libraryKindLabel(item))}</p>
+          <h3>${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.label)}</h3>
+          <div class="parent-actions">${play}</div>
+        </article>`;
+    });
+    const mystery = Math.min(locked, 2);
+    for (let i = 0; i < mystery; i += 1) {
+      cards.push(`
+        <article class="sound-card locked">
+          <div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>???</p></div>
+        </article>
+      `);
+    }
+    if (!cards.length) {
+      grid.innerHTML = `<p class="empty">No sounds yet — keep the streak going.</p>`;
+      return;
+    }
+    grid.innerHTML = cards.join("");
+    grid.querySelectorAll("[data-play-lib]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const item = Game.libraryItem(library, b.dataset.playLib);
+        if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
+      });
+    });
+    grid.querySelectorAll("[data-open-lib]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const item = Game.libraryItem(library, b.dataset.openLib);
+        const src = item && Game.librarySrc(item);
+        if (src && src !== "#") window.open(src, "_blank", "noopener");
+        else if (item) Game.playLibraryItem(item);
+      });
+    });
+  }
+
   async function boot() {
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     await Game.loadFamily();
+    library = await Game.loadLibrary();
     hud();
     render();
-    Game.maybePlayUnlockCelebration(roster);
+    if (!Game.maybePlayUnlockCelebration(roster)) {
+      Game.maybePlayContentCelebration(library);
+    }
   }
 
   boot();
