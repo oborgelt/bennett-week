@@ -611,6 +611,7 @@
   function openHelp(workId) {
     const work = findWork(workId);
     if (!work) return;
+    Game.recordHelp(workId);
     openSheet("A little help", `<p class="empty">Thinking…</p>`);
     document.getElementById("sheet-title").textContent = "A little help";
     loadHelp(work, "notecards");

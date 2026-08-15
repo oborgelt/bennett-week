@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#071618">
+  <title>Bennett · Progress</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="progress-page">
+  <header class="week-head">
+    <div class="banner-wrap">
+      <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
+      <div class="banner-title">
+        <h1>Progress</h1>
+        <p>Bennett’s activity · class dashboard</p>
+      </div>
+    </div>
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+      <p class="progress-tagline">His opens, actions, and class grades — not the parent trophy catalog.</p>
+      <div class="hud-nav">
+        <a class="progress-chip on" href="progress.html" aria-current="page"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="week-chip" href="index.html">This week</a>
+        <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="dash">
+    <section class="stat-strip" id="stat-strip" aria-label="Site activity"></section>
+    <section class="class-pane">
+      <div class="class-pane-head">
+        <h2>By class</h2>
+        <p id="grades-note">Grades are TEST seed until a real feed exists.</p>
+      </div>
+      <div class="class-list" id="class-list"></div>
+    </section>
+  </main>
+
+  <div class="peek-monkey" aria-hidden="true">
+    <img src="img/monkey-tennis.png" alt="">
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script id="week-seed" type="application/json">
+{
+  "timezone": "America/Chicago",
+  "work": [
+    {"id": "eng-names", "title": "English 10: Help me learn your names!", "due": "2026-08-17T23:59:00"},
+    {"id": "eng-comics", "title": "English 10: Finish summer comic strips", "due": "2026-08-18T13:05:00"},
+    {"id": "eng-notebook", "title": "English 10: Bring spiral notebook", "due": "2026-08-21T13:05:00"}
+  ],
+  "events": [
+    {"id": "band-am-0817", "title": "Band rehearsal", "start": "2026-08-17T06:50:00"},
+    {"id": "band-pm-0817", "title": "Band", "start": "2026-08-17T18:30:00"}
+  ]
+}
+  </script>
+  <script id="ach-seed" type="application/json">
+{
+  "currency": {"name": "bananas", "singular": "banana", "emoji": "🍌"},
+  "achievements": [
+    {"id": "straight-as-3w", "title": "Straight A's", "test": true},
+    {"id": "no-late-4w", "title": "On-time streak", "test": true},
+    {"id": "flash-cards-first", "title": "Flash-card first test", "test": true},
+    {"id": "started-week-5", "title": "Five-day start", "test": true},
+    {"id": "asked-before-due", "title": "Asked before it was due", "test": true},
+    {"id": "hidden-banana", "title": "Hidden banana", "test": true, "secret": true}
+  ]
+}
+  </script>
+  <script id="family-seed" type="application/json">
+{
+  "notes": [
+    {"id": "test-note-names", "targetType": "work", "targetId": "eng-names", "from": "parent", "kind": "note", "text": "TEST: Say your full name twice, then one thing you are awesome at. Keep it short.", "at": "2026-08-14T20:15:00-05:00", "test": true},
+    {"id": "test-q-comics", "targetType": "work", "targetId": "eng-comics", "from": "bennett", "kind": "question", "text": "TEST: Do the comic strips need color, or is pencil okay?", "at": "2026-08-14T21:04:00-05:00", "test": true},
+    {"id": "test-note-band", "targetType": "event", "targetId": "band-am-0817", "from": "parent", "kind": "note", "text": "TEST: Early call — pack the clarinet the night before.", "at": "2026-08-14T19:10:00-05:00", "test": true}
+  ],
+  "reflections": {
+    "pool": [
+      {"id": "r-easiest", "text": "Which class felt easiest today?", "test": true}
+    ],
+    "answers": [
+      {"id": "ra-test-1", "promptId": "r-easiest", "prompt": "Which class felt easiest today?", "text": "TEST: Band — we mostly set up and tuned.", "at": "2026-08-14T19:42:00-05:00", "test": true}
+    ]
+  },
+  "streaks": {}
+}
+  </script>
+  <script id="progress-seed" type="application/json">
+{
+  "timezone": "America/Chicago",
+  "gradesNote": "Grades are TEST seed until a real feed exists. English often lives in a Google sheet; Canvas is not the full due list.",
+  "eggNames": {
+    "banner-monkey": "Garage-band grin",
+    "hidden-ball": "Stray tennis ball",
+    "clarinet-honk": "Bass clarinet honk"
+  },
+  "sampleOpens": [
+    {"at": "2026-08-12T19:30:00-05:00", "test": true},
+    {"at": "2026-08-13T21:05:00-05:00", "test": true},
+    {"at": "2026-08-14T20:12:00-05:00", "test": true},
+    {"at": "2026-08-15T07:41:00-05:00", "test": true}
+  ],
+  "classes": [
+    {
+      "id": "english-10",
+      "name": "English 10",
+      "grade": {"display": "B+", "detail": "88%", "test": true},
+      "items": [
+        {"id": "eng-names", "title": "Help me learn your names!", "kind": "assignment", "grade": {"display": "5/5", "test": true}},
+        {"id": "eng-comics", "title": "Finish summer comic strips", "kind": "assignment", "grade": {"display": "—", "test": true}},
+        {"id": "eng-notebook", "title": "Bring spiral notebook", "kind": "assignment", "grade": {"display": "—", "test": true}},
+        {"id": "eng-quiz-test", "title": "Warm-up quiz", "kind": "quiz", "test": true, "grade": {"display": "9/10", "test": true}}
+      ]
+    },
+    {
+      "id": "band",
+      "name": "Band",
+      "grade": {"display": "A", "test": true},
+      "items": [
+        {"id": "band-am-0817", "title": "Monday morning rehearsal", "kind": "event"},
+        {"id": "band-pm-0817", "title": "Monday evening Band", "kind": "event"}
+      ]
+    }
+  ]
+}
+  </script>
+  <script src="js/game.js"></script>
+  <script src="js/progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+(function () {
+  let week = null;
+  let pack = null;
+  let family = null;
+  let seed = null;
+
+  function classIdForTitle(title) {
+    const t = title || "";
+    if (/^English 10/i.test(t)) return "english-10";
+    if (/^Band\b/i.test(t)) return "band";
+    return null;
+  }
+
+  function stripClassPrefix(title) {
+    return String(title || "")
+      .replace(/^TEST:\s*/i, "")
+      .replace(/^English 10:\s*/i, "")
+      .replace(/^Band:\s*/i, "")
+      .trim();
+  }
+
+  function mergeClasses() {
+    const map = new Map();
+    (seed.classes || []).forEach((cls) => {
+      map.set(cls.id, {
+        id: cls.id,
+        name: cls.name,
+        test: !!cls.test,
+        grade: cls.grade || { display: "—", test: true },
+        items: (cls.items || []).map((item) => Object.assign({}, item))
+      });
+    });
+
+    (week.work || []).forEach((w) => {
+      const cid = classIdForTitle(w.title);
+      if (!cid || !map.has(cid)) return;
+      const cls = map.get(cid);
+      if (cls.items.some((item) => item.id === w.id)) return;
+      cls.items.push({
+        id: w.id,
+        title: stripClassPrefix(w.title),
+        kind: "assignment"
+      });
+    });
+
+    return [...map.values()];
+  }
+
+  function notesForIds(ids) {
+    return (family.notes || []).filter((n) => ids.includes(n.targetId));
+  }
+
+  function classStats(cls) {
+    const ids = cls.items.map((item) => item.id);
+    let started = 0;
+    let done = 0;
+    let help = 0;
+    ids.forEach((id) => {
+      const st = Game.workState(id);
+      if (st.started) started += 1;
+      if (st.done) done += 1;
+      help += Game.helpOpens(id).length;
+    });
+    const notes = notesForIds(ids);
+    const asked = notes.filter((n) => n.from === "bennett").length;
+    const parentNotes = notes.filter((n) => n.from === "parent").length;
+    return { started, done, help, asked, parentNotes };
+  }
+
+  function actionBits(stats) {
+    const bits = [];
+    bits.push(stats.started ? stats.started + " started" : "0 started");
+    bits.push(stats.done ? stats.done + " done" : "0 done");
+    bits.push(stats.asked ? stats.asked + " asked" : "0 asked");
+    bits.push(stats.help ? stats.help + " help" : "0 help");
+    if (stats.parentNotes) {
+      bits.push(stats.parentNotes + (stats.parentNotes === 1 ? " note" : " notes"));
+    }
+    return bits.join(" · ");
+  }
+
+  function itemStatus(item) {
+    const st = Game.workState(item.id);
+    if (st.done) {
+      const when = st.startedAt ? " · Started " + Game.fmtStamp(st.startedAt) : "";
+      return { label: "Done" + when, kind: "done" };
+    }
+    if (st.started) {
+      return { label: "Started " + (st.startedAt ? Game.fmtStamp(st.startedAt) : ""), kind: "started" };
+    }
+    if (item.kind === "event") return { label: "On the calendar", kind: "event" };
+    return { label: "Not started", kind: "idle" };
+  }
+
+  function gradeHtml(grade, extraTest) {
+    if (!grade || (!grade.display && !grade.detail)) {
+      return `<span class="grade-pill empty">—</span>`;
+    }
+    const test = !!(grade.test || extraTest);
+    return `<span class="grade-pill${test ? " is-test" : ""}">${test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(grade.display || "—")}${grade.detail && grade.detail !== grade.display ? `<span class="grade-detail">${Game.esc(grade.detail)}</span>` : ""}</span>`;
+  }
+
+  function kindLabel(kind) {
+    if (kind === "quiz" || kind === "test") return "Test";
+    if (kind === "event") return "Calendar";
+    return "Assignment";
+  }
+
+  function openSource() {
+    const real = Game.getOpens();
+    if (real.length) {
+      return { stamps: real, test: false };
+    }
+    const sample = (seed.sampleOpens || [])
+      .map((row) => row.at)
+      .filter(Boolean);
+    return { stamps: sample, test: sample.length > 0 };
+  }
+
+  function weekOpenCount(stamps) {
+    const days = new Set(Game.lastNChicagoDays(7));
+    return stamps.filter((iso) => {
+      const d = Game.parseStamp(iso);
+      return d && days.has(Game.chicagoYmd(d));
+    }).length;
+  }
+
+  function sparkDays(stamps) {
+    const days = Game.lastNChicagoDays(7);
+    const counts = Object.fromEntries(days.map((d) => [d, 0]));
+    stamps.forEach((iso) => {
+      const d = Game.parseStamp(iso);
+      if (!d) return;
+      const key = Game.chicagoYmd(d);
+      if (key in counts) counts[key] += 1;
+    });
+    const max = Math.max(1, ...days.map((d) => counts[d]));
+    return days.map((d) => ({
+      day: d,
+      count: counts[d],
+      pct: Math.round((counts[d] / max) * 100)
+    }));
+  }
+
+  function recentOpens(stamps, limit) {
+    return stamps
+      .slice()
+      .reverse()
+      .slice(0, limit)
+      .map((iso) => Game.fmtStamp(iso))
+      .filter(Boolean);
+  }
+
+  function activityTotals(classes) {
+    const progress = Game.getProgress();
+    let started = 0;
+    let done = 0;
+    let help = 0;
+    const startedAt = [];
+    Object.keys(progress).forEach((id) => {
+      const st = Game.workState(id);
+      if (st.started) {
+        started += 1;
+        if (st.startedAt) startedAt.push({ id, at: st.startedAt });
+      }
+      if (st.done) done += 1;
+      help += Game.helpOpens(id).length;
+    });
+    classes.forEach((cls) => {
+      cls.items.forEach((item) => {
+        if (progress[item.id]) return;
+        const st = Game.workState(item.id);
+        if (st.started) started += 1;
+        if (st.done) done += 1;
+      });
+    });
+    const notes = family.notes || [];
+    const asked = notes.filter((n) => n.from === "bennett").length;
+    const parentNotes = notes.filter((n) => n.from === "parent").length;
+    const reflections = ((family.reflections && family.reflections.answers) || []).length;
+    const unlocks = Game.getUnlocks();
+    const trophies = (pack.achievements || []).filter((ach) => unlocks[ach.id]);
+    const eggs = Game.foundEggs(seed.eggNames);
+    return {
+      started,
+      startedAt: startedAt.sort((a, b) => String(b.at).localeCompare(String(a.at))),
+      done,
+      help,
+      asked,
+      parentNotes,
+      reflections,
+      trophies,
+      eggs,
+      bananas: Game.getBananas()
+    };
+  }
+
+  function workTitle(id) {
+    const w = (week.work || []).find((x) => x.id === id);
+    if (w) return stripClassPrefix(w.title);
+    for (let i = 0; i < (seed.classes || []).length; i += 1) {
+      const hit = (seed.classes[i].items || []).find((item) => item.id === id);
+      if (hit) return hit.title;
+    }
+    return id;
+  }
+
+  function renderOpens(opens) {
+    const last = opens.stamps.length ? Game.fmtStamp(opens.stamps[opens.stamps.length - 1]) : "—";
+    const weekCount = weekOpenCount(opens.stamps);
+    const spark = sparkDays(opens.stamps);
+    const recent = recentOpens(opens.stamps, 5);
+    const test = opens.test ? '<span class="test-tag">TEST</span> ' : "";
+    return `
+      <article class="stat-card opens-card">
+        <h3>Lobby opens</h3>
+        <p class="stat-lead">${test}${opens.stamps.length ? Game.esc(last) : "No opens yet"}</p>
+        <p class="stat-sub">${opens.stamps.length ? "Last open · America/Chicago" : "Open This week to start the log"}</p>
+        <div class="stat-row">
+          <div>
+            <div class="stat-num">${weekCount}</div>
+            <div class="stat-label">this week</div>
+          </div>
+          <div>
+            <div class="stat-num">${opens.stamps.length}</div>
+            <div class="stat-label">all time</div>
+          </div>
+        </div>
+        <div class="spark" aria-hidden="true">
+          ${spark.map((d) => `<span class="spark-bar" style="height:${Math.max(8, d.pct)}%" title="${Game.esc(d.day)} · ${d.count}"></span>`).join("")}
+        </div>
+        <ul class="open-list">
+          ${recent.length ? recent.map((t) => `<li>${test}${Game.esc(t)}</li>`).join("") : `<li class="empty">No lobby opens on this device yet.</li>`}
+        </ul>
+      </article>`;
+  }
+
+  function renderActions(totals) {
+    const startBits = totals.startedAt.slice(0, 3).map((row) => {
+      return `<li>${Game.esc(workTitle(row.id))} · ${Game.esc(Game.fmtStamp(row.at))}</li>`;
+    });
+    return `
+      <article class="stat-card actions-card">
+        <h3>Actions</h3>
+        <div class="metric-grid">
+          <div class="metric"><span class="stat-num">${totals.started}</span><span class="stat-label">started</span></div>
+          <div class="metric"><span class="stat-num">${totals.done}</span><span class="stat-label">done</span></div>
+          <div class="metric"><span class="stat-num">${totals.asked}</span><span class="stat-label">asked</span></div>
+          <div class="metric"><span class="stat-num">${totals.parentNotes}</span><span class="stat-label">parent notes</span></div>
+          <div class="metric"><span class="stat-num">${totals.reflections}</span><span class="stat-label">check-ins</span></div>
+          <div class="metric"><span class="stat-num">${totals.help}</span><span class="stat-label">help opened</span></div>
+        </div>
+        ${startBits.length ? `<ul class="open-list">${startBits.join("")}</ul>` : `<p class="empty">No “I started this” stamps yet — tap that on a week card.</p>`}
+      </article>`;
+  }
+
+  function renderFinds(totals) {
+    const cur = Game.currency(pack);
+    const eggs = totals.eggs;
+    const trophies = totals.trophies;
+    const eggList = eggs.length
+      ? eggs.map((e) => `<li>${Game.esc(e.name)}${e.at ? " · " + Game.esc(Game.fmtStamp(e.at)) : ""}</li>`).join("")
+      : `<li class="empty">None found yet. The lobby has a few wholesome surprises.</li>`;
+    const trophyList = trophies.length
+      ? trophies.map((ach) => `<li>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</li>`).join("")
+      : `<li class="empty">No trophies yet — keep the streak going.</li>`;
+    return `
+      <article class="stat-card finds-card">
+        <h3>Bananas &amp; finds</h3>
+        <div class="stat-row">
+          <div>
+            <div class="stat-num">${cur.emoji} ${totals.bananas}</div>
+            <div class="stat-label">${cur.name}</div>
+          </div>
+          <div>
+            <div class="stat-num">${trophies.length}</div>
+            <div class="stat-label">trophies</div>
+          </div>
+          <div>
+            <div class="stat-num">${eggs.length}</div>
+            <div class="stat-label">eggs found</div>
+          </div>
+        </div>
+        <h4>Eggs found</h4>
+        <ul class="open-list">${eggList}</ul>
+        <h4>Trophies awarded</h4>
+        <ul class="open-list">${trophyList}</ul>
+      </article>`;
+  }
+
+  function renderClass(cls, open) {
+    const stats = classStats(cls);
+    const items = cls.items || [];
+    const itemHtml = items.length
+      ? items.map((item) => {
+        const status = itemStatus(item);
+        return `
+          <li class="class-item">
+            <div class="class-item-top">
+              <div>
+                <div class="title">${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.title)}</div>
+                <div class="meta">${Game.esc(kindLabel(item.kind))} · <span class="status ${status.kind}">${Game.esc(status.label)}</span></div>
+              </div>
+              ${item.grade ? gradeHtml(item.grade, item.test) : (item.kind === "event" ? "" : `<span class="grade-pill empty">—</span>`)}
+            </div>
+          </li>`;
+      }).join("")
+      : `<li class="empty">No assignments or tests on the board yet. Band lives on the week calendar.</li>`;
+
+    return `
+      <details class="class-card" ${open ? "open" : ""} data-class="${Game.esc(cls.id)}">
+        <summary>
+          <span class="chev" aria-hidden="true"></span>
+          <span class="class-copy">
+            <span class="class-name">${cls.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(cls.name)}</span>
+            <span class="class-actions">${Game.esc(actionBits(stats))}</span>
+          </span>
+          ${gradeHtml(cls.grade, cls.test)}
+        </summary>
+        <ul class="class-items">${itemHtml}</ul>
+      </details>`;
+  }
+
+  function render() {
+    const classes = mergeClasses();
+    const opens = openSource();
+    const totals = activityTotals(classes);
+    document.getElementById("bananas").textContent = `${Game.currency(pack).emoji} ${totals.bananas}`;
+    document.getElementById("stat-strip").innerHTML =
+      renderOpens(opens) + renderActions(totals) + renderFinds(totals);
+    document.getElementById("class-list").innerHTML = classes.map((cls, i) => renderClass(cls, i === 0)).join("");
+    const note = document.getElementById("grades-note");
+    if (note) {
+      note.textContent = seed.gradesNote || "Grades are TEST seed until a real feed exists.";
+    }
+  }
+
+  async function boot() {
+    week = await Game.loadWeek() || { work: [], events: [] };
+    pack = await Game.loadAchievements() || { currency: Game.currency({}), achievements: [] };
+    family = await Game.loadFamily();
+    seed = await Game.loadProgress();
+    render();
+  }
+
+  boot();
+})();

@@ -7,8 +7,17 @@
     mom: "bw-mom-achievements",
     family: "bw-family",
     trophyOrder: "bw-trophy-order",
-    opened: "bw-opened"
+    opened: "bw-opened",
+    opens: "bw-opens"
   };
+
+  const EGG_NAMES = {
+    "banner-monkey": "Garage-band grin",
+    "hidden-ball": "Stray tennis ball",
+    "clarinet-honk": "Bass clarinet honk"
+  };
+
+  const OPEN_DEBOUNCE_MS = 15 * 60 * 1000;
 
   const ICONS = {
     tennis: "img/monkey-tennis.png",
@@ -77,6 +86,40 @@
     const day = `${get("month")}/${get("day")}`;
     const time = `${get("hour")}:${get("minute")} ${get("dayPeriod")}`.trim();
     return day && time ? `${day}, ${time}` : d.toLocaleString("en-US");
+  }
+
+  function chicagoYmd(date) {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Chicago",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(date || new Date());
+    const get = (t) => (parts.find((p) => p.type === t) || {}).value || "";
+    return `${get("year")}-${get("month")}-${get("day")}`;
+  }
+
+  function lastNChicagoDays(n) {
+    const [y, m, d] = chicagoYmd().split("-").map(Number);
+    const start = new Date(y, m - 1, d);
+    return Array.from({ length: n }, (_, i) => {
+      const x = new Date(start);
+      x.setDate(start.getDate() - (n - 1 - i));
+      const yy = x.getFullYear();
+      const mm = String(x.getMonth() + 1).padStart(2, "0");
+      const dd = String(x.getDate()).padStart(2, "0");
+      return `${yy}-${mm}-${dd}`;
+    });
+  }
+
+  function parseStamp(value) {
+    if (value == null || value === "") return null;
+    if (typeof value === "number" && Number.isFinite(value)) {
+      const d = new Date(value);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? null : d;
   }
 
   function getProgress() {
@@ -198,6 +241,27 @@
     return normalizeFamily(file || seed);
   }
 
+  function emptyProgressSeed() {
+    return { timezone: "America/Chicago", classes: [], sampleOpens: [], eggNames: EGG_NAMES };
+  }
+
+  function normalizeProgressSeed(raw) {
+    const p = raw && typeof raw === "object" ? raw : {};
+    return {
+      timezone: p.timezone || "America/Chicago",
+      gradesNote: p.gradesNote || "",
+      classes: Array.isArray(p.classes) ? p.classes : [],
+      sampleOpens: Array.isArray(p.sampleOpens) ? p.sampleOpens : [],
+      eggNames: p.eggNames && typeof p.eggNames === "object" ? Object.assign({}, EGG_NAMES, p.eggNames) : Object.assign({}, EGG_NAMES)
+    };
+  }
+
+  async function loadProgress() {
+    const seed = normalizeProgressSeed(parseSeed("progress-seed") || emptyProgressSeed());
+    const file = await fetchJson("progress.json", null);
+    return normalizeProgressSeed(file || seed);
+  }
+
   function workState(id) {
     const cur = getProgress()[id] || {};
     const started = !!(cur.started || cur.startedAt);
@@ -232,6 +296,27 @@
     all[id] = cur;
     write(KEYS.progress, all);
     return { first, state: workState(id) };
+  }
+
+  function recordHelp(id) {
+    if (!id) return workState(id);
+    const all = getProgress();
+    const cur = Object.assign({}, all[id] || {});
+    const times = Array.isArray(cur.helpOpened) ? cur.helpOpened.slice() : [];
+    const last = times[times.length - 1];
+    const lastMs = last ? (parseStamp(last) || {}).getTime?.() || 0 : 0;
+    if (!last || Date.now() - lastMs > 60 * 1000) {
+      times.push(nowIso());
+    }
+    cur.helpOpened = times;
+    all[id] = cur;
+    write(KEYS.progress, all);
+    return workState(id);
+  }
+
+  function helpOpens(id) {
+    const cur = getProgress()[id] || {};
+    return Array.isArray(cur.helpOpened) ? cur.helpOpened : [];
   }
 
   function alreadyUnlocked(id) {
@@ -360,8 +445,63 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 500);
   }
 
+  function readOpenLog() {
+    const stored = read(KEYS.opens, null);
+    if (Array.isArray(stored)) return stored.slice();
+    return null;
+  }
+
+  function firstOpenedIso() {
+    const raw = localStorage.getItem(KEYS.opened);
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      const d = parseStamp(parsed);
+      return d ? d.toISOString() : null;
+    } catch (_) {
+      const d = parseStamp(raw);
+      return d ? d.toISOString() : null;
+    }
+  }
+
+  function getOpens() {
+    const log = readOpenLog();
+    if (log && log.length) return log;
+    const first = firstOpenedIso();
+    return first ? [first] : [];
+  }
+
   function markOpened() {
-    if (!localStorage.getItem(KEYS.opened)) write(KEYS.opened, Date.now());
+    const nowMs = Date.now();
+    const nowIso = new Date(nowMs).toISOString();
+    if (!localStorage.getItem(KEYS.opened)) write(KEYS.opened, nowMs);
+
+    let opens = readOpenLog();
+    if (!opens) {
+      opens = [];
+      const first = firstOpenedIso();
+      if (first && first !== nowIso) opens.push(first);
+    }
+
+    const last = opens[opens.length - 1];
+    const lastMs = last ? (parseStamp(last) || {}).getTime?.() || 0 : 0;
+    if (!last || nowMs - lastMs >= OPEN_DEBOUNCE_MS) {
+      opens.push(nowIso);
+      write(KEYS.opens, opens);
+    }
+    return opens;
+  }
+
+  function foundEggs(eggNames) {
+    const eggs = getEggs();
+    const names = eggNames && typeof eggNames === "object" ? eggNames : EGG_NAMES;
+    return Object.keys(eggs)
+      .filter((k) => !k.endsWith("-count") && eggs[k])
+      .map((id) => ({
+        id,
+        name: names[id] || "A jungle surprise",
+        at: parseStamp(eggs[id]) ? parseStamp(eggs[id]).toISOString() : null
+      }));
   }
 
   function notesFor(family, targetType, targetId) {
@@ -416,6 +556,7 @@
     loadWeek,
     loadAchievements,
     loadFamily,
+    loadProgress,
     getProgress,
     getUnlocks,
     getBananas,
@@ -435,6 +576,8 @@
     saveTrophyOrder,
     workState,
     touchWork,
+    recordHelp,
+    helpOpens,
     checkUnlocks,
     awardAchievement,
     recordEgg,
@@ -445,6 +588,12 @@
     celebrate,
     downloadJson,
     markOpened,
+    getOpens,
+    chicagoYmd,
+    lastNChicagoDays,
+    parseStamp,
+    foundEggs,
+    EGG_NAMES,
     alreadyUnlocked,
     markUnlocked,
     notesFor,

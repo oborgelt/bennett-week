@@ -14,6 +14,7 @@ Theme: monkeys playing tennis and goofing around with guitars, bass clarinet, an
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
 8. **A little help** on due / start-this work: notecards, a short explanation, optional quiz, optional proofread. Additive help — not a finished assignment.
+9. Open **Progress** (HUD **Dash** on a phone) for Bennett’s activity and class grades. Same page is fine for parents — it is not a secret desk.
 
 If GitHub Pages is on: https://oborgelt.github.io/bennett-week/
 
@@ -27,6 +28,7 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 4. Inbox: Bennett’s questions and check-ins. Reply with a note on that item.
 5. Add reflection prompts (how class / teachers felt — celebrate and catch early warnings, not a psych eval).
 6. Saves on that device only. **Export family pack** and **Import JSON** so Mom and Orin can pass a file. **Download achievements.json** to drop the catalog into the repo.
+7. **Progress** is the same dashboard Bennett sees (activity + class grades). It does not show the locked trophy catalog.
 
 ## Live tutor help (`serve.py`)
 
@@ -52,7 +54,28 @@ Anything labeled **TEST** is look-and-feel filler, not a real family rule or a r
 - Seed streaks in `achievements.json` are `"test": true` (straight A’s, no-late, flash cards, five-day start, asked before due). Incentives are examples only.
 - Seed notes / questions / reflections in `family.json` are TEST so the inbox and cards are not empty.
 - `week.json` may include one fake calendar row titled `TEST: …`. Real seed items from v1 stay (parenting time, Mon band, English names, comic strips, Forms & Fees, spiral notebook, chemistry absence note on 8/14).
+- Progress grades in `progress.json` are TEST seed (English overall + the three real English items + one TEST quiz). Band’s overall grade is TEST. Not a gradebook.
+- Sample lobby-open times on Progress are TEST and only show when this device has no real open log yet.
 - Do not treat this as a full semester of homework. English often lives in a Google sheet; Canvas is not the full due list.
+
+## Progress page
+
+`progress.html` is a laptop-first dashboard (still fine on iPhone).
+
+**Site activity (top / left)**
+- Lobby opens: last open, count this rolling week (America/Chicago), a 7-day spark, recent times. Opening the week lobby appends to `localStorage` key `bw-opens` (ISO timestamps). The old `bw-opened` first-open flag still works; a new open is ignored if the last one was within 15 minutes.
+- Actions: I started this (with timestamps), Done, questions asked, parent notes received, reflections answered, “A little help” opened, trophies awarded (earned only).
+- Easter eggs found: count + wholesome names for eggs he already found. Unfound eggs are not listed.
+- Bananas from the same device store.
+
+**By class**
+- Real classes: English 10, Band. Collapsed row = class name + overall grade + actions (started / done / asked / help).
+- Expand a class to see assignments and tests with a grade and status (not started / started timestamp / done). Grades stay hidden until expand.
+- Help-opened timestamps are stored on the existing `bw-progress` object (`helpOpened`), not a new store.
+
+Bennett can see his activity and class progress. Parents can open the same page. Nobody sees the parent achievement catalog or locked trophies here.
+
+Grades stay seed/TEST until a real feed exists.
 
 ## Easter eggs
 
@@ -61,11 +84,13 @@ Wholesome only. Try tapping the banner band, the little clarinet, and a shy tenn
 ## Files
 
 - `index.html` — week lobby (embeds JSON fallbacks so `file://` still works)
+- `progress.html` — activity + class dashboard
 - `parent.html` — parent desk
 - `mom.html` — redirect to `parent.html`
 - `week.json` — calendar, work, parenting time
+- `progress.json` — class list + TEST grade seed + sample opens
 - `achievements.json` — streak catalog + incentives
 - `family.json` — seed notes, questions, reflection pool
 - `serve.py` — static server + `/api/tutor`
 - `img/` — banner, day art, badge, jungle wallpaper
-- `css/theme.css`, `js/game.js`, `js/week.js`, `js/parent.js`, `js/tutor.js`
+- `css/theme.css`, `js/game.js`, `js/week.js`, `js/parent.js`, `js/tutor.js`, `js/progress.js`
