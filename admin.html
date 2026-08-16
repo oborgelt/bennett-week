@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Admin · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=53">
+  <link rel="stylesheet" href="css/theme.css?v=54">
 </head>
 <body class="parent-page admin-page">
   <header class="week-head">
@@ -82,6 +82,7 @@
       If you drop the whole <code>audio</code> folder and include <code>manifest.json</code>, labels stay as written.
       Nine school-skip clips are left out automatically. Delete any more with <strong>Delete</strong> on the card.
       Default tag is <strong>Fun / Sounds</strong>. Retag anytime. Export the family pack so Mom can import the files.
+      <strong>Reload shipped files</strong> pulls in new locker / gear / fight stills without deleting Fun / Sounds.
       Do not re-encode the locker clips. Do not commit copyrighted soundboard rips.
     </p>
     <div class="parent-actions">
@@ -89,6 +90,7 @@
       <a class="btn" href="refs.html">Locker refs</a>
       <a class="btn" href="story.html?preview=1">Preview story</a>
       <button type="button" class="btn" id="export">Export family pack</button>
+      <button type="button" class="btn" id="reload-shipped">Reload shipped files</button>
       <label class="btn">Import JSON
         <input id="import" type="file" accept="application/json" class="sr-only">
       </label>
@@ -234,13 +236,19 @@
     {"id":"ace-frog","label":"Frog Serve","path":"img/library/ace-frog.mp4","poster":"img/library/ace-frog.jpg","kind":"video","character":"ace","slot":"content"},
     {"id":"riff-bird","label":"Bird Blast","path":"img/library/riff-bird.mp4","poster":"img/library/riff-bird.jpg","kind":"video","character":"riff","slot":"content"},
     {"id":"scorch-spider","label":"Web Burn","path":"img/library/scorch-spider.mp4","poster":"img/library/scorch-spider.jpg","kind":"video","character":"scorch","slot":"content"},
-    {"id":"scorch-spider-beam","label":"Web Burn beam","path":"img/library/scorch-spider-beam.jpg","kind":"image","character":"scorch"}
+    {"id":"scorch-spider-beam","label":"Web Burn beam","path":"img/library/scorch-spider-beam.jpg","kind":"image","character":"scorch"},
+    {"id":"trophy-room","label":"Trophy room","path":"img/library/trophy-room.jpg","kind":"image","character":"crew"},
+    {"id":"trophy-pedestal","label":"Pedestal","path":"img/library/trophy-pedestal.jpg","kind":"image","character":"crew"},
+    {"id":"trophy-window","label":"Window wall","path":"img/library/trophy-window.jpg","kind":"image","character":"crew"},
+    {"id":"trophy-cubbies","label":"Cubbies","path":"img/library/trophy-cubbies.jpg","kind":"image","character":"crew"},
+    {"id":"trophy-pegboard","label":"Peg wall","path":"img/library/trophy-pegboard.jpg","kind":"image","character":"crew"},
+    {"id":"trophy-lockers","label":"Lockers","path":"img/library/trophy-lockers.jpg","kind":"image","character":"crew"}
   ]
 }
   </script>
-  <script src="js/build.js?v=53"></script>
-  <script src="js/game.js?v=53"></script>
-  <script src="js/telemetry.js?v=53"></script>
-  <script src="js/admin.js?v=53"></script>
+  <script src="js/build.js?v=54"></script>
+  <script src="js/game.js?v=54"></script>
+  <script src="js/telemetry.js?v=54"></script>
+  <script src="js/admin.js?v=54"></script>
 </body>
 </html>

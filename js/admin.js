@@ -17,7 +17,7 @@
     deuce: "Locker clip and stills for this teammate.",
     fuzz: "Locker clip and stills for this teammate.",
     bennett: "Locker clip and stills for Bennett — his own avatar, not another animal teammate.",
-    crew: "Ace + Riff + Scorch together. Comic stills and the adventure clip.",
+    crew: "Ace + Riff + Scorch together. Comic stills, the adventure clip, and the treehouse room.",
     fun: "Meme-style unlocks and sounds. Award a streak so Bennett can play them later.",
     gear: "Awardable tools, outfits, and abilities. Also live on each teammate shelf."
   };
@@ -130,7 +130,8 @@
   function groupOpen(id, count) {
     const map = foldState();
     if (Object.prototype.hasOwnProperty.call(map, id)) return !!map[id];
-    return id !== "fun" || count <= 8;
+    if (id === "fun") return count <= 8;
+    return true;
   }
 
   function bindLibraryClicks(host) {
@@ -721,6 +722,13 @@
       family.story.includeNote = document.getElementById("story-note").value.trim();
       persistFamily();
       Game.toast(family.story.includeNote ? "Story will include that parent note." : "No parent note — story will skip it.");
+    });
+
+    document.getElementById("reload-shipped").addEventListener("click", async () => {
+      library = await Game.reloadShippedLibrary();
+      renderLibrary();
+      document.getElementById("draft-flag").hidden = false;
+      Game.toast("Shipped files reloaded. Fun / Sounds on this device were kept.");
     });
 
     document.getElementById("export").addEventListener("click", async () => {

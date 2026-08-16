@@ -1062,7 +1062,13 @@
         { id: "ace-frog", label: "Frog Serve", path: "img/library/ace-frog.mp4", poster: "img/library/ace-frog.jpg", kind: "video", character: "ace", slot: "content" },
         { id: "riff-bird", label: "Bird Blast", path: "img/library/riff-bird.mp4", poster: "img/library/riff-bird.jpg", kind: "video", character: "riff", slot: "content" },
         { id: "scorch-spider", label: "Web Burn", path: "img/library/scorch-spider.mp4", poster: "img/library/scorch-spider.jpg", kind: "video", character: "scorch", slot: "content" },
-        { id: "scorch-spider-beam", label: "Web Burn beam", path: "img/library/scorch-spider-beam.jpg", kind: "image", character: "scorch" }
+        { id: "scorch-spider-beam", label: "Web Burn beam", path: "img/library/scorch-spider-beam.jpg", kind: "image", character: "scorch" },
+        { id: "trophy-room", label: "Trophy room", path: "img/library/trophy-room.jpg", kind: "image", character: "crew" },
+        { id: "trophy-pedestal", label: "Pedestal", path: "img/library/trophy-pedestal.jpg", kind: "image", character: "crew" },
+        { id: "trophy-window", label: "Window wall", path: "img/library/trophy-window.jpg", kind: "image", character: "crew" },
+        { id: "trophy-cubbies", label: "Cubbies", path: "img/library/trophy-cubbies.jpg", kind: "image", character: "crew" },
+        { id: "trophy-pegboard", label: "Peg wall", path: "img/library/trophy-pegboard.jpg", kind: "image", character: "crew" },
+        { id: "trophy-lockers", label: "Lockers", path: "img/library/trophy-lockers.jpg", kind: "image", character: "crew" }
       ]
     };
   }
@@ -1480,6 +1486,67 @@
     };
   }
 
+  function isDraftLocalItem(item) {
+    if (!item) return false;
+    if (item.device || item.synth) return true;
+    if (item.kind === "audio" || item.kind === "link") return true;
+    if (item.url && isSafeHttpUrl(item.url)) return true;
+    return !!(item.path || item.url);
+  }
+
+  function keepDraftCharacter(ship, mom) {
+    const tag = mom && mom.character;
+    if (!tag || LIBRARY_GROUPS.indexOf(tag) < 0) return ship.character;
+    if (tag === ship.character) return ship.character;
+    if (tag === "fun" && ship.character !== "fun") return ship.character;
+    if (ship.slot) return ship.character;
+    if (/-(clip|poster)$/.test(ship.id)) return ship.character;
+    return tag;
+  }
+
+  function mergeLibrary(shippedRaw, draftRaw) {
+    const shipped = normalizeLibrary(shippedRaw || defaultLibrary());
+    const draft = normalizeLibrary(draftRaw || { items: [] });
+    const draftById = Object.create(null);
+    draft.items.forEach((item) => { draftById[item.id] = item; });
+    const seen = Object.create(null);
+    const items = [];
+    shipped.items.forEach((ship) => {
+      const mom = draftById[ship.id];
+      if (!mom) {
+        items.push(ship);
+        seen[ship.id] = true;
+        return;
+      }
+      items.push(normalizeLibraryItem({
+        id: ship.id,
+        label: mom.label || ship.label,
+        path: ship.path,
+        url: ship.url,
+        poster: ship.poster,
+        kind: ship.kind,
+        character: keepDraftCharacter(ship, mom),
+        slot: ship.slot,
+        synth: ship.synth,
+        device: false,
+        filename: ship.filename,
+        mime: ship.mime,
+        test: !!ship.test
+      }, items.length));
+      seen[ship.id] = true;
+    });
+    draft.items.forEach((mom) => {
+      if (seen[mom.id] || !isDraftLocalItem(mom)) return;
+      items.push(mom);
+      seen[mom.id] = true;
+    });
+    return normalizeLibrary({ items });
+  }
+
+  function shippedLibrary(file) {
+    return normalizeLibrary(file || parseSeed("library-seed") || defaultLibrary());
+  }
+
   function usingMomLibrary() {
     return !!localStorage.getItem(KEYS.library);
   }
@@ -1499,12 +1566,17 @@
   }
 
   async function loadLibrary() {
-    const seed = normalizeLibrary(parseSeed("library-seed") || defaultLibrary());
     const file = await fetchJson("library.json", null);
+    const shipped = shippedLibrary(file);
     const draft = getMomLibrary();
-    const lib = normalizeLibrary(draft || file || seed);
+    const lib = mergeLibrary(shipped, draft);
+    saveMomLibrary(lib);
     await hydrateLibraryBlobs(lib);
     return lib;
+  }
+
+  async function reloadShippedLibrary() {
+    return loadLibrary();
   }
 
   function libraryItem(lib, id) {
@@ -3406,8 +3478,11 @@
     saveMomLibrary,
     clearMomLibrary,
     loadLibrary,
+    reloadShippedLibrary,
     defaultLibrary,
     normalizeLibrary,
+    mergeLibrary,
+    shippedLibrary,
     inferKind,
     kindFromFile,
     labelFromFilename,
