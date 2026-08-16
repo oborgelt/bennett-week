@@ -17,7 +17,8 @@
     ask: "bw-ask-thread",
     opened: "bw-opened",
     opens: "bw-opens",
-    previewAll: "bw-preview-all"
+    previewAll: "bw-preview-all",
+    previewLocked: "bw-preview-locked"
   };
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew", "fun"];
@@ -3009,6 +3010,27 @@
     } catch (_) {}
   }
 
+  function hasPreviewLockedFlag() {
+    try {
+      const raw = localStorage.getItem(KEYS.previewLocked);
+      return raw === "1" || raw === "true";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function setPreviewLockedFlag() {
+    try {
+      localStorage.setItem(KEYS.previewLocked, "1");
+    } catch (_) {}
+  }
+
+  function clearPreviewLockedFlag() {
+    try {
+      localStorage.removeItem(KEYS.previewLocked);
+    } catch (_) {}
+  }
+
   function previewAwardPack(pack) {
     const list = ((pack && pack.achievements) || []).slice();
     const have = new Set(list.map((ach) => ach && ach.id));
@@ -3047,6 +3069,7 @@
       if (result.achievement) awarded += 1;
     });
     setPreviewAllFlag();
+    clearPreviewLockedFlag();
     return { family: next, awarded };
   }
 
@@ -3060,19 +3083,16 @@
       if (result.revoked) revoked += 1;
     });
     setPreviewAllFlag();
+    setPreviewLockedFlag();
     return { family: next, revoked };
   }
 
   function maybeAutoPreviewAll(pack, family) {
     const next = normalizeFamily(family);
-    if (hasPreviewAllFlag()) return { family: next, ran: false };
-    const crewUnlocks = Object.keys(getCharacterUnlocks()).filter((id) => id !== "bennett");
-    if (crewUnlocks.length || Object.keys(getGearUnlocks()).length) {
-      setPreviewAllFlag();
-      return { family: next, ran: false };
-    }
+    if (hasPreviewLockedFlag()) return { family: next, ran: false, awarded: 0 };
+    const firstOffer = !hasPreviewAllFlag();
     const result = awardAllPreview(pack, next);
-    return { family: result.family, ran: true, awarded: result.awarded };
+    return { family: result.family, ran: firstOffer, awarded: result.awarded };
   }
 
   async function importFamilyPack(obj) {
