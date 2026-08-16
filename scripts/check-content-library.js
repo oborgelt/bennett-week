@@ -126,6 +126,23 @@ assert(beam && beam.kind === "image" && beam.character === "scorch", "scorch-spi
 assert.strictEqual(beam.path, "img/library/scorch-spider-beam.jpg", "beam still path");
 assert(fs.existsSync(path.join(root, beam.path)), "scorch-spider-beam.jpg should already be on disk");
 assert(beam.slot !== "tool" && beam.slot !== "outfit" && beam.slot !== "ability", "beam is not locker or gear");
+const trophyStills = [
+  { id: "trophy-room", path: "img/library/trophy-room.jpg" },
+  { id: "trophy-pedestal", path: "img/library/trophy-pedestal.jpg" },
+  { id: "trophy-window", path: "img/library/trophy-window.jpg" },
+  { id: "trophy-cubbies", path: "img/library/trophy-cubbies.jpg" },
+  { id: "trophy-pegboard", path: "img/library/trophy-pegboard.jpg" },
+  { id: "trophy-lockers", path: "img/library/trophy-lockers.jpg" }
+];
+trophyStills.forEach((row) => {
+  const item = library.items.find((it) => it.id === row.id);
+  assert(item, row.id + " should be in library.json");
+  assert.strictEqual(item.kind, "image", row.id + " should be a still");
+  assert.strictEqual(item.character, "crew", row.id + " sits on Crew — LIBRARY_GROUPS has no Room shelf");
+  assert.strictEqual(item.path, row.path, row.id + " path");
+  assert(!item.slot, row.id + " is not locker art or gear");
+  assert(fs.existsSync(path.join(root, item.path)), row.id + " should already be on disk");
+});
 ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
   const clip = library.items.find((item) => item.id === id + "-clip");
   const poster = library.items.find((item) => item.id === id + "-poster");
@@ -138,6 +155,9 @@ assert(/test-ace-frog/.test(parentHtml) && /test-riff-bird/.test(parentHtml) && 
 assert(/outfit/.test(parentHtml), "parent desk should offer an outfit reward type");
 assert(adminHtml.includes("img/library/angle-finder.png") && adminHtml.includes("img/library/daily-pick.png"), "Admin file:// seed should include gear stills");
 assert(adminHtml.includes("img/library/ace-frog.mp4") && adminHtml.includes("img/library/riff-bird.mp4") && adminHtml.includes("img/library/scorch-spider.mp4"), "Admin file:// seed should include fight clips");
+assert(adminHtml.includes("img/library/trophy-room.jpg") && adminHtml.includes("img/library/trophy-window.jpg"), "Admin file:// seed should include trophy-room stills");
+assert(/Reload shipped files/.test(adminHtml), "Admin should offer Reload shipped files");
+assert(!/id="clear-audio"|id="wipe-fun"|Clear (all )?Fun|Delete all (audio|sounds)/i.test(adminHtml), "do not add a control that clears Fun/Sounds");
 assert(/Jungle Jam/.test(parentHtml), "parent desk should keep the Jungle Jam product name");
 
 const honk = library.items.find((item) => item.id === "banana-honk");
@@ -463,6 +483,33 @@ fightSeed.forEach((row) => {
   assert(Game.defaultLibrary().items.some((item) => item.id === row.id && item.slot === "content" && item.kind === "video"), "file:// default library includes " + row.id);
 });
 assert(Game.defaultLibrary().items.some((item) => item.id === "scorch-spider-beam" && item.kind === "image"), "file:// default library includes the Scorch beam still");
+trophyStills.forEach((row) => {
+  assert(Game.defaultLibrary().items.some((item) => item.id === row.id && item.character === "crew" && item.kind === "image"), "file:// default library includes " + row.id);
+});
+assert.strictEqual(Game.LIBRARY_GROUPS.indexOf("room"), -1, "do not add a Room library group — trophy stills sit on Crew");
+const aceOnlyDraft = Game.normalizeLibrary({
+  items: [
+    { id: "ace-clip", label: "Ace locker clip", path: "img/characters/ace.mp4", poster: "img/characters/ace.jpg", kind: "video", character: "ace" },
+    { id: "ace-poster", label: "Ace poster", path: "img/characters/ace.jpg", kind: "image", character: "ace" },
+    { id: "ace-frog", label: "Old frog", path: "img/wrong/ace-frog.mp4", poster: "", kind: "video", character: "fun", slot: "" },
+    { id: "orin-honk", label: "Orin Honk", kind: "audio", character: "fun", device: true, filename: "orin-honk.mp3" }
+  ]
+});
+const mergedDraft = Game.mergeLibrary(library, aceOnlyDraft);
+assert(mergedDraft.items.some((item) => item.id === "ace-frog" && item.slot === "content" && item.path === "img/library/ace-frog.mp4" && item.character === "ace"), "merge should restore Frog Serve from the shipped catalog");
+assert(mergedDraft.items.some((item) => item.id === "riff-clip" && item.path === "img/characters/riff.mp4"), "merge should restore Riff locker clip");
+assert(mergedDraft.items.some((item) => item.id === "field-kit" && item.slot === "tool" && item.path === "img/library/field-kit.png"), "merge should restore Field Kit");
+assert(mergedDraft.items.some((item) => item.id === "orin-honk" && item.device && item.character === "fun"), "merge should keep device Fun/Sounds audio");
+["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
+  const clip = Game.libraryItem(mergedDraft, id + "-clip");
+  const poster = Game.libraryItem(mergedDraft, id + "-poster");
+  assert(clip && clip.path === "img/characters/" + id + ".mp4", id + " locker clip path stays put after merge");
+  assert(poster && poster.path === "img/characters/" + id + ".jpg", id + " locker still path stays put after merge");
+});
+Game.saveMomLibrary(mergedDraft);
+const persisted = Game.getMomLibrary();
+assert(persisted.items.some((item) => item.id === "ace-frog"), "merged library should persist for Admin and Characters");
+assert(persisted.items.some((item) => item.id === "orin-honk" && item.device), "persisted merge should keep device audio");
 assert.strictEqual(Game.CONTENT_SLOT, "content", "content slot constant");
 assert(Game.isGatedLibraryItem({ kind: "audio", character: "ace" }), "audio stays gated");
 assert(Game.isGatedLibraryItem({ kind: "link", character: "crew" }), "links stay gated");
@@ -479,6 +526,14 @@ fightSeed.forEach((row) => {
 assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "ace-clip")), "Ace locker clip stays playable");
 assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "scorch-spider-beam")), "beam still is extra library art, not a gated locker replacement");
 assert(!Game.contentLibraryItems(seededLib).some((it) => it.id === "ace-clip"), "locker clips are not gated content");
+assert(Game.contentLibraryItems(mergedDraft).some((it) => it.id === "ace-frog"), "fight clips stay parent-awardable after merge");
+assert(!Game.canPlayLibraryItem(Game.libraryItem(mergedDraft, "ace-frog")), "Frog Serve stays locked until awarded after merge");
+assert(Game.canPlayLibraryItem(Game.libraryItem(mergedDraft, "ace-clip")), "Ace locker clip stays playable after merge");
+const adminJs = fs.readFileSync(path.join(root, "js/admin.js"), "utf8");
+assert(adminJs.includes("reloadShippedLibrary"), "Admin reload should re-run the shipped merge");
+assert(!/reload-shipped[\s\S]{0,500}clear(MomLibrary|LibraryBlobs)/.test(adminJs), "Reload shipped files must not wipe Fun/Sounds blobs");
+assert(/if \(id === "fun"\) return count <= 8;/.test(adminJs) && /return true;/.test(adminJs), "character / gear / crew shelves default open");
+assert(adminJs.includes("GROUPS.filter((g) => g.id !== \"fun\" && g.id !== \"crew\")"), "empty character shelves still render");
 
 const pack = {
   currency: achievements.currency,
@@ -565,7 +620,7 @@ const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=53/.test(weekHtml) && /week\.js\?v=53/.test(weekHtml) && /game\.js\?v=53/.test(weekHtml) && /telemetry\.js\?v=53/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=54/.test(weekHtml) && /week\.js\?v=54/.test(weekHtml) && /game\.js\?v=54/.test(weekHtml) && /telemetry\.js\?v=54/.test(weekHtml), "index should cache-bust css/js");
 ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".png")), id + " cutout png should stay on disk");
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".jpg")), id + " locker jpg should stay on disk");

@@ -206,6 +206,48 @@
       "path": "img/library/scorch-spider-beam.jpg",
       "kind": "image",
       "character": "scorch"
+    },
+    {
+      "id": "trophy-room",
+      "label": "Trophy room",
+      "path": "img/library/trophy-room.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "trophy-pedestal",
+      "label": "Pedestal",
+      "path": "img/library/trophy-pedestal.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "trophy-window",
+      "label": "Window wall",
+      "path": "img/library/trophy-window.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "trophy-cubbies",
+      "label": "Cubbies",
+      "path": "img/library/trophy-cubbies.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "trophy-pegboard",
+      "label": "Peg wall",
+      "path": "img/library/trophy-pegboard.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "trophy-lockers",
+      "label": "Lockers",
+      "path": "img/library/trophy-lockers.jpg",
+      "kind": "image",
+      "character": "crew"
     }
   ]
 }
