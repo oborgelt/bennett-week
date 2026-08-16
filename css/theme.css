@@ -2191,7 +2191,50 @@ a.btn {
   font: inherit;
 }
 
-.form-grid textarea { min-height: 72px; resize: vertical; }
+.cue-saved-title,
+.cue-add-title {
+  margin: 12px 0 8px;
+  font-size: 0.92rem;
+}
+
+.cue-add-title { margin-top: 18px; }
+
+.cue-list {
+  display: grid;
+  gap: 10px;
+}
+
+.cue-row {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.cue-row h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.cue-row label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.cue-row select {
+  width: 100%;
+  margin-top: 4px;
+  min-height: var(--tap);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #0e2426;
+  color: var(--ink);
+  padding: 10px 12px;
+  font: inherit;
+}
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .check { display: flex; align-items: center; gap: 8px; min-height: var(--tap); color: var(--ink); }
 .check input { width: auto; min-height: auto; }

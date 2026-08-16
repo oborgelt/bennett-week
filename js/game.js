@@ -2183,6 +2183,19 @@
     return rows;
   }
 
+  function assignedCueRows(family, week) {
+    const cues = (family && family.soundCues) || {};
+    const labels = {};
+    soundCueRows(week).forEach((row) => {
+      labels[row.id] = row.label;
+    });
+    return Object.keys(cues).filter((id) => cues[id]).map((id) => ({
+      id,
+      label: labels[id] || id,
+      soundId: cues[id]
+    })).sort((a, b) => String(a.label).localeCompare(String(b.label), undefined, { sensitivity: "base" }));
+  }
+
   function bindSoundCues(opts) {
     const host = typeof opts.host === "string" ? document.getElementById(opts.host) : opts.host;
     if (!host) return;
@@ -2192,61 +2205,93 @@
     const onFamily = opts.onFamily || function () {};
     const draft = document.getElementById(opts.draftFlag || "draft-flag");
 
+    function persist(next, message) {
+      family = next;
+      onFamily(family);
+      if (draft) draft.hidden = false;
+      render();
+      if (message) toast(message);
+    }
+
     function render() {
-      const cues = (family && family.soundCues) || {};
-      const rows = soundCueRows(week);
-      host.innerHTML = `
-        <div class="form-grid cue-assign">
-          <label>Moment
-            <select data-cue-event>${rows.map((row) => `<option value="${esc(row.id)}">${esc(row.label)}</option>`).join("")}</select>
-          </label>
-          <label>Sound
-            <select data-cue-sound>${audioCueOptions(library, "")}</select>
-          </label>
-        </div>
-        <div class="parent-actions">
-          <button type="button" class="btn primary" data-cue-save>Assign sound</button>
-          <button type="button" class="tiny" data-cue-preview>Play</button>
-        </div>
-        <div class="cue-list">${rows.filter((row) => cues[row.id]).map((row) => {
-          const label = cueSoundLabel(family, library, row.id) || "Missing file";
-          return `
-            <article class="ach-card">
+      const catalog = soundCueRows(week);
+      const assigned = assignedCueRows(family, week);
+      const taken = new Set(assigned.map((row) => row.id));
+      const open = catalog.filter((row) => !taken.has(row.id));
+      const savedHtml = assigned.length
+        ? assigned.map((row) => `
+            <article class="cue-row">
               <h3>${esc(row.label)}</h3>
-              <p>${esc(label)}</p>
+              <label>Sound
+                <select data-cue-change="${esc(row.id)}">${audioCueOptions(library, row.soundId)}</select>
+              </label>
               <div class="parent-actions">
                 <button type="button" class="tiny primary" data-cue-play="${esc(row.id)}">Play</button>
-                <button type="button" class="tiny danger" data-cue-clear="${esc(row.id)}">Clear</button>
+                <button type="button" class="tiny danger" data-cue-clear="${esc(row.id)}">Delete</button>
               </div>
-            </article>`;
-        }).join("") || `<p class="empty">No sounds assigned yet. Pick a moment, pick a clip, Assign sound.</p>`}</div>`;
+            </article>`)
+          .join("")
+        : `<p class="empty">None saved yet. Pick a moment and a clip, then Save.</p>`;
+      const addHtml = open.length
+        ? `
+          <h3 class="cue-add-title">Add a sound</h3>
+          <div class="form-grid cue-assign">
+            <label>Moment
+              <select data-cue-event>${open.map((row) => `<option value="${esc(row.id)}">${esc(row.label)}</option>`).join("")}</select>
+            </label>
+            <label>Sound
+              <select data-cue-sound>${audioCueOptions(library, "")}</select>
+            </label>
+          </div>
+          <div class="parent-actions">
+            <button type="button" class="btn primary" data-cue-save>Save</button>
+            <button type="button" class="tiny" data-cue-preview>Play</button>
+          </div>`
+        : `<p class="empty">Every listed moment has a sound. Change or delete one above to add another.</p>`;
+      host.innerHTML = `
+        <h3 class="cue-saved-title">Saved sounds</h3>
+        <div class="cue-list">${savedHtml}</div>
+        ${addHtml}`;
       const eventSel = host.querySelector("[data-cue-event]");
       const soundSel = host.querySelector("[data-cue-sound]");
-      function syncSoundSelect() {
-        const current = ((family && family.soundCues) || {})[eventSel.value] || "";
-        soundSel.innerHTML = audioCueOptions(library, current);
+      const saveBtn = host.querySelector("[data-cue-save]");
+      if (saveBtn) {
+        saveBtn.addEventListener("click", () => {
+          const momentId = eventSel && eventSel.value;
+          const soundId = soundSel && soundSel.value;
+          if (!momentId) {
+            toast("Pick a moment first.");
+            return;
+          }
+          if (!soundId) {
+            toast("Pick a sound first.");
+            return;
+          }
+          persist(setSoundCue(family, momentId, soundId), "Saved on this device. Export the family pack to share.");
+        });
       }
-      eventSel.addEventListener("change", syncSoundSelect);
-      syncSoundSelect();
-      host.querySelector("[data-cue-save]").addEventListener("click", () => {
-        family = setSoundCue(family, eventSel.value, soundSel.value);
-        onFamily(family);
-        if (draft) draft.hidden = false;
-        render();
-        toast(soundSel.value ? "Assigned on this device. Export the family pack to share." : "Cleared that moment.");
-      });
-      host.querySelector("[data-cue-preview]").addEventListener("click", () => {
-        const id = soundSel.value || ((family && family.soundCues) || {})[eventSel.value];
-        if (id === RANDOM_CUE) {
-          if (!playRandomLibraryItem(library)) toast("No clips in the library.");
-          return;
-        }
-        const item = libraryItem(library, id);
-        if (!item) {
-          toast("Pick a sound first.");
-          return;
-        }
-        playLibraryItem(item);
+      const preview = host.querySelector("[data-cue-preview]");
+      if (preview) {
+        preview.addEventListener("click", () => {
+          const id = soundSel && soundSel.value;
+          if (id === RANDOM_CUE) {
+            if (!playRandomLibraryItem(library)) toast("No clips in the library.");
+            return;
+          }
+          const item = libraryItem(library, id);
+          if (!item) {
+            toast("Pick a sound first.");
+            return;
+          }
+          playLibraryItem(item);
+        });
+      }
+      host.querySelectorAll("[data-cue-change]").forEach((sel) => {
+        sel.addEventListener("change", () => {
+          const id = sel.dataset.cueChange;
+          const next = setSoundCue(family, id, sel.value);
+          persist(next, sel.value ? "Sound updated." : "Deleted.");
+        });
       });
       host.querySelectorAll("[data-cue-play]").forEach((b) => {
         b.addEventListener("click", () => {
@@ -2255,11 +2300,7 @@
       });
       host.querySelectorAll("[data-cue-clear]").forEach((b) => {
         b.addEventListener("click", () => {
-          family = setSoundCue(family, b.dataset.cueClear, "");
-          onFamily(family);
-          if (draft) draft.hidden = false;
-          render();
-          toast("Cleared.");
+          persist(setSoundCue(family, b.dataset.cueClear, ""), "Deleted.");
         });
       });
     }
@@ -3523,6 +3564,7 @@
     playUndoSound,
     bindUndoCue,
     bindSoundCues,
+    assignedCueRows,
     playSynth,
     playContentReward,
     maybePlayContentCelebration,

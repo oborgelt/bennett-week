@@ -386,6 +386,9 @@ assert.strictEqual(resolved.item && resolved.item.id, "random", "a clip named Ra
 assert.strictEqual(Game.cueSoundLabel(namedRandom, libWithRandom, "egg-end"), "Random");
 const cleared = Game.setSoundCue(cued, "egg-end", "");
 assert(!cleared.soundCues["egg-end"], "clearing a cue should drop it");
+const listed = Game.assignedCueRows(Game.setSoundCue(Game.emptyFamily(), "undo", "honk"), { work: [], events: [] });
+assert(listed.some((row) => row.id === "undo" && row.soundId === "honk" && /Undo/i.test(row.label)), "saved cue list should include Undo");
+assert(!Game.assignedCueRows(Game.emptyFamily(), { work: [], events: [] }).length, "empty family has no saved sounds");
 assert.strictEqual(Game.inferKind("img/library/foo.mp3", "", ""), "audio");
 assert.strictEqual(Game.labelFromFilename("my-cool_honk.mp3"), "My Cool Honk");
 assert.strictEqual(Game.labelFromFilename("TEST-beep.wav"), "TEST Beep");
@@ -562,7 +565,7 @@ const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=52/.test(weekHtml) && /week\.js\?v=52/.test(weekHtml) && /game\.js\?v=52/.test(weekHtml) && /telemetry\.js\?v=52/.test(weekHtml), "index should cache-bust css/js past main v=51");
+assert(/theme\.css\?v=53/.test(weekHtml) && /week\.js\?v=53/.test(weekHtml) && /game\.js\?v=53/.test(weekHtml) && /telemetry\.js\?v=53/.test(weekHtml), "index should cache-bust css/js");
 ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".png")), id + " cutout png should stay on disk");
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".jpg")), id + " locker jpg should stay on disk");
