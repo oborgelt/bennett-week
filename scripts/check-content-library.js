@@ -426,11 +426,12 @@ assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("unp
 assert(Game.alreadyUnlocked("straight-as-3w") && Game.alreadyUnlocked("hidden-banana"), "preview should award the other streaks");
 assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "auto-preview should set bw-preview-all");
 assert(!localStorage.getItem("bw-preview-locked"), "auto-preview should not lock rewards");
-Game.revokeCharacterUnlock("ace");
-const gap = Game.maybeAutoPreviewAll(pack, auto.family);
+const afterAce = Game.revokeAchievement(pack, auto.family, "test-ace-closer");
+assert(!Game.alreadyUnlockedCharacter("ace"), "undoing Meet Ace should lock Ace");
+const gap = Game.maybeAutoPreviewAll(pack, afterAce.family);
 assert(!gap.ran, "later boots should gap-fill quietly");
 assert(Game.alreadyUnlockedCharacter("ace"), "gap-fill should restore missing preview crew");
-const locked = Game.revokeAllPreview(pack, auto.family);
+const locked = Game.revokeAllPreview(pack, gap.family);
 assert(!Game.alreadyUnlockedCharacter("ace") && !Game.alreadyUnlockedGear("angle-finder"), "Lock them back should revoke preview awards");
 assert(!Game.alreadyUnlockedCharacter("bennett") && !Game.alreadyUnlocked("signin-bennett"), "Lock them back should revoke Bennett too");
 assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "lock-back keeps bw-preview-all so preview stays offered");
