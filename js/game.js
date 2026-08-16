@@ -26,6 +26,7 @@
   const SIGNIN_ACHIEVEMENT = "signin-bennett";
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
   const GEAR_SLOTS = ["tool", "weapon", "ability", "outfit"];
+  const CONTENT_SLOT = "content";
   const SOUND_CUES = [
     { id: "undo", label: "Undo is clicked" },
     { id: "egg-win", label: "Egg game — 41 eggs win" },
@@ -1057,7 +1058,11 @@
         { id: "unplugged-strap", label: "Unplugged Strap", path: "img/library/unplugged-strap.png", poster: "img/library/unplugged-strap.png", kind: "image", character: "fuzz", slot: "outfit" },
         { id: "daily-pick", label: "Daily Pick", path: "img/library/daily-pick.png", poster: "img/library/daily-pick.png", kind: "image", character: "riff", slot: "tool" },
         { id: "notebook-holding", label: "Notebook of Holding", path: "img/library/notebook-holding.png", poster: "img/library/notebook-holding.png", kind: "image", character: "ace", slot: "tool" },
-        { id: "first-serve", label: "First Serve", path: "img/library/first-serve.png", poster: "img/library/first-serve.png", kind: "image", character: "ace", slot: "ability" }
+        { id: "first-serve", label: "First Serve", path: "img/library/first-serve.png", poster: "img/library/first-serve.png", kind: "image", character: "ace", slot: "ability" },
+        { id: "ace-frog", label: "Frog Serve", path: "img/library/ace-frog.mp4", poster: "img/library/ace-frog.jpg", kind: "video", character: "ace", slot: "content" },
+        { id: "riff-bird", label: "Bird Blast", path: "img/library/riff-bird.mp4", poster: "img/library/riff-bird.jpg", kind: "video", character: "riff", slot: "content" },
+        { id: "scorch-spider", label: "Web Burn", path: "img/library/scorch-spider.mp4", poster: "img/library/scorch-spider.jpg", kind: "video", character: "scorch", slot: "content" },
+        { id: "scorch-spider-beam", label: "Web Burn beam", path: "img/library/scorch-spider-beam.jpg", kind: "image", character: "scorch" }
       ]
     };
   }
@@ -1447,7 +1452,8 @@
     const mime = String(src.mime || "").trim();
     const character = LIBRARY_GROUPS.indexOf(src.character) >= 0 ? src.character : (device ? "fun" : "crew");
     const kind = inferKind(path || filename, url, src.kind);
-    const slot = GEAR_SLOTS.indexOf(String(src.slot || "").trim()) >= 0 ? String(src.slot).trim() : "";
+    const rawSlot = String(src.slot || "").trim();
+    const slot = (GEAR_SLOTS.indexOf(rawSlot) >= 0 || rawSlot === CONTENT_SLOT) ? rawSlot : "";
     const labelFallback = filename || (path || url).split("/").pop() || (synth ? "Sound" : (device ? "Sound" : "Untitled"));
     return {
       id: String(src.id || "").trim() || ("lib-" + (i + 1)),
@@ -1517,10 +1523,13 @@
     return libraryFor(lib, character, false, character !== "fun");
   }
 
+  function isGatedLibraryItem(item) {
+    if (!item) return false;
+    return item.kind === "audio" || item.kind === "link" || item.character === "fun" || item.slot === CONTENT_SLOT;
+  }
+
   function contentLibraryItems(lib) {
-    return ((lib && lib.items) || []).filter((item) => {
-      return item.kind === "audio" || item.kind === "link" || item.character === "fun";
-    });
+    return ((lib && lib.items) || []).filter(isGatedLibraryItem);
   }
 
   function libraryThumb(item) {
@@ -1790,7 +1799,7 @@
   function canPlayLibraryItem(item, preview) {
     if (!item) return false;
     if (preview) return true;
-    if (item.kind !== "audio" && item.kind !== "link" && item.character !== "fun") return true;
+    if (!isGatedLibraryItem(item)) return true;
     return alreadyUnlockedContent(item.id);
   }
 
@@ -3181,6 +3190,7 @@
     "signin-bennett", "test-bennett-showup",
     "test-ace-closer", "test-riff-reps", "test-scorch-recover", "test-deuce-return", "test-fuzz-unplugged",
     "test-notebook-holding", "test-first-serve", "test-angle-finder", "test-field-kit", "test-unplugged-strap", "test-daily-pick",
+    "test-ace-frog", "test-riff-bird", "test-scorch-spider",
     "straight-as-3w", "no-late-4w", "flash-cards-first", "started-week-5", "asked-before-due", "hidden-banana", "wrong-number-eggs"
   ];
 
@@ -3198,6 +3208,9 @@
     { id: "test-field-kit", title: "Field Kit", reward: 10, rewardUnlock: { type: "tool", id: "field-kit", label: "Field Kit" } },
     { id: "test-unplugged-strap", title: "Unplugged Strap", reward: 10, rewardUnlock: { type: "outfit", id: "unplugged-strap", label: "Unplugged Strap" } },
     { id: "test-daily-pick", title: "Daily Pick", reward: 10, rewardUnlock: { type: "tool", id: "daily-pick", label: "Daily Pick" } },
+    { id: "test-ace-frog", title: "Frog Serve", reward: 10, rewardUnlock: { type: "content", id: "ace-frog", label: "Frog Serve" } },
+    { id: "test-riff-bird", title: "Bird Blast", reward: 10, rewardUnlock: { type: "content", id: "riff-bird", label: "Bird Blast" } },
+    { id: "test-scorch-spider", title: "Web Burn", reward: 10, rewardUnlock: { type: "content", id: "scorch-spider", label: "Web Burn" } },
     { id: "straight-as-3w", title: "Straight A's", reward: 20 },
     { id: "no-late-4w", title: "On-time streak", reward: 20 },
     { id: "flash-cards-first", title: "Flash-card first test", reward: 10 },
@@ -3377,6 +3390,8 @@
     librarySrc,
     libraryKindLabel,
     contentLibraryItems,
+    isGatedLibraryItem,
+    CONTENT_SLOT,
     isSafeHttpUrl,
     youtubeId,
     youtubeEmbedSrc,
