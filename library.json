@@ -172,6 +172,40 @@
       "kind": "image",
       "character": "ace",
       "slot": "ability"
+    },
+    {
+      "id": "ace-frog",
+      "label": "Frog Serve",
+      "path": "img/library/ace-frog.mp4",
+      "poster": "img/library/ace-frog.jpg",
+      "kind": "video",
+      "character": "ace",
+      "slot": "content"
+    },
+    {
+      "id": "riff-bird",
+      "label": "Bird Blast",
+      "path": "img/library/riff-bird.mp4",
+      "poster": "img/library/riff-bird.jpg",
+      "kind": "video",
+      "character": "riff",
+      "slot": "content"
+    },
+    {
+      "id": "scorch-spider",
+      "label": "Web Burn",
+      "path": "img/library/scorch-spider.mp4",
+      "poster": "img/library/scorch-spider.jpg",
+      "kind": "video",
+      "character": "scorch",
+      "slot": "content"
+    },
+    {
+      "id": "scorch-spider-beam",
+      "label": "Web Burn beam",
+      "path": "img/library/scorch-spider-beam.jpg",
+      "kind": "image",
+      "character": "scorch"
     }
   ]
 }

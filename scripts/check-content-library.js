@@ -94,10 +94,50 @@ gearSeed.forEach((row) => {
 });
 assert((achievements.achievements || []).some((a) => a.id === "test-notebook-holding"), "keep test-notebook-holding");
 assert((achievements.achievements || []).some((a) => a.id === "test-first-serve"), "keep test-first-serve");
+const fightSeed = [
+  { id: "ace-frog", label: "Frog Serve", character: "ace", ach: "test-ace-frog", poster: "img/library/ace-frog.jpg", icon: "tennis" },
+  { id: "riff-bird", label: "Bird Blast", character: "riff", ach: "test-riff-bird", poster: "img/library/riff-bird.jpg", icon: "guitar" },
+  { id: "scorch-spider", label: "Web Burn", character: "scorch", ach: "test-scorch-spider", poster: "img/library/scorch-spider.jpg", icon: "clarinet" }
+];
+fightSeed.forEach((row) => {
+  const item = library.items.find((it) => it.id === row.id);
+  assert(item, row.id + " should be in library.json");
+  assert.strictEqual(item.kind, "video", row.id + " should be a video");
+  assert.strictEqual(item.character, row.character, row.id + " should sit on " + row.character);
+  assert.strictEqual(item.slot, "content", row.id + " should use the content slot");
+  assert.strictEqual(item.path, "img/library/" + row.id + ".mp4", row.id + " clip path");
+  assert.strictEqual(item.poster, row.poster, row.id + " poster");
+  assert(fs.existsSync(path.join(root, item.path)), row.id + " mp4 should already be on disk");
+  assert(fs.existsSync(path.join(root, item.poster)), row.id + " poster should already be on disk");
+  const ach = (achievements.achievements || []).find((a) => a.id === row.ach);
+  assert(ach, row.ach + " should stay in achievements.json");
+  assert(!ach.test, row.ach + " must not ship a test flag");
+  const unlock = ach.rewardUnlock || (ach.reward && typeof ach.reward === "object" ? ach.reward : null);
+  assert(unlock && unlock.id === row.id && unlock.type === "content", row.ach + " should grant content " + row.id);
+  assert.strictEqual(ach.title, row.label, row.ach + " title");
+  assert.strictEqual(ach.incentive, "Unlocks a fight clip", row.ach + " incentive");
+  assert.strictEqual(ach.icon, row.icon, row.ach + " icon");
+  assert.strictEqual(ach.streak && ach.streak.target, 1, row.ach + " streak target");
+  assert(/Parents award this from the desk/i.test(ach.how || ""), row.ach + " how");
+  assert(/does not auto-unlock/i.test(ach.how || ""), row.ach + " should not auto-unlock on load");
+});
+const beam = library.items.find((it) => it.id === "scorch-spider-beam");
+assert(beam && beam.kind === "image" && beam.character === "scorch", "scorch-spider-beam stays extra Scorch library art");
+assert.strictEqual(beam.path, "img/library/scorch-spider-beam.jpg", "beam still path");
+assert(fs.existsSync(path.join(root, beam.path)), "scorch-spider-beam.jpg should already be on disk");
+assert(beam.slot !== "tool" && beam.slot !== "outfit" && beam.slot !== "ability", "beam is not locker or gear");
+["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
+  const clip = library.items.find((item) => item.id === id + "-clip");
+  const poster = library.items.find((item) => item.id === id + "-poster");
+  assert(clip && clip.path === "img/characters/" + id + ".mp4", id + " locker clip path stays put");
+  assert(poster && poster.path === "img/characters/" + id + ".jpg", id + " locker still path stays put");
+});
 const parentHtml = fs.readFileSync(path.join(root, "parent.html"), "utf8");
 assert(/test-angle-finder/.test(parentHtml) && /test-field-kit/.test(parentHtml) && /test-unplugged-strap/.test(parentHtml) && /test-daily-pick/.test(parentHtml), "parent desk fallback should list the four gear awards");
+assert(/test-ace-frog/.test(parentHtml) && /test-riff-bird/.test(parentHtml) && /test-scorch-spider/.test(parentHtml), "parent desk fallback should list the three fight awards");
 assert(/outfit/.test(parentHtml), "parent desk should offer an outfit reward type");
 assert(adminHtml.includes("img/library/angle-finder.png") && adminHtml.includes("img/library/daily-pick.png"), "Admin file:// seed should include gear stills");
+assert(adminHtml.includes("img/library/ace-frog.mp4") && adminHtml.includes("img/library/riff-bird.mp4") && adminHtml.includes("img/library/scorch-spider.mp4"), "Admin file:// seed should include fight clips");
 assert(/Jungle Jam/.test(parentHtml), "parent desk should keep the Jungle Jam product name");
 
 const honk = library.items.find((item) => item.id === "banana-honk");
@@ -416,6 +456,26 @@ gearSeed.forEach((row) => {
 assert.strictEqual(Game.gearLibraryItems(seededLib).length, 6, "Gear group should list the six stills");
 assert(Game.gearThumbHtml(seededLib, "angle-finder").indexOf("img/library/angle-finder.png") >= 0, "loadout thumb should use the Angle Finder png");
 assert(Game.defaultLibrary().items.some((item) => item.id === "angle-finder" && item.slot === "tool"), "file:// default library includes Angle Finder");
+fightSeed.forEach((row) => {
+  assert(Game.defaultLibrary().items.some((item) => item.id === row.id && item.slot === "content" && item.kind === "video"), "file:// default library includes " + row.id);
+});
+assert(Game.defaultLibrary().items.some((item) => item.id === "scorch-spider-beam" && item.kind === "image"), "file:// default library includes the Scorch beam still");
+assert.strictEqual(Game.CONTENT_SLOT, "content", "content slot constant");
+assert(Game.isGatedLibraryItem({ kind: "audio", character: "ace" }), "audio stays gated");
+assert(Game.isGatedLibraryItem({ kind: "link", character: "crew" }), "links stay gated");
+assert(Game.isGatedLibraryItem({ kind: "video", character: "fun" }), "fun clips stay gated");
+assert(!Game.isGatedLibraryItem({ kind: "video", character: "ace" }), "character locker videos stay free");
+assert(Game.isGatedLibraryItem({ kind: "video", character: "ace", slot: "content" }), "content-slot videos are gated");
+fightSeed.forEach((row) => {
+  const item = Game.libraryItem(seededLib, row.id);
+  assert(item && item.slot === "content", row.id + " should keep content slot after normalize");
+  assert(Game.contentLibraryItems(seededLib).some((it) => it.id === row.id), row.id + " should be gated content");
+  assert(!Game.canPlayLibraryItem(item), row.id + " should stay locked until awarded");
+  assert(Game.canPlayLibraryItem(item, true), row.id + " should play in parent preview");
+});
+assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "ace-clip")), "Ace locker clip stays playable");
+assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "scorch-spider-beam")), "beam still is extra library art, not a gated locker replacement");
+assert(!Game.contentLibraryItems(seededLib).some((it) => it.id === "ace-clip"), "locker clips are not gated content");
 
 const pack = {
   currency: achievements.currency,
@@ -456,6 +516,14 @@ assert(awarded.freshContent, "awarding a content streak should unlock content");
 assert(Game.alreadyUnlockedContent("honk"), "content unlock should persist");
 family = awarded.family;
 assert(family.contentUnlocks.honk, "family pack should carry the content unlock");
+fightSeed.forEach((row) => {
+  const next = Game.awardStreak(pack, family, row.ach);
+  assert(next.freshContent, "awarding " + row.ach + " should unlock content");
+  assert(Game.alreadyUnlockedContent(row.id), row.id + " unlock should persist");
+  assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, row.id)), row.id + " should play after award");
+  family = next.family;
+  assert(family.contentUnlocks[row.id], "family pack should carry " + row.id);
+});
 
 const norm = Game.normalizeLibrary(library);
 const exported = Game.exportPack(pack, family, Game.defaultCharacters(), funLib);
@@ -494,7 +562,7 @@ const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=51/.test(weekHtml) && /week\.js\?v=51/.test(weekHtml) && /game\.js\?v=51/.test(weekHtml) && /telemetry\.js\?v=51/.test(weekHtml), "index should cache-bust css/js past main v=50");
+assert(/theme\.css\?v=52/.test(weekHtml) && /week\.js\?v=52/.test(weekHtml) && /game\.js\?v=52/.test(weekHtml) && /telemetry\.js\?v=52/.test(weekHtml), "index should cache-bust css/js past main v=51");
 ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".png")), id + " cutout png should stay on disk");
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".jpg")), id + " locker jpg should stay on disk");
@@ -533,7 +601,7 @@ assert(/id="trophy-order-list"/.test(parentHtml), "parent desk should keep troph
 assert(/theme\.css\?v=/.test(parentHtml) && /parent\.js\?v=/.test(parentHtml), "parent desk should cache-bust css/js");
 assert(crewJs.includes("gearThumbHtml") && crewJs.includes("alreadyUnlockedGear"), "loadout should use real gear stills when unlocked");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 const previewFamily = Game.emptyFamily();
 const auto = Game.maybeAutoPreviewAll(pack, previewFamily);
@@ -542,6 +610,7 @@ assert(Game.alreadyUnlockedCharacter("ace") && Game.alreadyUnlockedCharacter("fu
 assert(Game.alreadyUnlockedCharacter("bennett") && Game.alreadyUnlocked("signin-bennett"), "preview / Unlock all should include Signed in → Bennett");
 assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("unplugged-strap") && Game.alreadyUnlockedGear("first-serve"), "preview should unlock gear");
 assert(Game.alreadyUnlocked("straight-as-3w") && Game.alreadyUnlocked("hidden-banana"), "preview should award the other streaks");
+assert(Game.alreadyUnlockedContent("ace-frog") && Game.alreadyUnlockedContent("riff-bird") && Game.alreadyUnlockedContent("scorch-spider"), "preview / Unlock all should award the fight clips");
 assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "auto-preview should set bw-preview-all");
 assert(!localStorage.getItem("bw-preview-locked"), "auto-preview should not lock rewards");
 const afterAce = Game.revokeAchievement(pack, auto.family, "test-ace-closer");
@@ -551,6 +620,7 @@ assert(!gap.ran, "later boots should gap-fill quietly");
 assert(Game.alreadyUnlockedCharacter("ace"), "gap-fill should restore missing preview crew");
 const locked = Game.revokeAllPreview(pack, gap.family);
 assert(!Game.alreadyUnlockedCharacter("ace") && !Game.alreadyUnlockedGear("angle-finder"), "Lock them back should revoke preview awards");
+assert(!Game.alreadyUnlockedContent("ace-frog") && !Game.alreadyUnlockedContent("riff-bird") && !Game.alreadyUnlockedContent("scorch-spider"), "Lock them back should revoke fight clips");
 assert(!Game.alreadyUnlockedCharacter("bennett") && !Game.alreadyUnlocked("signin-bennett"), "Lock them back should revoke Bennett too");
 assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "lock-back keeps bw-preview-all so preview stays offered");
 assert.strictEqual(localStorage.getItem("bw-preview-locked"), "1", "lock-back sets bw-preview-locked");
@@ -562,7 +632,7 @@ assert(manual.awarded > 0 && Game.alreadyUnlockedCharacter("deuce") && Game.alre
 assert(Game.alreadyUnlockedCharacter("bennett"), "Unlock all should re-award Bennett");
 assert(!localStorage.getItem("bw-preview-locked"), "Unlock all should clear bw-preview-locked");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 let signFamily = Game.emptyFamily();
 const signin = Game.maybeAwardSignIn(pack, signFamily);
@@ -585,14 +655,14 @@ assert(!afterUndo.awarded && !Game.alreadyUnlockedCharacter("bennett"), "sign-in
 const reaward = Game.awardStreak(pack, undone.family, "test-bennett-showup");
 assert(reaward.freshCharacter && Game.alreadyUnlockedCharacter("bennett"), "Meet Bennett TEST can re-award after undo");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 Game.markCharacterUnlocked("bennett");
 const previewAfterBennett = Game.maybeAutoPreviewAll(pack, Game.emptyFamily());
 assert(previewAfterBennett.ran, "Bennett-only unlock should not block auto-preview of the crew");
 assert(Game.alreadyUnlockedCharacter("ace"), "auto-preview still unlocks teammates after Bennett signed in");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 Game.markCharacterUnlocked("bennett");
 localStorage.setItem("bw-preview-all", "1");

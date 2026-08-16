@@ -227,6 +227,39 @@
       "reward": 10,
       "rewardUnlock": { "type": "tool", "id": "daily-pick", "label": "Daily Pick" },
       "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-ace-frog",
+      "title": "Frog Serve",
+      "description": "Ace practiced projectile motion by serving a tennis-ball barrage at a giant jungle frog. Homework, but hoppy.",
+      "how": "Parents award this from the desk. Loading the site does not auto-unlock.",
+      "incentive": "Unlocks a fight clip",
+      "icon": "tennis",
+      "reward": 10,
+      "rewardUnlock": { "type": "content", "id": "ace-frog", "label": "Frog Serve" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-riff-bird",
+      "title": "Bird Blast",
+      "description": "Riff turned a guitar blast into a music-theory quiz for a shocked blue bird. Loud, then louder.",
+      "how": "Parents award this from the desk. Loading the site does not auto-unlock.",
+      "incentive": "Unlocks a fight clip",
+      "icon": "guitar",
+      "reward": 10,
+      "rewardUnlock": { "type": "content", "id": "riff-bird", "label": "Bird Blast" },
+      "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "test-scorch-spider",
+      "title": "Web Burn",
+      "description": "Scorch swung a bass clarinet at a giant spider. Chemistry: combustion. Also: do not lick the web.",
+      "how": "Parents award this from the desk. Loading the site does not auto-unlock.",
+      "incentive": "Unlocks a fight clip",
+      "icon": "clarinet",
+      "reward": 10,
+      "rewardUnlock": { "type": "content", "id": "scorch-spider", "label": "Web Burn" },
+      "streak": { "target": 1, "unit": "time" }
     }
   ]
 }
