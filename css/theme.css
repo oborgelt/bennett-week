@@ -1453,6 +1453,66 @@ body.week-page.in-treehouse .peek-monkey {
   50% { opacity: 1; }
 }
 
+.help-nudge {
+  display: grid;
+  gap: 12px;
+}
+
+.help-work {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: var(--banana);
+}
+
+.help-block {
+  background: #10282a;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.help-block h3 {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.help-block p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-weight: 650;
+}
+
+.help-start {
+  border-color: rgba(198, 224, 58, 0.45);
+  background: rgba(198, 224, 58, 0.08);
+}
+
+.help-hint {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.help-next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.help-next .btn {
+  margin-top: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .help-tabs {
   display: flex;
   flex-wrap: wrap;

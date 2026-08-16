@@ -15,7 +15,7 @@ Orin’s DNA: **high learning + high silliness**. Story, unlocks, and school wor
 5. Tap **🏆** to walk into the treehouse. The still is the room — look around, tap a glowing spot to walk up. Earned trophies sit in the scene; tap one for a small plaque. Empty room is still the treehouse. Edit / Undo / drag-reorder live on the **Parent desk**, not in Bennett’s room. Open **Characters** (HUD **Crew** on a phone) for teammates. Locked slots are silhouettes — no talent spoilers. Bennett (his own avatar) unlocks the first time he opens the lobby or Characters. When Ace / Riff / Scorch / Deuce / Fuzz is awarded, play that locker clip. After 3 teammate unlocks, **Story** appears on the HUD (not just a toast). Bennett does not count toward that 3.
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
-8. **A little help** on due / start-this work: notecards, a short explanation, optional quiz, optional proofread, **Ask AI**, and Khan Academy links. Additive help — not a finished assignment.
+8. **A little help** on due / start-this work: what the assignment is, one first move, **Talk it through** (Ask AI), Khan if it maps, and **Check a draft** only on writing-ish work. Additive help — not a finished assignment.
 9. Open **Progress** (HUD **Dash** on a phone) for Bennett’s activity and class grades. Same page is fine for parents — it is not a secret desk.
 
 **Undo / edit / share:** On a crossed-out card, tap the small **Undo**. Same **This week / Progress / Characters / Parent desk** chips on every screen. Parents **Export family pack** / **Import JSON** so Mom and Orin stay in sync.
@@ -124,10 +124,10 @@ python3 serve.py
 
 Then open http://127.0.0.1:8765/
 
-- `POST /api/tutor` — notecards / explain / quiz / proofread. Tutor, not ghostwriter.
+- `POST /api/tutor` — nudge (explain + first move) / optional proofread. Tutor, not ghostwriter.
 - `POST /api/ask` — Socratic mentor. Questions and hints only.
 
-If the API is missing (plain Pages, `file://`, or no key), the hub still works tonight with clearly labeled **TEST** notecards and a **TEST** mentor.
+If the API is missing (plain Pages, `file://`, or no key), the hub still works tonight from the assignment card and a fallback mentor.
 
 Optional: `PORT`, `ANTHROPIC_MODEL` (default `claude-sonnet-4-0`).
 

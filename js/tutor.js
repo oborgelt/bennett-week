@@ -11,6 +11,7 @@
           { front: "How long should it feel?", back: "Short. This is a 5-point names video, not a movie." },
           { front: "A solid first step", back: "Write the one awesome thing first, then hit record once." }
         ],
+        start: "Write the one awesome thing first, then hit record once.",
         quiz: [
           { q: "How many times do you say your full name?", a: "Twice." },
           { q: "What else belongs in the video?", a: "One thing you are awesome at." },
@@ -26,6 +27,7 @@
           { front: "Where did this start?", back: "In class on 8/17 — pick up from that work." },
           { front: "A first move tonight", back: "Find the pages, count unfinished panels, finish one strip." }
         ],
+        start: "Find the pages, count unfinished panels, finish one strip.",
         quiz: [
           { q: "Is this a brand-new comic?", a: "No — finish the summer strips you started." },
           { q: "What should you check in each panel?", a: "Drawing, words, and that the joke or story is clear." },
@@ -41,6 +43,7 @@
           { front: "Why index cards?", back: "They become flash cards later — good for a first test." },
           { front: "A first move tonight", back: "Put the notebook and a pack of cards by the backpack." }
         ],
+        start: "Put the notebook and a pack of cards by the backpack.",
         quiz: [
           { q: "Notebook type?", a: "Spiral or composition." },
           { q: "About how many index cards?", a: "100." },
@@ -55,6 +58,7 @@
         { front: "What does the note say?", back: n || "Check the week card for the teacher note." },
         { front: "How to start?", back: "Do one small first step tonight. Do not finish it all in one sitting unless it is tiny." }
       ],
+      start: "Do one small first step tonight. Do not finish it all in one sitting unless it is tiny.",
       quiz: [
         { q: "What is this asking for?", a: t },
         { q: "What extra detail is on the card?", a: n || "No extra note — use the title." },
@@ -65,18 +69,20 @@
 
   function testHelp(payload) {
     const base = cardsFrom(payload.title, payload.note);
-    const mode = payload.mode || "notecards";
+    const mode = payload.mode || "nudge";
     const out = { live: false, source: "offline", mode };
     if (mode === "explain") out.explain = base.explain;
     else if (mode === "quiz") out.quiz = base.quiz;
     else if (mode === "proofread") {
       out.feedback = [
-        "Offline help — run serve.py with ANTHROPIC_API_KEY for live notes.",
         "Read the draft out loud. Fix names, dates, and anything you would not say.",
         "Do not let a helper write the assignment for you."
       ];
-    } else {
+    } else if (mode === "notecards") {
       out.cards = base.cards;
+    } else {
+      out.explain = base.explain;
+      out.start = base.start;
     }
     return out;
   }

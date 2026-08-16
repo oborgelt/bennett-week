@@ -26,7 +26,7 @@ ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 SYSTEM = """You are a short, kid-appropriate study tutor for Bennett, a high-school sophomore.
 You help him start and understand the work in front of him.
 You are not a ghostwriter: do not write the assignment, the video script, the comic, or a finished draft.
-Keep help additive — a nudge, a few notecards, a concept check — tied to the subject at hand.
+Keep help additive — a first move and a short explanation — tied to the subject at hand.
 Prefer flavor from known past assignments when they match (English 10 names video, comic strips, spiral notebook / index cards).
 Do not invent a semester of homework.
 Return ONLY compact JSON matching the requested shape. No markdown fences.
@@ -42,25 +42,32 @@ Do not invent a semester of homework. Do not write the work for him.
 
 
 def tutor_payload(body: dict) -> dict:
-    mode = (body.get("mode") or "notecards").strip()
+    mode = (body.get("mode") or "nudge").strip()
     title = (body.get("title") or "this assignment").strip()
     note = (body.get("note") or "").strip()
     draft = (body.get("draft") or "").strip()
-    if mode == "explain":
-        shape = '{"explain":"3-6 short sentences"}'
-        ask = f"Give a short tutor explanation of the concept / task. Shape: {shape}"
-    elif mode == "quiz":
-        shape = '{"quiz":[{"q":"...","a":"..."},{"q":"...","a":"..."},{"q":"...","a":"..."}]}'
-        ask = f"Ask 3 short check-for-understanding questions (not the homework itself). Shape: {shape}"
-    elif mode == "proofread":
+    if mode == "proofread":
         shape = '{"feedback":["one nudge","another nudge"]}'
         ask = (
             "Proofread the student's draft. Do not rewrite it. "
             f"Give 2-4 short, kind notes. Shape: {shape}\n\nDraft:\n{draft or '(empty)'}"
         )
+    elif mode in ("notecards", "quiz", "explain"):
+        if mode == "explain":
+            shape = '{"explain":"3-6 short sentences"}'
+            ask = f"Give a short tutor explanation of the concept / task. Shape: {shape}"
+        elif mode == "quiz":
+            shape = '{"quiz":[{"q":"...","a":"..."},{"q":"...","a":"..."},{"q":"...","a":"..."}]}'
+            ask = f"Ask 3 short check-for-understanding questions (not the homework itself). Shape: {shape}"
+        else:
+            shape = '{"cards":[{"front":"...","back":"..."},{"front":"...","back":"..."},{"front":"...","back":"..."}]}'
+            ask = f"Make 3 or 4 flip notecards on the topic. Shape: {shape}"
     else:
-        shape = '{"cards":[{"front":"...","back":"..."},{"front":"...","back":"..."},{"front":"...","back":"..."}]}'
-        ask = f"Make 3 or 4 flip notecards on the topic. Shape: {shape}"
+        shape = '{"explain":"3-5 short sentences","start":"one first move tonight"}'
+        ask = (
+            "Help him get unstuck. Explain what the assignment actually is, then one first move "
+            f"he can do tonight. Do not write the work. Shape: {shape}"
+        )
     user = (
         f"Assignment title: {title}\n"
         f"Teacher note: {note or '(none)'}\n"
@@ -210,7 +217,7 @@ def main():
     if os.environ.get("ANTHROPIC_API_KEY", "").strip():
         print(f"Live tutor on POST /api/tutor and POST /api/ask ({MODEL})")
     else:
-        print("No ANTHROPIC_API_KEY — the page will use labeled TEST notecards and TEST Ask AI.")
+        print("No ANTHROPIC_API_KEY — the page will use assignment-card help and a fallback mentor.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

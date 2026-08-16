@@ -1313,83 +1313,93 @@
     document.getElementById("ask-text").focus();
   }
 
-  function renderHelpBody(work, data, mode) {
-    const banner = data.live
-      ? `<p class="help-banner live">Live tutor help — a nudge, not a finished assignment.</p>`
-      : `<p class="help-banner">Offline help from the assignment title and note. Run serve.py with ANTHROPIC_API_KEY for live help.</p>`;
-    const tabs = `
-      <div class="help-tabs">
-        <button type="button" class="mini" data-mode="notecards">Notecards</button>
-        <button type="button" class="mini" data-mode="explain">Explain</button>
-        <button type="button" class="mini" data-mode="quiz">Quiz me</button>
-        <button type="button" class="mini" data-mode="proofread">Proofread</button>
-      </div>`;
+  function looksLikeWriting(work) {
+    const blob = String((work && work.title) || "") + " " + String((work && work.note) || "");
+    return /essay|paragraph|draft|write|paper|proof|story|comic/i.test(blob);
+  }
+
+  function helpAskHref(work) {
+    const title = (work && work.title) || "";
+    const classId = Game.classIdForWork(work);
+    let href = "ask.html?title=" + encodeURIComponent(title);
+    if (classId) href += "&class=" + encodeURIComponent(classId);
+    return href;
+  }
+
+  function renderHelpBody(work, data, mode, draft) {
+    const title = work.title || "This assignment";
+    const start = data.start || ((data.cards || [])[2] && data.cards[2].back) || "Do one small first step tonight.";
+    const classId = Game.classIdForWork(work);
+    const khan = Game.khanStripHtml(work.title || "", classId ? { classId } : undefined);
+    const askHref = helpAskHref(work);
     let main = "";
-    if (mode === "explain") {
-      main = `<div class="explain-block">${Game.esc(data.explain || "No explanation yet.")}</div>`;
-    } else if (mode === "quiz") {
-      main = (data.quiz || []).map((q, i) => `
-        <div class="quiz-item">
-          <p><strong>${i + 1}.</strong> ${Game.esc(q.q)}</p>
-          <button type="button" class="mini" data-reveal="${i}">Show a hint</button>
-          <p class="empty" hidden data-ans="${i}">${Game.esc(q.a)}</p>
-        </div>`).join("") || `<p class="empty">No quiz yet.</p>`;
-    } else if (mode === "proofread") {
+    if (mode === "proofread") {
       main = `
-        <textarea class="proof-box" id="proof-draft" maxlength="2000" placeholder="Paste a draft. The tutor will nudge, not rewrite."></textarea>
-        <button type="button" class="btn primary" id="proof-go">Proofread</button>
-        <div id="proof-out">${(data.feedback || []).map((f) => `<div class="quiz-item">${Game.esc(f)}</div>`).join("")}</div>`;
+        <section class="help-block">
+          <h3>Check a draft</h3>
+          <p class="help-hint">A nudge, not a rewrite.</p>
+          <textarea class="proof-box" id="proof-draft" maxlength="2000" placeholder="Paste what you have.">${Game.esc(draft || "")}</textarea>
+          <button type="button" class="btn primary" id="proof-go">Look at this</button>
+          <div id="proof-out">${(data.feedback || []).map((f) => `<div class="quiz-item">${Game.esc(f)}</div>`).join("")}</div>
+        </section>
+        <button type="button" class="mini" id="help-back">Back to the first move</button>`;
     } else {
-      main = `<div class="flip-row">${(data.cards || []).map((c, i) => `
-        <button type="button" class="flip" data-flip="${i}" aria-label="Flip notecard">
-          <span class="flip-inner">
-            <span class="flip-face front">${Game.esc(c.front)}</span>
-            <span class="flip-face back">${Game.esc(c.back)}</span>
-          </span>
-        </button>`).join("")}</div>`;
+      main = `
+        <section class="help-block">
+          <h3>Here's the deal</h3>
+          <p>${Game.esc(data.explain || "Read the title and do one small start.")}</p>
+        </section>
+        <section class="help-block help-start">
+          <h3>Start here</h3>
+          <p>${Game.esc(start)}</p>
+        </section>`;
     }
-    const khan = Game.khanStripHtml(work.title || "");
-    const askLink = `<p class="ask-help-link"><a href="ask.html?title=${encodeURIComponent(work.title || "")}">Ask AI — Socratic mentor</a></p>`;
-    document.getElementById("sheet-body").innerHTML = banner + tabs + main + askLink + khan;
-    document.getElementById("sheet-body").querySelectorAll("[data-mode]").forEach((b) => {
-      b.addEventListener("click", () => loadHelp(work, b.dataset.mode));
-    });
-    document.getElementById("sheet-body").querySelectorAll("[data-flip]").forEach((b) => {
-      b.addEventListener("click", () => b.classList.toggle("on"));
-    });
-    document.getElementById("sheet-body").querySelectorAll("[data-reveal]").forEach((b) => {
-      b.addEventListener("click", () => {
-        const ans = document.getElementById("sheet-body").querySelector(`[data-ans="${b.dataset.reveal}"]`);
-        if (ans) ans.hidden = !ans.hidden;
-      });
-    });
+    const extras = mode === "proofread"
+      ? ""
+      : `
+        <div class="help-next">
+          <a class="btn primary" href="${Game.esc(askHref)}">Talk it through</a>
+          ${looksLikeWriting(work) ? `<button type="button" class="btn" id="help-draft">Check a draft</button>` : ""}
+        </div>`;
+    document.getElementById("sheet-body").innerHTML = `
+      <div class="help-nudge">
+        <p class="help-work">${Game.esc(title)}</p>
+        ${main}
+        ${extras}
+        ${khan}
+      </div>`;
+    const back = document.getElementById("help-back");
+    if (back) back.addEventListener("click", () => loadHelp(work, "nudge"));
+    const draftBtn = document.getElementById("help-draft");
+    if (draftBtn) {
+      draftBtn.addEventListener("click", () => loadHelp(work, "proofread", ""));
+    }
     const proof = document.getElementById("proof-go");
     if (proof) {
       proof.addEventListener("click", async () => {
-        const draft = document.getElementById("proof-draft").value;
-        await loadHelp(work, "proofread", draft);
+        const text = document.getElementById("proof-draft").value;
+        await loadHelp(work, "proofread", text);
       });
     }
   }
 
   async function loadHelp(work, mode, draft) {
-    document.getElementById("sheet-body").innerHTML = `<p class="empty">Thinking…</p>`;
+    document.getElementById("sheet-body").innerHTML = `<p class="empty">Looking at the assignment…</p>`;
     const data = await Tutor.request({
-      mode,
+      mode: mode || "nudge",
       title: work.title,
       note: work.note || "",
       draft: draft || ""
     });
-    renderHelpBody(work, data, mode);
+    renderHelpBody(work, data, mode || "nudge", draft || "");
   }
 
   function openHelp(workId) {
     const work = findWork(workId);
     if (!work) return;
     Game.recordHelp(workId);
-    openSheet("A little help", `<p class="empty">Thinking…</p>`);
-    document.getElementById("sheet-title").textContent = "A little help";
-    loadHelp(work, "notecards");
+    openSheet("A little help", `<p class="empty">Looking at the assignment…</p>`);
+    loadHelp(work, "nudge");
   }
 
   function driftNotes() {

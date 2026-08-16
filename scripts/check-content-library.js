@@ -146,6 +146,15 @@ const ctx = vm.createContext({
 vm.runInContext(fs.readFileSync(path.join(root, "js/game.js"), "utf8"), ctx);
 const Game = ctx.window.Game;
 assert(Game, "Game failed to load");
+vm.runInContext(fs.readFileSync(path.join(root, "js/tutor.js"), "utf8"), ctx);
+const Tutor = ctx.window.Tutor;
+assert(Tutor, "Tutor failed to load");
+const namesHelp = Tutor.testHelp({ title: "English 10: Help me learn your names!", mode: "nudge" });
+assert(namesHelp.explain && namesHelp.start, "nudge help should explain and give a first move");
+assert(!namesHelp.cards, "nudge help should not dump flip cards");
+assert(/awesome thing/i.test(namesHelp.start), "names help should start with the awesome-thing move");
+const notebookHelp = Tutor.cardsFrom("English 10: Bring spiral notebook");
+assert(notebookHelp.start && /backpack/i.test(notebookHelp.start), "notebook help should be a pack-it move");
 
 const khanChem = Game.khanLinksFor("Chemistry homework");
 assert(khanChem.some((k) => k.url === "https://www.khanacademy.org/science/hs-chemistry"), "chem titles should link HS Chemistry");
@@ -447,6 +456,9 @@ assert(/Unlock all rewards \(preview\)/.test(parentHtml), "parent desk should of
 assert(/Lock them back/.test(parentHtml), "parent desk should offer Lock them back");
 assert(/preview-unlock-all/.test(parentHtml) && /preview-lock-back/.test(parentHtml), "preview buttons need ids");
 const weekJs = fs.readFileSync(path.join(root, "js/week.js"), "utf8");
+assert(/Here's the deal/.test(weekJs) && /Start here/.test(weekJs), "A little help should be deal + first move");
+assert(!/data-mode="notecards"/.test(weekJs), "A little help should not open on notecard tabs");
+assert(/Talk it through/.test(weekJs), "A little help should offer Talk it through, not a study-tool menu");
 const crewJs = fs.readFileSync(path.join(root, "js/characters.js"), "utf8");
 const parentJs = fs.readFileSync(path.join(root, "js/parent.js"), "utf8");
 assert(/bennett:\s*\{/.test(weekJs), "trophy window slots should include bennett");
