@@ -29,6 +29,8 @@
   const CONTENT_SLOT = "content";
   const SOUND_CUES = [
     { id: "undo", label: "Undo is clicked" },
+    { id: "work-start", label: "I started this is clicked" },
+    { id: "work-done", label: "Done is clicked" },
     { id: "egg-win", label: "Egg game — 41 eggs win" },
     { id: "egg-closed", label: "Egg game — company shutdown" },
     { id: "egg-end", label: "Egg game — closed by the company" },
@@ -2197,6 +2199,18 @@
     return resolveCuePlay(family, lib, cueId).played;
   }
 
+  function workActionCueIds(workId, kind) {
+    const id = String(workId || "").trim();
+    if (kind === "done") return { specific: "work-done:" + id, fallback: "work-done" };
+    return { specific: "work:" + id, fallback: "work-start" };
+  }
+
+  function playWorkActionCue(family, lib, workId, kind) {
+    const ids = workActionCueIds(workId, kind);
+    if (playSoundCue(family, lib, ids.specific)) return true;
+    return playSoundCue(family, lib, ids.fallback);
+  }
+
   function isUndoControl(el) {
     if (!el || typeof el.closest !== "function") return false;
     const btn = el.closest("button, [role='button']");
@@ -2247,7 +2261,10 @@
   function soundCueRows(week) {
     const rows = SOUND_CUES.slice();
     ((week && week.work) || []).forEach((w) => {
-      if (w && w.id) rows.push({ id: "work:" + w.id, label: "Start · " + w.title });
+      if (w && w.id) {
+        rows.push({ id: "work:" + w.id, label: "I started this · " + w.title });
+        rows.push({ id: "work-done:" + w.id, label: "Done · " + w.title });
+      }
     });
     ((week && week.events) || []).forEach((e) => {
       if (e && e.id) rows.push({ id: "event:" + e.id, label: "Event · " + e.title });
@@ -3635,6 +3652,9 @@
     setSoundCue,
     resolveCuePlay,
     playSoundCue,
+    workActionCueIds,
+    playWorkActionCue,
+    soundCueRows,
     isUndoControl,
     playUndoSound,
     bindUndoCue,

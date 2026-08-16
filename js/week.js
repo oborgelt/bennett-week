@@ -504,9 +504,16 @@
 
     track.querySelectorAll("[data-act]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        Game.touchWork(btn.dataset.id, btn.dataset.act);
-        if (btn.dataset.act === "start") {
-          Game.playSoundCue(family, library, "work:" + btn.dataset.id);
+        const id = btn.dataset.id;
+        const act = btn.dataset.act;
+        const before = Game.workState(id);
+        const undo = btn.classList.contains("undo-mini");
+        Game.touchWork(id, act);
+        if (!undo && act === "started" && !before.started) {
+          Game.playWorkActionCue(family, library, id, "started");
+        }
+        if (!undo && act === "done" && !before.done) {
+          Game.playWorkActionCue(family, library, id, "done");
         }
         renderCards();
         goTo(dayIndex, true);

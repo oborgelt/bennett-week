@@ -364,7 +364,20 @@ const funLib = Game.normalizeLibrary({
   ]
 });
 assert(Game.emptyFamily().soundCues && typeof Game.emptyFamily().soundCues === "object");
-assert(Game.SOUND_CUES.some((c) => c.id === "undo"), "undo cue should exist");
+assert(Game.SOUND_CUES.some((c) => c.id === "work-start"), "I started this cue should exist");
+assert(Game.SOUND_CUES.some((c) => c.id === "work-done"), "Done cue should exist");
+assert.strictEqual(Game.workActionCueIds("a1", "started").specific, "work:a1");
+assert.strictEqual(Game.workActionCueIds("a1", "started").fallback, "work-start");
+assert.strictEqual(Game.workActionCueIds("a1", "done").specific, "work-done:a1");
+assert.strictEqual(Game.workActionCueIds("a1", "done").fallback, "work-done");
+const startRows = Game.soundCueRows({ work: [{ id: "a1", title: "English 10: Finish summer comic strips" }], events: [] });
+assert(startRows.some((row) => row.id === "work:a1" && /I started this/.test(row.label)), "assignment start row should match the week-card button");
+assert(startRows.some((row) => row.id === "work-done:a1" && /^Done · /.test(row.label)), "assignment done row should exist");
+const doneCue = Game.setSoundCue(Game.emptyFamily(), "work-done", "honk");
+assert(Game.playWorkActionCue(doneCue, funLib, "a1", "done"), "Done is clicked should play when marking work complete");
+const startCue = Game.setSoundCue(Game.emptyFamily(), "work:a1", "honk");
+assert(Game.playWorkActionCue(startCue, funLib, "a1", "started"), "assignment Start clip should play on I started this");
+assert(!Game.playWorkActionCue(startCue, funLib, "a1", "done"), "a Start clip must not play on Done");
 assert(Game.SOUND_CUES[0].id === "undo", "Undo should be first in the Admin moment list");
 assert(Game.isUndoControl({
   classList: { contains(name) { return name === "undo-mini"; } },
@@ -602,6 +615,8 @@ assert(/Unlock all rewards \(preview\)/.test(parentHtml), "parent desk should of
 assert(/Lock them back/.test(parentHtml), "parent desk should offer Lock them back");
 assert(/preview-unlock-all/.test(parentHtml) && /preview-lock-back/.test(parentHtml), "preview buttons need ids");
 const weekJs = fs.readFileSync(path.join(root, "js/week.js"), "utf8");
+assert(/playWorkActionCue/.test(weekJs) && /act === "started"/.test(weekJs) && /act === "done"/.test(weekJs), "week cards should play start and done cues");
+assert(!/dataset\.act === "start"/.test(weekJs), "start sound must not listen for data-act=start (the button is started)");
 assert(/Here's the deal/.test(weekJs) && /Start here/.test(weekJs), "A little help should be deal + first move");
 assert(!/data-mode="notecards"/.test(weekJs), "A little help should not open on notecard tabs");
 assert(/Talk it through/.test(weekJs), "A little help should offer Talk it through, not a study-tool menu");
