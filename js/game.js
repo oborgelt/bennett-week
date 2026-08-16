@@ -27,6 +27,7 @@
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
   const GEAR_SLOTS = ["tool", "weapon", "ability", "outfit"];
   const SOUND_CUES = [
+    { id: "undo", label: "Undo is clicked" },
     { id: "egg-win", label: "Egg game — 41 eggs win" },
     { id: "egg-closed", label: "Egg game — company shutdown" },
     { id: "egg-end", label: "Egg game — closed by the company" },
@@ -2115,6 +2116,38 @@
     return resolveCuePlay(family, lib, cueId).played;
   }
 
+  function isUndoControl(el) {
+    if (!el || typeof el.closest !== "function") return false;
+    const btn = el.closest("button, [role='button']");
+    if (!btn) return false;
+    if (btn.classList && btn.classList.contains("undo-mini")) return true;
+    if (btn.getAttribute("data-undo-trophy") || btn.getAttribute("data-revoke")) return true;
+    const label = String(btn.getAttribute("aria-label") || btn.textContent || "").replace(/\s+/g, " ").trim();
+    return /^undo\b/i.test(label);
+  }
+
+  async function playUndoSound() {
+    try {
+      let family = getFamilyDraft();
+      if (!family) family = await loadFamily();
+      let library = getMomLibrary();
+      if (!library) library = await loadLibrary();
+      await hydrateLibraryBlobs(library);
+      return playSoundCue(family, library, "undo");
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function bindUndoCue() {
+    if (!global.document || !document.addEventListener || document.documentElement.getAttribute("data-undo-cue") === "on") return;
+    document.documentElement.setAttribute("data-undo-cue", "on");
+    document.addEventListener("click", (e) => {
+      if (!isUndoControl(e.target)) return;
+      playUndoSound();
+    }, true);
+  }
+
   function audioCueOptions(lib, selected) {
     const items = audioLibraryItems(lib).slice().sort((a, b) =>
       String(a.label || "").localeCompare(String(b.label || ""), undefined, { sensitivity: "base" })
@@ -3471,6 +3504,9 @@
     setSoundCue,
     resolveCuePlay,
     playSoundCue,
+    isUndoControl,
+    playUndoSound,
+    bindUndoCue,
     bindSoundCues,
     playSynth,
     playContentReward,
@@ -3531,6 +3567,13 @@
     el.title = "Build " + meta.build + (when ? " · last modified " + when : "");
   }
 
-  if (document.body) paintBuild();
-  else document.addEventListener("DOMContentLoaded", paintBuild);
+  if (document.body) {
+    paintBuild();
+    bindUndoCue();
+  } else {
+    document.addEventListener("DOMContentLoaded", () => {
+      paintBuild();
+      bindUndoCue();
+    });
+  }
 })(window);

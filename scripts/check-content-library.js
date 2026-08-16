@@ -304,6 +304,26 @@ const funLib = Game.normalizeLibrary({
   ]
 });
 assert(Game.emptyFamily().soundCues && typeof Game.emptyFamily().soundCues === "object");
+assert(Game.SOUND_CUES.some((c) => c.id === "undo"), "undo cue should exist");
+assert(Game.SOUND_CUES[0].id === "undo", "Undo should be first in the Admin moment list");
+assert(Game.isUndoControl({
+  classList: { contains(name) { return name === "undo-mini"; } },
+  getAttribute() { return ""; },
+  textContent: "Undo",
+  closest() { return this; }
+}), "started/done Undo should count");
+assert(Game.isUndoControl({
+  classList: { contains() { return false; } },
+  getAttribute(name) { return name === "data-revoke" ? "test-ace" : ""; },
+  textContent: "Undo award",
+  closest() { return this; }
+}), "Undo award should count");
+assert(!Game.isUndoControl({
+  classList: { contains() { return false; } },
+  getAttribute() { return null; },
+  textContent: "I started this",
+  closest() { return this; }
+}), "Started should not play the undo cue");
 assert(Game.SOUND_CUES.some((c) => c.id === "egg-end"), "egg-end cue should exist");
 assert(Game.SOUND_CUES.some((c) => c.id === "egg-win"), "egg-win cue should exist");
 assert(Game.SOUND_CUES.some((c) => c.id === "egg-closed"), "egg-closed cue should exist");
