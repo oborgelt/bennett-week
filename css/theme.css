@@ -1059,10 +1059,10 @@ body.week-page.in-treehouse .peek-monkey {
   padding: 0;
   border: 0;
   background: transparent;
-  cursor: pointer;
+  cursor: default;
   appearance: none;
   touch-action: none;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .trophy-hotspot::before {
@@ -1262,6 +1262,79 @@ body.week-page.in-treehouse .peek-monkey {
 
 .trophy-room.is-zoomed .trophy-close .trophy-look {
   transform: translate(-50%, -50%) scale(1);
+}
+
+.trophy-walkup {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.trophy-walkup[hidden],
+.trophy-room.is-zoomed .trophy-walkup {
+  display: none;
+}
+
+.trophy-lantern {
+  position: relative;
+  pointer-events: auto;
+  flex: 1 1 4.5rem;
+  max-width: 7.6rem;
+  min-width: 4.4rem;
+  min-height: var(--tap);
+  padding: 10px 10px 11px;
+  border: 1px solid #e0b45a;
+  border-bottom-width: 3px;
+  border-radius: 3px 3px 9px 9px;
+  background:
+    linear-gradient(180deg, #8d5c2e 0%, #5a3816 52%, #3a230f 100%);
+  color: #ffe7b0;
+  font-size: 0.84rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 230, 170, 0.3);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.trophy-lantern::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -7px;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%);
+  border: 2px solid #d4a84a;
+  border-radius: 50%;
+  background: rgba(18, 10, 4, 0.55);
+  box-shadow: 0 0 0 1px rgba(80, 48, 16, 0.6);
+  pointer-events: none;
+}
+
+.trophy-lantern:hover,
+.trophy-lantern:focus-visible {
+  color: #fff6d4;
+  border-color: #f3d27a;
+  filter: brightness(1.08);
+}
+
+.trophy-lantern:focus-visible {
+  outline: 2px solid rgba(255, 220, 140, 0.8);
+  outline-offset: 3px;
 }
 
 .trophy-leave {
@@ -2068,6 +2141,7 @@ body:has(.sheet.open) .clarinet {
 
 @media (max-height: 640px) {
   .trophy-whisper { font-size: 0.6rem; }
+  .trophy-lantern { font-size: 0.74rem; padding: 8px 8px 9px; }
 }
 
 /* FEED EGGS — ITYSL */

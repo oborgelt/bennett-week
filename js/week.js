@@ -845,6 +845,11 @@
       else room.style.removeProperty("--zoom-origin");
     }
     if (close) close.setAttribute("aria-hidden", trophyZone ? "false" : "true");
+    const walkup = document.getElementById("trophy-walkup");
+    if (walkup) {
+      walkup.hidden = !!trophyZone;
+      walkup.setAttribute("aria-hidden", trophyZone ? "true" : "false");
+    }
     applyTrophyLook();
   }
 
@@ -854,16 +859,10 @@
     host.innerHTML = TROPHY_ZONE_ORDER.map((id) => {
       const zone = TROPHY_ZONES[id];
       const loot = trophiesForZone(id, earned).length > 0;
-      return `<button type="button" class="trophy-hotspot${loot ? " has-loot" : ""}" data-zone="${id}" style="${boxStyle(zone.hot)}" aria-label="Walk up to ${Game.esc(zone.label)}">
+      return `<span class="trophy-hotspot${loot ? " has-loot" : ""}" data-zone="${id}" style="${boxStyle(zone.hot)}" aria-hidden="true">
         <span class="trophy-whisper">${Game.esc(zone.label)}</span>
-      </button>`;
+      </span>`;
     }).join("");
-    host.onclick = (e) => {
-      const btn = e.target.closest("[data-zone]") || hotspotFromEvent(e);
-      if (!btn) return;
-      e.stopPropagation();
-      enterTrophyZone(btn.dataset.zone);
-    };
   }
 
   function renderTrophySlots(earned) {
@@ -913,31 +912,21 @@
     renderTrophySlots(orderedTrophies());
   }
 
-  function hotspotFromEvent(e) {
-    if (trophyZone || !e) return null;
-    const x = e.clientX;
-    const y = e.clientY;
-    const fromTarget = e.target && e.target.closest ? e.target.closest(".trophy-hotspot") : null;
-    if (fromTarget) return fromTarget;
-    const under = typeof document.elementFromPoint === "function" && Number.isFinite(x) && Number.isFinite(y)
-      ? document.elementFromPoint(x, y)
-      : null;
-    const fromPoint = under && under.closest ? under.closest(".trophy-hotspot") : null;
-    if (fromPoint) return fromPoint;
-    let best = null;
-    let bestDist = 56;
-    document.querySelectorAll("#trophy-hotspots .trophy-hotspot").forEach((el) => {
-      const r = el.getBoundingClientRect();
-      if (!r.width || !r.height) return;
-      const dx = x < r.left ? r.left - x : (x > r.right ? x - r.right : 0);
-      const dy = y < r.top ? r.top - y : (y > r.bottom ? y - r.bottom : 0);
-      const dist = Math.hypot(dx, dy);
-      if (dist < bestDist) {
-        bestDist = dist;
-        best = el;
-      }
-    });
-    return best;
+  function zoneFromStagePoint(clientX, clientY) {
+    const stage = document.getElementById("trophy-stage");
+    if (!stage) return "";
+    const r = stage.getBoundingClientRect();
+    if (!r.width || !r.height) return "";
+    const x = (clientX - r.left) / r.width;
+    const y = (clientY - r.top) / r.height;
+    if (x < 0 || x > 1 || y < 0 || y > 1) return "";
+    if (x < 0.28) return "window";
+    if (x >= 0.78) return "lockers";
+    if (x < 0.55 && y < 0.5) return "cubbies";
+    if (x >= 0.28 && x < 0.62 && y >= 0.42) return "pedestal";
+    if (x >= 0.55 && x < 0.78) return "pegboard";
+    if (x >= 0.28 && x < 0.62) return "pedestal";
+    return "";
   }
 
   function enterTrophyZone(id) {
@@ -1394,8 +1383,21 @@
       e.stopPropagation();
       closeShelf();
     });
+    const walkup = document.getElementById("trophy-walkup");
+    function walkUpFromControl(e) {
+      const btn = e.target.closest("[data-zone]");
+      if (!btn || !walkup || !walkup.contains(btn)) return;
+      if (trophyDrag && trophyDrag.moved) return;
+      e.preventDefault();
+      e.stopPropagation();
+      enterTrophyZone(btn.dataset.zone);
+    }
+    if (walkup) {
+      walkup.addEventListener("pointerup", walkUpFromControl);
+      walkup.addEventListener("click", walkUpFromControl);
+    }
     stage.addEventListener("pointerdown", (e) => {
-      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque")) return;
+      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque") || e.target.closest(".trophy-walkup")) return;
       skipTrophyClick = false;
       trophyDrag = {
         id: e.pointerId,
@@ -1403,15 +1405,15 @@
         y: e.clientY,
         panX: currentTrophyLook().panX,
         panY: currentTrophyLook().panY,
-        moved: false
+        moved: false,
+        zoneAtStart: trophyZone
       };
-      try { stage.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     });
-    stage.addEventListener("pointermove", (e) => {
+    const onStageMove = (e) => {
       if (!trophyDrag || trophyDrag.id !== e.pointerId) return;
       const dx = e.clientX - trophyDrag.x;
       const dy = e.clientY - trophyDrag.y;
-      if (Math.abs(dx) <= 8 && Math.abs(dy) <= 8) return;
+      if (Math.hypot(dx, dy) < 12 && !trophyDrag.moved) return;
       trophyDrag.moved = true;
       skipTrophyClick = true;
       stage.classList.add("is-dragging");
@@ -1421,38 +1423,38 @@
       look.mouseX = 0;
       look.mouseY = 0;
       applyTrophyLook();
-    });
-    const endDrag = (e) => {
+    };
+    const endStageDrag = (e) => {
       if (!trophyDrag || (e && trophyDrag.id !== e.pointerId)) return;
       const drag = trophyDrag;
       trophyDrag = null;
       stage.classList.remove("is-dragging");
-      if (!drag.moved) {
-        const btn = hotspotFromEvent(e);
-        if (btn) {
-          enterTrophyZone(btn.dataset.zone);
-          skipTrophyClick = true;
+      if (drag.moved) {
+        if (drag.zoneAtStart) {
+          const dy = (e.clientY || drag.y) - drag.y;
+          const dx = (e.clientX || drag.x) - drag.x;
+          if (dy > 80 && Math.abs(dy) > Math.abs(dx) * 1.2) leaveTrophyZone();
         }
         return;
       }
-      if (trophyZone) {
-        const dy = (e.clientY || drag.y) - drag.y;
-        const dx = (e.clientX || drag.x) - drag.x;
-        if (dy > 80 && Math.abs(dy) > Math.abs(dx) * 1.2) leaveTrophyZone();
-      }
-    };
-    stage.addEventListener("pointerup", endDrag);
-    stage.addEventListener("pointercancel", endDrag);
-    stage.addEventListener("click", (e) => {
-      if (skipTrophyClick) return;
-      if (!trophyZone) return;
-      if (e.target.closest(".trophy-object") || e.target.closest(".trophy-leave") || e.target.closest(".trophy-hotspot") || hotspotFromEvent(e)) return;
-      if (document.querySelector(".trophy-plaque")) {
-        clearTrophyPlaques();
+      const hit = e && e.target && e.target.closest ? e.target : null;
+      if (hit && (hit.closest(".trophy-object") || hit.closest(".trophy-plaque") || hit.closest(".trophy-leave") || hit.closest(".trophy-walkup"))) {
         return;
       }
-      leaveTrophyZone();
-    });
+      if (drag.zoneAtStart) {
+        if (document.querySelector(".trophy-plaque")) {
+          clearTrophyPlaques();
+          return;
+        }
+        leaveTrophyZone();
+        return;
+      }
+      const zone = zoneFromStagePoint(e.clientX, e.clientY);
+      if (zone) enterTrophyZone(zone);
+    };
+    window.addEventListener("pointermove", onStageMove);
+    window.addEventListener("pointerup", endStageDrag);
+    window.addEventListener("pointercancel", endStageDrag);
     window.addEventListener("resize", () => {
       if (shelf.classList.contains("open")) applyTrophyLook();
     });
