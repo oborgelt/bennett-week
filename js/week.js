@@ -680,9 +680,7 @@
   function trophyArt(ach) {
     const crewId = crewIdOf(ach);
     if (crewId) {
-      const ch = ((roster && roster.characters) || []).find((row) => row.id === crewId);
-      if (ch && ch.poster) return ch.poster;
-      return "img/characters/" + crewId + ".jpg";
+      return "img/characters/" + crewId + ".png";
     }
     const unlock = Game.rewardUnlockOf(ach);
     if (unlock && unlock.type && unlock.type !== "content") {

@@ -1177,7 +1177,8 @@ body.week-page.in-treehouse .peek-monkey {
 
 .trophy-object.trophy-character img {
   object-fit: contain;
-  border-radius: 6px;
+  object-position: center bottom;
+  border-radius: 0;
   background: transparent;
   filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.5));
   box-shadow: none;

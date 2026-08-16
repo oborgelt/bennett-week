@@ -462,7 +462,30 @@ const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=/.test(weekHtml) && /week\.js\?v=/.test(weekHtml) && /game\.js\?v=/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=49/.test(weekHtml) && /week\.js\?v=49/.test(weekHtml) && /game\.js\?v=49/.test(weekHtml) && /telemetry\.js\?v=49/.test(weekHtml), "index should cache-bust css/js past main v=48");
+["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
+  assert(fs.existsSync(path.join(root, "img/characters/" + id + ".png")), id + " cutout png should stay on disk");
+  assert(fs.existsSync(path.join(root, "img/characters/" + id + ".jpg")), id + " locker jpg should stay on disk");
+  assert(refsHtml.includes("img/characters/" + id + ".jpg"), id + " locker still should stay on refs.html");
+});
+assert(weekJs.includes('return "img/characters/" + crewId + ".png"'), "trophyArt should use png cutouts on the window wall");
+assert(!weekJs.includes('return "img/characters/" + crewId + ".jpg"'), "trophyArt should not use jpg posters for crew");
+assert(!/if \(ch && ch\.poster\) return ch\.poster/.test(weekJs), "trophyArt should not fall back to locker posters");
+function cssRule(css, selector) {
+  const start = css.indexOf(selector);
+  assert(start >= 0, "css should include " + selector);
+  const open = css.indexOf("{", start);
+  const close = css.indexOf("}", open);
+  return css.slice(open, close + 1);
+}
+[".trophy-object.trophy-character img", ".trophy-object.trophy-alcove img"].forEach((sel) => {
+  const rule = cssRule(themeCss, sel);
+  assert(/background:\s*transparent/.test(rule), sel + " should have a transparent plate");
+  assert(/object-fit:\s*contain/.test(rule), sel + " should contain the figure");
+  assert(/object-position:\s*center bottom/.test(rule), sel + " should stand feet-down on the shelf");
+  assert(/box-shadow:\s*none/.test(rule), sel + " should not draw a card box-shadow");
+  assert(!/border-radius:\s*[1-9]/.test(rule), sel + " should not round into a card");
+});
 assert(!/trophyManage/.test(weekJs), "week.js should not keep a manage mode in Bennett's room");
 assert(/trophy-plaque/.test(weekJs) && /prefersReducedMotion/.test(weekJs), "walk-up objects should open a plaque and respect reduced motion");
 assert(/id="trophy-walkup"/.test(weekHtml) && /data-zone="window"/.test(weekHtml) && /data-zone="lockers"/.test(weekHtml), "wide room needs five walk-up lantern plaques");
