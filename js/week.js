@@ -27,7 +27,7 @@
       hint: "Newest unlock",
       still: "img/library/trophy-pedestal.jpg",
       origin: "50% 58%",
-      hot: { l: "38%", t: "42%", w: "24%", h: "36%" }
+      hot: { l: "32%", t: "32%", w: "36%", h: "52%" }
     },
     window: {
       id: "window",
@@ -35,7 +35,7 @@
       hint: "Crew",
       still: "img/library/trophy-window.jpg",
       origin: "16% 46%",
-      hot: { l: "2%", t: "28%", w: "22%", h: "48%" }
+      hot: { l: "0%", t: "18%", w: "32%", h: "64%" }
     },
     cubbies: {
       id: "cubbies",
@@ -43,7 +43,7 @@
       hint: "Awards",
       still: "img/library/trophy-cubbies.jpg",
       origin: "24% 30%",
-      hot: { l: "8%", t: "8%", w: "24%", h: "24%" }
+      hot: { l: "0%", t: "0%", w: "38%", h: "32%" }
     },
     pegboard: {
       id: "pegboard",
@@ -51,7 +51,7 @@
       hint: "Tools",
       still: "img/library/trophy-pegboard.jpg",
       origin: "70% 48%",
-      hot: { l: "62%", t: "22%", w: "20%", h: "50%" }
+      hot: { l: "54%", t: "12%", w: "28%", h: "64%" }
     },
     lockers: {
       id: "lockers",
@@ -59,7 +59,7 @@
       hint: "Gear",
       still: "img/library/trophy-lockers.jpg",
       origin: "88% 50%",
-      hot: { l: "82%", t: "18%", w: "16%", h: "58%" }
+      hot: { l: "74%", t: "6%", w: "26%", h: "76%" }
     }
   };
   const TROPHY_ZONE_ORDER = ["window", "cubbies", "pedestal", "pegboard", "lockers"];
@@ -859,8 +859,7 @@
       </button>`;
     }).join("");
     host.onclick = (e) => {
-      if (skipTrophyClick) return;
-      const btn = e.target.closest("[data-zone]");
+      const btn = e.target.closest("[data-zone]") || hotspotFromEvent(e);
       if (!btn) return;
       e.stopPropagation();
       enterTrophyZone(btn.dataset.zone);
@@ -912,6 +911,33 @@
     renderTrophyChrome();
     renderTrophyHotspots(orderedTrophies());
     renderTrophySlots(orderedTrophies());
+  }
+
+  function hotspotFromEvent(e) {
+    if (trophyZone || !e) return null;
+    const x = e.clientX;
+    const y = e.clientY;
+    const fromTarget = e.target && e.target.closest ? e.target.closest(".trophy-hotspot") : null;
+    if (fromTarget) return fromTarget;
+    const under = typeof document.elementFromPoint === "function" && Number.isFinite(x) && Number.isFinite(y)
+      ? document.elementFromPoint(x, y)
+      : null;
+    const fromPoint = under && under.closest ? under.closest(".trophy-hotspot") : null;
+    if (fromPoint) return fromPoint;
+    let best = null;
+    let bestDist = 56;
+    document.querySelectorAll("#trophy-hotspots .trophy-hotspot").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const dx = x < r.left ? r.left - x : (x > r.right ? x - r.right : 0);
+      const dy = y < r.top ? r.top - y : (y > r.bottom ? y - r.bottom : 0);
+      const dist = Math.hypot(dx, dy);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = el;
+      }
+    });
+    return best;
   }
 
   function enterTrophyZone(id) {
@@ -1340,6 +1366,9 @@
     function openShelf() {
       resetTrophyView();
       preloadTrophyStills();
+      const preview = Game.maybeAutoPreviewAll(pack, family);
+      family = preview.family;
+      hud();
       renderShelf();
       document.body.classList.add("in-treehouse");
       shelf.classList.add("open");
@@ -1379,28 +1408,18 @@
       try { stage.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     });
     stage.addEventListener("pointermove", (e) => {
-      if (trophyDrag && trophyDrag.id === e.pointerId) {
-        const dx = e.clientX - trophyDrag.x;
-        const dy = e.clientY - trophyDrag.y;
-        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
-          trophyDrag.moved = true;
-          skipTrophyClick = true;
-          stage.classList.add("is-dragging");
-        }
-        const look = currentTrophyLook();
-        look.panX = trophyDrag.panX + dx;
-        look.panY = trophyDrag.panY + dy;
-        look.mouseX = 0;
-        look.mouseY = 0;
-        applyTrophyLook();
-        return;
-      }
-      if (Game.prefersReducedMotion() || e.pointerType !== "mouse") return;
-      const r = stage.getBoundingClientRect();
-      if (!r.width || !r.height) return;
+      if (!trophyDrag || trophyDrag.id !== e.pointerId) return;
+      const dx = e.clientX - trophyDrag.x;
+      const dy = e.clientY - trophyDrag.y;
+      if (Math.abs(dx) <= 8 && Math.abs(dy) <= 8) return;
+      trophyDrag.moved = true;
+      skipTrophyClick = true;
+      stage.classList.add("is-dragging");
       const look = currentTrophyLook();
-      look.mouseX = ((e.clientX - r.left) / r.width - 0.5) * 2;
-      look.mouseY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      look.panX = trophyDrag.panX + dx;
+      look.panY = trophyDrag.panY + dy;
+      look.mouseX = 0;
+      look.mouseY = 0;
       applyTrophyLook();
     });
     const endDrag = (e) => {
@@ -1408,7 +1427,15 @@
       const drag = trophyDrag;
       trophyDrag = null;
       stage.classList.remove("is-dragging");
-      if (trophyZone && drag.moved) {
+      if (!drag.moved) {
+        const btn = hotspotFromEvent(e);
+        if (btn) {
+          enterTrophyZone(btn.dataset.zone);
+          skipTrophyClick = true;
+        }
+        return;
+      }
+      if (trophyZone) {
         const dy = (e.clientY || drag.y) - drag.y;
         const dx = (e.clientX || drag.x) - drag.x;
         if (dy > 80 && Math.abs(dy) > Math.abs(dx) * 1.2) leaveTrophyZone();
@@ -1419,7 +1446,7 @@
     stage.addEventListener("click", (e) => {
       if (skipTrophyClick) return;
       if (!trophyZone) return;
-      if (e.target.closest(".trophy-object") || e.target.closest(".trophy-leave") || e.target.closest(".trophy-hotspot")) return;
+      if (e.target.closest(".trophy-object") || e.target.closest(".trophy-leave") || e.target.closest(".trophy-hotspot") || hotspotFromEvent(e)) return;
       if (document.querySelector(".trophy-plaque")) {
         clearTrophyPlaques();
         return;

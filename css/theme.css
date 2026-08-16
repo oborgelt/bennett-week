@@ -1048,16 +1048,21 @@ body.week-page.in-treehouse .peek-monkey {
 .trophy-slots {
   position: absolute;
   inset: 0;
+  z-index: 2;
 }
+
+.trophy-hotspots { pointer-events: none; }
 
 .trophy-hotspot {
   position: absolute;
+  z-index: 2;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
   appearance: none;
   touch-action: none;
+  pointer-events: auto;
 }
 
 .trophy-hotspot::before {

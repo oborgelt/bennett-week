@@ -408,11 +408,14 @@ assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHt
 assert(/theme\.css\?v=/.test(weekHtml) && /week\.js\?v=/.test(weekHtml) && /game\.js\?v=/.test(weekHtml), "index should cache-bust css/js");
 assert(!/trophyManage/.test(weekJs), "week.js should not keep a manage mode in Bennett's room");
 assert(/trophy-plaque/.test(weekJs) && /prefersReducedMotion/.test(weekJs), "walk-up objects should open a plaque and respect reduced motion");
+assert(weekJs.includes("hotspotFromEvent") && weekJs.includes("elementFromPoint"), "a tap must walk up from the hotspot under the pointer");
+assert((weekJs.match(/maybeAutoPreviewAll/g) || []).length >= 2, "preview should gap-fill on boot and when opening the trophy room");
+assert(!/e\.pointerType !== "mouse"/.test(weekJs), "hover mouse-look should not pan the hotspot layer");
 assert(/id="trophy-order-list"/.test(parentHtml), "parent desk should keep trophy drag-reorder");
 assert(/theme\.css\?v=/.test(parentHtml) && /parent\.js\?v=/.test(parentHtml), "parent desk should cache-bust css/js");
 assert(crewJs.includes("gearThumbHtml") && crewJs.includes("alreadyUnlockedGear"), "loadout should use real gear stills when unlocked");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 const previewFamily = Game.emptyFamily();
 const auto = Game.maybeAutoPreviewAll(pack, previewFamily);
@@ -422,18 +425,26 @@ assert(Game.alreadyUnlockedCharacter("bennett") && Game.alreadyUnlocked("signin-
 assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("unplugged-strap") && Game.alreadyUnlockedGear("first-serve"), "preview should unlock gear");
 assert(Game.alreadyUnlocked("straight-as-3w") && Game.alreadyUnlocked("hidden-banana"), "preview should award the other streaks");
 assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "auto-preview should set bw-preview-all");
-const locked = Game.revokeAllPreview(pack, auto.family);
+assert(!localStorage.getItem("bw-preview-locked"), "auto-preview should not lock rewards");
+const afterAce = Game.revokeAchievement(pack, auto.family, "test-ace-closer");
+assert(!Game.alreadyUnlockedCharacter("ace"), "undoing Meet Ace should lock Ace");
+const gap = Game.maybeAutoPreviewAll(pack, afterAce.family);
+assert(!gap.ran, "later boots should gap-fill quietly");
+assert(Game.alreadyUnlockedCharacter("ace"), "gap-fill should restore missing preview crew");
+const locked = Game.revokeAllPreview(pack, gap.family);
 assert(!Game.alreadyUnlockedCharacter("ace") && !Game.alreadyUnlockedGear("angle-finder"), "Lock them back should revoke preview awards");
 assert(!Game.alreadyUnlockedCharacter("bennett") && !Game.alreadyUnlocked("signin-bennett"), "Lock them back should revoke Bennett too");
-assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "lock-back must keep the flag so auto-preview does not re-fire");
+assert.strictEqual(localStorage.getItem("bw-preview-all"), "1", "lock-back keeps bw-preview-all so preview stays offered");
+assert.strictEqual(localStorage.getItem("bw-preview-locked"), "1", "lock-back sets bw-preview-locked");
 const again = Game.maybeAutoPreviewAll(pack, locked.family);
 assert(!again.ran, "auto-preview must not run again after lock-back");
 assert(!Game.alreadyUnlockedCharacter("ace"), "crew stays locked until a parent unlocks preview again");
 const manual = Game.awardAllPreview(pack, locked.family);
 assert(manual.awarded > 0 && Game.alreadyUnlockedCharacter("deuce") && Game.alreadyUnlockedGear("daily-pick"), "parent Unlock all should award through awardStreak again");
 assert(Game.alreadyUnlockedCharacter("bennett"), "Unlock all should re-award Bennett");
+assert(!localStorage.getItem("bw-preview-locked"), "Unlock all should clear bw-preview-locked");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 let signFamily = Game.emptyFamily();
 const signin = Game.maybeAwardSignIn(pack, signFamily);
@@ -456,12 +467,23 @@ assert(!afterUndo.awarded && !Game.alreadyUnlockedCharacter("bennett"), "sign-in
 const reaward = Game.awardStreak(pack, undone.family, "test-bennett-showup");
 assert(reaward.freshCharacter && Game.alreadyUnlockedCharacter("bennett"), "Meet Bennett TEST can re-award after undo");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 Game.markCharacterUnlocked("bennett");
 const previewAfterBennett = Game.maybeAutoPreviewAll(pack, Game.emptyFamily());
 assert(previewAfterBennett.ran, "Bennett-only unlock should not block auto-preview of the crew");
 assert(Game.alreadyUnlockedCharacter("ace"), "auto-preview still unlocks teammates after Bennett signed in");
+
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+localStorage.removeItem("bw-family");
+Game.markCharacterUnlocked("bennett");
+localStorage.setItem("bw-preview-all", "1");
+const orinGap = Game.maybeAutoPreviewAll(pack, Game.emptyFamily());
+assert(!orinGap.ran, "a device that already saw preview should gap-fill without fanfare");
+assert(Game.alreadyUnlockedCharacter("ace") && Game.alreadyUnlockedCharacter("riff") && Game.alreadyUnlockedCharacter("scorch"), "Orin-style preview-all + Bennett should still unlock the crew");
+assert(Game.alreadyUnlockedCharacter("deuce") && Game.alreadyUnlockedCharacter("fuzz") && Game.alreadyUnlockedCharacter("bennett"), "gap-fill should include Deuce, Fuzz, and Bennett");
+assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("field-kit") && Game.alreadyUnlockedGear("unplugged-strap"), "gap-fill should include Angle Finder, Field Kit, Unplugged Strap");
+assert(Game.alreadyUnlockedGear("daily-pick") && Game.alreadyUnlockedGear("notebook-holding") && Game.alreadyUnlockedGear("first-serve"), "gap-fill should include Daily Pick, Notebook of Holding, First Serve");
 
 (async () => {
   const beep = new File([new Uint8Array([82, 73, 70, 70, 0, 0, 0, 0])], "TEST-beep.wav", { type: "audio/wav" });
