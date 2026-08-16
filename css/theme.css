@@ -105,9 +105,16 @@ header.week-head {
   object-position: center 38%;
 }
 
+.banner-home {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
 .banner-hotspot {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -117,9 +124,18 @@ header.week-head {
   position: absolute;
   left: 10px;
   bottom: 6px;
-  right: 10px;
+  right: 118px;
+  z-index: 4;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-  pointer-events: none;
+  pointer-events: auto;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.banner-title:hover h1,
+.banner-title:focus h1 {
+  text-decoration: underline;
 }
 
 .banner-title h1 {
@@ -3174,6 +3190,116 @@ body.admin-page {
 .ask-help-link a {
   color: var(--start);
   font-weight: 750;
+}
+
+.add-work-row {
+  margin: 10px 0 0;
+}
+
+.usage-panel {
+  margin: 0 0 22px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(7, 22, 24, 0.45);
+}
+
+.usage-panel h2 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+}
+
+.usage-lead {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin: 0 0 12px;
+}
+
+.usage-connect {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.usage-connect label,
+.usage-panel .edit-label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.usage-connect input,
+.usage-connect select,
+#usage-term {
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #102628;
+  color: var(--ink);
+  padding: 0 10px;
+}
+
+.usage-status {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.usage-health,
+.usage-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.usage-tile {
+  background: rgba(20, 46, 49, 0.8);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.usage-tile .stat-num {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.usage-tile .stat-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.usage-warn .stat-num { color: var(--due); }
+
+.usage-class-list,
+.usage-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.usage-class-list li,
+.usage-timeline li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(51, 88, 92, 0.45);
+  font-size: 0.84rem;
+}
+
+.usage-class-list button {
+  background: none;
+  border: 0;
+  color: var(--start);
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
 }
 
 .ask-lead {

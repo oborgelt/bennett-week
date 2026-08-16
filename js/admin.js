@@ -27,6 +27,12 @@
   let roster = null;
   let library = null;
   let week = { work: [], events: [] };
+  let progressSeed = null;
+  let termsCatalog = { current: "2025-26-s1", terms: [] };
+  let usageEvents = [];
+  let usageDevices = [];
+  let drillClass = "";
+  let drillAssignment = "";
 
   function persistLib() {
     Game.saveMomLibrary(library);
@@ -254,11 +260,267 @@
     });
   }
 
+  function tel() {
+    return globalThis.Telemetry || window.Telemetry;
+  }
+
+  function fillConnectForm() {
+    const T = tel();
+    if (!T) return;
+    const cfg = T.getConfig();
+    document.getElementById("tel-url").value = cfg.url || "";
+    document.getElementById("tel-anon").value = cfg.anonKey || "";
+    document.getElementById("tel-token").value = cfg.familyToken || "";
+    document.getElementById("tel-role").value = cfg.role || "bennett";
+  }
+
+  function paintUsageStatus(text) {
+    const el = document.getElementById("usage-status");
+    if (el) el.textContent = text;
+  }
+
+  function countBy(events, type) {
+    return events.filter((e) => e.type === type).length;
+  }
+
+  function hoursAgoIso(h) {
+    return new Date(Date.now() - h * 3600 * 1000).toISOString();
+  }
+
+  function classLabel(id) {
+    if (!id) return "(no class)";
+    const fromSeed = ((progressSeed && progressSeed.classes) || []).find((c) => c.id === id);
+    return (fromSeed && fromSeed.name) || Game.classNameForId(id) || id;
+  }
+
+  function workTitle(id) {
+    if (!id) return "(site)";
+    const w = (week.work || []).find((x) => x.id === id);
+    if (w) return w.title;
+    const classes = (progressSeed && progressSeed.classes) || [];
+    for (let i = 0; i < classes.length; i += 1) {
+      const hit = (classes[i].items || []).find((item) => item.id === id);
+      if (hit) return hit.title;
+    }
+    return id;
+  }
+
+  function renderHealth(events, devices) {
+    const T = tel();
+    const day = hoursAgoIso(24);
+    const weekAgo = hoursAgoIso(24 * 7);
+    const recent = events.filter((e) => e.ts >= day);
+    const errors = recent.filter((e) => e.type === "error").length;
+    const slow = recent.filter((e) => e.type === "slow_page").length;
+    const bennett = events.filter((e) => e.role === "bennett");
+    const lastBennett = bennett[0];
+    const stale = (devices || []).filter((d) => !d.last_seen || d.last_seen < weekAgo);
+    const queued = T && T._queued;
+    document.getElementById("usage-health").innerHTML = `
+      <div class="usage-health">
+        <div class="usage-tile"><div class="stat-num">${lastBennett ? Game.esc(Game.fmtStamp(lastBennett.ts)) : "—"}</div><div class="stat-label">last Bennett event</div></div>
+        <div class="usage-tile${errors ? " usage-warn" : ""}"><div class="stat-num">${errors}</div><div class="stat-label">errors (24h)</div></div>
+        <div class="usage-tile${slow ? " usage-warn" : ""}"><div class="stat-num">${slow}</div><div class="stat-label">slow pages (24h)</div></div>
+        <div class="usage-tile${stale.length ? " usage-warn" : ""}"><div class="stat-num">${stale.length}</div><div class="stat-label">devices quiet 7d</div></div>
+      </div>`;
+  }
+
+  function renderStats(events) {
+    const day = hoursAgoIso(24);
+    const recent = events.filter((e) => e.ts >= day);
+    const sessions = {};
+    events.filter((e) => e.type === "session_start").forEach((e) => {
+      sessions[e.role || "unknown"] = (sessions[e.role || "unknown"] || 0) + 1;
+    });
+    document.getElementById("usage-stats").innerHTML = `
+      <div class="usage-stats">
+        <div class="usage-tile"><div class="stat-num">${sessions.bennett || 0}</div><div class="stat-label">Bennett sessions</div></div>
+        <div class="usage-tile"><div class="stat-num">${(sessions.parent || 0) + (sessions.orin || 0)}</div><div class="stat-label">parent / Orin sessions</div></div>
+        <div class="usage-tile"><div class="stat-num">${countBy(recent, "click")}</div><div class="stat-label">clicks (24h)</div></div>
+        <div class="usage-tile"><div class="stat-num">${countBy(recent, "page_view")}</div><div class="stat-label">page views (24h)</div></div>
+        <div class="usage-tile"><div class="stat-num">${countBy(events, "work_add")}</div><div class="stat-label">assignments added</div></div>
+        <div class="usage-tile"><div class="stat-num">${countBy(events, "work_note")}</div><div class="stat-label">notes</div></div>
+        <div class="usage-tile"><div class="stat-num">${countBy(events, "ask_ai")}</div><div class="stat-label">Ask AI</div></div>
+        <div class="usage-tile"><div class="stat-num">${countBy(events, "help_open")}</div><div class="stat-label">a little help</div></div>
+      </div>`;
+  }
+
+  function selectedTermId() {
+    const sel = document.getElementById("usage-term");
+    return (sel && sel.value) || (termsCatalog.current || Game.DEFAULT_TERM.id);
+  }
+
+  function fillTerms() {
+    const sel = document.getElementById("usage-term");
+    if (!sel) return;
+    const terms = termsCatalog.terms && termsCatalog.terms.length
+      ? termsCatalog.terms
+      : [Game.DEFAULT_TERM];
+    const cur = sel.value || termsCatalog.current || Game.DEFAULT_TERM.id;
+    sel.innerHTML = terms.map((t) => {
+      const on = t.id === cur ? " selected" : "";
+      return `<option value="${Game.esc(t.id)}"${on}>${Game.esc(t.label || t.id)}</option>`;
+    }).join("");
+  }
+
+  function renderClasses(events) {
+    const termId = selectedTermId();
+    const scoped = events.filter((e) => !e.term_id || e.term_id === termId);
+    const map = {};
+    scoped.forEach((e) => {
+      const id = e.class_id || "";
+      if (!map[id]) map[id] = { id, events: 0, assignments: new Set(), ai: 0, notes: 0, help: 0 };
+      map[id].events += 1;
+      if (e.assignment_id) map[id].assignments.add(e.assignment_id);
+      if (e.type === "ask_ai") map[id].ai += 1;
+      if (e.type === "work_note") map[id].notes += 1;
+      if (e.type === "help_open") map[id].help += 1;
+    });
+    const roster = (progressSeed && progressSeed.classes) || [];
+    roster.forEach((cls) => {
+      if (!map[cls.id]) map[cls.id] = { id: cls.id, events: 0, assignments: new Set((cls.items || []).map((i) => i.id)), ai: 0, notes: 0, help: 0 };
+      (cls.items || []).forEach((item) => map[cls.id].assignments.add(item.id));
+    });
+    const rows = Object.keys(map).filter((id) => id).sort((a, b) => classLabel(a).localeCompare(classLabel(b)));
+    document.getElementById("usage-classes").innerHTML = `
+      <h3 style="font-size:0.95rem;margin:8px 0">By class</h3>
+      <ul class="usage-class-list">
+        ${rows.map((id) => {
+          const row = map[id];
+          return `<li>
+            <button type="button" data-usage-class="${Game.esc(id)}">${Game.esc(classLabel(id))}</button>
+            <span>${row.assignments.size} items · ${row.ai} AI · ${row.notes} notes · ${row.events} events</span>
+          </li>`;
+        }).join("") || `<li class="empty">No class activity in this term yet.</li>`}
+      </ul>`;
+    document.querySelectorAll("[data-usage-class]").forEach((b) => {
+      b.addEventListener("click", () => {
+        drillClass = b.dataset.usageClass;
+        drillAssignment = "";
+        renderDrill(events);
+      });
+    });
+    if (drillClass) renderDrill(events);
+    else document.getElementById("usage-drill").innerHTML = `<p class="empty">Pick a class to drill into assignments and activity.</p>`;
+  }
+
+  function renderDrill(events) {
+    const host = document.getElementById("usage-drill");
+    if (!drillClass) {
+      host.innerHTML = `<p class="empty">Pick a class to drill into assignments and activity.</p>`;
+      return;
+    }
+    const termId = selectedTermId();
+    const scoped = events.filter((e) => (!e.term_id || e.term_id === termId) && e.class_id === drillClass);
+    const byItem = {};
+    scoped.forEach((e) => {
+      const id = e.assignment_id || "";
+      if (!byItem[id]) byItem[id] = [];
+      byItem[id].push(e);
+    });
+    const cls = ((progressSeed && progressSeed.classes) || []).find((c) => c.id === drillClass);
+    (cls && cls.items || []).forEach((item) => {
+      if (!byItem[item.id]) byItem[item.id] = [];
+    });
+    const ids = Object.keys(byItem).filter(Boolean);
+    if (drillAssignment) {
+      const rows = (byItem[drillAssignment] || []).slice().sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
+      host.innerHTML = `
+        <h3 style="font-size:0.95rem;margin:8px 0">${Game.esc(classLabel(drillClass))} · ${Game.esc(workTitle(drillAssignment))}</h3>
+        <button type="button" class="mini" id="usage-back-class">Back to class</button>
+        <ul class="usage-timeline">
+          ${rows.map((e) => `<li><span>${Game.esc(e.type)}${e.message ? " · " + Game.esc(e.message) : ""}</span><span>${Game.esc(Game.fmtStamp(e.ts))} · ${Game.esc(e.role || "")}</span></li>`).join("") || `<li class="empty">No events on this item.</li>`}
+        </ul>`;
+      document.getElementById("usage-back-class").addEventListener("click", () => {
+        drillAssignment = "";
+        renderDrill(events);
+      });
+      return;
+    }
+    host.innerHTML = `
+      <h3 style="font-size:0.95rem;margin:8px 0">${Game.esc(classLabel(drillClass))}</h3>
+      <ul class="usage-class-list">
+        ${ids.map((id) => `<li>
+          <button type="button" data-usage-item="${Game.esc(id)}">${Game.esc(workTitle(id))}</button>
+          <span>${byItem[id].length} events</span>
+        </li>`).join("") || `<li class="empty">No assignment activity yet.</li>`}
+      </ul>
+      <h4 style="font-size:0.82rem;margin:12px 0 4px">Recent activity</h4>
+      <ul class="usage-timeline">
+        ${scoped.slice(0, 25).map((e) => `<li><span>${Game.esc(e.type)}${e.assignment_id ? " · " + Game.esc(workTitle(e.assignment_id)) : ""}</span><span>${Game.esc(Game.fmtStamp(e.ts))}</span></li>`).join("") || `<li class="empty">Nothing yet.</li>`}
+      </ul>`;
+    document.querySelectorAll("[data-usage-item]").forEach((b) => {
+      b.addEventListener("click", () => {
+        drillAssignment = b.dataset.usageItem;
+        renderDrill(events);
+      });
+    });
+  }
+
+  async function loadUsage() {
+    const T = tel();
+    fillTerms();
+    if (!T || !T.connected()) {
+      paintUsageStatus("Not connected. Events stay on this device until you paste URL, anon key, and family token.");
+      renderHealth([], []);
+      renderStats([]);
+      renderClasses([]);
+      return;
+    }
+    paintUsageStatus("Loading usage…");
+    try {
+      await T.flush();
+      const termId = selectedTermId();
+      usageEvents = await T.fetchEvents({ termId, limit: 2000 }) || [];
+      usageDevices = await T.fetchDevices() || [];
+      const queued = await T.queuedCount();
+      paintUsageStatus("Connected · " + usageEvents.length + " events" + (queued ? " · " + queued + " waiting to send" : "") + " · this device " + T.deviceId());
+      renderHealth(usageEvents, usageDevices);
+      renderStats(usageEvents);
+      renderClasses(usageEvents);
+    } catch (err) {
+      paintUsageStatus("Could not read usage. Check the URL, anon key, family token, and that telemetry.sql ran.");
+      renderHealth([], []);
+      renderStats([]);
+      renderClasses([]);
+    }
+  }
+
+  function bindUsage() {
+    fillConnectForm();
+    const form = document.getElementById("usage-connect");
+    if (!form) return;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const T = tel();
+      if (!T) {
+        Game.toast("Telemetry script did not load.");
+        return;
+      }
+      T.setConfig({
+        url: document.getElementById("tel-url").value.trim(),
+        anonKey: document.getElementById("tel-anon").value.trim(),
+        familyToken: document.getElementById("tel-token").value.trim(),
+        role: document.getElementById("tel-role").value
+      });
+      Game.toast("Saved on this device. Not in the repo.");
+      await loadUsage();
+    });
+    document.getElementById("tel-refresh").addEventListener("click", () => loadUsage());
+    document.getElementById("usage-term").addEventListener("change", () => {
+      drillClass = "";
+      drillAssignment = "";
+      loadUsage();
+    });
+  }
+
   async function boot() {
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
+    progressSeed = await Game.loadProgress();
+    termsCatalog = await Game.loadTerms();
     try {
       const seed = await fetch("week.json", { cache: "no-cache" }).then((r) => r.json());
       week = Game.applyWeekOverlay(seed, family);
@@ -270,6 +532,8 @@
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
     document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomLibrary());
+    bindUsage();
+    loadUsage();
 
     document.getElementById("close-sheet").addEventListener("click", closeSheet);
     document.getElementById("sheet").addEventListener("click", (e) => {

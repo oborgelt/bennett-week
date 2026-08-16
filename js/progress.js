@@ -54,7 +54,7 @@
     });
 
     (week.work || []).forEach((w) => {
-      const cid = classIdForTitle(w.title);
+      const cid = Game.classIdForWork(w);
       if (!cid || !map.has(cid)) return;
       const cls = map.get(cid);
       if (cls.items.some((item) => item.id === w.id)) return;
@@ -338,7 +338,10 @@
               </div>
               ${item.grade ? gradeHtml(item.grade, item.test) : ""}
             </div>
-            <div class="entry-tools">${Game.entryButtons("pitem:" + item.id, "pitem:" + item.id)}</div>
+            <div class="entry-tools">
+              <button type="button" class="tiny" data-note-item="${Game.esc(item.id)}">Note</button>
+              ${Game.entryButtons("pitem:" + item.id, "pitem:" + item.id)}
+            </div>
           </li>`;
       }).join("")
       : `<li class="empty">No assignments yet</li>`;
@@ -357,7 +360,10 @@
         <ul class="class-items">${itemHtml}</ul>
         ${khan}
         <p class="ask-help-link class-ask"><a href="${Game.esc(askHref)}">Ask AI</a></p>
-        <div class="class-card-tools">${Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id)}</div>
+        <div class="class-card-tools">
+          <button type="button" class="mini" data-add-item="${Game.esc(cls.id)}">Add assignment</button>
+          ${Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id)}
+        </div>
       </details>`;
   }
 
@@ -527,6 +533,75 @@
     render();
   }
 
+  function openAddItem(classId) {
+    const cls = mergeClasses().find((c) => c.id === classId);
+    if (!cls) return;
+    const today = Game.chicagoYmd(new Date());
+    openSheet("Add assignment · " + (cls.name || ""), editForm([
+      { name: "title", label: "Title", value: "" },
+      { name: "due", label: "Due", value: today + "T23:59", type: "datetime-local" },
+      { name: "note", label: "Note (optional)", value: "", type: "textarea" }
+    ]).replace(">Save<", ">Add<"));
+    document.getElementById("edit-save").addEventListener("click", () => {
+      const title = fieldValue("title");
+      if (!title) {
+        Game.toast("Add a title first.");
+        return;
+      }
+      const due = Game.fromLocalInput(fieldValue("due"));
+      if (!due) {
+        Game.toast("Pick a due date.");
+        return;
+      }
+      const result = Game.addAssignment(family, seed || baseSeed, {
+        title,
+        classId,
+        due,
+        note: fieldValue("note"),
+        addedBy: "bennett"
+      });
+      family = result.family;
+      closeSheet();
+      Game.toast("Added on this device.");
+      syncViews();
+      render();
+    });
+  }
+
+  function openItemNote(id) {
+    const found = findClassItem(id);
+    const classId = found ? found.cls.id : "";
+    const termId = Game.termOf(seed || baseSeed).id;
+    openSheet("Add a note", `
+      <p class="empty">A reminder or fact on this assignment — not a question for parents.</p>
+      <textarea id="note-text" maxlength="280" placeholder="What should stay on this assignment?"></textarea>
+      <button type="button" class="btn primary" id="note-send">Save note</button>
+    `);
+    document.getElementById("note-send").addEventListener("click", () => {
+      const text = (document.getElementById("note-text").value || "").trim();
+      if (!text) {
+        Game.toast("Write a note first.");
+        return;
+      }
+      family = Game.addNote(family, {
+        id: Game.uid("n"),
+        targetType: "work",
+        targetId: id,
+        from: "bennett",
+        kind: "note",
+        text,
+        at: Game.nowIso(),
+        classId: classId || undefined,
+        termId
+      });
+      closeSheet();
+      Game.toast("Note saved on this device.");
+      syncViews();
+      render();
+    });
+    document.getElementById("note-text").focus();
+  }
+
   function bindDash() {
     document.querySelectorAll(".class-summary-khan a, .class-card .khan-strip a").forEach((a) => {
       a.addEventListener("click", (e) => e.stopPropagation());
@@ -551,6 +626,20 @@
         family = result.family;
         Game.toast("Award undone. That trophy leaves the room.");
         render();
+      });
+    });
+    document.querySelectorAll("[data-add-item]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openAddItem(btn.dataset.addItem);
+      });
+    });
+    document.querySelectorAll("[data-note-item]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openItemNote(btn.dataset.noteItem);
       });
     });
   }

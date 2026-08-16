@@ -1,6 +1,11 @@
 {
   "timezone": "America/Chicago",
   "gradesNote": "No grades until a real feed exists. English often lives in a Google sheet; Canvas is not the full due list.",
+  "term": {
+    "id": "2025-26-s1",
+    "label": "2025–26 S1",
+    "grade": "sophomore"
+  },
   "eggNames": {
     "banner-monkey": "Garage-band grin",
     "hidden-ball": "Stray tennis ball",

@@ -37,6 +37,7 @@
     }
     title = document.getElementById("ask-title").value.trim() || title;
     thread = Game.addAskMessage(thread, { role: "bennett", text, title });
+    Game.track("ask_ai", { classId: params().get("class") || Game.classIdForTitle(title), message: title });
     input.value = "";
     renderLog();
     document.getElementById("ask-send").disabled = true;

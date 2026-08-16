@@ -10,11 +10,12 @@
 <body class="parent-page admin-page">
   <header class="week-head">
     <div class="banner-wrap">
+      <a class="banner-home" href="index.html" aria-label="Jungle Jam home · This week"></a>
       <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
-      <div class="banner-title">
+      <a class="banner-title" href="index.html">
         <h1>Admin</h1>
         <p>Media library · sounds · links</p>
-      </div>
+      </a>
       <div class="build-stamp" id="build-stamp">
         <span>Build 43</span>
         <span>8/15, 3:40 PM</span>
@@ -37,6 +38,45 @@
 
   <div class="parent-wrap">
     <p class="draft-flag" id="draft-flag" hidden>This device has a library or family draft. Export the family pack to share.</p>
+
+    <section class="usage-panel" id="usage-panel">
+      <h2>Usage</h2>
+      <p class="usage-lead">
+        Sessions, clicks, delays, and class activity across devices. Create a Supabase project, paste
+        <code>scripts/telemetry.sql</code> in the SQL editor, then connect this laptop and Bennett’s phone with the same family token.
+      </p>
+      <form id="usage-connect" class="usage-connect">
+        <label>Supabase URL
+          <input id="tel-url" type="url" autocomplete="off" placeholder="https://xxxx.supabase.co">
+        </label>
+        <label>Anon key
+          <input id="tel-anon" type="password" autocomplete="off" placeholder="public anon key">
+        </label>
+        <label>Family token
+          <input id="tel-token" type="password" autocomplete="off" placeholder="shared secret — not in git">
+        </label>
+        <label>This device is
+          <select id="tel-role">
+            <option value="bennett">Bennett</option>
+            <option value="parent">Parent</option>
+            <option value="orin">Orin</option>
+          </select>
+        </label>
+        <div class="parent-actions">
+          <button type="submit" class="btn primary" id="tel-save">Connect this device</button>
+          <button type="button" class="btn" id="tel-refresh">Refresh usage</button>
+        </div>
+      </form>
+      <p class="usage-status" id="usage-status"></p>
+      <div id="usage-health"></div>
+      <div id="usage-stats"></div>
+      <label class="edit-label">Term
+        <select id="usage-term"></select>
+      </label>
+      <div id="usage-classes"></div>
+      <div id="usage-drill"></div>
+    </section>
+
     <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
       Drop audio you already have (mp3 / wav / ogg / m4a), or an image / video. Files stay <strong>on this device</strong> — not in the repo.
       If you drop the whole <code>audio</code> folder and include <code>manifest.json</code>, labels stay as written.
@@ -194,6 +234,7 @@
   </script>
   <script src="js/build.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/telemetry.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

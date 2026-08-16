@@ -224,6 +224,63 @@ assert.strictEqual(Game.classDueCount(english, week), 3, "English has 3 due from
 assert.strictEqual(Game.classDueCount(byId.chemistry, week), 0, "Chemistry has nothing due");
 assert.strictEqual(Game.classPeriodLine(band), "P1 Marching Band");
 
+assert.strictEqual(progress.term.id, "2025-26-s1", "progress.json should name the current term");
+assert.strictEqual(Game.termOf(progress).id, "2025-26-s1");
+assert.strictEqual(Game.termOf({}).id, Game.DEFAULT_TERM.id);
+const termsFile = readJson("data/terms.json");
+assert.strictEqual(termsFile.current, "2025-26-s1");
+assert(termsFile.terms.some((t) => t.id === "2025-26-s1" && t.grade === "sophomore"));
+
+const overlayShape = Game.emptyFamily().overlay;
+assert(Array.isArray(overlayShape.week.added.work), "week overlay can add work");
+assert(Array.isArray(overlayShape.progress.addedItems), "progress overlay can add items");
+
+let addedFam = Game.emptyFamily();
+const added = Game.addAssignment(addedFam, progress, {
+  title: "Read chapter 2",
+  classId: "english-10",
+  due: "2026-08-20T23:59:00",
+  note: "quiz Friday"
+});
+addedFam = added.family;
+assert(added.id, "addAssignment returns an id");
+const weekApplied = Game.applyWeekOverlay({ work: [], events: [], notes: [] }, addedFam);
+const newWork = weekApplied.work.find((w) => w.id === added.id);
+assert(newWork, "added work shows on the week overlay");
+assert.strictEqual(Game.classIdForWork(newWork), "english-10");
+assert.strictEqual(newWork.termId, "2025-26-s1");
+assert(/English 10/.test(newWork.title), "week title keeps the class prefix");
+const progApplied = Game.applyProgressOverlay(progress, addedFam);
+const eng = progApplied.classes.find((cls) => cls.id === "english-10");
+assert(eng.items.some((item) => item.id === added.id && item.title === "Read chapter 2"), "Progress sees the new assignment");
+assert(addedFam.notes.some((n) => n.kind === "note" && n.from === "bennett" && n.targetId === added.id && n.termId === "2025-26-s1"));
+
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "orin" });
+store["bw-device-id"] = "dev-keep";
+store["bw-session-at"] = "1";
+store["bw-seed-gen"] = "0";
+Game.migrateCleanSlate();
+assert(localStorage.getItem("bw-telemetry"), "clean-slate must not wipe telemetry config");
+assert.strictEqual(localStorage.getItem("bw-device-id"), "dev-keep");
+assert(localStorage.getItem("bw-session-at"), "clean-slate must not wipe session stamp");
+
+["index.html", "progress.html", "parent.html", "admin.html", "ask.html", "egg.html", "story.html", "characters.html", "refs.html"].forEach((file) => {
+  const html = fs.readFileSync(path.join(root, file), "utf8");
+  assert(/class="banner-title"[^>]*href="index.html"|href="index.html"[^>]*class="banner-title"/.test(html), file + " banner should link home");
+  assert(html.indexOf("hud-nav") < 0 || /hud-nav[\s\S]{0,80}week-chip/.test(html), file + " should keep This week first in the HUD");
+  if (file !== "index.html") {
+    assert(/banner-home/.test(html), file + " banner image should be a home hit target");
+  }
+  assert(html.includes("js/telemetry.js"), file + " should load telemetry");
+});
+
+vm.runInContext(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8"), ctx);
+const Telemetry = ctx.window.Telemetry;
+assert(Telemetry, "Telemetry failed to load");
+Telemetry.track("work_add", { classId: "english-10", assignmentId: "eng-names", termId: "2025-26-s1" });
+assert(typeof Telemetry.queuedCount === "function");
+assert(!Telemetry.connected() || store["bw-telemetry"], "telemetry config lives in localStorage");
+
 let classFamily = Game.emptyFamily();
 classFamily = Game.addProgressClass(classFamily, "Study hall", progress);
 const overlayClasses = Game.applyProgressOverlay(progress, classFamily).classes;

@@ -304,7 +304,9 @@
 
   function noteBubble(n) {
     const kid = n.from === "bennett";
-    const label = kid ? "You asked: " : "Parent note: ";
+    const label = kid
+      ? (n.kind === "note" ? "You noted: " : "You asked: ")
+      : "Parent note: ";
     return `
       <div class="bubble ${kid ? "kid" : "parent"}">
         ${n.test ? '<span class="test-tag">TEST</span> ' : ""}${label}${Game.esc(n.text)}
@@ -338,6 +340,7 @@
     const kind = targetType === "event" ? "event" : "work";
     return `
       <div class="item-tools">
+        <button type="button" class="mini" data-note="${targetType}:${Game.esc(targetId)}">Note</button>
         <button type="button" class="mini" data-ask="${targetType}:${Game.esc(targetId)}">Ask</button>
         ${help ? `<button type="button" class="mini" data-help="${Game.esc(targetId)}">A little help</button>` : ""}
         ${itemSound(targetId)}
@@ -490,6 +493,9 @@
                     <div class="item-tools">${Game.entryButtons("weeknote:" + n.id, "weeknote:" + n.id)}</div>
                   </div>`)}
               </section>` : ""}
+              <p class="add-work-row">
+                <button type="button" class="mini" data-add-work="${ymd(d)}">Add assignment</button>
+              </p>
             </div>
           </div>
         </div>`;
@@ -516,6 +522,12 @@
     });
     track.querySelectorAll("[data-ask]").forEach((btn) => {
       btn.addEventListener("click", () => openAsk(btn.dataset.ask));
+    });
+    track.querySelectorAll("[data-note]").forEach((btn) => {
+      btn.addEventListener("click", () => openItemNote(btn.dataset.note));
+    });
+    track.querySelectorAll("[data-add-work]").forEach((btn) => {
+      btn.addEventListener("click", () => openAddWork(btn.dataset.addWork));
     });
     track.querySelectorAll("[data-help]").forEach((btn) => {
       btn.addEventListener("click", () => openHelp(btn.dataset.help));
@@ -1185,8 +1197,94 @@
     refreshBoard();
   }
 
+  function classSelectHtml(selected) {
+    const classes = standingClasses();
+    const opts = [`<option value="">Class</option>`].concat(classes.map((cls) => {
+      const on = cls.id === selected ? " selected" : "";
+      return `<option value="${Game.esc(cls.id)}"${on}>${Game.esc(Game.classPeriodLine(cls))}</option>`;
+    }));
+    return `<label class="edit-label">Class<select id="ef-classId">${opts.join("")}</select></label>`;
+  }
+
+  function workClassId(work) {
+    return Game.classIdForWork(work) || "";
+  }
+
+  function openAddWork(day) {
+    const dueDefault = day ? day + "T23:59" : "";
+    openSheet("Add assignment", `
+      ${editForm([
+        { name: "title", label: "Title", value: "" },
+        { name: "due", label: "Due", value: dueDefault, type: "datetime-local" },
+        { name: "note", label: "Note (optional)", value: "", type: "textarea" }
+      ], "add-work-save").replace('<button type="button" class="btn primary" id="add-work-save">Save</button>', classSelectHtml("") + '<button type="button" class="btn primary" id="add-work-save">Add</button>')}
+    `);
+    document.getElementById("add-work-save").addEventListener("click", () => {
+      const title = fieldValue("title");
+      if (!title) {
+        Game.toast("Add a title first.");
+        return;
+      }
+      const due = Game.fromLocalInput(fieldValue("due"));
+      if (!due) {
+        Game.toast("Pick a due date.");
+        return;
+      }
+      const result = Game.addAssignment(family, seed || baseSeed, {
+        title,
+        classId: fieldValue("classId"),
+        due,
+        note: fieldValue("note"),
+        addedBy: "bennett"
+      });
+      family = result.family;
+      closeSheet();
+      Game.toast("Added on this device.");
+      refreshBoard();
+    });
+    document.getElementById("ef-title").focus();
+  }
+
+  function openItemNote(token) {
+    const [targetType, targetId] = (token || "").split(":");
+    const work = (week.work || []).find((w) => w.id === targetId);
+    const classId = workClassId(work) || Game.classIdForTitle(work && work.title);
+    const termId = (work && work.termId) || Game.termOf(seed || baseSeed).id;
+    openSheet("Add a note", `
+      <p class="empty">A reminder or fact on this item — not a question for parents.</p>
+      <textarea id="note-text" maxlength="280" placeholder="What should stay on this assignment?"></textarea>
+      <button type="button" class="btn primary" id="note-send">Save note</button>
+    `);
+    document.getElementById("note-send").addEventListener("click", () => {
+      const text = (document.getElementById("note-text").value || "").trim();
+      if (!text) {
+        Game.toast("Write a note first.");
+        return;
+      }
+      family = Game.addNote(family, {
+        id: Game.uid("n"),
+        targetType,
+        targetId,
+        from: "bennett",
+        kind: "note",
+        text,
+        at: Game.nowIso(),
+        classId: classId || undefined,
+        termId
+      });
+      closeSheet();
+      Game.toast("Note saved on this device.");
+      renderCards();
+      goTo(dayIndex, true);
+    });
+    document.getElementById("note-text").focus();
+  }
+
   function openAsk(token) {
     const [targetType, targetId] = (token || "").split(":");
+    const work = (week.work || []).find((w) => w.id === targetId) || (week.events || []).find((e) => e.id === targetId);
+    const classId = workClassId(work) || Game.classIdForTitle(work && work.title);
+    const termId = (work && work.termId) || Game.termOf(seed || baseSeed).id;
     openSheet("Ask a parent", `
       <p class="empty">One question about this item. It lands on the parent desk — no chat thread.</p>
       <textarea id="ask-text" maxlength="280" placeholder="What do you need to know?"></textarea>
@@ -1205,7 +1303,9 @@
         from: "bennett",
         kind: "question",
         text,
-        at: Game.nowIso()
+        at: Game.nowIso(),
+        classId: classId || undefined,
+        termId
       });
       closeSheet();
       Game.toast("Sent to the parent desk.");

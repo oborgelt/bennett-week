@@ -107,6 +107,28 @@
     return new Date().toISOString();
   }
 
+  const DEFAULT_TERM = { id: "2025-26-s1", label: "2025–26 S1", grade: "sophomore" };
+
+  function termOf(seed) {
+    const t = seed && seed.term;
+    if (t && t.id) {
+      return {
+        id: String(t.id),
+        label: String(t.label || t.id),
+        grade: String(t.grade || "")
+      };
+    }
+    return Object.assign({}, DEFAULT_TERM);
+  }
+
+  function track(type, extra) {
+    try {
+      if (global.Telemetry && typeof global.Telemetry.track === "function") {
+        global.Telemetry.track(type, extra || {});
+      }
+    } catch (_) {}
+  }
+
   function fmtStamp(iso) {
     if (!iso) return "";
     const d = typeof iso === "number" ? new Date(iso) : new Date(iso);
@@ -200,14 +222,16 @@
     return {
       week: {
         deleted: { events: [], work: [], notes: [] },
-        edits: { events: {}, work: {}, notes: {} }
+        edits: { events: {}, work: {}, notes: {} },
+        added: { events: [], work: [], notes: [] }
       },
       progress: {
         deletedClasses: [],
         deletedItems: [],
         classEdits: {},
         itemEdits: {},
-        addedClasses: []
+        addedClasses: [],
+        addedItems: []
       }
     };
   }
@@ -254,12 +278,31 @@
     return value.map(normalizeAddedClass).filter(Boolean);
   }
 
+  function normalizeAddedList(value) {
+    if (!Array.isArray(value)) return [];
+    return value.filter((row) => row && typeof row === "object" && row.id).map((row) => Object.assign({}, row));
+  }
+
+  function normalizeAddedItems(value) {
+    if (!Array.isArray(value)) return [];
+    return value.filter((row) => row && row.id && row.classId).map((row) => ({
+      id: String(row.id),
+      classId: String(row.classId),
+      title: String(row.title || "").trim(),
+      kind: String(row.kind || "assignment"),
+      due: row.due || undefined,
+      termId: row.termId ? String(row.termId) : undefined,
+      note: row.note ? String(row.note) : undefined
+    })).filter((row) => row.title);
+  }
+
   function normalizeOverlay(raw) {
     const o = raw && typeof raw === "object" ? raw : {};
     const week = o.week && typeof o.week === "object" ? o.week : {};
     const progress = o.progress && typeof o.progress === "object" ? o.progress : {};
     const deleted = week.deleted && typeof week.deleted === "object" ? week.deleted : {};
     const edits = week.edits && typeof week.edits === "object" ? week.edits : {};
+    const added = week.added && typeof week.added === "object" ? week.added : {};
     return {
       week: {
         deleted: {
@@ -271,6 +314,11 @@
           events: asIdMap(edits.events),
           work: asIdMap(edits.work),
           notes: asIdMap(edits.notes)
+        },
+        added: {
+          events: normalizeAddedList(added.events),
+          work: normalizeAddedList(added.work),
+          notes: normalizeAddedList(added.notes)
         }
       },
       progress: {
@@ -278,7 +326,8 @@
         deletedItems: asStringList(progress.deletedItems),
         classEdits: asIdMap(progress.classEdits),
         itemEdits: asIdMap(progress.itemEdits),
-        addedClasses: normalizeAddedClasses(progress.addedClasses)
+        addedClasses: normalizeAddedClasses(progress.addedClasses),
+        addedItems: normalizeAddedItems(progress.addedItems)
       }
     };
   }
@@ -330,6 +379,7 @@
         KEYS.ask,
         KEYS.opened,
         KEYS.opens
+        // Keep bw-telemetry, bw-device-id, bw-session-at — usage history is not seed data.
       ].forEach((key) => {
         try { localStorage.removeItem(key); } catch (_) {}
       });
@@ -422,13 +472,24 @@
     });
   }
 
+  function mergeAddedList(baseList, addedList, deleted, edits) {
+    const applied = applyListOverlay(baseList, deleted, edits);
+    const seen = new Set(applied.map((item) => item.id));
+    applyListOverlay(addedList, deleted, edits).forEach((item) => {
+      if (!item || !item.id || seen.has(item.id)) return;
+      applied.push(item);
+      seen.add(item.id);
+    });
+    return applied;
+  }
+
   function applyWeekOverlay(week, family) {
     const base = ensureWeekIds(week);
     const overlay = normalizeFamily(family).overlay.week;
     return Object.assign({}, base, {
-      events: applyListOverlay(base.events, overlay.deleted.events, overlay.edits.events),
-      work: applyListOverlay(base.work, overlay.deleted.work, overlay.edits.work),
-      notes: applyListOverlay(base.notes, overlay.deleted.notes, overlay.edits.notes)
+      events: mergeAddedList(base.events, overlay.added.events, overlay.deleted.events, overlay.edits.events),
+      work: mergeAddedList(base.work, overlay.added.work, overlay.deleted.work, overlay.edits.work),
+      notes: mergeAddedList(base.notes, overlay.added.notes, overlay.deleted.notes, overlay.edits.notes)
     });
   }
 
@@ -461,6 +522,15 @@
       classes.push(Object.assign({}, added, patch, { id: added.id, items }));
       seen.add(added.id);
     });
+    const byClass = new Map(classes.map((cls) => [cls.id, cls]));
+    (overlay.addedItems || []).forEach((row) => {
+      if (!row || !row.id || overlay.deletedItems.indexOf(row.id) >= 0) return;
+      const cls = byClass.get(row.classId);
+      if (!cls) return;
+      if (cls.items.some((item) => item.id === row.id)) return;
+      const ip = overlay.itemEdits[row.id];
+      cls.items.push(ip ? Object.assign({}, row, ip, { id: row.id }) : Object.assign({}, row));
+    });
     return Object.assign({}, base, { classes });
   }
 
@@ -483,6 +553,81 @@
     next.overlay.week.deleted[kind] = pushUnique(next.overlay.week.deleted[kind] || [], id);
     saveFamily(next);
     return next;
+  }
+
+  function addWeekItem(family, kind, item) {
+    const next = normalizeFamily(family);
+    if (!item || !item.id || !next.overlay.week.added[kind]) return next;
+    const list = next.overlay.week.added[kind];
+    if (list.some((row) => row && row.id === item.id)) return next;
+    next.overlay.week.added[kind] = list.concat([Object.assign({}, item)]);
+    saveFamily(next);
+    return next;
+  }
+
+  function addProgressItem(family, classId, item) {
+    const next = normalizeFamily(family);
+    const cid = String(classId || "").trim();
+    if (!cid || !item || !item.id) return next;
+    const list = next.overlay.progress.addedItems || [];
+    if (list.some((row) => row && row.id === item.id)) return next;
+    next.overlay.progress.addedItems = list.concat([Object.assign({}, item, { classId: cid })]);
+    saveFamily(next);
+    return next;
+  }
+
+  function assignmentTitle(classId, title) {
+    const raw = String(title || "").trim();
+    const prefix = classNameForId(classId);
+    if (!raw) return raw;
+    if (!prefix) return raw;
+    if (raw.toLowerCase().indexOf(prefix.toLowerCase()) === 0) return raw;
+    return prefix + ": " + raw;
+  }
+
+  function addAssignment(family, seed, fields) {
+    const src = fields && typeof fields === "object" ? fields : {};
+    const title = String(src.title || "").trim();
+    const classId = String(src.classId || "").trim();
+    if (!title) return { family: normalizeFamily(family), id: "" };
+    const id = src.id || uid("w");
+    const term = termOf(seed);
+    const work = {
+      id,
+      title: assignmentTitle(classId, title),
+      due: src.due,
+      suggest_from: src.suggest_from || undefined,
+      note: src.note ? String(src.note).trim() : undefined,
+      classId: classId || undefined,
+      termId: term.id,
+      addedBy: src.addedBy || "bennett"
+    };
+    let next = addWeekItem(family, "work", work);
+    if (classId) {
+      next = addProgressItem(next, classId, {
+        id,
+        title: title,
+        kind: "assignment",
+        classId,
+        termId: term.id
+      });
+    }
+    const noteText = String(src.note || "").trim();
+    if (noteText) {
+      next = addNote(next, {
+        id: uid("n"),
+        targetType: "work",
+        targetId: id,
+        from: src.addedBy === "parent" ? "parent" : "bennett",
+        kind: "note",
+        text: noteText,
+        at: nowIso(),
+        classId: classId || undefined,
+        termId: term.id
+      });
+    }
+    track("work_add", { assignmentId: id, classId: classId || "", termId: term.id });
+    return { family: next, id };
   }
 
   function editProgressClass(family, id, patch) {
@@ -2240,6 +2385,11 @@
     return "";
   }
 
+  function classIdForWork(work) {
+    if (work && work.classId) return String(work.classId);
+    return classIdForTitle(work && work.title);
+  }
+
   function classNameForId(id) {
     const key = String(id || "").toLowerCase();
     if (key === "band") return "Marching Band";
@@ -2356,7 +2506,7 @@
       if (!w || !w.id) return false;
       if (workState(w.id).done) return false;
       if (ids.has(w.id)) return true;
-      return classIdForTitle(w.title) === (cls && cls.id);
+      return classIdForWork(w) === (cls && cls.id);
     }).length;
   }
 
@@ -2462,7 +2612,7 @@
   }
 
   function emptyProgressSeed() {
-    return { timezone: "America/Chicago", classes: [], sampleOpens: [], eggNames: EGG_NAMES };
+    return { timezone: "America/Chicago", term: Object.assign({}, DEFAULT_TERM), classes: [], sampleOpens: [], eggNames: EGG_NAMES };
   }
 
   function normalizeProgressSeed(raw) {
@@ -2470,6 +2620,7 @@
     return {
       timezone: p.timezone || "America/Chicago",
       gradesNote: p.gradesNote || "",
+      term: termOf(p),
       classes: Array.isArray(p.classes) ? p.classes : [],
       sampleOpens: Array.isArray(p.sampleOpens) ? p.sampleOpens : [],
       eggNames: p.eggNames && typeof p.eggNames === "object" ? Object.assign({}, EGG_NAMES, p.eggNames) : Object.assign({}, EGG_NAMES)
@@ -2481,6 +2632,23 @@
     const seed = normalizeProgressSeed(parseSeed("progress-seed") || emptyProgressSeed());
     const file = await fetchJson("progress.json", null);
     return normalizeProgressSeed(file || seed);
+  }
+
+  async function loadTerms() {
+    const fallback = { current: DEFAULT_TERM.id, terms: [Object.assign({}, DEFAULT_TERM)] };
+    const file = await fetchJson("data/terms.json", null);
+    if (!file || typeof file !== "object") return fallback;
+    const terms = Array.isArray(file.terms)
+      ? file.terms.filter((t) => t && t.id).map((t) => ({
+        id: String(t.id),
+        label: String(t.label || t.id),
+        grade: String(t.grade || ""),
+        start: t.start ? String(t.start) : "",
+        end: t.end ? String(t.end) : ""
+      }))
+      : [Object.assign({}, DEFAULT_TERM)];
+    const current = String(file.current || (terms[0] && terms[0].id) || DEFAULT_TERM.id);
+    return { current, terms };
   }
 
   function workState(id) {
@@ -2533,6 +2701,8 @@
     }
     all[id] = cur;
     write(KEYS.progress, all);
+    if (kind === "started" && !before.started) track("work_start", { assignmentId: id });
+    if (kind === "done" && !before.done) track("work_done", { assignmentId: id });
     return { first, state: workState(id) };
   }
 
@@ -2549,6 +2719,7 @@
     cur.helpOpened = times;
     all[id] = cur;
     write(KEYS.progress, all);
+    track("help_open", { assignmentId: id });
     return workState(id);
   }
 
@@ -2881,8 +3052,16 @@
 
   function addNote(family, note) {
     const next = normalizeFamily(family);
-    next.notes = next.notes.concat([note]);
+    const row = Object.assign({}, note);
+    if (!row.id) row.id = uid("n");
+    if (!row.at) row.at = nowIso();
+    next.notes = next.notes.concat([row]);
     saveFamily(next);
+    track(row.kind === "question" ? "ask_parent" : "work_note", {
+      assignmentId: row.targetId || "",
+      classId: row.classId || "",
+      termId: row.termId || ""
+    });
     return next;
   }
 
@@ -3183,6 +3362,9 @@
     applyWeekOverlay,
     applyProgressOverlay,
     addProgressClass,
+    addProgressItem,
+    addWeekItem,
+    addAssignment,
     editWeekOverlay,
     deleteWeekOverlay,
     editProgressClass,
@@ -3301,6 +3483,12 @@
     latestReflection,
     latestBennettQuestion,
     classIdForTitle,
+    classIdForWork,
+    termOf,
+    DEFAULT_TERM,
+    loadTerms,
+    track,
+    migrateCleanSlate,
     classNameForId,
     classPeriodLine,
     classShowsPeriodChip,

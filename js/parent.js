@@ -226,7 +226,7 @@
     }
     const qHtml = questions.map((n) => `
       <article class="inbox-card">
-        <h3>${n.test ? '<span class="test-tag">TEST</span> ' : ""}Question · ${Game.esc(itemLabel(n.targetType, n.targetId))}</h3>
+        <h3>${n.test ? '<span class="test-tag">TEST</span> ' : ""}${n.kind === "note" ? "Bennett note" : "Question"} · ${Game.esc(itemLabel(n.targetType, n.targetId))}</h3>
         <p>${Game.esc(n.text)}</p>
         <p>${Game.esc(Game.fmtStamp(n.at))}</p>
         <label>Reply with a note
