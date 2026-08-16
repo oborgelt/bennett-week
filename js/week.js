@@ -65,14 +65,7 @@
   const TROPHY_ZONE_ORDER = ["window", "cubbies", "pedestal", "pegboard", "lockers"];
   const PEGBOARD_IDS = ["angle-finder", "field-kit", "daily-pick", "notebook-holding"];
   const LOCKER_IDS = ["unplugged-strap", "first-serve"];
-  const WINDOW_SLOTS = {
-    ace: { l: "7%", t: "10%", w: "16%", h: "30%" },
-    riff: { l: "25%", t: "8%", w: "18%", h: "28%" },
-    scorch: { l: "46%", t: "10%", w: "20%", h: "30%" },
-    deuce: { l: "30%", t: "46%", w: "13%", h: "40%" },
-    bennett: { l: "41%", t: "42%", w: "14%", h: "50%" },
-    fuzz: { l: "54%", t: "50%", w: "16%", h: "30%" }
-  };
+  const CREW_ORDER = ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"];
   const PEGBOARD_SLOTS = {
     "angle-finder": { l: "14%", t: "8%", w: "18%", h: "26%" },
     "field-kit": { l: "38%", t: "34%", w: "20%", h: "28%" },
@@ -678,17 +671,18 @@
   }
 
   function trophyArt(ach) {
-    const crewId = crewIdOf(ach);
-    if (crewId) {
-      return "img/characters/" + crewId + ".png";
-    }
     const unlock = Game.rewardUnlockOf(ach);
-    if (unlock && unlock.type && unlock.type !== "content") {
+    if (unlock && unlock.type && unlock.type !== "content" && unlock.type !== "character") {
       const item = Game.libraryItem(library, unlock.id) || Game.gearLibraryItem(library, unlock.id);
       const src = item ? (Game.librarySrc(item) || Game.libraryThumb(item)) : "";
       if (src) return src;
     }
     return Game.iconFor(ach.icon);
+  }
+
+  function crewPortraitSrc(id) {
+    const ch = ((roster && roster.characters) || []).find((row) => row.id === id);
+    return (ch && ch.poster) || ("img/characters/" + id + ".jpg");
   }
 
   function unlockAt(id) {
@@ -712,8 +706,9 @@
   }
 
   function featuredTrophy(earned) {
-    if (!earned.length) return null;
-    return [...earned].sort((a, b) => unlockAt(b.id) - unlockAt(a.id))[0];
+    const items = earned.filter((ach) => !crewIdOf(ach));
+    if (!items.length) return null;
+    return [...items].sort((a, b) => unlockAt(b.id) - unlockAt(a.id))[0];
   }
 
   function crewSlotItem(id) {
@@ -731,20 +726,15 @@
       const featured = featuredTrophy(earned);
       return featured ? [featured] : [];
     }
-    const items = earned.filter((ach) => homeZoneOf(ach) === zoneId);
-    if (zoneId !== "window") return items;
-    const seen = new Set(items.map(crewIdOf).filter(Boolean));
-    Object.keys(WINDOW_SLOTS).forEach((id) => {
-      if (seen.has(id) || !Game.alreadyUnlockedCharacter(id)) return;
-      items.push(crewSlotItem(id));
-    });
-    return items;
+    if (zoneId === "window") {
+      return CREW_ORDER.filter((id) => Game.alreadyUnlockedCharacter(id)).map(crewSlotItem);
+    }
+    return earned.filter((ach) => homeZoneOf(ach) === zoneId && !crewIdOf(ach));
   }
 
   function slotBox(zoneId, ach, index) {
     const id = crewIdOf(ach) || (Game.rewardUnlockOf(ach) || {}).id || "";
     if (zoneId === "pedestal") return PEDESTAL_SLOT;
-    if (zoneId === "window") return WINDOW_SLOTS[id] || CUBBY_SLOTS[index % CUBBY_SLOTS.length];
     if (zoneId === "pegboard") return PEGBOARD_SLOTS[id] || CUBBY_SLOTS[index % CUBBY_SLOTS.length];
     if (zoneId === "lockers") return LOCKER_SLOTS[id] || CUBBY_SLOTS[(index + 4) % CUBBY_SLOTS.length];
     return CUBBY_SLOTS[index % CUBBY_SLOTS.length];
@@ -772,9 +762,14 @@
   }
 
   function plaqueHtml(ach) {
-    const play = Game.gameHref(ach)
+    const crewId = crewIdOf(ach);
+    const ch = crewId && ((roster && roster.characters) || []).find((row) => row.id === crewId);
+    const watch = ch && ch.video
+      ? `<button type="button" class="trophy-plaque-go" data-watch-crew="${Game.esc(ch.id)}">Watch</button>`
+      : "";
+    const play = watch || (Game.gameHref(ach)
       ? `<a class="trophy-plaque-go" href="${Game.esc(Game.gameHref(ach))}">Play</a>`
-      : contentPlay(ach);
+      : contentPlay(ach));
     return `<aside class="trophy-plaque">
       <strong>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</strong>
       ${plaqueLine(ach) ? `<span>${Game.esc(plaqueLine(ach))}</span>` : ""}
@@ -791,13 +786,21 @@
         if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
       });
     });
+    root.querySelectorAll("[data-watch-crew]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const ch = ((roster && roster.characters) || []).find((row) => row.id === btn.dataset.watchCrew);
+        if (ch) Game.playUnlockClip(roster, ch);
+      });
+    });
   }
 
   function clearTrophyPlaques() {
-    const slots = document.getElementById("trophy-slots");
-    if (!slots) return;
-    slots.querySelectorAll(".trophy-object").forEach((el) => el.classList.remove("is-open"));
-    slots.querySelectorAll(".trophy-plaque").forEach((p) => p.remove());
+    document.querySelectorAll(".trophy-object.is-open, .trophy-portrait.is-open").forEach((el) => {
+      el.classList.remove("is-open");
+    });
+    document.querySelectorAll(".trophy-plaque").forEach((p) => p.remove());
   }
 
   function currentTrophyLook() {
@@ -875,6 +878,51 @@
     }).join("");
   }
 
+  function renderPortraitRail() {
+    const rail = document.getElementById("trophy-portrait-rail");
+    if (!rail) return;
+    if (trophyZone !== "window") {
+      rail.hidden = true;
+      rail.innerHTML = "";
+      return;
+    }
+    rail.hidden = false;
+    const chars = (roster && roster.characters) || [];
+    const byId = new Map(chars.map((ch) => [ch.id, ch]));
+    const ids = CREW_ORDER.slice();
+    chars.forEach((ch) => {
+      if (ch && ch.id && ids.indexOf(ch.id) < 0) ids.push(ch.id);
+    });
+    rail.innerHTML = `<div class="trophy-portrait-shelf">${ids.map((id) => {
+      const ch = byId.get(id);
+      const unlocked = Game.alreadyUnlockedCharacter(id);
+      const name = ch ? ch.name : id;
+      if (!unlocked) {
+        return `<span class="trophy-portrait is-locked" aria-label="Empty frame">
+          <span class="trophy-portrait-frame"><span class="trophy-portrait-empty"></span></span>
+        </span>`;
+      }
+      return `<button type="button" class="trophy-portrait is-ready" data-crew="${Game.esc(id)}" data-id="crew:${Game.esc(id)}" aria-label="${Game.esc(name)}">
+        <span class="trophy-portrait-frame"><img src="${Game.esc(crewPortraitSrc(id))}" alt=""></span>
+        <span class="trophy-portrait-name">${Game.esc(name)}</span>
+      </button>`;
+    }).join("")}</div>`;
+    rail.querySelectorAll(".trophy-portrait.is-ready").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        if (skipTrophyClick) return;
+        if (e.target.closest(".trophy-plaque")) return;
+        e.stopPropagation();
+        const open = el.classList.contains("is-open");
+        clearTrophyPlaques();
+        if (open) return;
+        const ach = crewSlotItem(el.dataset.crew);
+        el.insertAdjacentHTML("beforeend", plaqueHtml(ach));
+        el.classList.add("is-open");
+        bindPlaque(el);
+      });
+    });
+  }
+
   function renderTrophySlots(earned) {
     const slots = document.getElementById("trophy-slots");
     const still = document.getElementById("trophy-close-still");
@@ -882,19 +930,21 @@
     const zone = trophyZone ? TROPHY_ZONES[trophyZone] : null;
     if (!zone) {
       slots.innerHTML = "";
+      renderPortraitRail();
       return;
     }
     still.src = zone.still;
     still.alt = zone.label;
-    const items = trophiesForZone(trophyZone, earned);
+    if (trophyZone === "window") {
+      slots.innerHTML = "";
+      renderPortraitRail();
+      return;
+    }
+    const items = trophiesForZone(trophyZone, earned).filter((ach) => trophyKind(ach) !== "character");
     slots.innerHTML = items.map((ach, i) => {
       const box = slotBox(trophyZone, ach, i);
       const kind = trophyKind(ach);
-      const slotId = crewIdOf(ach);
-      const extra = [
-        trophyZone === "pedestal" ? "trophy-pedestal" : "",
-        slotId === "bennett" ? "trophy-alcove" : ""
-      ].filter(Boolean).map((c) => " " + c).join("");
+      const extra = trophyZone === "pedestal" ? " trophy-pedestal" : "";
       return `<article class="trophy-object trophy-${kind}${extra}" data-id="${Game.esc(ach.id)}" style="${boxStyle(box)}">
         <img src="${Game.esc(trophyArt(ach))}" alt="">
       </article>`;
@@ -914,6 +964,7 @@
         bindPlaque(el);
       });
     });
+    renderPortraitRail();
   }
 
   function renderTrophyRoom() {
@@ -1505,7 +1556,10 @@
       walkup.addEventListener("click", walkUpFromControl);
     }
     stage.addEventListener("pointerdown", (e) => {
-      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque") || e.target.closest(".trophy-walkup")) return;
+      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque") || e.target.closest(".trophy-walkup") || e.target.closest(".trophy-portrait-rail")) {
+        skipTrophyClick = false;
+        return;
+      }
       skipTrophyClick = false;
       trophyDrag = {
         id: e.pointerId,
@@ -1546,7 +1600,7 @@
         return;
       }
       const hit = e && e.target && e.target.closest ? e.target : null;
-      if (hit && (hit.closest(".trophy-object") || hit.closest(".trophy-plaque") || hit.closest(".trophy-leave") || hit.closest(".trophy-walkup"))) {
+      if (hit && (hit.closest(".trophy-object") || hit.closest(".trophy-plaque") || hit.closest(".trophy-leave") || hit.closest(".trophy-walkup") || hit.closest(".trophy-portrait-rail"))) {
         return;
       }
       if (drag.zoneAtStart) {
