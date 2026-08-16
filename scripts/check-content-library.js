@@ -408,7 +408,10 @@ assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHt
 assert(/theme\.css\?v=/.test(weekHtml) && /week\.js\?v=/.test(weekHtml) && /game\.js\?v=/.test(weekHtml), "index should cache-bust css/js");
 assert(!/trophyManage/.test(weekJs), "week.js should not keep a manage mode in Bennett's room");
 assert(/trophy-plaque/.test(weekJs) && /prefersReducedMotion/.test(weekJs), "walk-up objects should open a plaque and respect reduced motion");
-assert(weekJs.includes("hotspotFromEvent") && weekJs.includes("elementFromPoint"), "a tap must walk up from the hotspot under the pointer");
+assert(/id="trophy-walkup"/.test(weekHtml) && /data-zone="window"/.test(weekHtml) && /data-zone="lockers"/.test(weekHtml), "wide room needs five walk-up lantern plaques");
+assert(weekJs.includes("zoneFromStagePoint") && weekJs.includes("getBoundingClientRect()"), "a tap on the still must walk up from the stage viewport");
+assert(weekJs.includes("walkUpFromControl") && /enterTrophyZone\(btn\.dataset\.zone\)/.test(weekJs), "walk-up plaques must call enterTrophyZone");
+assert(!/setPointerCapture/.test(weekJs) && !weekJs.includes("hotspotFromEvent") && !weekJs.includes("elementFromPoint"), "trophy room must not capture the pointer or hit-test the look-layer glows");
 assert((weekJs.match(/maybeAutoPreviewAll/g) || []).length >= 2, "preview should gap-fill on boot and when opening the trophy room");
 assert(!/e\.pointerType !== "mouse"/.test(weekJs), "hover mouse-look should not pan the hotspot layer");
 assert(/id="trophy-order-list"/.test(parentHtml), "parent desk should keep trophy drag-reorder");
