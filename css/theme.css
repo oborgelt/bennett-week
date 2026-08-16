@@ -1175,15 +1175,6 @@ body.week-page.in-treehouse .peek-monkey {
   pointer-events: none;
 }
 
-.trophy-object.trophy-character img {
-  object-fit: contain;
-  object-position: center bottom;
-  border-radius: 0;
-  background: transparent;
-  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.5));
-  box-shadow: none;
-}
-
 .trophy-object.trophy-pedestal img {
   object-fit: contain;
   filter:
@@ -1191,13 +1182,112 @@ body.week-page.in-treehouse .peek-monkey {
     drop-shadow(0 12px 16px rgba(0, 0, 0, 0.5));
 }
 
-.trophy-object.trophy-alcove img {
-  object-fit: contain;
-  object-position: center bottom;
-  border-radius: 0;
+.trophy-portrait-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  padding: 0 8px max(8px, env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+
+.trophy-portrait-rail[hidden] { display: none; }
+
+.trophy-portrait-shelf {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 10px 12px 12px;
+  border: 1px solid #d4a84a;
+  border-bottom-width: 4px;
+  border-radius: 4px 4px 8px 8px;
+  background:
+    linear-gradient(180deg, #9a6734 0%, #6a4218 48%, #3f2610 100%);
+  box-shadow:
+    0 -8px 22px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 230, 170, 0.32),
+    inset 0 -7px 0 #2a1808;
+  pointer-events: auto;
+  overflow: visible;
+}
+
+.trophy-portrait {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 2.7rem;
+  max-width: 5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
   background: transparent;
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45));
-  box-shadow: none;
+  cursor: pointer;
+  text-align: center;
+  color: inherit;
+  appearance: none;
+  font: inherit;
+}
+
+.trophy-portrait.is-locked {
+  cursor: default;
+  opacity: 0.78;
+}
+
+.trophy-portrait-frame {
+  display: block;
+  aspect-ratio: 3 / 4;
+  padding: 5px;
+  border-radius: 2px;
+  background:
+    linear-gradient(145deg, #f0d78a 0%, #c9a24a 18%, #7a4e16 42%, #e6c56a 58%, #5a3610 100%);
+  box-shadow:
+    0 6px 10px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 230, 170, 0.38);
+}
+
+.trophy-portrait-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 16%;
+  background: #1a120c;
+  pointer-events: none;
+}
+
+.trophy-portrait-empty {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 40% 28%, rgba(48, 32, 18, 0.45), rgba(8, 6, 4, 0.94));
+  box-shadow: inset 0 0 0 1px rgba(20, 12, 6, 0.7);
+}
+
+.trophy-portrait-name {
+  display: block;
+  margin-top: 5px;
+  color: #ffe7b0;
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trophy-portrait.is-open .trophy-portrait-frame {
+  box-shadow:
+    0 0 0 2px #f3d27a,
+    0 8px 16px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 230, 170, 0.5);
+}
+
+.trophy-portrait .trophy-plaque {
+  z-index: 7;
 }
 
 .trophy-plaque {
