@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#071618">
+  <title>Messages · Jungle Jam</title>
+  <link rel="stylesheet" href="css/theme.css?v=72">
+</head>
+<body class="parent-page messages-page">
+  <header class="week-head">
+    <div class="banner-wrap">
+      <a class="banner-home" href="index.html" aria-label="Jungle Jam home · This week"></a>
+      <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
+      <a class="banner-title" href="index.html">
+        <h1>Messages</h1>
+        <p>Bennett’s asks · reply here</p>
+      </a>
+      <div class="build-stamp" id="build-stamp">
+        <span>Build 68</span>
+        <span>8/17, 4:50 PM</span>
+      </div>
+    </div>
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+      <p class="progress-tagline">Asks land here — not under Classes, not only on Parent desk.</p>
+      <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
+        <a class="progress-chip" href="progress.html" aria-label="Progress"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="crew-chip" href="characters.html" aria-label="Characters"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
+        <a class="messages-chip on" href="messages.html" aria-current="page" aria-label="Messages"><span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span></a>
+        <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="admin-chip" href="admin.html">Admin</a>
+        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="messages-wrap parent-wrap">
+    <p class="messages-lead">When Bennett taps <strong>Ask</strong> on a week card, it shows up here first. A reply lands on that same card as <strong>Mom/Dad replied</strong>.</p>
+    <p class="messages-sync" id="messages-sync" hidden></p>
+    <div id="messages-inbox"></div>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/build.js?v=72"></script>
+  <script src="js/game.js?v=72"></script>
+  <script src="js/telemetry.js?v=72"></script>
+  <script src="js/messages.js?v=72"></script>
+</body>
+</html>

@@ -710,6 +710,7 @@
     const next = normalizeFamily(family);
     next.notes = updateById(next.notes, id, patch);
     saveFamily(next);
+    queueNotePush(next);
     return next;
   }
 
@@ -717,6 +718,11 @@
     const next = normalizeFamily(family);
     next.notes = next.notes.filter((n) => n.id !== id);
     saveFamily(next);
+    queueNotePush(next);
+    const tel = global.Telemetry;
+    if (tel && typeof tel.deleteNote === "function" && tel.connected && tel.connected()) {
+      tel.deleteNote(id).catch(() => {});
+    }
     return next;
   }
 
@@ -3328,8 +3334,12 @@
       }
     }
     mountSiteViewControl();
+    mountMessagesChip();
     hideAdultShortcuts(hideAdult);
+    hideMessagesChip(view);
+    bounceMessagesIfKid();
     gateAdultPage();
+    paintMessagesChip();
     notifySiteView(view);
     return view;
   }
@@ -3553,7 +3563,366 @@
       classId: row.classId || "",
       termId: row.termId || ""
     });
+    queueNotePush(next);
     return next;
+  }
+
+  function noteTargetKey(n) {
+    return String((n && n.targetType) || "") + ":" + String((n && n.targetId) || "");
+  }
+
+  function isBennettAsk(n) {
+    return !!(n && n.from === "bennett" && n.kind !== "note" && String(n.text || "").trim());
+  }
+
+  function isParentReply(n) {
+    return !!(n && n.from === "parent" && (n.kind === "reply" || n.replyTo) && String(n.text || "").trim());
+  }
+
+  function parentRepliesForAsk(family, ask) {
+    const notes = (family && family.notes) || [];
+    if (!ask) return [];
+    const byId = notes.filter((n) => isParentReply(n) && n.replyTo === ask.id);
+    if (byId.length) return byId;
+    return notes.filter((n) => {
+      return isParentReply(n) && noteTargetKey(n) === noteTargetKey(ask);
+    });
+  }
+
+  function askHasParentReply(family, ask) {
+    return parentRepliesForAsk(family, ask).length > 0;
+  }
+
+  function bennettAsks(family) {
+    return ((family && family.notes) || []).filter(isBennettAsk);
+  }
+
+  function unansweredBennettAsks(family) {
+    return bennettAsks(family).filter((ask) => !askHasParentReply(family, ask));
+  }
+
+  function unansweredAskCount(family) {
+    return unansweredBennettAsks(family).length;
+  }
+
+  function sortNotesNewest(list) {
+    return (list || []).slice().sort((a, b) => String((b && b.at) || "").localeCompare(String((a && a.at) || "")));
+  }
+
+  function noteTargetLabel(week, targetType, targetId) {
+    if (targetType === "work") {
+      const w = ((week && week.work) || []).find((x) => x && x.id === targetId);
+      return w ? w.title : targetId;
+    }
+    const e = ((week && week.events) || []).find((x) => x && x.id === targetId);
+    return e ? e.title : targetId;
+  }
+
+  function noteTargetWhen(week, note) {
+    if (!note) return "";
+    if (note.targetType === "event") {
+      const e = ((week && week.events) || []).find((x) => x && x.id === note.targetId);
+      return (e && (e.start || e.date)) || "";
+    }
+    const w = ((week && week.work) || []).find((x) => x && x.id === note.targetId);
+    return (w && (w.due || w.suggest_from)) || "";
+  }
+
+  function noteDayLabel(week, note) {
+    const when = noteTargetWhen(week, note);
+    if (!when) return "";
+    const d = parseStamp(when) || new Date(when);
+    if (!d || Number.isNaN(d.getTime())) return "";
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Chicago",
+        weekday: "long",
+        month: "numeric",
+        day: "numeric"
+      }).format(d);
+    } catch (_) {
+      return chicagoYmd(d);
+    }
+  }
+
+  function mergeNotesById(local, remote) {
+    const map = Object.create(null);
+    const put = (n) => {
+      if (!n || !n.id) return;
+      const cur = map[n.id];
+      if (!cur) {
+        map[n.id] = n;
+        return;
+      }
+      if (String(n.at || "") > String(cur.at || "")) map[n.id] = Object.assign({}, cur, n);
+    };
+    (local || []).forEach(put);
+    (remote || []).forEach(put);
+    return Object.keys(map).map((id) => map[id]);
+  }
+
+  function notesNewerThan(local, remote) {
+    const remoteMap = Object.create(null);
+    (remote || []).forEach((n) => {
+      if (n && n.id) remoteMap[n.id] = n;
+    });
+    return (local || []).filter((n) => {
+      if (!n || !n.id) return false;
+      const other = remoteMap[n.id];
+      if (!other) return true;
+      return String(n.at || "") > String(other.at || "");
+    });
+  }
+
+  let notePushTimer = null;
+
+  function queueNotePush(family) {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.connected !== "function" || !tel.connected()) return;
+    if (typeof setTimeout !== "function") {
+      pushFamilyNotes(family);
+      return;
+    }
+    if (notePushTimer) clearTimeout(notePushTimer);
+    notePushTimer = setTimeout(() => {
+      notePushTimer = null;
+      pushFamilyNotes(family);
+    }, 400);
+  }
+
+  async function pushFamilyNotes(family) {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.upsertNotes !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    const notes = ((family && family.notes) || []).filter((n) => n && n.id);
+    if (!notes.length) return { pushed: 0, missing: false };
+    try {
+      await tel.upsertNotes(notes);
+      return { pushed: notes.length, missing: false };
+    } catch (err) {
+      const missing = !!(err && (err.status === 404 || err.status === 406));
+      return { pushed: 0, missing };
+    }
+  }
+
+  async function pullFamilyNotes() {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.fetchNotes !== "function" || !tel.connected()) {
+      return { notes: [], missing: false, offline: !tel || !tel.connected() };
+    }
+    try {
+      const rows = await tel.fetchNotes();
+      const notes = (Array.isArray(rows) ? rows : []).map((row) => tel.rowToNote ? tel.rowToNote(row) : row).filter((n) => n && n.id);
+      return { notes, missing: false, offline: false };
+    } catch (err) {
+      const missing = !!(err && (err.status === 404 || err.status === 406));
+      return { notes: [], missing, offline: false };
+    }
+  }
+
+  async function syncFamilyNotes(family) {
+    const next = normalizeFamily(family);
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
+      return { family: next, pulled: 0, pushed: 0, missing: false, offline: true };
+    }
+    const pulled = await pullFamilyNotes();
+    if (pulled.missing) {
+      return { family: next, pulled: 0, pushed: 0, missing: true, offline: false };
+    }
+    const merged = mergeNotesById(next.notes, pulled.notes);
+    const toPush = notesNewerThan(merged, pulled.notes);
+    let pushed = 0;
+    if (toPush.length && typeof tel.upsertNotes === "function") {
+      try {
+        await tel.upsertNotes(toPush);
+        pushed = toPush.length;
+      } catch (err) {
+        if (err && (err.status === 404 || err.status === 406)) {
+          next.notes = merged;
+          saveFamily(next);
+          return { family: next, pulled: pulled.notes.length, pushed: 0, missing: true, offline: false };
+        }
+      }
+    }
+    next.notes = merged;
+    saveFamily(next);
+    return { family: next, pulled: pulled.notes.length, pushed, missing: false, offline: false };
+  }
+
+  function sendParentReply(family, askId, text) {
+    const next = normalizeFamily(family);
+    const q = (next.notes || []).find((n) => n && n.id === askId);
+    const body = String(text || "").trim();
+    if (!q || !body) return next;
+    return addNote(next, {
+      id: uid("note"),
+      targetType: q.targetType,
+      targetId: q.targetId,
+      from: "parent",
+      kind: "reply",
+      replyTo: q.id,
+      text: body,
+      at: nowIso(),
+      classId: q.classId,
+      termId: q.termId
+    });
+  }
+
+  function messagesInboxHtml(family, week, opts) {
+    const o = opts || {};
+    const asks = sortNotesNewest(bennettAsks(family));
+    const open = asks.filter((ask) => !askHasParentReply(family, ask));
+    const done = asks.filter((ask) => askHasParentReply(family, ask));
+    if (!asks.length) {
+      const hint = o.missingTable
+        ? "Asks still save on this device. The cloud table is not set up yet."
+        : (o.offline
+          ? "Asks stay on this phone until Admin → Connect. Then Mom, Dad, and this laptop share them."
+          : "When he taps Ask on a week card, it shows up here on every connected phone.");
+      return `<div class="messages-empty">
+        <p class="empty">No asks from Bennett yet.</p>
+        <p class="messages-empty-hint">${esc(hint)}</p>
+      </div>`;
+    }
+    const card = (ask, unanswered) => {
+      const title = noteTargetLabel(week, ask.targetType, ask.targetId) || "This item";
+      const day = noteDayLabel(week, ask);
+      const replies = parentRepliesForAsk(family, ask);
+      const replyHtml = replies.map((r) => `
+        <div class="msg-reply">
+          <p class="msg-reply-kicker">Mom/Dad replied</p>
+          <p class="msg-reply-text">${esc(r.text)}</p>
+          <p class="msg-stamp">${esc(fmtStamp(r.at))}</p>
+        </div>`).join("");
+      const composer = unanswered ? `
+        <label class="msg-reply-label">Reply
+          <textarea data-reply="${esc(ask.id)}" maxlength="280" rows="3" placeholder="A short answer he will see on that card"></textarea>
+        </label>
+        <div class="parent-actions">
+          <button type="button" class="btn primary" data-send-reply="${esc(ask.id)}">Send reply</button>
+        </div>` : "";
+      return `
+        <article class="inbox-card msg-card${unanswered ? " msg-card-open" : " msg-card-done"}">
+          <p class="msg-kicker">${unanswered ? "Needs a reply" : "Answered"}</p>
+          <h3>${ask.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}${day ? " · " + esc(day) : ""}</h3>
+          <p class="msg-ask">${esc(ask.text)}</p>
+          <p class="msg-stamp">${esc(fmtStamp(ask.at))}</p>
+          ${replyHtml}
+          ${composer}
+        </article>`;
+    };
+    const openHtml = open.length
+      ? `<section class="msg-section"><h2>Needs a reply</h2>${open.map((ask) => card(ask, true)).join("")}</section>`
+      : "";
+    const doneHtml = done.length
+      ? `<section class="msg-section msg-section-done"><h2>Answered</h2>${done.map((ask) => card(ask, false)).join("")}</section>`
+      : "";
+    return openHtml + doneHtml;
+  }
+
+  function bindMessagesInbox(root, opts) {
+    const o = opts || {};
+    let family = o.family;
+    if (!root || !root.querySelectorAll) return family;
+    root.querySelectorAll("[data-send-reply]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const id = b.getAttribute("data-send-reply");
+        const ta = root.querySelector(`[data-reply="${id}"]`);
+        const text = (ta && ta.value || "").trim();
+        if (!text) {
+          toast("Write a reply first.");
+          return;
+        }
+        family = sendParentReply(family, id, text);
+        toast("Reply sent. Bennett will see it on that card.");
+        if (typeof o.onChange === "function") o.onChange(family);
+      });
+    });
+    return family;
+  }
+
+  function messagesChipHtml(on) {
+    return `<a class="messages-chip${on ? " on" : ""}" href="messages.html"${on ? ' aria-current="page"' : ""} aria-label="Messages"><span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span></a>`;
+  }
+
+  function mountMessagesChip() {
+    if (!document.querySelectorAll) return null;
+    const navs = document.querySelectorAll(".hud-nav");
+    if (!navs || !navs.length) return null;
+    const on = pageFile() === "messages.html";
+    Array.from(navs).forEach((nav) => {
+      let chip = nav.querySelector ? nav.querySelector(".messages-chip") : null;
+      if (!chip && nav.insertAdjacentHTML) {
+        const parent = nav.querySelector && nav.querySelector(".parent-chip");
+        if (parent && parent.insertAdjacentHTML) parent.insertAdjacentHTML("beforebegin", messagesChipHtml(on));
+        else nav.insertAdjacentHTML("beforeend", messagesChipHtml(on));
+        chip = nav.querySelector && nav.querySelector(".messages-chip");
+      } else if (!chip && document.createElement) {
+        chip = document.createElement("a");
+        chip.className = "messages-chip" + (on ? " on" : "");
+        chip.setAttribute("href", "messages.html");
+        chip.setAttribute("aria-label", "Messages");
+        chip.innerHTML = `<span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span>`;
+        const parent = nav.querySelector && nav.querySelector(".parent-chip");
+        if (parent && parent.parentNode && parent.parentNode.insertBefore) {
+          parent.parentNode.insertBefore(chip, parent);
+        } else if (nav.appendChild) {
+          nav.appendChild(chip);
+        }
+      }
+      if (chip && on && chip.classList && chip.classList.add) chip.classList.add("on");
+    });
+    paintMessagesChip();
+    return navs[0];
+  }
+
+  function paintMessagesChip(family) {
+    if (!document.querySelectorAll) return 0;
+    const fam = family || getFamilyDraft() || emptyFamily();
+    const n = unansweredAskCount(fam);
+    Array.from(document.querySelectorAll(".messages-chip") || []).forEach((chip) => {
+      if (!chip) return;
+      if (chip.classList && chip.classList.toggle) chip.classList.toggle("has-unread", n > 0);
+      else if (chip.classList && chip.classList.add && chip.classList.remove) {
+        if (n > 0) chip.classList.add("has-unread");
+        else chip.classList.remove("has-unread");
+      }
+      const badge = chip.querySelector ? chip.querySelector(".messages-badge") : null;
+      if (badge) {
+        badge.textContent = n > 9 ? "9+" : String(n);
+        badge.hidden = n === 0;
+      }
+      if (chip.setAttribute) {
+        chip.setAttribute("aria-label", n ? "Messages, " + n + " unanswered" : "Messages");
+      }
+    });
+    return n;
+  }
+
+  function hideMessagesChip(view) {
+    if (!document.querySelectorAll) return;
+    const hide = normalizeSiteView(view || siteView()) === "bennett";
+    const nodes = document.querySelectorAll(".messages-chip, a[href='messages.html']");
+    Array.from(nodes || []).forEach((el) => {
+      if (!el) return;
+      if (el.closest && el.closest(".site-view-gate")) return;
+      el.hidden = !!hide;
+    });
+  }
+
+  function shouldBounceMessagesPage(file, view) {
+    const name = String(file || pageFile()).toLowerCase();
+    return name === "messages.html" && normalizeSiteView(view || siteView()) === "bennett";
+  }
+
+  function bounceMessagesIfKid() {
+    if (!shouldBounceMessagesPage()) return false;
+    try {
+      if (global.location && typeof global.location.replace === "function") {
+        global.location.replace("index.html");
+      }
+    } catch (_) {}
+    return true;
   }
 
   function exportPack(pack, family, roster, library) {
@@ -4061,6 +4430,27 @@
     markUnlocked,
     notesFor,
     addNote,
+    isBennettAsk,
+    isParentReply,
+    parentRepliesForAsk,
+    askHasParentReply,
+    bennettAsks,
+    unansweredBennettAsks,
+    unansweredAskCount,
+    mergeNotesById,
+    syncFamilyNotes,
+    pullFamilyNotes,
+    pushFamilyNotes,
+    sendParentReply,
+    messagesInboxHtml,
+    bindMessagesInbox,
+    messagesChipHtml,
+    mountMessagesChip,
+    paintMessagesChip,
+    hideMessagesChip,
+    shouldBounceMessagesPage,
+    bounceMessagesIfKid,
+    noteTargetLabel,
     exportPack,
     importPack,
     exportFamilyPack,
