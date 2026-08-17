@@ -33,6 +33,9 @@
   let usageDevices = [];
   let drillClass = "";
   let drillAssignment = "";
+  let libCat = "all";
+  let funCountLabel = "";
+  const LIB_CATS = ["all", "ace", "riff", "scorch", "deuce", "fuzz", "bennett", "gear", "crew", "fun"];
 
   function persistLib() {
     Game.saveMomLibrary(library);
@@ -174,7 +177,7 @@
       ? `<div class="lib-grid">${items.map(cardHtml).join("")}</div>`
       : `<p class="empty">${Game.esc(empty || ("No files tagged " + title + " yet."))}</p>`;
     return `
-        <details class="lib-group" data-fold="${Game.esc(id)}"${open}>
+        <details class="lib-group" id="lib-shelf-${Game.esc(id)}" data-lib-shelf="${Game.esc(id)}" data-fold="${Game.esc(id)}"${open}>
           <summary>
             <span>${Game.esc(title)}</span>
             <span class="fold-count">${Game.esc(count)}</span>
@@ -182,6 +185,56 @@
           <p>${Game.esc(GROUP_BLURB[id] || "")}</p>
           ${body}
         </details>`;
+  }
+
+  function applyLibCat() {
+    document.querySelectorAll("[data-lib-shelf]").forEach((el) => {
+      const show = libCat === "all" || el.dataset.libShelf === libCat;
+      el.hidden = !show;
+      if (show && libCat !== "all" && el.tagName === "DETAILS") el.open = true;
+    });
+    if (libCat === "fun") {
+      const panel = document.getElementById("fun-audio-panel");
+      const toggle = document.getElementById("toggle-fun-audio");
+      if (panel) panel.removeAttribute("hidden");
+      if (toggle) {
+        toggle.setAttribute("aria-expanded", "true");
+        if (funCountLabel) toggle.textContent = "Hide audio files · " + funCountLabel;
+      }
+    }
+  }
+
+  function setLibCat(id, jump) {
+    libCat = LIB_CATS.indexOf(id) >= 0 ? id : "all";
+    try { localStorage.setItem("bw-lib-cat", libCat); } catch (_) {}
+    document.querySelectorAll("[data-lib-cat]").forEach((tab) => {
+      const on = tab.dataset.libCat === libCat;
+      tab.classList.toggle("on", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    applyLibCat();
+    if (!jump) return;
+    const target = libCat === "all"
+      ? document.getElementById("library-groups")
+      : document.querySelector("[data-lib-shelf=\"" + libCat + "\"]");
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function bindLibraryCats() {
+    const nav = document.getElementById("library-cats");
+    if (!nav || nav.dataset.bound === "1") return;
+    nav.dataset.bound = "1";
+    try {
+      const saved = localStorage.getItem("bw-lib-cat") || "";
+      if (LIB_CATS.indexOf(saved) >= 0) libCat = saved;
+    } catch (_) {}
+    nav.addEventListener("click", (e) => {
+      const tab = e.target.closest("[data-lib-cat]");
+      if (!tab) return;
+      setLibCat(tab.dataset.libCat, true);
+    });
+    setLibCat(libCat, false);
   }
 
   function renderLibrary() {
@@ -194,15 +247,18 @@
     const gear = groupBlock("gear", "Gear", Game.gearLibraryItems(library), "No awardable gear stills yet.");
     const crew = groupBlock("crew", "Crew", Game.libraryFor(library, "crew", false));
     const funCount = funItems.length === 1 ? "1 audio file" : funItems.length + " audio files";
+    funCountLabel = funCount;
     host.innerHTML = `
-      <div class="audio-toolbar">
-        <button type="button" class="btn primary" id="toggle-fun-audio" aria-expanded="${funOpen ? "true" : "false"}">
-          ${funOpen ? "Hide audio files" : "Show audio files"} · ${Game.esc(funCount)}
-        </button>
-        <p>Tap a card once to play. Hide parks the whole list.</p>
-      </div>
-      <div id="fun-audio-panel" class="fun-audio-panel"${funOpen ? "" : " hidden"}>
-        <div class="lib-grid">${funItems.map(cardHtml).join("")}</div>
+      <div class="lib-shelf" id="lib-shelf-fun" data-lib-shelf="fun">
+        <div class="audio-toolbar">
+          <button type="button" class="btn primary" id="toggle-fun-audio" aria-expanded="${funOpen ? "true" : "false"}">
+            ${funOpen ? "Hide audio files" : "Show audio files"} · ${Game.esc(funCount)}
+          </button>
+          <p>Tap a card once to play. Hide parks the whole list.</p>
+        </div>
+        <div id="fun-audio-panel" class="fun-audio-panel"${funOpen ? "" : " hidden"}>
+          <div class="lib-grid">${funItems.map(cardHtml).join("")}</div>
+        </div>
       </div>
       ${charShelves}
       ${gear}
@@ -223,6 +279,7 @@
       el.addEventListener("toggle", () => saveFold(el.dataset.fold, el.open));
     });
     bindLibraryClicks(host);
+    applyLibCat();
     renderCues();
   }
 
@@ -841,6 +898,7 @@
       reader.readAsText(file);
     });
 
+    bindLibraryCats();
     renderLibrary();
     renderIngredients();
   }

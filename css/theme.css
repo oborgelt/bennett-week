@@ -233,6 +233,7 @@ header.week-head {
   font-weight: 750;
   font-size: 0.78rem;
   padding: 0 10px;
+  cursor: pointer;
 }
 
 .parent-chip,
@@ -1033,6 +1034,20 @@ body.week-page.in-treehouse .peek-monkey {
 }
 
 .trophy-stage.is-dragging { cursor: grabbing; }
+
+.trophies,
+#trophies,
+.parent-chip,
+.admin-chip,
+.progress-chip,
+.crew-chip,
+.week-chip,
+.trophy-lantern,
+.trophy-back,
+.trophy-leave,
+.trophy-portrait.is-ready {
+  cursor: pointer !important;
+}
 
 .trophy-view {
   position: absolute;
@@ -2879,6 +2894,7 @@ body.crew-page {
   padding: 0 10px;
   text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .story-chip {
@@ -3460,6 +3476,47 @@ body.admin-page {
 .admin-jump a:focus-visible {
   border-color: var(--banana);
   color: var(--banana);
+}
+
+.library-cats {
+  position: sticky;
+  top: 0;
+  z-index: 13;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 10px 0 12px;
+  background: rgba(7, 22, 24, 0.96);
+  border-bottom: 1px solid rgba(244, 211, 94, 0.22);
+}
+
+.library-cat {
+  min-height: var(--tap);
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(18, 42, 46, 0.96);
+  color: var(--ink);
+  font-size: 1.02rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.library-cat.on,
+.library-cat[aria-selected="true"] {
+  border-color: var(--banana);
+  background: rgba(240, 195, 110, 0.2);
+  color: var(--banana);
+}
+
+.library-cat:hover,
+.library-cat:focus-visible {
+  border-color: var(--banana);
+}
+
+[data-lib-shelf] {
+  scroll-margin-top: 132px;
 }
 
 .cue-pin {
