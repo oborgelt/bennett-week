@@ -124,20 +124,46 @@
     };
   }
 
+  function familyToken() {
+    try {
+      if (global.Telemetry && typeof global.Telemetry.getConfig === "function") {
+        return String(global.Telemetry.getConfig().familyToken || "").trim();
+      }
+    } catch (_) {}
+    try {
+      const raw = JSON.parse(localStorage.getItem("bw-telemetry") || "null");
+      return String((raw && raw.familyToken) || "").trim();
+    } catch (_) {
+      return "";
+    }
+  }
+
+  async function postAsk(url, payload, headers) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: Object.assign({ "Content-Type": "application/json" }, headers || {}),
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error("ask unavailable");
+    const data = await res.json();
+    if (!data || data.error || !data.reply) throw new Error((data && data.error) || "ask error");
+    return Object.assign({ live: true, source: data.source || "live" }, data);
+  }
+
   async function ask(payload) {
     const title = (payload && payload.title) || "";
     const messages = (payload && payload.messages) || [];
     const lastUser = [...messages].reverse().find((m) => m && m.role === "bennett") || {};
+    const token = familyToken();
+    if (token) {
+      try {
+        return await postAsk("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask", payload, {
+          "x-family-token": token
+        });
+      } catch (_) {}
+    }
     try {
-      const res = await fetch("/api/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error("ask unavailable");
-      const data = await res.json();
-      if (!data || data.error || !data.reply) throw new Error((data && data.error) || "ask error");
-      return Object.assign({ live: true, source: "live" }, data);
+      return await postAsk("/api/ask", payload);
     } catch (_) {
       return testAsk(title, lastUser.text || "");
     }

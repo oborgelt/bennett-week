@@ -31,6 +31,7 @@
     { id: "undo", label: "Undo is clicked" },
     { id: "work-start", label: "I started this is clicked" },
     { id: "work-done", label: "Done is clicked" },
+    { id: "tables", label: "The table is clicked" },
     { id: "egg-win", label: "Egg game — 41 eggs win" },
     { id: "egg-closed", label: "Egg game — company shutdown" },
     { id: "egg-end", label: "Egg game — closed by the company" },

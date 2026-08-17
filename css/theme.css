@@ -3441,6 +3441,11 @@ body.admin-page {
   margin: 0 0 10px;
 }
 
+#spend-stats .usage-tile .stat-num {
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
 .usage-health,
 .usage-stats {
   display: grid;

@@ -280,6 +280,66 @@
     if (el) el.textContent = text;
   }
 
+  function paintSpendStatus(text) {
+    const el = document.getElementById("spend-status");
+    if (el) el.textContent = text;
+  }
+
+  function familyToken() {
+    const T = tel();
+    const cfg = T && T.getConfig ? T.getConfig() : {};
+    return String(cfg.familyToken || "").trim();
+  }
+
+  function formatUsd(n) {
+    const x = Number(n);
+    if (!isFinite(x) || x <= 0) return "$0.00";
+    if (x < 0.01) return "$" + x.toFixed(4);
+    return "$" + x.toFixed(2);
+  }
+
+  function renderSpend(data) {
+    const host = document.getElementById("spend-stats");
+    if (!host) return;
+    const row = data || {};
+    const last = row.last;
+    const lastLabel = last && last.ts
+      ? Game.fmtStamp(last.ts) + (last.model ? " · " + last.model : "")
+      : "—";
+    host.innerHTML = `
+      <div class="usage-stats">
+        <div class="usage-tile"><div class="stat-num">${Game.esc(formatUsd(row.spend_24h_usd))}</div><div class="stat-label">spend today</div></div>
+        <div class="usage-tile"><div class="stat-num">${Number(row.calls_24h) || 0}</div><div class="stat-label">calls today</div></div>
+        <div class="usage-tile"><div class="stat-num">${Game.esc(formatUsd(row.spend_7d_usd))}</div><div class="stat-label">spend 7d</div></div>
+        <div class="usage-tile"><div class="stat-num">${Game.esc(formatUsd(row.spend_all_usd))}</div><div class="stat-label">all-time</div></div>
+        <div class="usage-tile"><div class="stat-num">${Game.esc(lastLabel)}</div><div class="stat-label">last call</div></div>
+      </div>`;
+  }
+
+  async function loadSpend() {
+    const host = document.getElementById("spend-stats");
+    const token = familyToken();
+    if (!token) {
+      paintSpendStatus("Connect this device with the family token to read spend.");
+      if (host) host.innerHTML = "";
+      return;
+    }
+    paintSpendStatus("Loading spend…");
+    try {
+      const res = await fetch("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/spend", {
+        method: "GET",
+        headers: { "x-family-token": token }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((data && data.error) || "spend failed");
+      paintSpendStatus("Spend from Jungle Jam Ask AI.");
+      renderSpend(data);
+    } catch (_) {
+      paintSpendStatus("Could not read spend. Check the family token.");
+      if (host) host.innerHTML = "";
+    }
+  }
+
   function countBy(events, type) {
     return events.filter((e) => e.type === type).length;
   }
@@ -466,6 +526,7 @@
       renderHealth([], []);
       renderStats([]);
       renderClasses([]);
+      await loadSpend();
       return;
     }
     paintUsageStatus("Loading usage…");
@@ -485,6 +546,7 @@
       renderStats([]);
       renderClasses([]);
     }
+    await loadSpend();
   }
 
   function bindUsage() {

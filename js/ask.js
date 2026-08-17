@@ -54,7 +54,7 @@
     document.getElementById("ask-send").disabled = false;
     renderLog();
     if (!data.live) {
-      Game.toast("TEST mentor — run serve.py with ANTHROPIC_API_KEY for live Ask AI.");
+      Game.toast("TEST mentor — connect Admin with the family token for live Ask AI.");
     }
   }
 
