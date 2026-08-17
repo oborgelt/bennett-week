@@ -71,7 +71,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=80/.test(askHtml) && /ask\.js\?v=80/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=82/.test(askHtml) && /ask\.js\?v=82/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8"), fs.readFileSync(path.join(root, "js/messages.js"), "utf8"), fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -192,6 +192,15 @@ trophyStills.forEach((row) => {
   assert(!item.slot, row.id + " is not locker art or gear");
   assert(fs.existsSync(path.join(root, item.path)), row.id + " should already be on disk");
 });
+assert(fs.existsSync(path.join(root, "audio/tablesloud.mp3")), "audio/tablesloud.mp3 should already be on disk");
+const tableClick = library.items.find((item) => item.id === "tablesloud");
+assert(tableClick, "tablesloud should be in library.json");
+assert.strictEqual(tableClick.label, "Table click", "tablesloud label");
+assert.strictEqual(tableClick.kind, "audio", "tablesloud is audio");
+assert.strictEqual(tableClick.path, "audio/tablesloud.mp3", "tablesloud path");
+assert.strictEqual(tableClick.character, "fun", "tablesloud sits on Fun / Sounds");
+assert(!tableClick.device, "tablesloud is shipped, not a device drop");
+assert(!tableClick.synth, "tablesloud is the mp3, not a synth");
 ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
   const clip = library.items.find((item) => item.id === id + "-clip");
   const poster = library.items.find((item) => item.id === id + "-poster");
@@ -205,6 +214,7 @@ assert(/outfit/.test(parentHtml), "parent desk should offer an outfit reward typ
 assert(adminHtml.includes("img/library/angle-finder.png") && adminHtml.includes("img/library/daily-pick.png"), "Admin file:// seed should include gear stills");
 assert(adminHtml.includes("img/library/ace-frog.mp4") && adminHtml.includes("img/library/riff-bird.mp4") && adminHtml.includes("img/library/scorch-spider.mp4"), "Admin file:// seed should include fight clips");
 assert(adminHtml.includes("img/library/trophy-room.jpg") && adminHtml.includes("img/library/trophy-window.jpg"), "Admin file:// seed should include trophy-room stills");
+assert(adminHtml.includes("audio/tablesloud.mp3") && /"id"\s*:\s*"tablesloud"/.test(adminHtml), "Admin file:// seed should include Table click");
 assert(/Reload shipped files/.test(adminHtml), "Admin should offer Reload shipped files");
 assert(!/id="clear-audio"|id="wipe-fun"|Clear (all )?Fun|Delete all (audio|sounds)/i.test(adminHtml), "do not add a control that clears Fun/Sounds");
 assert(/Jungle Jam/.test(parentHtml), "parent desk should keep the Jungle Jam product name");
@@ -520,6 +530,23 @@ const cued = Game.setSoundCue(Game.emptyFamily(), "egg-end", "honk");
 assert.strictEqual(cued.soundCues["egg-end"], "honk");
 assert.strictEqual(Game.cueLibraryItem(cued, funLib, "egg-end").id, "honk");
 assert.strictEqual(Game.playSoundCue(Game.emptyFamily(), funLib, "missing-cue"), false);
+assert.strictEqual(Game.DEFAULT_SOUND_CUES.undo, "tablesloud", "default undo cue resolves to tablesloud");
+assert.strictEqual(Game.DEFAULT_SOUND_CUES.tables, "tablesloud", "default table cue is the same clip");
+assert.strictEqual(Game.defaultSoundCueId("undo"), "tablesloud");
+assert.strictEqual(Game.defaultSoundCueId("tables"), "tablesloud");
+assert.strictEqual(Game.resolveCueItemId(Game.emptyFamily(), funLib, "undo"), "tablesloud", "empty family undo uses the shipped click");
+assert.strictEqual(Game.resolveCueItemId(null, null, "undo"), "tablesloud", "undo fallback does not need a family pack");
+assert.strictEqual(Game.resolveCueItemId({ soundCues: { undo: "gone-clip" } }, funLib, "undo"), "tablesloud", "broken undo id falls back to tablesloud");
+assert.strictEqual(Game.resolveCueItemId(Game.setSoundCue(Game.emptyFamily(), "undo", "honk"), funLib, "undo"), "honk", "keep a device undo assignment");
+assert.strictEqual(Game.cueSoundLabel(Game.emptyFamily(), Game.defaultLibrary(), "undo"), "Table click");
+assert.strictEqual(Game.cueSoundLabel(Game.emptyFamily(), Game.defaultLibrary(), "tables"), "Table click");
+assert.strictEqual(Game.resolveCueLibraryItem(null, { items: [] }, "undo").path, "audio/tablesloud.mp3");
+assert(Game.playSoundCue(null, null, "undo"), "playSoundCue undo plays with no family draft");
+assert(Game.playSoundCue(Game.emptyFamily(), { items: [] }, "undo"), "playSoundCue undo plays when the library blob is empty");
+assert(Game.playSoundCue({ soundCues: { undo: "gone-clip" } }, { items: [] }, "undo"), "playSoundCue undo plays when the assigned id is missing");
+assert(Game.playSoundCue(Game.emptyFamily(), funLib, "tables"), "clean-device table cue plays the shipped click");
+assert.strictEqual(Game.shippedTableClick().id, "tablesloud");
+assert.strictEqual(Game.shippedTableClick().path, "audio/tablesloud.mp3");
 assert(Game.audioLibraryItems(funLib).some((item) => item.id === "honk"));
 assert(Game.playRandomLibraryItem(funLib), "random clip should pick an audio item");
 const shuffled = Game.setSoundCue(Game.emptyFamily(), "egg-end", Game.RANDOM_CUE);
@@ -536,7 +563,10 @@ const cleared = Game.setSoundCue(cued, "egg-end", "");
 assert(!cleared.soundCues["egg-end"], "clearing a cue should drop it");
 const listed = Game.assignedCueRows(Game.setSoundCue(Game.emptyFamily(), "undo", "honk"), { work: [], events: [] });
 assert(listed.some((row) => row.id === "undo" && row.soundId === "honk" && /Undo/i.test(row.label)), "saved cue list should include Undo");
-assert(!Game.assignedCueRows(Game.emptyFamily(), { work: [], events: [] }).length, "empty family has no saved sounds");
+const bakedCues = Game.assignedCueRows(Game.emptyFamily(), { work: [], events: [] });
+assert(bakedCues.some((row) => row.id === "undo" && row.soundId === "tablesloud" && /Undo/i.test(row.label)), "Admin should show Table click as the Undo default");
+assert(bakedCues.some((row) => row.id === "tables" && row.soundId === "tablesloud"), "Admin should show Table click as the table default");
+assert(!bakedCues.some((row) => row.id === "egg-end"), "empty family does not invent other saved sounds");
 assert.strictEqual(Game.inferKind("img/library/foo.mp3", "", ""), "audio");
 assert.strictEqual(Game.labelFromFilename("my-cool_honk.mp3"), "My Cool Honk");
 assert.strictEqual(Game.labelFromFilename("TEST-beep.wav"), "TEST Beep");
@@ -611,6 +641,7 @@ fightSeed.forEach((row) => {
   assert(Game.defaultLibrary().items.some((item) => item.id === row.id && item.slot === "content" && item.kind === "video"), "file:// default library includes " + row.id);
 });
 assert(Game.defaultLibrary().items.some((item) => item.id === "scorch-spider-beam" && item.kind === "image"), "file:// default library includes the Scorch beam still");
+assert(Game.defaultLibrary().items.some((item) => item.id === "tablesloud" && item.path === "audio/tablesloud.mp3" && item.character === "fun" && !item.device), "file:// default library includes Table click");
 trophyStills.forEach((row) => {
   assert(Game.defaultLibrary().items.some((item) => item.id === row.id && item.character === "crew" && item.kind === "image"), "file:// default library includes " + row.id);
 });
@@ -628,6 +659,7 @@ assert(mergedDraft.items.some((item) => item.id === "ace-frog" && item.slot === 
 assert(mergedDraft.items.some((item) => item.id === "riff-clip" && item.path === "img/characters/riff.mp4"), "merge should restore Riff locker clip");
 assert(mergedDraft.items.some((item) => item.id === "field-kit" && item.slot === "tool" && item.path === "img/library/field-kit.png"), "merge should restore Field Kit");
 assert(mergedDraft.items.some((item) => item.id === "orin-honk" && item.device && item.character === "fun"), "merge should keep device Fun/Sounds audio");
+assert(mergedDraft.items.some((item) => item.id === "tablesloud" && item.path === "audio/tablesloud.mp3" && !item.device), "merge should keep shipped Table click");
 ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
   const clip = Game.libraryItem(mergedDraft, id + "-clip");
   const poster = Game.libraryItem(mergedDraft, id + "-poster");
@@ -774,7 +806,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=80/.test(weekHtml) && /week\.js\?v=80/.test(weekHtml) && /game\.js\?v=80/.test(weekHtml) && /telemetry\.js\?v=80/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=82/.test(weekHtml) && /week\.js\?v=82/.test(weekHtml) && /game\.js\?v=82/.test(weekHtml) && /telemetry\.js\?v=82/.test(weekHtml), "index should cache-bust css/js");
 assert(/canvas-check/.test(weekJs) && /Canvas check/.test(weekJs), "Canvas check lives in week.js so Bennett sees it");
 assert(/Canvas already has this/.test(weekJs), "submitted Canvas callout is on This Week");
 assert(/Class time Tuesday/.test(weekJs) && /Canvas due Thursday/.test(weekJs), "comics show class time and Canvas due");
@@ -787,10 +819,10 @@ assert(/data-usage-who="orin"/.test(usageBlock) && />Orin</.test(usageBlock), "u
 assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "usage who-filter includes Mom");
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=80/.test(progressHtml) && /theme\.css\?v=80/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=82/.test(progressHtml) && /theme\.css\?v=82/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*78/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*80/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1111,6 +1143,7 @@ assert(adminChip.hidden && parentChip.hidden && refsChip.hidden, "bennett hides 
 assert(messagesChip.hidden, "Bennett view hides the Messages chip");
 assert(Game.audioAllowed(), "Bennett still hears audio");
 assert(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "tables", "honk"), funLib, "tables"), "Bennett table cue still plays");
+assert(Game.playSoundCue(Game.emptyFamily(), null, "undo"), "Bennett hears the shipped undo click");
 
 localStorage.removeItem("bw-signin-seen");
 const clipChar = { id: "bennett", name: "Bennett", video: "img/characters/bennett.mp4", poster: "img/characters/bennett.jpg" };
@@ -1252,6 +1285,12 @@ document.documentElement = prevRoot;
   await Game.hydrateLibraryBlobs(mom);
   const back = Game.libraryItem(mom, added.item.id);
   assert(Game.librarySrc(back), "import should restore the device blob");
+
+  localStorage.removeItem("bw-family");
+  localStorage.removeItem("bw-mom-library");
+  assert(!Game.getFamilyDraft(), "first visit has no family pack");
+  assert(!Game.getMomLibrary(), "first visit has no library draft");
+  assert(await Game.playUndoSound(), "playUndoSound plays the shipped click with no family pack");
 
   console.log("check-content-library: ok");
 })().catch((err) => {
