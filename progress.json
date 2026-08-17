@@ -75,7 +75,13 @@
       "room": "Rm 113",
       "teacher": "Pfeiff",
       "khan": ["hs-chemistry"],
-      "items": []
+      "items": [
+        {
+          "id": "chem-about-me",
+          "title": "About Me Slides",
+          "kind": "assignment"
+        }
+      ]
     },
     {
       "id": "strength",
@@ -104,7 +110,7 @@
         },
         {
           "id": "eng-comics",
-          "title": "Finish summer comic strips",
+          "title": "Summer Narrative Comic Strip",
           "kind": "assignment"
         },
         {

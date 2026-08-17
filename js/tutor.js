@@ -21,17 +21,17 @@
     }
     if (/comic/.test(blob)) {
       return {
-        explain: "Finish the summer comic strips you already started in class. The job is to complete the pages you have, not invent a new graphic novel. Check panels, speech, and that the story lands.",
+        explain: "Summer Narrative Comic Strip — paper, done in class Tuesday. Official Canvas due is Thursday 11:59pm. If you were absent, see the teacher for the directions. Illustration: color in every square, at most 2 word-only boxes. On the back, a short narrative — at least 5 sentences about the events in the comic.",
         cards: [
-          { front: "What is due?", back: "The summer comic strips from the Daily Agendas sheet." },
-          { front: "Where did this start?", back: "In class on 8/17 — pick up from that work." },
-          { front: "A first move tonight", back: "Find the pages, count unfinished panels, finish one strip." }
+          { front: "What is due?", back: "The paper comic plus a paragraph on the back. Canvas due Thursday 11:59pm." },
+          { front: "Where did this start?", back: "In class Tuesday. If you were absent, see the teacher for the directions." },
+          { front: "A first move tonight", back: "Find the paper. Count squares still missing color, then write the 5-sentence paragraph on the back." }
         ],
-        start: "Find the pages, count unfinished panels, finish one strip.",
+        start: "Find the paper. Count squares still missing color, then write the 5-sentence paragraph on the back.",
         quiz: [
-          { q: "Is this a brand-new comic?", a: "No — finish the summer strips you started." },
-          { q: "What should you check in each panel?", a: "Drawing, words, and that the joke or story is clear." },
-          { q: "What is a tiny start?", a: "Open the pages and finish one unfinished strip." }
+          { q: "Is this submitted on Canvas?", a: "No — submitting on paper." },
+          { q: "What does Illustration need?", a: "A drawing in every square, in color. No more than 2 boxes words-only." },
+          { q: "What goes on the back?", a: "A short narrative — at least 5 sentences about the events in the comic." }
         ]
       };
     }
@@ -147,7 +147,7 @@
     const blob = (t + " " + (lastUser || "")).toLowerCase();
     let reply = "";
     if (/comic|panel/.test(blob)) {
-      reply = "Before the next box — what does that panel need besides pictures? A word, a beat, something the reader can hear? What's the one thing this strip has to say?";
+      reply = "Paper comic from class — color in every square, at most two word-only boxes. What's still blank? Then the back: five sentences that tell the same story. Which panel will the first sentence cover?";
     } else if (/names/.test(blob)) {
       reply = "What's the one true thing you're awesome at — and can you say it in one breath right after your name, twice?";
     } else if (/notebook|index card/.test(blob)) {

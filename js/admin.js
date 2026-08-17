@@ -33,6 +33,8 @@
   let usageDevices = [];
   let drillClass = "";
   let drillAssignment = "";
+  let usageWho = "all";
+  const USAGE_WHO = ["all", "bennett", "orin", "parent"];
   let adminTab = "connect";
   let libCat = "all";
   let funCountLabel = "";
@@ -443,6 +445,34 @@
     return events.filter((e) => e.type === type).length;
   }
 
+  function filterUsageEvents(events) {
+    if (usageWho === "all") return events || [];
+    return (events || []).filter((e) => e.role === usageWho);
+  }
+
+  function filterUsageDevices(devices) {
+    if (usageWho === "all") return devices || [];
+    return (devices || []).filter((d) => d.role === usageWho);
+  }
+
+  function paintUsage() {
+    const events = filterUsageEvents(usageEvents);
+    const devices = filterUsageDevices(usageDevices);
+    renderHealth(events, devices);
+    renderStats(events);
+    renderClasses(events);
+  }
+
+  function setUsageWho(who) {
+    usageWho = USAGE_WHO.indexOf(who) >= 0 ? who : "all";
+    document.querySelectorAll("[data-usage-who]").forEach((btn) => {
+      const on = btn.dataset.usageWho === usageWho;
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    paintUsage();
+  }
+
   function hoursAgoIso(h) {
     return new Date(Date.now() - h * 3600 * 1000).toISOString();
   }
@@ -622,9 +652,9 @@
     fillTerms();
     if (!T || !T.connected()) {
       paintUsageStatus("Not connected. Events stay on this device until you paste URL, anon key, and family token.");
-      renderHealth([], []);
-      renderStats([]);
-      renderClasses([]);
+      usageEvents = [];
+      usageDevices = [];
+      paintUsage();
       await loadSpend();
       return;
     }
@@ -636,14 +666,12 @@
       usageDevices = await T.fetchDevices() || [];
       const queued = await T.queuedCount();
       paintUsageStatus("Connected · " + usageEvents.length + " events" + (queued ? " · " + queued + " waiting to send" : "") + " · this device " + T.deviceId());
-      renderHealth(usageEvents, usageDevices);
-      renderStats(usageEvents);
-      renderClasses(usageEvents);
+      paintUsage();
     } catch (err) {
       paintUsageStatus("Could not read usage. Check the URL, anon key, family token, and that telemetry.sql ran.");
-      renderHealth([], []);
-      renderStats([]);
-      renderClasses([]);
+      usageEvents = [];
+      usageDevices = [];
+      paintUsage();
     }
     await loadSpend();
   }
@@ -678,6 +706,15 @@
       drillAssignment = "";
       loadUsage();
     });
+    const who = document.getElementById("usage-who");
+    if (who && who.dataset.bound !== "1") {
+      who.dataset.bound = "1";
+      who.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-usage-who]");
+        if (!btn) return;
+        setUsageWho(btn.dataset.usageWho);
+      });
+    }
   }
 
   async function boot() {

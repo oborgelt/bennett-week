@@ -367,6 +367,148 @@
     return "item" + (st.done ? " done" : st.started ? " started" : "");
   }
 
+  function canvasOf(w) {
+    return (w && w.canvas && typeof w.canvas === "object") ? w.canvas : null;
+  }
+
+  function canvasStatusLabel(c) {
+    if (!c || !c.status) return "";
+    if (c.status === "submitted") return "Submitted";
+    if (c.status === "open") return "Open";
+    return "";
+  }
+
+  function nightWhen(iso) {
+    if (!iso) return "";
+    const d = parseLocal(iso);
+    const today = todayInChicago();
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const dueDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const diff = Math.round((dueDay - start) / 86400000);
+    if (diff === 0) return "tonight";
+    if (diff === 1) return "tomorrow night";
+    return dateLabel(d) + " night";
+  }
+
+  function canvasBadgeHtml(w) {
+    const c = canvasOf(w);
+    const label = canvasStatusLabel(c);
+    if (!label) return "";
+    return `<span class="canvas-tag ${Game.esc(c.status)}">${Game.esc(label)}</span>`;
+  }
+
+  function canvasCalloutHtml(w) {
+    const c = canvasOf(w);
+    if (!c || c.status !== "submitted") return "";
+    if (Game.workState(w.id).done) return "";
+    return `<p class="canvas-callout">Canvas already has this — tap Done if you are finished.</p>`;
+  }
+
+  function canvasDueBits(w) {
+    const c = canvasOf(w);
+    const bits = [];
+    if (c && c.class_due && (c.due || w.due) && String(c.class_due).slice(0, 10) !== String(c.due || w.due).slice(0, 10)) {
+      bits.push("Class time Tuesday");
+      bits.push("Canvas due Thursday 11:59pm");
+    }
+    return bits;
+  }
+
+  function canvasRubricHtml(c) {
+    const rows = (c && Array.isArray(c.rubric)) ? c.rubric : [];
+    if (!rows.length) return "";
+    return rows.map((row) => `
+      <div class="canvas-rubric">
+        <strong>${Game.esc(row.name || "Rubric")}${row.points ? " (" + Game.esc(String(row.points)) + " pts)" : ""}</strong>
+        ${row.text ? `<p>${Game.esc(row.text)}</p>` : ""}
+        ${row.ratings ? `<p class="canvas-ratings">${Game.esc(row.ratings)}</p>` : ""}
+      </div>`).join("");
+  }
+
+  function canvasFactsHtml(w) {
+    const c = canvasOf(w);
+    if (!c) return "";
+    const bits = [];
+    const status = canvasStatusLabel(c);
+    if (status) bits.push(status);
+    if (c.points != null) bits.push(c.points + " pt" + (Number(c.points) === 1 ? "" : "s"));
+    if (c.submit === "paper") bits.push("submitting on paper");
+    const dueBits = canvasDueBits(w);
+    return `
+      <div class="canvas-facts">
+        ${bits.length ? `<p class="canvas-facts-line">${Game.esc(bits.join(" · "))}</p>` : ""}
+        ${dueBits.length ? `<p class="canvas-facts-line">${Game.esc(dueBits.join(" · "))}</p>` : ""}
+        ${c.absent ? `<p class="canvas-absent">${Game.esc(c.absent)}</p>` : ""}
+        ${canvasRubricHtml(c)}
+      </div>`;
+  }
+
+  function workMetaHtml(w, startThis) {
+    const c = canvasOf(w);
+    const bits = [];
+    if (startThis) bits.push("Due " + dateLabel(parseLocal(w.due)));
+    else if (w.due) bits.push(fmtTime(w.due));
+    canvasDueBits(w).forEach((bit) => bits.push(bit));
+    if (w.note && !c) bits.push(w.note);
+    else if (w.note && c && !c.rubric && !c.absent) bits.push(w.note);
+    return bits.length ? `<div class="meta">${Game.esc(bits.join(" · "))}</div>` : "";
+  }
+
+  function workTitleHtml(w, dueTag) {
+    const c = canvasOf(w);
+    const title = (dueTag ? `<span class="tag">Due</span> ` : "") + titleHtml(w.title) + " " + canvasBadgeHtml(w);
+    if (!c) return `<div class="title">${title}</div>`;
+    return `<button type="button" class="work-title-btn" data-work-detail="${Game.esc(w.id)}">${title}</button>`;
+  }
+
+  function workCardHtml(w, startThis) {
+    return `
+      <div class="${itemClass(w.id)}">
+        ${workTitleHtml(w, !startThis)}
+        ${workMetaHtml(w, startThis)}
+        ${canvasCalloutHtml(w)}
+        ${canvasFactsHtml(w)}
+        ${workButtons(w)}
+        ${itemTools("work", w.id, true)}
+      </div>`;
+  }
+
+  function canvasCheckHtml(isToday) {
+    if (!isToday) return "";
+    const work = week.work || [];
+    const lines = [];
+    const chem = work.find((w) => w.id === "chem-about-me" && canvasOf(w));
+    const comics = work.find((w) => w.id === "eng-comics" && canvasOf(w));
+    const names = work.find((w) => w.id === "eng-names" && canvasOf(w) && w.canvas.status === "submitted");
+    if (chem) {
+      lines.push("Chemistry About Me Slides is due " + nightWhen(chem.due) + " (was missing here).");
+    }
+    if (comics) {
+      lines.push("Comic official due is Thursday night, paper, plus a paragraph on the back.");
+    }
+    if (names) {
+      lines.push("Name video: Canvas says submitted.");
+    }
+    if (!lines.length) return "";
+    return `
+      <section class="canvas-check span-all">
+        <h3>Canvas check</h3>
+        <ul>${lines.map((line) => `<li>${Game.esc(line)}</li>`).join("")}</ul>
+      </section>`;
+  }
+
+  function openWorkDetail(id) {
+    const work = findWork(id);
+    if (!work || !canvasOf(work)) return;
+    openSheet(work.title || "Canvas", `
+      <div class="help-nudge">
+        <p class="help-work">${Game.esc(work.title || "")}</p>
+        ${canvasFactsHtml(work)}
+        ${canvasCalloutHtml(work)}
+        ${work.note && canvasOf(work).rubric ? "" : (work.note ? `<p class="canvas-absent">${Game.esc(work.note)}</p>` : "")}
+      </div>`);
+  }
+
   function items(arr, html) {
     if (!arr.length) return `<p class="empty">None</p>`;
     return arr.map(html).join("");
@@ -463,6 +605,7 @@
             </div>
             <div class="who ${who.cls}">${Game.esc(who.label)}</div>
             ${reflectBlock(i === 0)}
+            ${canvasCheckHtml(i === 0)}
             <div class="card-grid">
               ${events.length ? `<section>
                 <h3>On the calendar</h3>
@@ -475,24 +618,12 @@
               </section>` : ""}
               ${due.length ? `<section>
                 <h3>Due today</h3>
-                ${items(due, (w) => `
-                  <div class="${itemClass(w.id)}">
-                    <div class="title"><span class="tag">Due</span> ${titleHtml(w.title)}</div>
-                    <div class="meta">${Game.esc(fmtTime(w.due))}${w.note ? " · " + Game.esc(w.note) : ""}</div>
-                    ${workButtons(w)}
-                    ${itemTools("work", w.id, true)}
-                  </div>`)}
+                ${items(due, (w) => workCardHtml(w, false))}
               </section>` : ""}
               ${startThis.length ? `<section class="start span-all">
                 <h3>Start this</h3>
                 <div class="item-grid">
-                ${items(startThis, (w) => `
-                  <div class="${itemClass(w.id)}">
-                    <div class="title">${titleHtml(w.title)}</div>
-                    <div class="meta">Due ${dateLabel(parseLocal(w.due))} · ${Game.esc(w.note || "Get ahead")}</div>
-                    ${workButtons(w)}
-                    ${itemTools("work", w.id, true)}
-                  </div>`)}
+                ${items(startThis, (w) => workCardHtml(w, true))}
                 </div>
               </section>` : ""}
               ${!events.length && !due.length && !startThis.length ? `<p class="empty">Open day — nothing on the board.</p>` : ""}
@@ -554,6 +685,9 @@
         btn.disabled = true;
         openHelp(btn.dataset.help);
       });
+    });
+    track.querySelectorAll("[data-work-detail]").forEach((btn) => {
+      btn.addEventListener("click", () => openWorkDetail(btn.dataset.workDetail));
     });
     track.querySelectorAll("[data-play-lib]").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -1641,6 +1775,7 @@
     document.getElementById("sheet-body").innerHTML = `
       <div class="help-nudge">
         <p class="help-work">${Game.esc(title)}</p>
+        ${canvasFactsHtml(work)}
         ${banner}
         ${main}
         ${extras}
