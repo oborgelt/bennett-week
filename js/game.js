@@ -198,12 +198,17 @@
     return read(KEYS.unlocks, {});
   }
 
-  function getBananas() {
+  function storedBananas() {
     return Number(read(KEYS.bananas, 0)) || 0;
   }
 
+  function getBananas(pack) {
+    if (kidViewHidesPreview()) return kidBananas(pack);
+    return storedBananas();
+  }
+
   function addBananas(n) {
-    const next = getBananas() + (Number(n) || 0);
+    const next = storedBananas() + (Number(n) || 0);
     write(KEYS.bananas, next);
     return next;
   }
@@ -748,6 +753,7 @@
   }
 
   function entryButtons(editToken, delToken) {
+    if (siteViewHidesAdult()) return "";
     return `
       <button type="button" class="tiny" data-edit="${esc(editToken)}">Edit</button>
       <button type="button" class="tiny danger" data-del="${esc(delToken)}">Delete</button>`;
@@ -3083,7 +3089,7 @@
     }
     saveFamily(next);
     if (was && ach) {
-      write(KEYS.bananas, Math.max(0, getBananas() - bananasOf(ach)));
+      write(KEYS.bananas, Math.max(0, storedBananas() - bananasOf(ach)));
     }
     return { family: next, revoked: was, achievement: ach || null, revokedCharacter, revokedGear, revokedContent };
   }
@@ -3631,6 +3637,51 @@
     return siteViewHidesAdult(view);
   }
 
+  function bananaValue(id, pack) {
+    if (!id) return 0;
+    const lists = [];
+    if (pack && Array.isArray(pack.achievements)) lists.push(pack.achievements);
+    const draft = getMomDraft();
+    if (draft && Array.isArray(draft.achievements)) lists.push(draft.achievements);
+    lists.push(PREVIEW_FALLBACKS);
+    for (let i = 0; i < lists.length; i += 1) {
+      const hit = lists[i].find((row) => row && row.id === id);
+      if (hit) return bananasOf(hit);
+    }
+    return 0;
+  }
+
+  function kidBananas(pack) {
+    const stored = storedBananas();
+    const unlocks = getUnlocks();
+    let taint = 0;
+    Object.keys(unlocks).forEach((id) => {
+      if (!unlocks[id]) return;
+      if (!achievementIsPreviewOnly(id)) return;
+      taint += bananaValue(id, pack);
+    });
+    return Math.max(0, stored - taint);
+  }
+
+  function progressCanMutate() {
+    return !siteViewHidesAdult();
+  }
+
+  function progressTrophyListHtml(achievements) {
+    const trophies = (achievements || []).filter((ach) => alreadyUnlocked(ach.id));
+    if (!trophies.length) {
+      return `<li class="empty">No trophies yet</li>`;
+    }
+    return trophies.map((ach) => {
+      const play = gameHref(ach) ? `<a class="tiny primary" href="${esc(gameHref(ach))}">Play</a>` : "";
+      const mutate = progressCanMutate()
+        ? `<button type="button" class="tiny" data-edit="trophy:${esc(ach.id)}">Edit</button><button type="button" class="tiny" data-undo-trophy="${esc(ach.id)}">Undo award</button>`
+        : "";
+      const tools = (play || mutate) ? ` <span class="entry-tools">${play}${mutate}</span>` : "";
+      return `<li class="entry-row">${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(ach.title)}${tools}</li>`;
+    }).join("");
+  }
+
   function getPreviewIdList() {
     const stored = read(KEYS.previewIds, []);
     if (Array.isArray(stored)) return stored.map((id) => String(id || "")).filter(Boolean);
@@ -3879,7 +3930,11 @@
     getProgress,
     getUnlocks,
     getBananas,
+    storedBananas,
+    kidBananas,
     addBananas,
+    progressCanMutate,
+    progressTrophyListHtml,
     getEggs,
     usingMomDraft,
     getMomDraft,

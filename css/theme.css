@@ -257,7 +257,14 @@ html[data-site-view="bennett"] a[href="mom.html"],
 html[data-site-view="mom"] a[href="admin.html"],
 html[data-site-view="mom"] a[href="parent.html"],
 html[data-site-view="mom"] a[href="refs.html"],
-html[data-site-view="mom"] a[href="mom.html"] {
+html[data-site-view="mom"] a[href="mom.html"],
+html[data-site-view="bennett"] .crew-page .parent-actions,
+html[data-site-view="mom"] .crew-page .parent-actions,
+body.site-view-kid [data-edit],
+body.site-view-kid [data-del],
+body.site-view-kid [data-undo-trophy],
+body.site-view-kid [data-add-item],
+body.site-view-kid .class-card-tools {
   display: none !important;
 }
 
@@ -2923,8 +2930,8 @@ body.crew-page {
   width: 100%;
   max-height: 240px;
   object-fit: contain;
-  filter: invert(1) grayscale(1) contrast(1.35) brightness(0.45);
-  opacity: 0.88;
+  filter: brightness(0) contrast(1.4);
+  opacity: 1;
 }
 
 .char-empty-slot {
