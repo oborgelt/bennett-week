@@ -38,7 +38,7 @@ Laptop layout fills one screen (about 880–1100px wide). iPhone stays full-blee
 
 ## Admin library
 
-Open `admin.html` from the parent desk **Admin** chip. **Locker refs** opens the six locker stills for Imagine.
+Open `admin.html` from the parent desk **Admin** chip. Sections: **Connect**, **Site usage**, **API spend**, **Library**, **Sounds**, **Story**, **Locker refs**. **Locker refs** opens the six locker stills for Imagine. **API spend** reads the family token from this device and links the [xAI console](https://console.x.ai/team/default/usage).
 
 - Library kinds: **image**, **video**, **audio**, **link** (YouTube / any https URL).
 - Grouped **Ace / Riff / Scorch / Deuce / Fuzz / Bennett / Gear / Crew / Fun / Sounds**. Gear stills also sit on the matching teammate shelf.
@@ -109,8 +109,8 @@ On the lobby **Classes** strip, Progress empty-class rows, **A little help**, As
 `ask.html` (also from week **A little help**).
 
 - Chat UI: Bennett asks; the mentor replies with questions and small hints. Not the finished assignment. Kid-safe. Silly allowed, never mean.
-- Live path: `python3 serve.py` with `ANTHROPIC_API_KEY` in the environment — `POST /api/ask`. The key never goes in frontend JS.
-- `file://`, Pages, or no key: labeled **TEST** fallback that still asks a Socratic question from the assignment title.
+- Live path: Admin **Connect** family token → `POST` the Jungle Jam `ask` function (`x-family-token` from `bw-telemetry`). Then `POST /api/ask` if you are running `python3 serve.py`. Keys never go in frontend JS or this repo.
+- `file://`, Pages, or no token: labeled **TEST** fallback that still asks a Socratic question from the assignment title.
 - Thread persists in `localStorage` (`bw-ask-thread`). Parents see it on the parent desk inbox. Export includes it in the family pack.
 
 ## Live tutor + Ask AI (`serve.py`)
@@ -205,7 +205,7 @@ Parents assign a teammate (or a tool / ability) on a streak, then award that str
 4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / outfits / abilities with the gear PNG. Locked gear stays **???**. **Sounds** shows earned audio / links; locked names stay **???**.
 5. After 3 character unlocks, **Story** is available — a choose-your-own-adventure, not a toast. An attached unlocked sound can play on a story or week beat.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **45**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **53**.
 
 ## Locker refs (Orin)
 

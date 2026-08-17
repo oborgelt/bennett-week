@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Admin · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=54">
+  <link rel="stylesheet" href="css/theme.css?v=55">
 </head>
 <body class="parent-page admin-page">
   <header class="week-head">
@@ -39,11 +39,12 @@
   <div class="parent-wrap">
     <p class="draft-flag" id="draft-flag" hidden>This device has a library or family draft. Export the family pack to share.</p>
 
-    <section class="usage-panel" id="usage-panel">
-      <h2>Usage</h2>
+    <section class="usage-panel" id="connect-panel">
+      <h2>Connect</h2>
       <p class="usage-lead">
-        Sessions, clicks, delays, and class activity across devices. Create a Supabase project, paste
-        <code>scripts/telemetry.sql</code> in the SQL editor, then connect this laptop and Bennett’s phone with the same family token.
+        Paste the Supabase URL, anon key, and family token on this laptop and Bennett’s phone.
+        Keys stay in <code>bw-telemetry</code> on the device — not in git. Then paste
+        <code>scripts/telemetry.sql</code> in the SQL editor if this project is new.
       </p>
       <form id="usage-connect" class="usage-connect">
         <label>Supabase URL
@@ -68,6 +69,13 @@
         </div>
       </form>
       <p class="usage-status" id="usage-status"></p>
+    </section>
+
+    <section class="usage-panel" id="usage-panel">
+      <h2>Site usage</h2>
+      <p class="usage-lead">
+        Sessions, clicks, delays, and class activity across devices. Refresh usage also reloads API spend.
+      </p>
       <div id="usage-health"></div>
       <div id="usage-stats"></div>
       <label class="edit-label">Term
@@ -77,122 +85,139 @@
       <div id="usage-drill"></div>
     </section>
 
-    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
-      Drop audio you already have (mp3 / wav / ogg / m4a), or an image / video. Files stay <strong>on this device</strong> — not in the repo.
-      If you drop the whole <code>audio</code> folder and include <code>manifest.json</code>, labels stay as written.
-      Nine school-skip clips are left out automatically. Delete any more with <strong>Delete</strong> on the card.
-      Default tag is <strong>Fun / Sounds</strong>. Retag anytime. Export the family pack so Mom can import the files.
-      <strong>Reload shipped files</strong> pulls in new locker / gear / fight stills without deleting Fun / Sounds.
-      Do not re-encode the locker clips. Do not commit copyrighted soundboard rips.
-    </p>
-    <div class="parent-actions">
-      <a class="btn" href="parent.html">Back to parent desk</a>
-      <a class="btn" href="refs.html">Locker refs</a>
-      <a class="btn" href="story.html?preview=1">Preview story</a>
-      <button type="button" class="btn" id="export">Export family pack</button>
-      <button type="button" class="btn" id="reload-shipped">Reload shipped files</button>
-      <label class="btn">Import JSON
-        <input id="import" type="file" accept="application/json" class="sr-only">
-      </label>
-    </div>
+    <section class="usage-panel" id="spend-panel">
+      <h2>API spend</h2>
+      <p class="usage-lead">
+        Live Ask AI cost from this family’s token.
+        <a href="https://console.x.ai/team/default/usage" target="_blank" rel="noopener">xAI console</a>
+      </p>
+      <p class="usage-status" id="spend-status"></p>
+      <div id="spend-stats"></div>
+    </section>
 
-    <h2 id="refs" style="font-size:1rem;margin:18px 0 8px">Locker refs</h2>
-    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
-      Five locker stills on one page so you can drag them into Imagine. No Downloads folder. Do not redesign.
-    </p>
-    <div class="parent-actions">
-      <a class="btn primary" href="refs.html">Locker refs</a>
-    </div>
-
-    <h2 style="font-size:1rem;margin:18px 0 8px">Add a library item</h2>
-    <div class="lib-drop" id="lib-drop" tabindex="0" role="button" aria-label="Drop or choose audio, image, or video files">
-      <input id="lib-files" type="file" accept="audio/*,image/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.mp4,.webm,.mov,.jpg,.jpeg,.png,.gif,.webp" multiple class="sr-only">
-      <p class="lib-drop-lead">Drop a sound here</p>
-      <p class="lib-drop-hint">mp3, wav, ogg, m4a — or drop the whole audio folder (keep manifest.json). Stays on this phone or laptop. Tagged Fun / Sounds unless you retag it.</p>
-      <input id="lib-folder" type="file" webkitdirectory directory multiple class="sr-only">
-      <div class="parent-actions" style="margin-top:10px">
-        <button type="button" class="btn primary" id="lib-pick">Choose files</button>
-        <button type="button" class="btn" id="lib-pick-folder">Choose folder</button>
+    <section class="usage-panel" id="library-panel">
+      <h2>Library</h2>
+      <p class="usage-lead">
+        Drop audio you already have (mp3 / wav / ogg / m4a), or an image / video. Files stay <strong>on this device</strong> — not in the repo.
+        If you drop the whole <code>audio</code> folder and include <code>manifest.json</code>, labels stay as written.
+        Nine school-skip clips are left out automatically. Delete any more with <strong>Delete</strong> on the card.
+        Default tag is <strong>Fun / Sounds</strong>. Retag anytime. Export the family pack so Mom can import the files.
+        <strong>Reload shipped files</strong> pulls in new locker / gear / fight stills without deleting Fun / Sounds.
+        Do not re-encode the locker clips. Do not commit copyrighted soundboard rips.
+      </p>
+      <div class="parent-actions">
+        <a class="btn" href="parent.html">Back to parent desk</a>
+        <a class="btn" href="story.html?preview=1">Preview story</a>
+        <button type="button" class="btn" id="export">Export family pack</button>
+        <button type="button" class="btn" id="reload-shipped">Reload shipped files</button>
+        <label class="btn">Import JSON
+          <input id="import" type="file" accept="application/json" class="sr-only">
+        </label>
       </div>
-    </div>
-    <details class="lib-advanced">
-      <summary>Add by path or URL</summary>
-      <div class="form-grid">
-        <label>Label
-          <input id="lib-label" maxlength="80" placeholder="Banana honk">
-        </label>
-        <label>Path (local file)
-          <input id="lib-path" maxlength="200" placeholder="img/library/foo.mp3">
-        </label>
-        <label>URL (https audio or any link)
-          <input id="lib-url" maxlength="300" placeholder="https://…">
-        </label>
-        <div class="form-row">
-          <label>Character
-            <select id="lib-character">
-              <option value="ace">Ace</option>
-              <option value="riff">Riff</option>
-              <option value="scorch">Scorch</option>
-              <option value="deuce">Deuce</option>
-              <option value="fuzz">Fuzz</option>
-              <option value="crew">Crew</option>
-              <option value="fun" selected>Fun / Sounds</option>
-            </select>
+      <h3 style="font-size:0.95rem;margin:18px 0 8px">Add a library item</h3>
+      <div class="lib-drop" id="lib-drop" tabindex="0" role="button" aria-label="Drop or choose audio, image, or video files">
+        <input id="lib-files" type="file" accept="audio/*,image/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.mp4,.webm,.mov,.jpg,.jpeg,.png,.gif,.webp" multiple class="sr-only">
+        <p class="lib-drop-lead">Drop a sound here</p>
+        <p class="lib-drop-hint">mp3, wav, ogg, m4a — or drop the whole audio folder (keep manifest.json). Stays on this phone or laptop. Tagged Fun / Sounds unless you retag it.</p>
+        <input id="lib-folder" type="file" webkitdirectory directory multiple class="sr-only">
+        <div class="parent-actions" style="margin-top:10px">
+          <button type="button" class="btn primary" id="lib-pick">Choose files</button>
+          <button type="button" class="btn" id="lib-pick-folder">Choose folder</button>
+        </div>
+      </div>
+      <details class="lib-advanced">
+        <summary>Add by path or URL</summary>
+        <div class="form-grid">
+          <label>Label
+            <input id="lib-label" maxlength="80" placeholder="Banana honk">
           </label>
-          <label>Kind
-            <select id="lib-kind">
-              <option value="">Auto from path / URL</option>
-              <option value="image">Image</option>
-              <option value="video">Video</option>
-              <option value="audio">Audio</option>
-              <option value="link">Link</option>
-            </select>
+          <label>Path (local file)
+            <input id="lib-path" maxlength="200" placeholder="img/library/foo.mp3">
+          </label>
+          <label>URL (https audio or any link)
+            <input id="lib-url" maxlength="300" placeholder="https://…">
+          </label>
+          <div class="form-row">
+            <label>Character
+              <select id="lib-character">
+                <option value="ace">Ace</option>
+                <option value="riff">Riff</option>
+                <option value="scorch">Scorch</option>
+                <option value="deuce">Deuce</option>
+                <option value="fuzz">Fuzz</option>
+                <option value="crew">Crew</option>
+                <option value="fun" selected>Fun / Sounds</option>
+              </select>
+            </label>
+            <label>Kind
+              <select id="lib-kind">
+                <option value="">Auto from path / URL</option>
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+                <option value="audio">Audio</option>
+                <option value="link">Link</option>
+              </select>
+            </label>
+          </div>
+          <label>Poster path (videos)
+            <input id="lib-poster" maxlength="200" placeholder="img/library/crew-hero.jpg">
           </label>
         </div>
-        <label>Poster path (videos)
-          <input id="lib-poster" maxlength="200" placeholder="img/library/crew-hero.jpg">
+        <div class="parent-actions">
+          <button type="button" class="btn" id="add-lib">Add to library</button>
+        </div>
+      </details>
+      <div id="library-groups"></div>
+    </section>
+
+    <section class="usage-panel" id="sounds-panel">
+      <h2>Sounds</h2>
+      <p class="usage-lead">
+        Pick a moment and a clip, then <strong>Save</strong>. Saved sounds show in the list so you can change the clip or delete it.
+        <strong>I started this is clicked</strong> and <strong>Done is clicked</strong> are different buttons on the week card. A clip saved on Start will not play when you tap Done.
+        <strong>The table is clicked</strong> is the banana-peel pedestal in the treehouse.
+        Per-assignment rows override the matching global. Undo has its own cue.
+        <strong>41 eggs win</strong> — optional clip on the egg-butt screen (slinky if none).
+        <strong>Company shutdown</strong> — the warning before the close (alarm if none).
+        <strong>Closed by the company</strong> — the punchline on the black closed screen. Pick the clip named <strong>Random</strong> if that is the file you want. <strong>Shuffle — any library clip</strong> is a surprise pick, not that file.
+        Plays on this device. Export the family pack so Mom gets the same assignments.
+      </p>
+      <div id="sound-cues"></div>
+    </section>
+
+    <section class="usage-panel" id="story-panel">
+      <h2>Story</h2>
+      <p class="usage-lead">
+        Topics you want in the comic.
+        A parent “include in story” note is pulled read-only if you write one.
+      </p>
+      <div class="form-grid">
+        <label>New ingredient
+          <input id="new-ingredient" maxlength="140" placeholder="finish what you start">
+        </label>
+        <label class="check">
+          <input id="ingredient-test" type="checkbox"> Mark as TEST
+        </label>
+        <label>Include in story (parent note)
+          <textarea id="story-note" maxlength="280" placeholder="Optional note Bennett’s story can quote. Leave blank to skip."></textarea>
         </label>
       </div>
       <div class="parent-actions">
-        <button type="button" class="btn" id="add-lib">Add to library</button>
+        <button type="button" class="btn" id="add-ingredient">Add ingredient</button>
+        <button type="button" class="btn primary" id="save-story-note">Save include-in-story note</button>
       </div>
-    </details>
+      <div id="ingredients"></div>
+    </section>
 
-    <h2 style="font-size:1rem;margin:18px 0 8px">Story ingredients</h2>
-    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
-      Topics you want in the comic.
-      A parent “include in story” note is pulled read-only if you write one.
-    </p>
-    <div class="form-grid">
-      <label>New ingredient
-        <input id="new-ingredient" maxlength="140" placeholder="finish what you start">
-      </label>
-      <label class="check">
-        <input id="ingredient-test" type="checkbox"> Mark as TEST
-      </label>
-      <label>Include in story (parent note)
-        <textarea id="story-note" maxlength="280" placeholder="Optional note Bennett’s story can quote. Leave blank to skip."></textarea>
-      </label>
-    </div>
-    <div class="parent-actions">
-      <button type="button" class="btn" id="add-ingredient">Add ingredient</button>
-      <button type="button" class="btn primary" id="save-story-note">Save include-in-story note</button>
-    </div>
-    <div id="ingredients"></div>
-
-    <h2 style="font-size:1rem;margin:18px 0 8px">Play a sound when…</h2>
-    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
-      Pick a moment and a clip, then <strong>Save</strong>. Saved sounds show in the list so you can change the clip or delete it.
-      <strong>I started this is clicked</strong> and <strong>Done is clicked</strong> are different buttons on the week card. A clip saved on Start will not play when you tap Done.
-      Per-assignment rows override the matching global. Undo has its own cue.
-      <strong>41 eggs win</strong> — optional clip on the egg-butt screen (slinky if none).
-      <strong>Company shutdown</strong> — the warning before the close (alarm if none).
-      <strong>Closed by the company</strong> — the punchline on the black closed screen. Pick the clip named <strong>Random</strong> if that is the file you want. <strong>Shuffle — any library clip</strong> is a surprise pick, not that file.
-      Plays on this device. Export the family pack so Mom gets the same assignments.
-    </p>
-    <div id="sound-cues"></div>
-
-    <div id="library-groups"></div>
+    <section class="usage-panel" id="refs">
+      <h2>Locker refs</h2>
+      <p class="usage-lead">
+        Six locker stills on one page so you can drag them into Imagine. No Downloads folder. Do not redesign.
+      </p>
+      <div class="parent-actions">
+        <a class="btn primary" href="refs.html">Locker refs</a>
+      </div>
+    </section>
   </div>
 
   <div class="sheet" id="sheet">
@@ -246,9 +271,9 @@
   ]
 }
   </script>
-  <script src="js/build.js?v=54"></script>
-  <script src="js/game.js?v=54"></script>
-  <script src="js/telemetry.js?v=54"></script>
-  <script src="js/admin.js?v=54"></script>
+  <script src="js/build.js?v=55"></script>
+  <script src="js/game.js?v=55"></script>
+  <script src="js/telemetry.js?v=55"></script>
+  <script src="js/admin.js?v=55"></script>
 </body>
 </html>

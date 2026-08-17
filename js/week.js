@@ -865,6 +865,8 @@
       else room.style.removeProperty("--zoom-origin");
     }
     if (close) close.setAttribute("aria-hidden", trophyZone ? "false" : "true");
+    const leave = document.getElementById("trophy-leave");
+    if (leave) leave.setAttribute("aria-label", trophyZone ? "Back to the treehouse" : "Leave the treehouse");
     const walkup = document.getElementById("trophy-walkup");
     if (walkup) {
       walkup.hidden = !!trophyZone;
@@ -997,8 +999,13 @@
     return "";
   }
 
+  function playTableCue() {
+    Game.playSoundCue(family, library, "tables");
+  }
+
   function enterTrophyZone(id) {
     if (!TROPHY_ZONES[id] || trophyZone === id) return;
+    if (id === "pedestal") playTableCue();
     trophyZone = id;
     trophyLookClose = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
     renderTrophyRoom();
@@ -1547,7 +1554,8 @@
     if (location.hash === "#trophies") openShelf();
     document.getElementById("trophy-leave").addEventListener("click", (e) => {
       e.stopPropagation();
-      closeShelf();
+      if (trophyZone) leaveTrophyZone();
+      else closeShelf();
     });
     const walkup = document.getElementById("trophy-walkup");
     function walkUpFromControl(e) {
@@ -1611,6 +1619,7 @@
         return;
       }
       if (drag.zoneAtStart) {
+        if (drag.zoneAtStart === "pedestal") playTableCue();
         if (document.querySelector(".trophy-plaque")) {
           clearTrophyPlaques();
           return;

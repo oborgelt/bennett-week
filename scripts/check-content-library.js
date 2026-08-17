@@ -27,6 +27,28 @@ assert(/Do not redesign/.test(refsHtml), "refs.html should say do not redesign")
 });
 assert(/1 Ace/.test(refsHtml) && /2 Riff/.test(refsHtml) && /3 Scorch/.test(refsHtml) && /4 Deuce/.test(refsHtml) && /5 Fuzz/.test(refsHtml) && /6 Bennett/.test(refsHtml), "refs.html should label 1 Ace through 6 Bennett");
 assert(adminHtml.includes("refs.html") && /Locker refs/.test(adminHtml), "Admin should link Locker refs");
+assert(/<h2>Connect<\/h2>/.test(adminHtml), "Admin should have a Connect section");
+assert(/<h2>Site usage<\/h2>/.test(adminHtml), "Admin should have a Site usage section");
+assert(/<h2>API spend<\/h2>/.test(adminHtml), "Admin should have an API spend section");
+assert(/<h2>Library<\/h2>/.test(adminHtml), "Admin should have a Library section");
+assert(/<h2>Sounds<\/h2>/.test(adminHtml), "Admin should have a Sounds section");
+assert(/<h2>Story<\/h2>/.test(adminHtml), "Admin should have a Story section");
+assert(/xAI console/.test(adminHtml) && adminHtml.includes("https://console.x.ai/team/default/usage"), "Admin should link xAI console");
+assert(adminHtml.includes('id="usage-connect"') && adminHtml.includes('id="tel-token"') && adminHtml.includes('id="tel-refresh"'), "Admin should keep connect IDs");
+assert(adminHtml.includes('id="usage-stats"') && adminHtml.includes('id="sound-cues"') && adminHtml.includes('id="library-groups"'), "Admin should keep usage, sound, and library IDs");
+const adminJs = fs.readFileSync(path.join(root, "js/admin.js"), "utf8");
+const tutorJs = fs.readFileSync(path.join(root, "js/tutor.js"), "utf8");
+const askHtml = fs.readFileSync(path.join(root, "ask.html"), "utf8");
+assert(adminJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/spend"), "Admin should GET the spend function");
+assert(/x-family-token/.test(adminJs) && /loadSpend/.test(adminJs) && /await loadSpend/.test(adminJs), "Refresh usage should also refresh spend");
+assert(/spend today/.test(adminJs) && /calls today/.test(adminJs) && /spend 7d/.test(adminJs) && /all-time/.test(adminJs) && /last call/.test(adminJs), "spend tiles should cover today, 7d, all-time, and last call");
+assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
+assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
+assert(/tutor\.js\?v=55/.test(askHtml) && /ask\.js\?v=55/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
+assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
+assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
+assert(!/FAMILY_TOKEN\s*[:=]\s*["'][^"']+["']/.test(secretScan), "do not put the family token in the repo");
 assert(charactersHtml.includes("refs.html") && /Locker refs/.test(charactersHtml), "Characters should link Locker refs");
 
 const kinds = new Set(["image", "video", "audio", "link"]);
@@ -366,6 +388,9 @@ const funLib = Game.normalizeLibrary({
 assert(Game.emptyFamily().soundCues && typeof Game.emptyFamily().soundCues === "object");
 assert(Game.SOUND_CUES.some((c) => c.id === "work-start"), "I started this cue should exist");
 assert(Game.SOUND_CUES.some((c) => c.id === "work-done"), "Done cue should exist");
+assert(Game.SOUND_CUES.some((c) => c.id === "tables" && c.label === "The table is clicked"), "table click cue should exist");
+const tableCue = Game.setSoundCue(Game.emptyFamily(), "tables", "honk");
+assert(Game.playSoundCue(tableCue, funLib, "tables"), "The table is clicked should play");
 assert.strictEqual(Game.workActionCueIds("a1", "started").specific, "work:a1");
 assert.strictEqual(Game.workActionCueIds("a1", "started").fallback, "work-start");
 assert.strictEqual(Game.workActionCueIds("a1", "done").specific, "work-done:a1");
@@ -542,7 +567,6 @@ assert(!Game.contentLibraryItems(seededLib).some((it) => it.id === "ace-clip"), 
 assert(Game.contentLibraryItems(mergedDraft).some((it) => it.id === "ace-frog"), "fight clips stay parent-awardable after merge");
 assert(!Game.canPlayLibraryItem(Game.libraryItem(mergedDraft, "ace-frog")), "Frog Serve stays locked until awarded after merge");
 assert(Game.canPlayLibraryItem(Game.libraryItem(mergedDraft, "ace-clip")), "Ace locker clip stays playable after merge");
-const adminJs = fs.readFileSync(path.join(root, "js/admin.js"), "utf8");
 assert(adminJs.includes("reloadShippedLibrary"), "Admin reload should re-run the shipped merge");
 assert(!/reload-shipped[\s\S]{0,500}clear(MomLibrary|LibraryBlobs)/.test(adminJs), "Reload shipped files must not wipe Fun/Sounds blobs");
 assert(/if \(id === "fun"\) return count <= 8;/.test(adminJs) && /return true;/.test(adminJs), "character / gear / crew shelves default open");
@@ -635,7 +659,13 @@ const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=54/.test(weekHtml) && /week\.js\?v=54/.test(weekHtml) && /game\.js\?v=54/.test(weekHtml) && /telemetry\.js\?v=54/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=55/.test(weekHtml) && /week\.js\?v=55/.test(weekHtml) && /game\.js\?v=55/.test(weekHtml) && /telemetry\.js\?v=55/.test(weekHtml), "index should cache-bust css/js");
+assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
+const leaveClick = weekJs.slice(weekJs.indexOf('getElementById("trophy-leave").addEventListener("click"'));
+assert(leaveClick.includes("leaveTrophyZone") && leaveClick.includes("closeShelf"), "X should return to the treehouse when zoomed, and leave only from the wide room");
+assert(weekJs.includes('playSoundCue(family, library, "tables")'), "pedestal/table clicks should play the tables cue");
+assert(/enterTrophyZone[\s\S]{0,180}pedestal[\s\S]{0,80}playTableCue/.test(weekJs) || /if \(id === "pedestal"\) playTableCue/.test(weekJs), "entering the pedestal should play the table cue");
+assert(/zoneAtStart === "pedestal"/.test(weekJs) && /playTableCue/.test(weekJs), "pedestal closeup still clicks should play the table cue");
 ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".png")), id + " cutout png should stay on disk");
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".jpg")), id + " locker jpg should stay on disk");
@@ -747,6 +777,39 @@ assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("fie
 assert(Game.alreadyUnlockedGear("daily-pick") && Game.alreadyUnlockedGear("notebook-holding") && Game.alreadyUnlockedGear("first-serve"), "gap-fill should include Daily Pick, Notebook of Holding, First Serve");
 
 (async () => {
+  const askCalls = [];
+  ctx.fetch = async (url, init) => {
+    askCalls.push({ url: String(url), headers: (init && init.headers) || {} });
+    if (String(url).indexOf("/functions/v1/ask") >= 0) {
+      return { ok: true, json: async () => ({ reply: "What's the first serve?", live: true, source: "xai" }) };
+    }
+    throw new Error("no local ask");
+  };
+  const liveAsk = await Tutor.ask({ title: "English 10", messages: [{ role: "bennett", text: "help" }] });
+  assert.strictEqual(liveAsk.reply, "What's the first serve?", "live Ask AI should use the family-token function first");
+  assert.strictEqual(askCalls[0] && askCalls[0].headers["x-family-token"], "fam", "live Ask AI should send x-family-token");
+  assert(!askCalls.some((row) => row.url === "/api/ask"), "live Ask AI should not fall through when the function replies");
+
+  askCalls.length = 0;
+  ctx.fetch = async (url) => {
+    askCalls.push({ url: String(url) });
+    if (String(url).indexOf("/functions/v1/ask") >= 0) throw new Error("function down");
+    if (String(url) === "/api/ask") {
+      return { ok: true, json: async () => ({ reply: "Local mentor?", live: true, source: "live" }) };
+    }
+    throw new Error("offline");
+  };
+  const localAsk = await Tutor.ask({ title: "English 10", messages: [{ role: "bennett", text: "help" }] });
+  assert.strictEqual(localAsk.reply, "Local mentor?", "Ask AI should fall back to /api/ask");
+
+  askCalls.length = 0;
+  ctx.fetch = async (url) => {
+    askCalls.push({ url: String(url) });
+    throw new Error("offline");
+  };
+  const offlineAsk = await Tutor.ask({ title: "English 10: Finish summer comic strips", messages: [{ role: "bennett", text: "stuck" }] });
+  assert(offlineAsk.reply && offlineAsk.live === false, "Ask AI should fall back to testAsk");
+
   const beep = new File([new Uint8Array([82, 73, 70, 70, 0, 0, 0, 0])], "TEST-beep.wav", { type: "audio/wav" });
   const added = await Game.addDeviceLibraryFile({ items: norm.items.slice() }, beep, { test: true });
   assert(added.ok, "drop should accept a wav");
