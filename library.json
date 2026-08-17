@@ -248,6 +248,13 @@
       "path": "img/library/trophy-lockers.jpg",
       "kind": "image",
       "character": "crew"
+    },
+    {
+      "id": "tablesloud",
+      "label": "Table click",
+      "path": "audio/tablesloud.mp3",
+      "kind": "audio",
+      "character": "fun"
     }
   ]
 }

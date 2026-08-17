@@ -42,6 +42,17 @@
     { id: "egg-end", label: "Egg game — closed by the company" },
     { id: "streak-award", label: "A streak is awarded" }
   ];
+  const DEFAULT_SOUND_CUES = {
+    undo: "tablesloud",
+    tables: "tablesloud"
+  };
+  const SHIPPED_TABLE_CLICK = {
+    id: "tablesloud",
+    label: "Table click",
+    kind: "audio",
+    path: "audio/tablesloud.mp3",
+    character: "fun"
+  };
   const RANDOM_CUE = "__random__";
   const PACK_BLOB_MAX = 2 * 1024 * 1024;
   const IDB_NAME = "bennett-week";
@@ -1101,7 +1112,8 @@
         { id: "trophy-window", label: "Window wall", path: "img/library/trophy-window.jpg", kind: "image", character: "crew" },
         { id: "trophy-cubbies", label: "Cubbies", path: "img/library/trophy-cubbies.jpg", kind: "image", character: "crew" },
         { id: "trophy-pegboard", label: "Peg wall", path: "img/library/trophy-pegboard.jpg", kind: "image", character: "crew" },
-        { id: "trophy-lockers", label: "Lockers", path: "img/library/trophy-lockers.jpg", kind: "image", character: "crew" }
+        { id: "trophy-lockers", label: "Lockers", path: "img/library/trophy-lockers.jpg", kind: "image", character: "crew" },
+        { id: "tablesloud", label: "Table click", path: "audio/tablesloud.mp3", kind: "audio", character: "fun" }
       ]
     };
   }
@@ -2189,6 +2201,9 @@
         if (id && id !== RANDOM_CUE) ids.push(id);
       });
     }
+    Object.keys(DEFAULT_SOUND_CUES).forEach((key) => {
+      ids.push(DEFAULT_SOUND_CUES[key]);
+    });
     const pick = pickRandomLibraryItem(lib);
     if (pick && !pick.synth) ids.push(pick.id);
     ids.forEach((id) => {
@@ -2201,17 +2216,38 @@
     return family && family.soundCues && cueId ? family.soundCues[cueId] : "";
   }
 
-  function cueLibraryItem(family, lib, cueId) {
-    const id = cueStoredId(family, cueId);
+  function defaultSoundCueId(cueId) {
+    return DEFAULT_SOUND_CUES[String(cueId || "")] || "";
+  }
+
+  function shippedTableClick() {
+    return normalizeLibraryItem(SHIPPED_TABLE_CLICK, 0);
+  }
+
+  function resolveCueItemId(family, lib, cueId) {
+    const stored = cueStoredId(family, cueId);
+    if (stored === RANDOM_CUE) return RANDOM_CUE;
+    if (stored && libraryItem(lib, stored)) return stored;
+    const fallback = defaultSoundCueId(cueId);
+    if (fallback) return fallback;
+    return stored || "";
+  }
+
+  function resolveCueLibraryItem(family, lib, cueId) {
+    const id = resolveCueItemId(family, lib, cueId);
     if (!id || id === RANDOM_CUE) return null;
-    return libraryItem(lib, id);
+    return libraryItem(lib, id) || (id === SHIPPED_TABLE_CLICK.id ? shippedTableClick() : null);
+  }
+
+  function cueLibraryItem(family, lib, cueId) {
+    return resolveCueLibraryItem(family, lib, cueId);
   }
 
   function cueSoundLabel(family, lib, cueId) {
-    const id = cueStoredId(family, cueId);
+    const id = resolveCueItemId(family, lib, cueId);
     if (!id) return "";
     if (id === RANDOM_CUE) return "Shuffle — any library clip";
-    const item = libraryItem(lib, id);
+    const item = resolveCueLibraryItem(family, lib, cueId);
     return item ? item.label : "Missing file";
   }
 
@@ -2228,13 +2264,13 @@
 
   function resolveCuePlay(family, lib, cueId) {
     if (!audioAllowed()) return { played: false, item: null };
-    const id = cueStoredId(family, cueId);
+    const id = resolveCueItemId(family, lib, cueId);
     if (!id) return { played: false, item: null };
     if (id === RANDOM_CUE) {
       const pick = playRandomLibraryItem(lib);
       return { played: !!pick, item: pick };
     }
-    const item = libraryItem(lib, id);
+    const item = resolveCueLibraryItem(family, lib, cueId);
     return { played: playLibraryItem(item), item: item };
   }
 
@@ -2267,13 +2303,24 @@
   async function playUndoSound() {
     try {
       let family = getFamilyDraft();
-      if (!family) family = await loadFamily();
+      if (!family) {
+        try { family = await loadFamily(); } catch (_) { family = null; }
+      }
       let library = getMomLibrary();
-      if (!library) library = await loadLibrary();
-      await hydrateLibraryBlobs(library);
-      return playSoundCue(family, library, "undo");
+      if (!library) {
+        try { library = await loadLibrary(); } catch (_) { library = defaultLibrary(); }
+      }
+      if (library) {
+        try { await hydrateLibraryBlobs(library); } catch (_) {}
+      }
+      if (playSoundCue(family, library, "undo")) return true;
+      return playLibraryItem((library && libraryItem(library, SHIPPED_TABLE_CLICK.id)) || shippedTableClick());
     } catch (_) {
-      return false;
+      try {
+        return playLibraryItem(shippedTableClick());
+      } catch (__) {
+        return false;
+      }
     }
   }
 
@@ -2316,7 +2363,8 @@
   }
 
   function assignedCueRows(family, week) {
-    const cues = (family && family.soundCues) || {};
+    const stored = (family && family.soundCues) || {};
+    const cues = Object.assign({}, DEFAULT_SOUND_CUES, stored);
     const labels = {};
     soundCueRows(week).forEach((row) => {
       labels[row.id] = row.label;
@@ -4523,7 +4571,12 @@
     playRandomLibraryItem,
     audioLibraryItems,
     SOUND_CUES,
+    DEFAULT_SOUND_CUES,
     RANDOM_CUE,
+    defaultSoundCueId,
+    shippedTableClick,
+    resolveCueItemId,
+    resolveCueLibraryItem,
     cueLibraryItem,
     cueSoundLabel,
     setSoundCue,
