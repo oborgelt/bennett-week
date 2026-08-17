@@ -198,12 +198,39 @@
     return read(KEYS.unlocks, {});
   }
 
-  function getBananas() {
+  function storedBananas() {
     return Number(read(KEYS.bananas, 0)) || 0;
   }
 
+  function achievementBananaValue(id) {
+    if (!id) return 0;
+    const draft = getMomDraft();
+    const fromDraft = draft && (draft.achievements || []).find((ach) => ach && ach.id === id);
+    if (fromDraft) return bananasOf(fromDraft);
+    const fallback = PREVIEW_FALLBACKS.find((row) => row && row.id === id);
+    return bananasOf(fallback);
+  }
+
+  function previewBananaTotal() {
+    const unlocks = getUnlocks();
+    let n = 0;
+    Object.keys(unlocks).forEach((id) => {
+      if (!unlocks[id] || !achievementIsPreviewOnly(id)) return;
+      n += achievementBananaValue(id);
+    });
+    return n;
+  }
+
+  function kidBananas() {
+    return Math.max(0, storedBananas() - previewBananaTotal());
+  }
+
+  function getBananas() {
+    return kidViewHidesPreview() ? kidBananas() : storedBananas();
+  }
+
   function addBananas(n) {
-    const next = getBananas() + (Number(n) || 0);
+    const next = storedBananas() + (Number(n) || 0);
     write(KEYS.bananas, next);
     return next;
   }
@@ -748,6 +775,7 @@
   }
 
   function entryButtons(editToken, delToken) {
+    if (siteViewHidesAdult()) return "";
     return `
       <button type="button" class="tiny" data-edit="${esc(editToken)}">Edit</button>
       <button type="button" class="tiny danger" data-del="${esc(delToken)}">Delete</button>`;
@@ -3083,7 +3111,7 @@
     }
     saveFamily(next);
     if (was && ach) {
-      write(KEYS.bananas, Math.max(0, getBananas() - bananasOf(ach)));
+      write(KEYS.bananas, Math.max(0, storedBananas() - bananasOf(ach)));
     }
     return { family: next, revoked: was, achievement: ach || null, revokedCharacter, revokedGear, revokedContent };
   }
@@ -3169,6 +3197,7 @@
   }
 
   function siteView() {
+    if (telemetryDeviceRole() === "bennett") return "bennett";
     try {
       const stored = localStorage.getItem(KEYS.siteView);
       if (stored != null && String(stored).trim() !== "") {
@@ -3205,7 +3234,12 @@
     return siteViewHidesAdult(view) && isAdultDeskPage(file);
   }
 
+  function showSiteViewControl() {
+    return telemetryDeviceRole() !== "bennett";
+  }
+
   function siteViewControlHtml(view) {
+    if (!showSiteViewControl()) return "";
     const v = normalizeSiteView(view || siteView());
     const btn = (id, label) => {
       const on = v === id;
@@ -3226,6 +3260,15 @@
     if (!document.querySelectorAll) return null;
     const navs = document.querySelectorAll(".hud-nav");
     if (!navs || !navs.length) return null;
+    if (!showSiteViewControl()) {
+      Array.from(navs).forEach((nav) => {
+        const box = nav.querySelector ? nav.querySelector(".site-view") : null;
+        if (!box) return;
+        if (box.parentNode && box.parentNode.removeChild) box.parentNode.removeChild(box);
+        else if (nav.removeChild) nav.removeChild(box);
+      });
+      return null;
+    }
     let last = null;
     Array.from(navs).forEach((nav) => {
       let box = nav.querySelector ? nav.querySelector(".site-view") : null;
@@ -3879,6 +3922,8 @@
     getProgress,
     getUnlocks,
     getBananas,
+    kidBananas,
+    storedBananas,
     addBananas,
     getEggs,
     usingMomDraft,
@@ -4102,6 +4147,7 @@
     applySiteView,
     mountSiteViewControl,
     siteViewControlHtml,
+    showSiteViewControl,
     siteViewHidesAdult,
     shouldGateAdultPage,
     SITE_VIEWS

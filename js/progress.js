@@ -128,10 +128,17 @@
     return "Assignment";
   }
 
+  function kidView() {
+    return Game.siteViewHidesAdult();
+  }
+
   function openSource() {
     const real = Game.getOpens();
     if (real.length) {
       return { stamps: real, test: false };
+    }
+    if (kidView()) {
+      return { stamps: [], test: false };
     }
     const sample = (seed.sampleOpens || [])
       .map((row) => row.at)
@@ -200,8 +207,7 @@
     const asked = notes.filter((n) => n.from === "bennett").length;
     const parentNotes = notes.filter((n) => n.from === "parent").length;
     const reflections = ((family.reflections && family.reflections.answers) || []).length;
-    const unlocks = Game.getUnlocks();
-    const trophies = (pack.achievements || []).filter((ach) => unlocks[ach.id]);
+    const trophies = (pack.achievements || []).filter((ach) => Game.alreadyUnlocked(ach.id));
     const eggs = Game.foundEggs(seed.eggNames);
     return {
       started,
@@ -285,7 +291,13 @@
       ? eggs.map((e) => `<li>${Game.esc(e.name)}${e.at ? " · " + Game.esc(Game.fmtStamp(e.at)) : ""}</li>`).join("")
       : `<li class="empty">None found yet. The lobby has a few wholesome surprises.</li>`;
     const trophyList = trophies.length
-      ? trophies.map((ach) => `<li class="entry-row">${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)} <span class="entry-tools">${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}<button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button><button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button></span></li>`).join("")
+      ? trophies.map((ach) => {
+        const play = Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : "";
+        const tools = kidView()
+          ? play
+          : `${play}<button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button><button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button>`;
+        return `<li class="entry-row">${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}${tools ? ` <span class="entry-tools">${tools}</span>` : ""}</li>`;
+      }).join("")
       : `<li class="empty">No trophies yet — keep the streak going.</li>`;
     const mateList = totals.mates.length
       ? totals.mates.map((ch) => `<li><a href="characters.html">${Game.esc(Game.characterLabel(ch))}</a>${ch.talent ? " · " + Game.esc(ch.talent) : ""}</li>`).join("")
@@ -340,7 +352,7 @@
             </div>
             <div class="entry-tools">
               <button type="button" class="tiny" data-note-item="${Game.esc(item.id)}">Note</button>
-              ${Game.entryButtons("pitem:" + item.id, "pitem:" + item.id)}
+              ${kidView() ? "" : Game.entryButtons("pitem:" + item.id, "pitem:" + item.id)}
             </div>
           </li>`;
       }).join("")
@@ -360,10 +372,10 @@
         <ul class="class-items">${itemHtml}</ul>
         ${khan}
         <p class="ask-help-link class-ask"><a href="${Game.esc(askHref)}">Ask AI</a></p>
-        <div class="class-card-tools">
+        ${kidView() ? "" : `<div class="class-card-tools">
           <button type="button" class="mini" data-add-item="${Game.esc(cls.id)}">Add assignment</button>
           ${Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id)}
-        </div>
+        </div>`}
       </details>`;
   }
 
@@ -683,7 +695,32 @@
       if (e.target.id === "sheet") closeSheet();
     });
     render();
+    document.addEventListener("bw-site-view", () => {
+      if (!pack) return;
+      syncViews();
+      render();
+    });
   }
 
-  boot();
+  function pageReady() {
+    return !!(document.getElementById && document.getElementById("stat-strip") && document.getElementById("class-list"));
+  }
+
+  if (pageReady()) boot();
+
+  window.Progress = {
+    activityTotals,
+    renderFinds,
+    renderClass,
+    renderActions,
+    renderOpens,
+    setState(next) {
+      if (!next) return;
+      if (next.pack) pack = next.pack;
+      if (next.roster) roster = next.roster;
+      if (next.family) family = next.family;
+      if (next.seed) seed = next.seed;
+      if (next.week) week = next.week;
+    }
+  };
 })();

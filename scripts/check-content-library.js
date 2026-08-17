@@ -71,7 +71,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=66/.test(askHtml) && /ask\.js\?v=66/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=68/.test(askHtml) && /ask\.js\?v=68/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -258,6 +258,7 @@ const ctx = vm.createContext({
 });
 vm.runInContext(fs.readFileSync(path.join(root, "js/game.js"), "utf8"), ctx);
 const Game = ctx.window.Game;
+ctx.Game = Game;
 assert(Game, "Game failed to load");
 vm.runInContext(fs.readFileSync(path.join(root, "js/tutor.js"), "utf8"), ctx);
 const Tutor = ctx.window.Tutor;
@@ -398,6 +399,9 @@ assert(localStorage.getItem("bw-session-at"), "clean-slate must not wipe session
 
 vm.runInContext(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8"), ctx);
 const Telemetry = ctx.window.Telemetry;
+vm.runInContext(fs.readFileSync(path.join(root, "js/progress.js"), "utf8"), ctx);
+const Progress = ctx.window.Progress;
+assert(Progress && Progress.renderFinds && Progress.activityTotals, "progress.js should expose kid-safe render helpers");
 assert(Telemetry, "Telemetry failed to load");
 Telemetry.track("work_add", { classId: "english-10", assignmentId: "eng-names", termId: "2025-26-s1" });
 assert(typeof Telemetry.queuedCount === "function");
@@ -686,6 +690,7 @@ const crewJs = fs.readFileSync(path.join(root, "js/characters.js"), "utf8");
 const parentJs = fs.readFileSync(path.join(root, "js/parent.js"), "utf8");
 assert(weekJs.includes('"bennett"') && weekJs.includes("CREW_ORDER") && weekJs.includes("renderPortraitRail"), "window portrait rail should include bennett");
 assert(crewJs.includes("markOpened") && crewJs.includes("maybeAwardSignIn"), "Characters page should sign in and award Bennett");
+assert(crewJs.includes("<h3>Locked</h3>") && crewJs.includes("char-sil"), "locked crew are nameless silhouettes");
 assert(weekJs.includes("maybeAwardSignIn"), "lobby should award Bennett on first open");
 assert(/Unlocked by sign-in/.test(parentJs) && /Unlocks the first time he opens the site/.test(parentJs), "parent desk should label Bennett as unlocked-by-sign-in");
 const weekHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
@@ -703,7 +708,8 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=66/.test(weekHtml) && /week\.js\?v=66/.test(weekHtml) && /game\.js\?v=66/.test(weekHtml) && /telemetry\.js\?v=66/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=68/.test(weekHtml) && /week\.js\?v=68/.test(weekHtml) && /game\.js\?v=68/.test(weekHtml) && /telemetry\.js\?v=68/.test(weekHtml), "index should cache-bust css/js");
+assert(/progress\.js\?v=68/.test(fs.readFileSync(path.join(root, "progress.html"), "utf8")), "progress should cache-bust js");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -742,6 +748,8 @@ assert(!themeCss.includes(".trophy-object.trophy-alcove img"), "theme should not
 [".trophy-portrait-rail", ".trophy-portrait-shelf", ".trophy-portrait-frame", ".trophy-portrait-empty", ".trophy-portrait-name"].forEach((sel) => {
   assert(themeCss.includes(sel), "css should include " + sel);
 });
+const silRule = cssRule(themeCss, ".char-sil");
+assert(/brightness\(\s*0\s*\)/.test(silRule) && /contrast\(/.test(silRule), ".char-sil silhouette CSS exists");
 const frameRule = cssRule(themeCss, ".trophy-portrait-frame");
 assert(/linear-gradient/.test(frameRule), "portrait frames should use a wood/gold frame");
 const posterRule = cssRule(themeCss, ".trophy-portrait-frame img");
@@ -759,6 +767,7 @@ assert(themeCss.includes(".trophy-lantern:hover") && themeCss.includes(".trophy-
 assert(weekJs.includes("zoneFromStagePoint") && weekJs.includes("getBoundingClientRect()"), "a tap on the still must walk up from the stage viewport");
 assert(weekJs.includes("walkUpFromControl") && /enterTrophyZone\(btn\.dataset\.zone\)/.test(weekJs), "walk-up plaques must call enterTrophyZone");
 assert(!/setPointerCapture/.test(weekJs) && !weekJs.includes("hotspotFromEvent") && !weekJs.includes("elementFromPoint"), "trophy room must not capture the pointer or hit-test the look-layer glows");
+assert(weekJs.includes("siteViewHidesAdult()") && weekJs.includes("data-add-work"), "week cards hide add-work and undo in kid view");
 assert(!weekJs.includes("maybeAutoPreviewAll"), "This Week must not auto-preview into Bennett's locker");
 assert(!crewJs.includes("maybeAutoPreviewAll"), "Characters must not auto-preview on boot");
 assert(parentJs.includes("awardAllPreview") && parentJs.includes("siteViewHidesAdult"), "parent desk Unlock all stays on Me and ignores kid view");
@@ -853,6 +862,27 @@ const previewDump = Game.awardAllPreview(pack, Game.emptyFamily());
 assert(Game.alreadyUnlockedCharacter("ace") && Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedContent("ace-frog"), "Me view still sees preview awards");
 Game.setSiteView("bennett");
 assert(!Game.alreadyUnlockedCharacter("ace"), "kid view + preview-all must not treat Ace as earned");
+assert(!Game.hasEggGame(pack), "preview trophies do not unlock the egg game in kid view");
+const previewBananaDump = Game.storedBananas();
+assert(previewBananaDump > 100, "preview-all stores the parent banana dump");
+assert.strictEqual(Game.getBananas(), Game.kidBananas(), "getBananas respects kid view");
+assert(Game.kidBananas() < 40 && Game.kidBananas() < previewBananaDump, "kid view bananas are not the preview dump");
+Progress.setState({
+  pack,
+  roster: Game.defaultCharacters(),
+  family: previewDump.family,
+  seed: { eggNames: Game.EGG_NAMES, classes: [], sampleOpens: [] },
+  week: { work: [], events: [] }
+});
+const kidFinds = Progress.renderFinds(Progress.activityTotals([]));
+assert(!/Undo award/.test(kidFinds), "kid view progress markup has no Undo award");
+assert(!/>Edit</.test(kidFinds) && !/data-edit=/.test(kidFinds), "kid view progress markup has no Edit");
+const kidClass = Progress.renderClass({
+  id: "english-10",
+  name: "English 10",
+  items: [{ id: "eng-names", title: "Help me learn your names!", kind: "assignment" }]
+}, false);
+assert(!/Add assignment/.test(kidClass) && !/data-edit=/.test(kidClass) && !/data-del=/.test(kidClass), "kid view class cards hide mutate controls");
 assert(!Game.alreadyUnlockedGear("angle-finder") && !Game.alreadyUnlockedGear("first-serve"), "kid view + preview-all must not treat gear as earned");
 assert(!Game.alreadyUnlockedContent("ace-frog") && !Game.alreadyUnlockedContent("riff-bird") && !Game.alreadyUnlockedContent("scorch-spider"), "kid view + preview-all must not treat fight clips as earned");
 assert(!Game.alreadyUnlockedCharacter("bennett") && !Game.alreadyUnlocked("signin-bennett"), "preview Bennett is not earned in kid view");
@@ -867,6 +897,13 @@ const afterWelcome = Game.maybeAwardSignIn(pack, kidSign.family);
 assert(!afterWelcome.awarded, "welcome must not replay after the clip has been seen");
 
 Game.setSiteView("me");
+const meFinds = Progress.renderFinds({
+  bananas: Game.getBananas(),
+  trophies: (pack.achievements || []).filter((ach) => Game.alreadyUnlocked(ach.id)).slice(0, 1),
+  eggs: [],
+  mates: []
+});
+assert(/Undo award/.test(meFinds) && />Edit</.test(meFinds), "Me view progress still has Edit and Undo award");
 ["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-signin-seen", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 const parentAce = Game.awardStreak(pack, Game.emptyFamily(), "test-ace-closer");
@@ -916,6 +953,11 @@ function fakeEl(tag) {
       toggle(n, on) { if (on) this.add(n); }
     },
     appendChild(child) { this.children.push(child); child.parentNode = this; return child; },
+    removeChild(child) {
+      this.children = this.children.filter((c) => c !== child);
+      if (child) child.parentNode = null;
+      return child;
+    },
     querySelector(sel) {
       if (sel === ".site-view") return this.children.find((c) => c.className === "site-view") || null;
       return null;
@@ -994,6 +1036,14 @@ Game.setSiteView("me");
 assert.strictEqual(Game.siteView(), "me");
 assert(Game.audioAllowed(), "Me allows audio again");
 assert(!adminChip.hidden, "Me shows Admin again");
+const telOrin = store["bw-telemetry"];
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "bennett" });
+assert.strictEqual(Game.siteView(), "bennett", "device role bennett forces Bennett view");
+assert.strictEqual(Game.showSiteViewControl(), false);
+assert.strictEqual(Game.siteViewControlHtml(), "", "device role bennett omits preview HTML");
+assert.strictEqual(Game.mountSiteViewControl(), null);
+assert(!hud.children.some((c) => c.className === "site-view"), "site-view control is omitted when device role is bennett");
+store["bw-telemetry"] = telOrin;
 document.createElement = prevCreate;
 document.querySelectorAll = prevAll;
 document.querySelector = prevOne;

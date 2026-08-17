@@ -293,8 +293,8 @@
           Done
         </button>
       </div>
-      ${stamp ? `<p class="started-row"><span class="started-at">${Game.esc(stamp)}</span><button type="button" class="tiny undo-mini" data-act="started" data-id="${Game.esc(w.id)}">Undo</button></p>` : ""}
-      ${st.done ? `<p class="started-row"><span class="started-at">Marked done</span><button type="button" class="tiny undo-mini" data-act="done" data-id="${Game.esc(w.id)}">Undo</button></p>` : ""}`;
+      ${stamp ? `<p class="started-row"><span class="started-at">${Game.esc(stamp)}</span>${Game.siteViewHidesAdult() ? "" : `<button type="button" class="tiny undo-mini" data-act="started" data-id="${Game.esc(w.id)}">Undo</button>`}</p>` : ""}
+      ${st.done ? `<p class="started-row"><span class="started-at">Marked done</span>${Game.siteViewHidesAdult() ? "" : `<button type="button" class="tiny undo-mini" data-act="done" data-id="${Game.esc(w.id)}">Undo</button>`}</p>` : ""}`;
   }
 
   function noteBubble(n) {
@@ -488,9 +488,9 @@
                     <div class="item-tools">${Game.entryButtons("weeknote:" + n.id, "weeknote:" + n.id)}</div>
                   </div>`)}
               </section>` : ""}
-              <p class="add-work-row">
+              ${Game.siteViewHidesAdult() ? "" : `<p class="add-work-row">
                 <button type="button" class="mini" data-add-work="${ymd(d)}">Add assignment</button>
-              </p>
+              </p>`}
             </div>
           </div>
         </div>`;
@@ -1790,6 +1790,7 @@
       family = next.family;
       if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack);
       hud();
+      renderCards();
       const shelf = document.getElementById("shelf");
       if (shelf && shelf.classList.contains("open")) renderShelf();
     });
