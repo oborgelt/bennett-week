@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Admin · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=55">
+  <link rel="stylesheet" href="css/theme.css?v=56">
 </head>
 <body class="parent-page admin-page">
   <header class="week-head">
@@ -37,6 +37,15 @@
   </header>
 
   <div class="parent-wrap">
+    <nav class="admin-jump" aria-label="Admin sections">
+      <a href="#connect-panel">Connect</a>
+      <a href="#usage-panel">Site usage</a>
+      <a href="#spend-panel">API spend</a>
+      <a href="#library-panel">Library</a>
+      <a href="#sounds-panel">Sounds</a>
+      <a href="#story-panel">Story</a>
+      <a href="#refs">Locker refs</a>
+    </nav>
     <p class="draft-flag" id="draft-flag" hidden>This device has a library or family draft. Export the family pack to share.</p>
 
     <section class="usage-panel" id="connect-panel">
@@ -172,10 +181,14 @@
 
     <section class="usage-panel" id="sounds-panel">
       <h2>Sounds</h2>
+      <article class="cue-pin" id="treehouse-table-card">
+        <h3>Treehouse table</h3>
+        <p class="usage-lead">Banana-peel table / Pedestal</p>
+        <div id="table-cue"></div>
+      </article>
       <p class="usage-lead">
         Pick a moment and a clip, then <strong>Save</strong>. Saved sounds show in the list so you can change the clip or delete it.
         <strong>I started this is clicked</strong> and <strong>Done is clicked</strong> are different buttons on the week card. A clip saved on Start will not play when you tap Done.
-        <strong>The table is clicked</strong> is the banana-peel pedestal in the treehouse.
         Per-assignment rows override the matching global. Undo has its own cue.
         <strong>41 eggs win</strong> — optional clip on the egg-butt screen (slinky if none).
         <strong>Company shutdown</strong> — the warning before the close (alarm if none).
@@ -271,9 +284,9 @@
   ]
 }
   </script>
-  <script src="js/build.js?v=55"></script>
-  <script src="js/game.js?v=55"></script>
-  <script src="js/telemetry.js?v=55"></script>
-  <script src="js/admin.js?v=55"></script>
+  <script src="js/build.js?v=56"></script>
+  <script src="js/game.js?v=56"></script>
+  <script src="js/telemetry.js?v=56"></script>
+  <script src="js/admin.js?v=56"></script>
 </body>
 </html>

@@ -228,10 +228,19 @@
 
   function renderCues() {
     Game.bindSoundCues({
+      host: "table-cue",
+      family,
+      library,
+      week,
+      only: ["tables"],
+      onFamily(next) { family = next; }
+    });
+    Game.bindSoundCues({
       host: "sound-cues",
       family,
       library,
       week,
+      except: ["tables"],
       onFamily(next) { family = next; }
     });
   }

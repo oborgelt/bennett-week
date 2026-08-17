@@ -14,6 +14,8 @@
   let trophyZone = "";
   let trophyStillsReady = false;
   let trophyHintTimer = 0;
+  let trophyLanternHintSeen = false;
+  let trophyLanternHintTimer = 0;
   let trophyLookWide = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
   let trophyLookClose = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
   let trophyDrag = null;
@@ -872,6 +874,13 @@
       walkup.hidden = !!trophyZone;
       walkup.setAttribute("aria-hidden", trophyZone ? "true" : "false");
     }
+    const backRow = document.getElementById("trophy-back-row");
+    if (backRow) {
+      backRow.hidden = !trophyZone;
+      backRow.setAttribute("aria-hidden", trophyZone ? "false" : "true");
+    }
+    const hint = document.getElementById("trophy-lantern-hint");
+    if (hint) hint.hidden = !!trophyZone || trophyLanternHintSeen;
     applyTrophyLook();
   }
 
@@ -1000,11 +1009,31 @@
   }
 
   function playTableCue() {
+    if (typeof Game.soundsMuted === "function" && Game.soundsMuted()) return;
     Game.playSoundCue(family, library, "tables");
+  }
+
+  function dismissLanternHint() {
+    const hint = document.getElementById("trophy-lantern-hint");
+    if (hint) hint.hidden = true;
+    trophyLanternHintSeen = true;
+    if (trophyLanternHintTimer) {
+      window.clearTimeout(trophyLanternHintTimer);
+      trophyLanternHintTimer = 0;
+    }
+  }
+
+  function revealLanternHint() {
+    const hint = document.getElementById("trophy-lantern-hint");
+    if (!hint || trophyLanternHintSeen) return;
+    hint.hidden = false;
+    if (trophyLanternHintTimer) window.clearTimeout(trophyLanternHintTimer);
+    trophyLanternHintTimer = window.setTimeout(dismissLanternHint, 4200);
   }
 
   function enterTrophyZone(id) {
     if (!TROPHY_ZONES[id] || trophyZone === id) return;
+    dismissLanternHint();
     if (id === "pedestal") playTableCue();
     trophyZone = id;
     trophyLookClose = { panX: 0, panY: 0, mouseX: 0, mouseY: 0 };
@@ -1028,6 +1057,10 @@
     if (trophyHintTimer) {
       window.clearTimeout(trophyHintTimer);
       trophyHintTimer = 0;
+    }
+    if (trophyLanternHintTimer) {
+      window.clearTimeout(trophyLanternHintTimer);
+      trophyLanternHintTimer = 0;
     }
   }
 
@@ -1537,6 +1570,7 @@
       applyTrophyLook();
       const leave = document.getElementById("trophy-leave");
       if (leave) leave.focus();
+      revealLanternHint();
       trophyHintTimer = window.setTimeout(() => {
         const room = document.getElementById("trophy-room");
         if (!room || !shelf.classList.contains("open")) return;
@@ -1557,6 +1591,13 @@
       if (trophyZone) leaveTrophyZone();
       else closeShelf();
     });
+    const back = document.getElementById("trophy-back");
+    if (back) {
+      back.addEventListener("click", (e) => {
+        e.stopPropagation();
+        leaveTrophyZone();
+      });
+    }
     const walkup = document.getElementById("trophy-walkup");
     function walkUpFromControl(e) {
       const btn = e.target.closest("[data-zone]");
@@ -1571,7 +1612,7 @@
       walkup.addEventListener("click", walkUpFromControl);
     }
     stage.addEventListener("pointerdown", (e) => {
-      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque") || e.target.closest(".trophy-walkup") || e.target.closest(".trophy-portrait-rail")) {
+      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque") || e.target.closest(".trophy-walkup") || e.target.closest(".trophy-back-row") || e.target.closest(".trophy-lantern-hint") || e.target.closest(".trophy-portrait-rail")) {
         skipTrophyClick = false;
         return;
       }
@@ -1606,25 +1647,17 @@
       const drag = trophyDrag;
       trophyDrag = null;
       stage.classList.remove("is-dragging");
-      if (drag.moved) {
-        if (drag.zoneAtStart) {
-          const dy = (e.clientY || drag.y) - drag.y;
-          const dx = (e.clientX || drag.x) - drag.x;
-          if (dy > 80 && Math.abs(dy) > Math.abs(dx) * 1.2) leaveTrophyZone();
-        }
-        return;
-      }
+      if (drag.moved) return;
       const hit = e && e.target && e.target.closest ? e.target : null;
-      if (hit && (hit.closest(".trophy-object") || hit.closest(".trophy-plaque") || hit.closest(".trophy-leave") || hit.closest(".trophy-walkup") || hit.closest(".trophy-portrait-rail"))) {
+      if (hit && (hit.closest(".trophy-object") || hit.closest(".trophy-plaque") || hit.closest(".trophy-leave") || hit.closest(".trophy-walkup") || hit.closest(".trophy-back-row") || hit.closest(".trophy-portrait-rail"))) {
         return;
       }
       if (drag.zoneAtStart) {
-        if (drag.zoneAtStart === "pedestal") playTableCue();
         if (document.querySelector(".trophy-plaque")) {
           clearTrophyPlaques();
           return;
         }
-        leaveTrophyZone();
+        if (drag.zoneAtStart === "pedestal") playTableCue();
         return;
       }
       const zone = zoneFromStagePoint(e.clientX, e.clientY);
