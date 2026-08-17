@@ -70,7 +70,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=60/.test(askHtml) && /ask\.js\?v=60/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=62/.test(askHtml) && /ask\.js\?v=62/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -224,15 +224,19 @@ const localStorage = {
 };
 const document = {
   body: null,
+  documentElement: { setAttribute() {}, getAttribute() { return ""; } },
   addEventListener() {},
   getElementById() { return null; },
+  querySelector() { return null; },
+  querySelectorAll() { return []; },
   createElement() {
-    return { style: {}, className: "", id: "", classList: { add() {}, remove() {} }, appendChild() {}, querySelector() { return null; } };
+    return { style: {}, className: "", id: "", hidden: false, innerHTML: "", classList: { add() {}, remove() {}, contains() { return false; }, toggle() {} }, appendChild() {}, querySelector() { return null; }, querySelectorAll() { return []; }, setAttribute() {}, getAttribute() { return null; }, addEventListener() {}, closest() { return null; } };
   }
 };
 const window = {
   localStorage,
   document,
+  location: { pathname: "/index.html" },
   matchMedia() { return { matches: true }; },
   AudioContext: undefined,
   webkitAudioContext: undefined,
@@ -686,6 +690,9 @@ assert(/Unlocked by sign-in/.test(parentJs) && /Unlocks the first time he opens 
 const weekHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
 assert(/admin-tabs/.test(themeCss) && /admin-tab\.on/.test(themeCss) && /body\.admin-page \.usage-panel h2/.test(themeCss), "Admin cards need selected tabs and distinct headers");
+assert(/\.site-view-btn/.test(themeCss) && /\.site-view-seg/.test(themeCss), "theme should style the preview switch");
+assert(/\.site-view-btn[\s\S]{0,220}cursor:\s*pointer/.test(themeCss), "preview switch must show a pointer cursor");
+assert(/#ffe08a|#f3c34a/.test(themeCss), "selected preview segment is filled gold");
 assert(/\.help-thinking/.test(themeCss) && /\.ask-bubble\.thinking/.test(themeCss), "theme should style help and Ask AI thinking states");
 assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation");
 ["trophy-room.jpg", "trophy-pedestal.jpg", "trophy-cubbies.jpg", "trophy-pegboard.jpg", "trophy-lockers.jpg", "trophy-window.jpg"].forEach((name) => {
@@ -695,7 +702,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=60/.test(weekHtml) && /week\.js\?v=60/.test(weekHtml) && /game\.js\?v=60/.test(weekHtml) && /telemetry\.js\?v=60/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=62/.test(weekHtml) && /week\.js\?v=62/.test(weekHtml) && /game\.js\?v=62/.test(weekHtml) && /telemetry\.js\?v=62/.test(weekHtml), "index should cache-bust css/js");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -828,6 +835,105 @@ assert(Game.alreadyUnlockedCharacter("ace") && Game.alreadyUnlockedCharacter("ri
 assert(Game.alreadyUnlockedCharacter("deuce") && Game.alreadyUnlockedCharacter("fuzz") && Game.alreadyUnlockedCharacter("bennett"), "gap-fill should include Deuce, Fuzz, and Bennett");
 assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("field-kit") && Game.alreadyUnlockedGear("unplugged-strap"), "gap-fill should include Angle Finder, Field Kit, Unplugged Strap");
 assert(Game.alreadyUnlockedGear("daily-pick") && Game.alreadyUnlockedGear("notebook-holding") && Game.alreadyUnlockedGear("first-serve"), "gap-fill should include Daily Pick, Notebook of Holding, First Serve");
+
+assert.strictEqual(Game.siteView(), "me", "this laptop defaults to Me");
+assert(Game.audioAllowed(), "Me allows audio");
+assert.strictEqual((Game.SITE_VIEWS || []).join(","), "me,bennett,mom");
+assert(/data-site-view="me"/.test(Game.siteViewControlHtml()) && /data-site-view="bennett"/.test(Game.siteViewControlHtml()) && /data-site-view="mom"/.test(Game.siteViewControlHtml()), "view control has Me · Bennett · Mom");
+assert(/setAttribute\("aria-label", "Preview as"\)/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "preview switch is labeled Preview as, not a login");
+assert(!Game.siteViewHidesAdult("me") && Game.siteViewHidesAdult("bennett") && Game.siteViewHidesAdult("mom"), "Bennett and Mom hide adult chrome");
+assert(Game.shouldGateAdultPage("admin.html", "bennett") && Game.shouldGateAdultPage("parent.html", "mom") && Game.shouldGateAdultPage("refs.html", "bennett"), "kid views bounce adult desks");
+assert(!Game.shouldGateAdultPage("index.html", "bennett") && !Game.shouldGateAdultPage("admin.html", "me"), "Me keeps Admin; kid views keep This Week");
+
+function fakeEl(tag) {
+  const el = {
+    tagName: String(tag || "div").toUpperCase(),
+    style: {},
+    className: "",
+    id: "",
+    hidden: false,
+    innerHTML: "",
+    children: [],
+    attrs: {},
+    classList: {
+      add(n) { el.className = (el.className + " " + n).trim(); },
+      remove() {},
+      contains(n) { return (" " + el.className + " ").indexOf(" " + n + " ") >= 0; },
+      toggle(n, on) { if (on) this.add(n); }
+    },
+    appendChild(child) { this.children.push(child); child.parentNode = this; return child; },
+    querySelector(sel) {
+      if (sel === ".site-view") return this.children.find((c) => c.className === "site-view") || null;
+      return null;
+    },
+    querySelectorAll() { return []; },
+    getAttribute(name) { return Object.prototype.hasOwnProperty.call(this.attrs, name) ? this.attrs[name] : null; },
+    setAttribute(name, value) {
+      this.attrs[name] = String(value);
+      if (name === "id") this.id = String(value);
+      if (name === "class") this.className = String(value);
+    },
+    addEventListener() {},
+    closest() { return null; }
+  };
+  return el;
+}
+const prevCreate = document.createElement;
+const prevAll = document.querySelectorAll;
+const prevOne = document.querySelector;
+const prevGet = document.getElementById;
+const prevBody = document.body;
+const prevRoot = document.documentElement;
+const hud = fakeEl("div");
+hud.className = "hud-nav";
+const adminChip = fakeEl("a");
+adminChip.className = "admin-chip";
+const parentChip = fakeEl("a");
+parentChip.className = "parent-chip";
+const refsChip = fakeEl("a");
+refsChip.className = "refs-chip";
+document.body = fakeEl("body");
+document.documentElement = fakeEl("html");
+document.createElement = fakeEl;
+document.getElementById = () => null;
+document.querySelector = (sel) => (sel === ".hud-nav" ? hud : null);
+document.querySelectorAll = (sel) => {
+  if (sel === ".hud-nav") return [hud];
+  if (String(sel).indexOf("admin-chip") >= 0) return [adminChip, parentChip, refsChip];
+  return [];
+};
+const telBefore = store["bw-telemetry"];
+assert.strictEqual(Game.setSiteView("bennett"), "bennett");
+assert.strictEqual(Game.siteView(), "bennett");
+assert.strictEqual(localStorage.getItem("bw-site-view"), "bennett");
+assert.strictEqual(store["bw-telemetry"], telBefore, "preview must not change bw-telemetry");
+assert.strictEqual(JSON.parse(store["bw-telemetry"]).role, "orin", "device role stays Orin");
+const viewBox = hud.children[0];
+assert(viewBox && viewBox.getAttribute("aria-label") === "Preview as", "view control exists");
+assert(adminChip.hidden && parentChip.hidden && refsChip.hidden, "bennett hides admin");
+assert(Game.audioAllowed(), "Bennett still hears audio");
+assert(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "tables", "honk"), funLib, "tables"), "Bennett table cue still plays");
+
+Game.setSiteView("mom");
+assert.strictEqual(Game.siteView(), "mom");
+assert(!Game.audioAllowed(), "mom mutes audio");
+assert.strictEqual(JSON.parse(store["bw-telemetry"]).role, "orin", "Mom preview must not change telemetry role");
+assert(adminChip.hidden, "Mom keeps Admin hidden");
+assert.strictEqual(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "tables", "honk"), funLib, "tables"), false, "mom table cue is a no-op");
+assert.strictEqual(Game.honk(), false, "mom honk is a no-op");
+assert.strictEqual(Game.playRandomLibraryItem(funLib), null, "mom library play is a no-op");
+assert.strictEqual(Game.playLibraryItem({ id: "honk", kind: "audio", synth: "honk" }), false, "mom library synth is a no-op");
+
+Game.setSiteView("me");
+assert.strictEqual(Game.siteView(), "me");
+assert(Game.audioAllowed(), "Me allows audio again");
+assert(!adminChip.hidden, "Me shows Admin again");
+document.createElement = prevCreate;
+document.querySelectorAll = prevAll;
+document.querySelector = prevOne;
+document.getElementById = prevGet;
+document.body = prevBody;
+document.documentElement = prevRoot;
 
 (async () => {
   const askCalls = [];

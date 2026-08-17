@@ -162,8 +162,103 @@ header.week-head {
 
 .hud-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   align-items: center;
+}
+
+.site-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 2px;
+}
+
+.site-view-kicker {
+  font-size: 0.58rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.site-view-seg {
+  display: inline-flex;
+  align-items: stretch;
+  min-height: 36px;
+  padding: 2px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 211, 94, 0.45);
+  background: rgba(7, 22, 24, 0.55);
+}
+
+.site-view-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 32px;
+  min-width: 44px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #ffe9b0;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.site-view-btn.on,
+.site-view-btn[aria-pressed="true"] {
+  background: linear-gradient(180deg, #ffe08a, #f3c34a);
+  color: #2a1d08;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
+.site-view-gate {
+  max-width: var(--desk);
+  margin: 18px auto;
+  padding: 22px 18px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid rgba(244, 211, 94, 0.35);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.site-view-gate p {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.site-view-gate a {
+  color: var(--banana);
+  font-weight: 750;
+}
+
+body.site-view-gated .parent-wrap,
+body.site-view-gated .refs-wrap,
+body.site-view-gated .admin-nav {
+  display: none !important;
+}
+
+html[data-site-view="bennett"] .admin-chip,
+html[data-site-view="bennett"] .parent-chip,
+html[data-site-view="bennett"] .refs-chip,
+html[data-site-view="mom"] .admin-chip,
+html[data-site-view="mom"] .parent-chip,
+html[data-site-view="mom"] .refs-chip,
+html[data-site-view="bennett"] a[href="admin.html"],
+html[data-site-view="bennett"] a[href="parent.html"],
+html[data-site-view="bennett"] a[href="refs.html"],
+html[data-site-view="bennett"] a[href="mom.html"],
+html[data-site-view="mom"] a[href="admin.html"],
+html[data-site-view="mom"] a[href="parent.html"],
+html[data-site-view="mom"] a[href="refs.html"],
+html[data-site-view="mom"] a[href="mom.html"] {
+  display: none !important;
 }
 
 .bananas {
@@ -307,6 +402,7 @@ header.week-head {
     grid-column: 1 / -1;
     justify-content: flex-end;
   }
+  .site-view-kicker { display: none; }
 }
 
 .draft-flag {
@@ -1048,6 +1144,7 @@ body.week-page.in-treehouse .peek-monkey {
 .progress-chip,
 .crew-chip,
 .week-chip,
+.site-view-btn,
 .trophy-lantern,
 .trophy-back,
 .trophy-leave,

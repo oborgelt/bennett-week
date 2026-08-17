@@ -18,8 +18,11 @@
     opened: "bw-opened",
     opens: "bw-opens",
     previewAll: "bw-preview-all",
-    previewLocked: "bw-preview-locked"
+    previewLocked: "bw-preview-locked",
+    siteView: "bw-site-view"
   };
+
+  const SITE_VIEWS = ["me", "bennett", "mom"];
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew", "fun"];
   const TEAMMATE_IDS = ["ace", "riff", "scorch", "deuce", "fuzz"];
@@ -384,7 +387,7 @@
         KEYS.ask,
         KEYS.opened,
         KEYS.opens
-        // Keep bw-telemetry, bw-device-id, bw-session-at — usage history is not seed data.
+        // Keep bw-telemetry, bw-device-id, bw-session-at, bw-site-view — usage history and preview are not seed data.
       ].forEach((key) => {
         try { localStorage.removeItem(key); } catch (_) {}
       });
@@ -1886,6 +1889,7 @@
   }
 
   function playSynth(name) {
+    if (!audioAllowed()) return false;
     if (name === "honk" || !name) {
       honk();
       return true;
@@ -1952,6 +1956,7 @@
   }
 
   function startBuffer(buf) {
+    if (!audioAllowed()) return false;
     const ctx = getSharedAudioContext();
     if (!ctx || !buf) return false;
     stopLibraryAudio();
@@ -1972,6 +1977,7 @@
   }
 
   function playHtmlAudio(src) {
+    if (!audioAllowed()) return false;
     if (!src || src === "#") return false;
     try {
       if (!activeLibraryAudio) activeLibraryAudio = new Audio();
@@ -2002,6 +2008,7 @@
   }
 
   function primeLibraryAudio() {
+    if (!audioAllowed()) return false;
     getSharedAudioContext();
     if (!activeLibraryAudio) {
       try { activeLibraryAudio = new Audio(); } catch (_) {}
@@ -2104,6 +2111,7 @@
   }
 
   function playLibraryItem(item) {
+    if (!audioAllowed()) return false;
     if (!item) return false;
     lastLibraryItemId = item.id || "";
     if (item.synth) {
@@ -2132,6 +2140,7 @@
   }
 
   function playRandomLibraryItem(lib, exceptId) {
+    if (!audioAllowed()) return null;
     const pick = pickRandomLibraryItem(lib, exceptId);
     if (!pick) return null;
     playLibraryItem(pick);
@@ -2139,6 +2148,7 @@
   }
 
   function warmupLibraryAudio(lib, family) {
+    if (!audioAllowed()) return;
     getSharedAudioContext();
     const ids = [];
     const cues = family && family.soundCues;
@@ -2186,6 +2196,7 @@
   }
 
   function resolveCuePlay(family, lib, cueId) {
+    if (!audioAllowed()) return { played: false, item: null };
     const id = cueStoredId(family, cueId);
     if (!id) return { played: false, item: null };
     if (id === RANDOM_CUE) {
@@ -2419,6 +2430,7 @@
 
   function playContentReward(item) {
     if (!item) return false;
+    if ((item.kind === "audio" || item.synth) && !audioAllowed()) return false;
     let layer = document.getElementById("content-celebrate");
     if (!layer) {
       layer = document.createElement("div");
@@ -3088,10 +3100,167 @@
     }
   }
 
+  function normalizeSiteView(value) {
+    const raw = String(value || "").trim().toLowerCase();
+    return SITE_VIEWS.indexOf(raw) >= 0 ? raw : "me";
+  }
+
+  function siteView() {
+    try {
+      return normalizeSiteView(localStorage.getItem(KEYS.siteView));
+    } catch (_) {
+      return "me";
+    }
+  }
+
+  function audioAllowed() {
+    return siteView() !== "mom";
+  }
+
+  function siteViewHidesAdult(view) {
+    const v = normalizeSiteView(view || siteView());
+    return v === "bennett" || v === "mom";
+  }
+
+  function pageFile() {
+    try {
+      const path = String(((global.location || {}).pathname || "")).split("/").pop() || "";
+      return path || "index.html";
+    } catch (_) {
+      return "index.html";
+    }
+  }
+
+  function isAdultDeskPage(file) {
+    const name = String(file || pageFile()).toLowerCase();
+    return name === "admin.html" || name === "parent.html" || name === "refs.html" || name === "mom.html";
+  }
+
+  function shouldGateAdultPage(file, view) {
+    return siteViewHidesAdult(view) && isAdultDeskPage(file);
+  }
+
+  function siteViewControlHtml(view) {
+    const v = normalizeSiteView(view || siteView());
+    const btn = (id, label) => {
+      const on = v === id;
+      return `<button type="button" class="site-view-btn${on ? " on" : ""}" data-site-view="${id}" aria-pressed="${on ? "true" : "false"}">${label}</button>`;
+    };
+    return `<span class="site-view-kicker">Preview</span><div class="site-view-seg">${btn("me", "Me")}${btn("bennett", "Bennett")}${btn("mom", "Mom")}</div>`;
+  }
+
+  function onSiteViewClick(e) {
+    const btn = e.target && e.target.closest ? e.target.closest("[data-site-view]") : null;
+    if (!btn) return;
+    const next = btn.getAttribute("data-site-view");
+    if (!next || next === siteView()) return;
+    setSiteView(next);
+  }
+
+  function mountSiteViewControl() {
+    if (!document.querySelectorAll) return null;
+    const navs = document.querySelectorAll(".hud-nav");
+    if (!navs || !navs.length) return null;
+    let last = null;
+    Array.from(navs).forEach((nav) => {
+      let box = nav.querySelector ? nav.querySelector(".site-view") : null;
+      if (!box) {
+        box = document.createElement("div");
+        box.className = "site-view";
+        box.setAttribute("role", "group");
+        box.setAttribute("aria-label", "Preview as");
+        if (nav.appendChild) nav.appendChild(box);
+        if (box.addEventListener) box.addEventListener("click", onSiteViewClick);
+      }
+      box.innerHTML = siteViewControlHtml();
+      last = box;
+    });
+    return last;
+  }
+
+  function hideAdultShortcuts(hide) {
+    if (!document.querySelectorAll) return;
+    const nodes = document.querySelectorAll(".admin-chip, .parent-chip, .refs-chip, a[href='admin.html'], a[href='parent.html'], a[href='refs.html'], a[href='mom.html']");
+    Array.from(nodes || []).forEach((el) => {
+      if (!el) return;
+      if (el.closest && el.closest(".site-view-gate")) return;
+      el.hidden = !!hide;
+    });
+  }
+
+  function gateAdultPage() {
+    if (!document.body) return false;
+    const hide = shouldGateAdultPage();
+    const existing = document.getElementById ? document.getElementById("site-view-gate") : null;
+    if (!hide) {
+      if (existing) existing.hidden = true;
+      if (document.body.classList && document.body.classList.remove) {
+        document.body.classList.remove("site-view-gated");
+      }
+      return false;
+    }
+    if (document.body.classList && document.body.classList.add) {
+      document.body.classList.add("site-view-gated");
+    }
+    const who = siteView() === "mom" ? "Mom" : "Bennett";
+    const html = `<p>${esc(who)} view — <a href="index.html">back to This Week</a></p>`;
+    let gate = existing;
+    if (!gate) {
+      gate = document.createElement("div");
+      gate.id = "site-view-gate";
+      gate.className = "site-view-gate";
+      const header = document.querySelector ? document.querySelector(".week-head") : null;
+      if (header && header.parentNode && header.parentNode.insertBefore) {
+        header.parentNode.insertBefore(gate, header.nextSibling);
+      } else if (document.body.appendChild) {
+        document.body.appendChild(gate);
+      }
+    }
+    gate.innerHTML = html;
+    gate.hidden = false;
+    return true;
+  }
+
+  function applySiteView() {
+    const view = siteView();
+    const hideAdult = siteViewHidesAdult(view);
+    if (document.documentElement && document.documentElement.setAttribute) {
+      document.documentElement.setAttribute("data-site-view", view);
+    }
+    if (document.body && document.body.classList) {
+      if (document.body.classList.toggle) {
+        document.body.classList.toggle("site-view-kid", hideAdult);
+        document.body.classList.toggle("site-view-mom", view === "mom");
+        document.body.classList.toggle("site-view-bennett", view === "bennett");
+        document.body.classList.toggle("site-view-me", view === "me");
+      } else {
+        if (document.body.classList.add && document.body.classList.remove) {
+          ["site-view-kid", "site-view-mom", "site-view-bennett", "site-view-me"].forEach((name) => {
+            document.body.classList.remove(name);
+          });
+          document.body.classList.add("site-view-" + view);
+          if (hideAdult) document.body.classList.add("site-view-kid");
+        }
+      }
+    }
+    mountSiteViewControl();
+    hideAdultShortcuts(hideAdult);
+    gateAdultPage();
+    return view;
+  }
+
+  function setSiteView(next) {
+    const view = normalizeSiteView(next);
+    try { localStorage.setItem(KEYS.siteView, view); } catch (_) {}
+    applySiteView();
+    return view;
+  }
+
   function honk() {
+    if (!audioAllowed()) return false;
     try {
       const ctx = getSharedAudioContext();
-      if (!ctx) return;
+      if (!ctx) return false;
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.type = "square";
@@ -3103,7 +3272,10 @@
       g.connect(ctx.destination);
       o.start();
       o.stop(ctx.currentTime + 0.42);
-    } catch (_) {}
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function celebrate(ach, pack) {
@@ -3706,7 +3878,16 @@
     loadStory,
     characterMedia,
     paintStoryChip,
-    paintBuild
+    paintBuild,
+    siteView,
+    setSiteView,
+    audioAllowed,
+    applySiteView,
+    mountSiteViewControl,
+    siteViewControlHtml,
+    siteViewHidesAdult,
+    shouldGateAdultPage,
+    SITE_VIEWS
   };
 
   function paintStoryChip(roster, force) {
@@ -3733,10 +3914,12 @@
   if (document.body) {
     paintBuild();
     bindUndoCue();
+    applySiteView();
   } else {
     document.addEventListener("DOMContentLoaded", () => {
       paintBuild();
       bindUndoCue();
+      applySiteView();
     });
   }
 })(window);
