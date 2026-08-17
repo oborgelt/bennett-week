@@ -43,8 +43,15 @@
     { id: "streak-award", label: "A streak is awarded" }
   ];
   const DEFAULT_SOUND_CUES = {
-    undo: "tablesloud",
+    undo: "undo-click",
     tables: "tablesloud"
+  };
+  const SHIPPED_UNDO_CLICK = {
+    id: "undo-click",
+    label: "Undo",
+    kind: "audio",
+    path: "audio/undo.wav",
+    character: "fun"
   };
   const SHIPPED_TABLE_CLICK = {
     id: "tablesloud",
@@ -1113,7 +1120,8 @@
         { id: "trophy-cubbies", label: "Cubbies", path: "img/library/trophy-cubbies.jpg", kind: "image", character: "crew" },
         { id: "trophy-pegboard", label: "Peg wall", path: "img/library/trophy-pegboard.jpg", kind: "image", character: "crew" },
         { id: "trophy-lockers", label: "Lockers", path: "img/library/trophy-lockers.jpg", kind: "image", character: "crew" },
-        { id: "tablesloud", label: "Table click", path: "audio/tablesloud.mp3", kind: "audio", character: "fun" }
+        { id: "tablesloud", label: "Table click", path: "audio/tablesloud.mp3", kind: "audio", character: "fun" },
+        { id: "undo-click", label: "Undo", path: "audio/undo.wav", kind: "audio", character: "fun" }
       ]
     };
   }
@@ -2220,8 +2228,18 @@
     return DEFAULT_SOUND_CUES[String(cueId || "")] || "";
   }
 
+  function shippedUndoClick() {
+    return normalizeLibraryItem(SHIPPED_UNDO_CLICK, 0);
+  }
+
   function shippedTableClick() {
     return normalizeLibraryItem(SHIPPED_TABLE_CLICK, 0);
+  }
+
+  function shippedCueItem(id) {
+    if (id === SHIPPED_UNDO_CLICK.id) return shippedUndoClick();
+    if (id === SHIPPED_TABLE_CLICK.id) return shippedTableClick();
+    return null;
   }
 
   function resolveCueItemId(family, lib, cueId) {
@@ -2236,7 +2254,7 @@
   function resolveCueLibraryItem(family, lib, cueId) {
     const id = resolveCueItemId(family, lib, cueId);
     if (!id || id === RANDOM_CUE) return null;
-    return libraryItem(lib, id) || (id === SHIPPED_TABLE_CLICK.id ? shippedTableClick() : null);
+    return libraryItem(lib, id) || shippedCueItem(id);
   }
 
   function cueLibraryItem(family, lib, cueId) {
@@ -2314,10 +2332,10 @@
         try { await hydrateLibraryBlobs(library); } catch (_) {}
       }
       if (playSoundCue(family, library, "undo")) return true;
-      return playLibraryItem((library && libraryItem(library, SHIPPED_TABLE_CLICK.id)) || shippedTableClick());
+      return playLibraryItem((library && libraryItem(library, SHIPPED_UNDO_CLICK.id)) || shippedUndoClick());
     } catch (_) {
       try {
-        return playLibraryItem(shippedTableClick());
+        return playLibraryItem(shippedUndoClick());
       } catch (__) {
         return false;
       }
@@ -4574,6 +4592,7 @@
     DEFAULT_SOUND_CUES,
     RANDOM_CUE,
     defaultSoundCueId,
+    shippedUndoClick,
     shippedTableClick,
     resolveCueItemId,
     resolveCueLibraryItem,

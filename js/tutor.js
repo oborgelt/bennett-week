@@ -117,16 +117,13 @@
   }
 
   async function request(payload) {
-    const token = familyToken();
-    if (token) {
-      try {
-        const data = await ask({
-          title: (payload && payload.title) || "",
-          messages: [{ role: "bennett", text: helpAskText(payload) }]
-        });
-        if (data && data.live && data.reply) return helpFromLive(payload, data);
-      } catch (_) {}
-    }
+    try {
+      const data = await ask({
+        title: (payload && payload.title) || "",
+        messages: [{ role: "bennett", text: helpAskText(payload) }]
+      });
+      if (data && data.live && data.reply) return helpFromLive(payload, data);
+    } catch (_) {}
     try {
       const res = await fetch("/api/tutor", {
         method: "POST",
@@ -194,13 +191,11 @@
     const messages = (payload && payload.messages) || [];
     const lastUser = [...messages].reverse().find((m) => m && m.role === "bennett") || {};
     const token = familyToken();
-    if (token) {
-      try {
-        return await postAsk("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask", payload, {
-          "x-family-token": token
-        });
-      } catch (_) {}
-    }
+    const headers = {};
+    if (token) headers["x-family-token"] = token;
+    try {
+      return await postAsk("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask", payload, headers);
+    } catch (_) {}
     try {
       return await postAsk("/api/ask", payload);
     } catch (_) {

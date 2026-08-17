@@ -255,6 +255,13 @@
       "path": "audio/tablesloud.mp3",
       "kind": "audio",
       "character": "fun"
+    },
+    {
+      "id": "undo-click",
+      "label": "Undo",
+      "path": "audio/undo.wav",
+      "kind": "audio",
+      "character": "fun"
     }
   ]
 }
