@@ -59,6 +59,7 @@ assert(/id="table-cue"/.test(adminHtml), "Treehouse table card needs the assign/
 const adminJs = fs.readFileSync(path.join(root, "js/admin.js"), "utf8");
 assert(/data-lib-shelf/.test(adminJs) && /setLibCat/.test(adminJs) && /applyLibCat/.test(adminJs), "Admin should filter library shelves from the category tabs");
 assert(/setAdminTab/.test(adminJs) && /applyAdminTab/.test(adminJs) && /data-admin-panel/.test(adminJs), "Admin should show only the selected top panel");
+assert(/setSiteView/.test(adminJs) && /siteViewFromRole/.test(adminJs), "Connect save should set site view from the device role");
 assert(!/scrollIntoView/.test(adminJs), "Admin category changes must not scrollIntoView");
 assert(/bw-admin-tab/.test(adminJs) && /bw-lib-cat/.test(adminJs), "Admin should persist the top tab and library sub-tab");
 const tutorJs = fs.readFileSync(path.join(root, "js/tutor.js"), "utf8");
@@ -70,7 +71,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=62/.test(askHtml) && /ask\.js\?v=62/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=64/.test(askHtml) && /ask\.js\?v=64/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -702,7 +703,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=62/.test(weekHtml) && /week\.js\?v=62/.test(weekHtml) && /game\.js\?v=62/.test(weekHtml) && /telemetry\.js\?v=62/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=64/.test(weekHtml) && /week\.js\?v=64/.test(weekHtml) && /game\.js\?v=64/.test(weekHtml) && /telemetry\.js\?v=64/.test(weekHtml), "index should cache-bust css/js");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -837,6 +838,20 @@ assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("fie
 assert(Game.alreadyUnlockedGear("daily-pick") && Game.alreadyUnlockedGear("notebook-holding") && Game.alreadyUnlockedGear("first-serve"), "gap-fill should include Daily Pick, Notebook of Holding, First Serve");
 
 assert.strictEqual(Game.siteView(), "me", "this laptop defaults to Me");
+assert.strictEqual(Game.siteViewFromRole("bennett"), "bennett");
+assert.strictEqual(Game.siteViewFromRole("parent"), "mom");
+assert.strictEqual(Game.siteViewFromRole("orin"), "me");
+assert.strictEqual(Game.siteViewFromRole(""), "me");
+localStorage.removeItem("bw-site-view");
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "bennett" });
+assert.strictEqual(Game.siteView(), "bennett", "unset view + role bennett → siteView is bennett");
+localStorage.removeItem("bw-site-view");
+Telemetry.setConfig({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "parent" });
+assert.strictEqual(Game.siteView(), "mom", "setConfig/connect save maps parent → mom");
+assert.strictEqual(localStorage.getItem("bw-site-view"), "mom");
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "orin" });
+localStorage.removeItem("bw-site-view");
+assert.strictEqual(Game.siteView(), "me", "orin role without a saved view stays Me");
 assert(Game.audioAllowed(), "Me allows audio");
 assert.strictEqual((Game.SITE_VIEWS || []).join(","), "me,bennett,mom");
 assert(/data-site-view="me"/.test(Game.siteViewControlHtml()) && /data-site-view="bennett"/.test(Game.siteViewControlHtml()) && /data-site-view="mom"/.test(Game.siteViewControlHtml()), "view control has Me · Bennett · Mom");

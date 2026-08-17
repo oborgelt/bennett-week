@@ -51,6 +51,14 @@
       role: ROLES.indexOf(next && next.role) >= 0 ? next.role : "bennett"
     };
     localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    try {
+      if (global.Game && typeof global.Game.setSiteView === "function") {
+        const view = typeof global.Game.siteViewFromRole === "function"
+          ? global.Game.siteViewFromRole(cfg.role)
+          : (cfg.role === "parent" ? "mom" : (cfg.role === "bennett" ? "bennett" : "me"));
+        global.Game.setSiteView(view);
+      }
+    } catch (_) {}
     return cfg;
   }
 

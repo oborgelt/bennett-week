@@ -3105,12 +3105,38 @@
     return SITE_VIEWS.indexOf(raw) >= 0 ? raw : "me";
   }
 
+  function siteViewFromRole(role) {
+    const raw = String(role || "").trim().toLowerCase();
+    if (raw === "bennett") return "bennett";
+    if (raw === "parent") return "mom";
+    return "me";
+  }
+
+  function telemetryDeviceRole() {
+    let stored = null;
+    try { stored = localStorage.getItem("bw-telemetry"); } catch (_) {}
+    if (!stored) return "";
+    try {
+      if (global.Telemetry && typeof global.Telemetry.getConfig === "function") {
+        const cfg = global.Telemetry.getConfig();
+        if (cfg && cfg.role) return String(cfg.role);
+      }
+    } catch (_) {}
+    try {
+      const raw = JSON.parse(stored);
+      if (raw && typeof raw === "object" && raw.role) return String(raw.role);
+    } catch (_) {}
+    return "";
+  }
+
   function siteView() {
     try {
-      return normalizeSiteView(localStorage.getItem(KEYS.siteView));
-    } catch (_) {
-      return "me";
-    }
+      const stored = localStorage.getItem(KEYS.siteView);
+      if (stored != null && String(stored).trim() !== "") {
+        return normalizeSiteView(stored);
+      }
+    } catch (_) {}
+    return siteViewFromRole(telemetryDeviceRole());
   }
 
   function audioAllowed() {
@@ -3880,6 +3906,7 @@
     paintStoryChip,
     paintBuild,
     siteView,
+    siteViewFromRole,
     setSiteView,
     audioAllowed,
     applySiteView,
