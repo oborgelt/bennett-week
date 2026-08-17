@@ -71,7 +71,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=68/.test(askHtml) && /ask\.js\?v=68/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=70/.test(askHtml) && /ask\.js\?v=70/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -709,12 +709,12 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=68/.test(weekHtml) && /week\.js\?v=68/.test(weekHtml) && /game\.js\?v=68/.test(weekHtml) && /telemetry\.js\?v=68/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=70/.test(weekHtml) && /week\.js\?v=70/.test(weekHtml) && /game\.js\?v=70/.test(weekHtml) && /telemetry\.js\?v=70/.test(weekHtml), "index should cache-bust css/js");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=68/.test(progressHtml) && /theme\.css\?v=68/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=70/.test(progressHtml) && /theme\.css\?v=70/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*66/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*68/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -920,7 +920,11 @@ assert.strictEqual(Game.siteView(), "me", "orin role without a saved view stays 
 assert(Game.audioAllowed(), "Me allows audio");
 assert.strictEqual((Game.SITE_VIEWS || []).join(","), "me,bennett,mom");
 assert(/data-site-view="me"/.test(Game.siteViewControlHtml()) && /data-site-view="bennett"/.test(Game.siteViewControlHtml()) && /data-site-view="mom"/.test(Game.siteViewControlHtml()), "view control has Me · Bennett · Mom");
-assert(/setAttribute\("aria-label", "Preview as"\)/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "preview switch is labeled Preview as, not a login");
+const gameSrc = fs.readFileSync(path.join(root, "js/game.js"), "utf8");
+const mountFn = gameSrc.slice(gameSrc.indexOf("function mountSiteViewControl"), gameSrc.indexOf("function hideAdultShortcuts"));
+assert(/siteViewFromRole\(\s*telemetryDeviceRole\(\)\s*\)/.test(mountFn), "preview switch hide uses the device telemetry role");
+assert(!/siteView\(\)\s*===\s*["']bennett["']/.test(mountFn), "do not hide the switch from the current preview view");
+assert(/setAttribute\("aria-label", "Preview as"\)/.test(gameSrc), "preview switch is labeled Preview as, not a login");
 assert(!Game.siteViewHidesAdult("me") && Game.siteViewHidesAdult("bennett") && Game.siteViewHidesAdult("mom"), "Bennett and Mom hide adult chrome");
 assert(Game.shouldGateAdultPage("admin.html", "bennett") && Game.shouldGateAdultPage("parent.html", "mom") && Game.shouldGateAdultPage("refs.html", "bennett"), "kid views bounce adult desks");
 assert(!Game.shouldGateAdultPage("index.html", "bennett") && !Game.shouldGateAdultPage("admin.html", "me"), "Me keeps Admin; kid views keep This Week");
@@ -942,6 +946,12 @@ function fakeEl(tag) {
       toggle(n, on) { if (on) this.add(n); }
     },
     appendChild(child) { this.children.push(child); child.parentNode = this; return child; },
+    removeChild(child) {
+      const i = this.children.indexOf(child);
+      if (i >= 0) this.children.splice(i, 1);
+      if (child) child.parentNode = null;
+      return child;
+    },
     querySelector(sel) {
       if (sel === ".site-view") return this.children.find((c) => c.className === "site-view") || null;
       return null;
@@ -1015,6 +1025,25 @@ assert.strictEqual(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "table
 assert.strictEqual(Game.honk(), false, "mom honk is a no-op");
 assert.strictEqual(Game.playRandomLibraryItem(funLib), null, "mom library play is a no-op");
 assert.strictEqual(Game.playLibraryItem({ id: "honk", kind: "audio", synth: "honk" }), false, "mom library synth is a no-op");
+
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "bennett" });
+assert.strictEqual(typeof Game.telemetryDeviceRole, "function");
+assert.strictEqual(Game.siteViewFromRole(Game.telemetryDeviceRole()), "bennett");
+Game.setSiteView("bennett");
+assert.strictEqual(Game.mountSiteViewControl(), null, "mountSiteViewControl omits the switch on a bennett device");
+assert(!hud.querySelector(".site-view"), "bennett device omits site-view HTML");
+assert(!hud.children.some((c) => /site-view-btn|Preview/.test(c.innerHTML || "")), "bennett phone has no Preview · Me · Bennett · Mom");
+
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "orin" });
+Game.setSiteView("bennett");
+const orinSwitch = hud.querySelector(".site-view") || Game.mountSiteViewControl();
+assert(orinSwitch && /data-site-view="me"/.test(orinSwitch.innerHTML) && /data-site-view="bennett"/.test(orinSwitch.innerHTML) && /data-site-view="mom"/.test(orinSwitch.innerHTML), "orin device keeps the switch while previewing Bennett");
+
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "parent" });
+const parentSwitch = Game.mountSiteViewControl();
+assert(parentSwitch && /data-site-view="mom"/.test(parentSwitch.innerHTML), "parent device still shows the preview switch");
+
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "orin" });
 
 Game.setSiteView("me");
 assert.strictEqual(Game.siteView(), "me");

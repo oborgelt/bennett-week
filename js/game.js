@@ -3232,9 +3232,22 @@
     if (!document.querySelectorAll) return null;
     const navs = document.querySelectorAll(".hud-nav");
     if (!navs || !navs.length) return null;
+    // Device role, not the current preview view — Orin must keep the switch on his laptop.
+    const hideSwitch = siteViewFromRole(telemetryDeviceRole()) === "bennett";
     let last = null;
     Array.from(navs).forEach((nav) => {
       let box = nav.querySelector ? nav.querySelector(".site-view") : null;
+      if (hideSwitch) {
+        if (box) {
+          box.innerHTML = "";
+          if (nav.removeChild) {
+            try { nav.removeChild(box); } catch (_) {}
+          } else if (box.parentNode && box.parentNode.removeChild) {
+            try { box.parentNode.removeChild(box); } catch (_) {}
+          }
+        }
+        return;
+      }
       if (!box) {
         box = document.createElement("div");
         box.className = "site-view";
@@ -4152,6 +4165,7 @@
     paintBuild,
     siteView,
     siteViewFromRole,
+    telemetryDeviceRole,
     setSiteView,
     audioAllowed,
     applySiteView,
