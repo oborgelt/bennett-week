@@ -18,7 +18,9 @@
     opened: "bw-opened",
     opens: "bw-opens",
     previewAll: "bw-preview-all",
+    previewIds: "bw-preview-ids",
     previewLocked: "bw-preview-locked",
+    signinSeen: "bw-signin-seen",
     siteView: "bw-site-view"
   };
 
@@ -970,7 +972,9 @@
   }
 
   function alreadyUnlockedCharacter(id) {
-    return !!(id && getCharacterUnlocks()[id]);
+    if (!id || !getCharacterUnlocks()[id]) return false;
+    if (kidViewHidesPreview() && unlockTargetIsPreviewOnly("character", id)) return false;
+    return true;
   }
 
   function markCharacterUnlocked(id) {
@@ -992,8 +996,7 @@
   }
 
   function unlockedCharacters(roster) {
-    const unlocks = getCharacterUnlocks();
-    return ((roster && roster.characters) || []).filter((ch) => unlocks[ch.id]);
+    return ((roster && roster.characters) || []).filter((ch) => alreadyUnlockedCharacter(ch.id));
   }
 
   function isTeammate(ch) {
@@ -1026,13 +1029,23 @@
   }
 
   function characterMedia(roster, ch) {
+    const id = (ch && ch.id) || "ace";
     if (ch && (ch.video || ch.poster)) {
-      return { video: ch.video || "", poster: ch.poster || "" };
+      return {
+        video: ch.video || ("img/characters/" + id + ".mp4"),
+        poster: ch.poster || ("img/characters/" + id + ".jpg")
+      };
     }
-    const ace = ((roster && roster.characters) || []).find((row) => row.id === "ace");
+    const row = ((roster && roster.characters) || []).find((item) => item.id === id);
+    if (row && (row.video || row.poster)) {
+      return {
+        video: row.video || ("img/characters/" + id + ".mp4"),
+        poster: row.poster || ("img/characters/" + id + ".jpg")
+      };
+    }
     return {
-      video: (ace && ace.video) || "img/characters/ace.mp4",
-      poster: (ace && ace.poster) || "img/characters/ace.jpg"
+      video: "img/characters/" + id + ".mp4",
+      poster: "img/characters/" + id + ".jpg"
     };
   }
 
@@ -1715,7 +1728,9 @@
   }
 
   function alreadyUnlockedGear(id) {
-    return !!(id && getGearUnlocks()[id]);
+    if (!id || !getGearUnlocks()[id]) return false;
+    if (kidViewHidesPreview() && unlockTargetIsPreviewOnly("gear", id)) return false;
+    return true;
   }
 
   function markGearUnlocked(unlock) {
@@ -1743,7 +1758,7 @@
 
   function unlockedGear() {
     const map = getGearUnlocks();
-    return Object.keys(map).map((id) => {
+    return Object.keys(map).filter((id) => alreadyUnlockedGear(id)).map((id) => {
       const row = map[id] && typeof map[id] === "object" ? map[id] : { id };
       return {
         type: row.type || "tool",
@@ -1785,7 +1800,9 @@
   }
 
   function alreadyUnlockedContent(id) {
-    return !!(id && getContentUnlocks()[id]);
+    if (!id || !getContentUnlocks()[id]) return false;
+    if (kidViewHidesPreview() && unlockTargetIsPreviewOnly("content", id)) return false;
+    return true;
   }
 
   function markContentUnlocked(unlock) {
@@ -1813,7 +1830,7 @@
 
   function unlockedContent(lib) {
     const map = getContentUnlocks();
-    return Object.keys(map).map((id) => {
+    return Object.keys(map).filter((id) => alreadyUnlockedContent(id)).map((id) => {
       const row = map[id] && typeof map[id] === "object" ? map[id] : { id };
       const item = libraryItem(lib, id);
       return {
@@ -2745,11 +2762,13 @@
       </div>`;
     layer.classList.add("open");
     const close = () => closeCharacterCelebrate();
-    document.getElementById("char-celebrate-close").addEventListener("click", close);
+    const closeBtn = document.getElementById("char-celebrate-close");
+    if (closeBtn && closeBtn.addEventListener) closeBtn.addEventListener("click", close);
     layer.onclick = (e) => {
       if (e.target === layer) close();
     };
     if (unlockedChar && unlockedChar.id) markCharacterSeen(unlockedChar.id);
+    if (unlockedChar && unlockedChar.id === "bennett") markSignInSeen();
     confetti();
   }
 
@@ -2924,7 +2943,9 @@
   }
 
   function alreadyUnlocked(id) {
-    return !!getUnlocks()[id];
+    if (!id || !getUnlocks()[id]) return false;
+    if (kidViewHidesPreview() && achievementIsPreviewOnly(id)) return false;
+    return true;
   }
 
   function markUnlocked(id) {
@@ -2962,19 +2983,39 @@
     return ach;
   }
 
-  function awardStreak(pack, family, id) {
-    const ach = awardAchievement(pack, id);
+  function awardStreak(pack, family, id, opts) {
+    const preview = !!(opts && opts.preview);
+    const force = !!(opts && opts.force);
+    let ach = awardAchievement(pack, id);
+    if (!ach && force) {
+      ach = ((pack && pack.achievements) || []).find((row) => row && row.id === id) || null;
+      if (ach && !getUnlocks()[id]) markUnlocked(id);
+    }
+    if (!ach) {
+      return {
+        family: normalizeFamily(family),
+        achievement: null,
+        grantedCharacter: "",
+        grantedUnlock: null,
+        freshCharacter: false,
+        freshGear: false,
+        freshContent: false
+      };
+    }
     const next = normalizeFamily(family);
     const st = next.streaks[id] || { count: 0 };
     const unlock = rewardUnlockOf(ach) || (st.grantedUnlock && typeof st.grantedUnlock === "object" ? st.grantedUnlock : null);
     const granted = (unlock && unlock.type === "character" && unlock.id) || st.grantedCharacter || "";
     next.streaks[id] = Object.assign({}, st, {
       awarded: true,
-      awardedAt: nowIso(),
+      awardedAt: st.awardedAt || nowIso(),
       grantedCharacter: granted || undefined,
       grantedUnlock: unlock || undefined,
-      rewardMedia: (ach && ach.rewardMedia) || st.rewardMedia || undefined
+      rewardMedia: (ach && ach.rewardMedia) || st.rewardMedia || undefined,
+      preview: !!preview
     });
+    if (preview) addPreviewIds([id]);
+    else removePreviewIds([id]);
     let freshCharacter = false;
     let freshGear = false;
     let freshContent = false;
@@ -2992,9 +3033,7 @@
       freshGear = grant.fresh;
       Object.assign(next, grant.family);
     }
-    if (!granted && !(unlock && unlock.type && unlock.type !== "character")) {
-      saveFamily(next);
-    }
+    saveFamily(next);
     return {
       family: next,
       achievement: ach,
@@ -3272,7 +3311,18 @@
     mountSiteViewControl();
     hideAdultShortcuts(hideAdult);
     gateAdultPage();
+    notifySiteView(view);
     return view;
+  }
+
+  function notifySiteView(view) {
+    try {
+      if (!document || typeof document.dispatchEvent !== "function") return;
+      const ev = typeof CustomEvent === "function"
+        ? new CustomEvent("bw-site-view", { detail: { view: view } })
+        : null;
+      if (ev) document.dispatchEvent(ev);
+    } catch (_) {}
   }
 
   function setSiteView(next) {
@@ -3305,11 +3355,25 @@
   }
 
   function celebrate(ach, pack) {
+    const unlock = rewardUnlockOf(ach);
+    const bennettWelcome = !!(ach && (
+      ach.id === SIGNIN_ACHIEVEMENT
+      || ach.rewardCharacter === "bennett"
+      || (unlock && unlock.type === "character" && unlock.id === "bennett")
+    ));
+    if (siteViewHidesAdult() && bennettWelcome && !hasSignInSeen()) {
+      playUnlockClip(null, {
+        id: "bennett",
+        name: "Bennett",
+        video: "img/characters/bennett.mp4",
+        poster: "img/characters/bennett.jpg"
+      });
+      return;
+    }
     const cur = currency(pack);
     const prize = ach.incentive ? " · " + ach.incentive : "";
     const extra = bananasOf(ach) ? " · +" + bananasOf(ach) + " " + cur.name : "";
     const game = ach.unlocksGame === "egg" ? " · Egg game unlocked" : "";
-    const unlock = rewardUnlockOf(ach);
     const mate = unlock && unlock.type === "character"
       ? (unlock.id === "bennett" ? " · Bennett unlocked" : " · teammate unlocked")
       : "";
@@ -3390,14 +3454,41 @@
     };
   }
 
+  function hasSignInSeen() {
+    try {
+      const raw = localStorage.getItem(KEYS.signinSeen);
+      return raw === "1" || raw === "true";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function markSignInSeen() {
+    try {
+      localStorage.setItem(KEYS.signinSeen, "1");
+    } catch (_) {}
+  }
+
   function maybeAwardSignIn(pack, family) {
     const next = normalizeFamily(family);
-    if (alreadyUnlocked(SIGNIN_ACHIEVEMENT) || alreadyUnlockedCharacter("bennett")) {
-      return { family: next, awarded: false, freshCharacter: false, achievement: null };
-    }
     const st = next.streaks[SIGNIN_ACHIEVEMENT];
     if (st && st.awarded === false && st.awardedAt) {
       return { family: next, awarded: false, freshCharacter: false, achievement: null };
+    }
+    const kidWelcome = siteViewHidesAdult() || siteViewFromRole(telemetryDeviceRole()) === "bennett";
+    if (!kidWelcome) {
+      if (alreadyUnlocked(SIGNIN_ACHIEVEMENT) || alreadyUnlockedCharacter("bennett")) {
+        return { family: next, awarded: false, freshCharacter: false, achievement: null };
+      }
+    } else {
+      const earnedSignin = !!(getUnlocks()[SIGNIN_ACHIEVEMENT] && !achievementIsPreviewOnly(SIGNIN_ACHIEVEMENT));
+      const earnedBennett = !!(getCharacterUnlocks().bennett && !unlockTargetIsPreviewOnly("character", "bennett"));
+      if (earnedSignin && earnedBennett && hasSignInSeen()) {
+        return { family: next, awarded: false, freshCharacter: false, achievement: null };
+      }
+      if (earnedSignin && earnedBennett) {
+        return { family: next, awarded: true, freshCharacter: false, achievement: signInAchievement(pack) };
+      }
     }
     const working = Object.assign({}, pack || {}, {
       achievements: ((pack && pack.achievements) || []).concat(
@@ -3406,7 +3497,7 @@
           : [signInAchievement(pack)]
       )
     });
-    const result = awardStreak(working, next, SIGNIN_ACHIEVEMENT);
+    const result = awardStreak(working, next, SIGNIN_ACHIEVEMENT, { preview: false, force: kidWelcome });
     return {
       family: result.family,
       awarded: !!result.achievement,
@@ -3532,6 +3623,104 @@
     "test-ace-frog", "test-riff-bird", "test-scorch-spider",
     "straight-as-3w", "no-late-4w", "flash-cards-first", "started-week-5", "asked-before-due", "hidden-banana", "wrong-number-eggs"
   ];
+  const PREVIEW_CHARACTER_IDS = ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"];
+  const PREVIEW_GEAR_IDS = ["notebook-holding", "first-serve", "angle-finder", "field-kit", "unplugged-strap", "daily-pick"];
+  const PREVIEW_CONTENT_IDS = ["ace-frog", "riff-bird", "scorch-spider"];
+
+  function kidViewHidesPreview(view) {
+    return siteViewHidesAdult(view);
+  }
+
+  function getPreviewIdList() {
+    const stored = read(KEYS.previewIds, []);
+    if (Array.isArray(stored)) return stored.map((id) => String(id || "")).filter(Boolean);
+    if (stored && typeof stored === "object") return Object.keys(stored);
+    return [];
+  }
+
+  function savePreviewIdList(ids) {
+    const seen = Object.create(null);
+    const next = [];
+    (ids || []).forEach((id) => {
+      const key = String(id || "");
+      if (!key || seen[key]) return;
+      seen[key] = true;
+      next.push(key);
+    });
+    write(KEYS.previewIds, next);
+    return next;
+  }
+
+  function addPreviewIds(ids) {
+    return savePreviewIdList(getPreviewIdList().concat(ids || []));
+  }
+
+  function removePreviewIds(ids) {
+    const drop = Object.create(null);
+    (ids || []).forEach((id) => {
+      if (id) drop[String(id)] = true;
+    });
+    return savePreviewIdList(getPreviewIdList().filter((id) => !drop[id]));
+  }
+
+  function familyStreaks() {
+    const family = getFamilyDraft();
+    return (family && family.streaks) || {};
+  }
+
+  function achievementIsPreviewOnly(id) {
+    if (!id) return false;
+    const st = familyStreaks()[id];
+    if (st && st.preview === false) return false;
+    if (st && st.preview === true) return true;
+    if (getPreviewIdList().indexOf(id) >= 0) return true;
+    if (hasPreviewAllFlag() && PREVIEW_AWARD_IDS.indexOf(id) >= 0) return true;
+    return false;
+  }
+
+  function previewTargetSet(type) {
+    if (type === "character") return PREVIEW_CHARACTER_IDS;
+    if (type === "content") return PREVIEW_CONTENT_IDS;
+    return PREVIEW_GEAR_IDS;
+  }
+
+  function streakUnlockMatches(st, type, targetId) {
+    if (!st || !targetId) return false;
+    if (type === "character") {
+      if (st.grantedCharacter === targetId) return true;
+      const unlock = st.grantedUnlock;
+      return !!(unlock && unlock.type === "character" && unlock.id === targetId);
+    }
+    const unlock = st.grantedUnlock;
+    if (!unlock || unlock.id !== targetId) return false;
+    if (type === "content") return unlock.type === "content";
+    return !!(unlock.type && unlock.type !== "character" && unlock.type !== "content");
+  }
+
+  function hasEarnedUnlockGrant(type, targetId) {
+    const streaks = familyStreaks();
+    return Object.keys(streaks).some((achId) => {
+      const st = streaks[achId];
+      if (!st || !st.awarded) return false;
+      if (achievementIsPreviewOnly(achId)) return false;
+      return streakUnlockMatches(st, type, targetId);
+    });
+  }
+
+  function unlockTargetIsPreviewOnly(type, targetId) {
+    if (!targetId) return false;
+    if (hasEarnedUnlockGrant(type, targetId)) return false;
+    const streaks = familyStreaks();
+    const previewGrant = Object.keys(streaks).some((achId) => {
+      const st = streaks[achId];
+      if (!st || !st.awarded) return false;
+      if (!achievementIsPreviewOnly(achId)) return false;
+      return streakUnlockMatches(st, type, targetId);
+    });
+    if (previewGrant) return true;
+    if (hasPreviewAllFlag() && previewTargetSet(type).indexOf(targetId) >= 0) return true;
+    return false;
+  }
 
   const PREVIEW_FALLBACKS = [
     { id: "signin-bennett", title: "Signed in", reward: 10, rewardCharacter: "bennett", rewardUnlock: { type: "character", id: "bennett", label: "Bennett" } },
@@ -3628,7 +3817,7 @@
     let awarded = 0;
     previewAwardIds(working).forEach((id) => {
       if (alreadyUnlocked(id)) return;
-      const result = awardStreak(working, next, id);
+      const result = awardStreak(working, next, id, { preview: true });
       next = result.family;
       if (result.achievement) awarded += 1;
     });
@@ -3653,6 +3842,7 @@
 
   function maybeAutoPreviewAll(pack, family) {
     const next = normalizeFamily(family);
+    if (siteViewHidesAdult()) return { family: next, ran: false, awarded: 0 };
     if (hasPreviewLockedFlag()) return { family: next, ran: false, awarded: 0 };
     const firstOffer = !hasPreviewAllFlag();
     const result = awardAllPreview(pack, next);
