@@ -213,6 +213,7 @@
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
     Game.paintStoryChip(roster);
+    Game.paintMessagesChip(family);
   }
 
   function runUnlocks(extra) {
@@ -299,11 +300,13 @@
 
   function noteBubble(n) {
     const kid = n.from === "bennett";
+    const reply = !kid && Game.isParentReply(n);
     const label = kid
       ? (n.kind === "note" ? "You noted: " : "You asked: ")
-      : "Parent note: ";
+      : (reply ? "Mom/Dad replied: " : "Parent note: ");
+    const cls = kid ? "kid" : (reply ? "parent reply" : "parent");
     return `
-      <div class="bubble ${kid ? "kid" : "parent"}">
+      <div class="bubble ${cls}">
         ${n.test ? '<span class="test-tag">TEST</span> ' : ""}${label}${Game.esc(n.text)}
         <div class="entry-tools">${Game.entryButtons("note:" + n.id, "note:" + n.id)}</div>
       </div>`;
@@ -311,9 +314,24 @@
 
   function itemNotes(targetType, targetId) {
     const notes = Game.notesFor(family, targetType, targetId);
-    const parent = notes.filter((n) => n.from === "parent");
-    const kid = notes.filter((n) => n.from === "bennett");
-    return parent.map(noteBubble).join("") + kid.map(noteBubble).join("");
+    const used = new Set();
+    const parts = [];
+    notes.filter((n) => n.from === "bennett").forEach((ask) => {
+      used.add(ask.id);
+      parts.push(noteBubble(ask));
+      const replies = Game.parentRepliesForAsk(family, ask).filter((r) => {
+        return r.targetType === targetType && r.targetId === targetId;
+      });
+      replies.forEach((r) => {
+        used.add(r.id);
+        parts.push(noteBubble(r));
+      });
+    });
+    notes.forEach((n) => {
+      if (used.has(n.id)) return;
+      parts.push(noteBubble(n));
+    });
+    return parts.join("");
   }
 
   function itemSound(targetId) {
@@ -1385,7 +1403,7 @@
     const classId = workClassId(work) || Game.classIdForTitle(work && work.title);
     const termId = (work && work.termId) || Game.termOf(seed || baseSeed).id;
     openSheet("Ask a parent", `
-      <p class="empty">One question about this item. It lands on the parent desk — no chat thread.</p>
+      <p class="empty">One question about this item. It lands in Messages — Mom and Dad see it when Connect is on.</p>
       <textarea id="ask-text" maxlength="280" placeholder="What do you need to know?"></textarea>
       <button type="button" class="btn primary" id="ask-send">Send</button>
     `);
@@ -1407,7 +1425,7 @@
         termId
       });
       closeSheet();
-      Game.toast("Sent to the parent desk.");
+      Game.toast("Sent to Messages.");
       renderCards();
       goTo(dayIndex, true);
     });
@@ -1758,6 +1776,10 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    try {
+      const synced = await Game.syncFamilyNotes(family);
+      family = synced.family;
+    } catch (_) {}
     const signin = Game.maybeAwardSignIn(pack, family);
     family = signin.family;
     if (signin.awarded && signin.achievement) {

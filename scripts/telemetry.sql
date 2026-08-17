@@ -66,3 +66,30 @@ create policy family_events_insert on public.events
 
 grant select, insert, update on public.devices to anon;
 grant select, insert on public.events to anon;
+
+create table if not exists public.family_notes (
+  id text primary key,
+  family_token text not null,
+  target_type text,
+  target_id text,
+  from_role text,
+  kind text,
+  reply_to text,
+  text text,
+  at timestamptz not null default now(),
+  class_id text,
+  term_id text,
+  test boolean
+);
+
+create index if not exists family_notes_family_at_idx on public.family_notes (family_token, at desc);
+
+alter table public.family_notes enable row level security;
+
+drop policy if exists family_notes_all on public.family_notes;
+create policy family_notes_all on public.family_notes
+  for all to anon
+  using (family_token = public.requesting_family_token())
+  with check (family_token = public.requesting_family_token());
+
+grant select, insert, update, delete on public.family_notes to anon;

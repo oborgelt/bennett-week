@@ -352,6 +352,64 @@
     return query("/rest/v1/devices?select=*&order=last_seen.desc");
   }
 
+  function noteToRow(note, familyToken) {
+    const n = note && typeof note === "object" ? note : {};
+    return {
+      id: String(n.id || ""),
+      family_token: familyToken,
+      target_type: String(n.targetType || ""),
+      target_id: String(n.targetId || ""),
+      from_role: String(n.from || ""),
+      kind: String(n.kind || ""),
+      reply_to: String(n.replyTo || ""),
+      text: String(n.text || "").slice(0, 280),
+      at: n.at || new Date().toISOString(),
+      class_id: String(n.classId || ""),
+      term_id: String(n.termId || ""),
+      test: !!n.test
+    };
+  }
+
+  function rowToNote(row) {
+    const r = row && typeof row === "object" ? row : {};
+    const note = {
+      id: String(r.id || ""),
+      targetType: String(r.target_type || ""),
+      targetId: String(r.target_id || ""),
+      from: String(r.from_role || ""),
+      kind: String(r.kind || ""),
+      text: String(r.text || ""),
+      at: r.at || ""
+    };
+    if (r.reply_to) note.replyTo = String(r.reply_to);
+    if (r.class_id) note.classId = String(r.class_id);
+    if (r.term_id) note.termId = String(r.term_id);
+    if (r.test) note.test = true;
+    return note;
+  }
+
+  async function fetchNotes() {
+    const rows = await query("/rest/v1/family_notes?select=*&order=at.asc");
+    return Array.isArray(rows) ? rows : [];
+  }
+
+  async function upsertNotes(notes) {
+    const cfg = getConfig();
+    const payload = (notes || []).map((n) => noteToRow(n, cfg.familyToken)).filter((row) => row.id);
+    if (!payload.length) return [];
+    return rest("/rest/v1/family_notes?on_conflict=id", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async function deleteRemoteNote(id) {
+    const key = String(id || "");
+    if (!key) return null;
+    return rest("/rest/v1/family_notes?id=eq." + encodeURIComponent(key), { method: "DELETE" });
+  }
+
   async function queuedCount() {
     return (await pending()).length;
   }
@@ -369,6 +427,11 @@
     flush,
     fetchEvents,
     fetchDevices,
+    fetchNotes,
+    upsertNotes,
+    deleteNote: deleteRemoteNote,
+    noteToRow,
+    rowToNote,
     queuedCount,
     boot
   };

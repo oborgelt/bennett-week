@@ -56,6 +56,7 @@
     renderClassRoster();
     fillTargets();
     hud();
+    Game.paintMessagesChip(family);
   }
 
   function progressClasses() {

@@ -71,8 +71,8 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=70/.test(askHtml) && /ask\.js\?v=70/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
-const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
+assert(/tutor\.js\?v=72/.test(askHtml) && /ask\.js\?v=72/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8"), fs.readFileSync(path.join(root, "js/messages.js"), "utf8"), fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
 assert(!/FAMILY_TOKEN\s*[:=]\s*["'][^"']+["']/.test(secretScan), "do not put the family token in the repo");
@@ -386,7 +386,7 @@ assert(localStorage.getItem("bw-telemetry"), "clean-slate must not wipe telemetr
 assert.strictEqual(localStorage.getItem("bw-device-id"), "dev-keep");
 assert(localStorage.getItem("bw-session-at"), "clean-slate must not wipe session stamp");
 
-["index.html", "progress.html", "parent.html", "admin.html", "ask.html", "egg.html", "story.html", "characters.html", "refs.html"].forEach((file) => {
+["index.html", "progress.html", "parent.html", "admin.html", "ask.html", "egg.html", "story.html", "characters.html", "refs.html", "messages.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(/class="banner-title"[^>]*href="index.html"|href="index.html"[^>]*class="banner-title"/.test(html), file + " banner should link home");
   assert(html.indexOf("hud-nav") < 0 || /hud-nav[\s\S]{0,80}week-chip/.test(html), file + " should keep This week first in the HUD");
@@ -709,12 +709,12 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=70/.test(weekHtml) && /week\.js\?v=70/.test(weekHtml) && /game\.js\?v=70/.test(weekHtml) && /telemetry\.js\?v=70/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=72/.test(weekHtml) && /week\.js\?v=72/.test(weekHtml) && /game\.js\?v=72/.test(weekHtml) && /telemetry\.js\?v=72/.test(weekHtml), "index should cache-bust css/js");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=70/.test(progressHtml) && /theme\.css\?v=70/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=72/.test(progressHtml) && /theme\.css\?v=72/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*68/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*70/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -928,6 +928,34 @@ assert(/setAttribute\("aria-label", "Preview as"\)/.test(gameSrc), "preview swit
 assert(!Game.siteViewHidesAdult("me") && Game.siteViewHidesAdult("bennett") && Game.siteViewHidesAdult("mom"), "Bennett and Mom hide adult chrome");
 assert(Game.shouldGateAdultPage("admin.html", "bennett") && Game.shouldGateAdultPage("parent.html", "mom") && Game.shouldGateAdultPage("refs.html", "bennett"), "kid views bounce adult desks");
 assert(!Game.shouldGateAdultPage("index.html", "bennett") && !Game.shouldGateAdultPage("admin.html", "me"), "Me keeps Admin; kid views keep This Week");
+assert(fs.existsSync(path.join(root, "messages.html")), "messages.html exists");
+assert(fs.existsSync(path.join(root, "js/messages.js")), "messages.js exists");
+assert(!Game.shouldGateAdultPage("messages.html", "mom") && !Game.shouldGateAdultPage("messages.html", "bennett") && !Game.shouldGateAdultPage("messages.html", "me"), "Mom view does not gate Messages");
+assert(Game.shouldBounceMessagesPage("messages.html", "bennett") && !Game.shouldBounceMessagesPage("messages.html", "mom") && !Game.shouldBounceMessagesPage("messages.html", "me"), "Bennett hitting Messages bounces to This Week");
+assert(/html\[data-site-view="bennett"\][\s\S]*\.messages-chip/.test(themeCss), "Bennett CSS hides the Messages chip");
+assert(!/html\[data-site-view="mom"\] a\[href="messages\.html"\]/.test(themeCss), "Mom CSS must not hide messages.html");
+assert(/Inbox is now/.test(parentHtml) && parentHtml.includes("messages.html"), "parent desk points Inbox to Messages");
+assert(/Mom\/Dad replied:/.test(weekJs), "Bennett cards show Mom/Dad replied bubbles");
+assert(/family_notes/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "notes sync uses family_notes");
+assert(/family_notes/.test(fs.readFileSync(path.join(root, "scripts/telemetry.sql"), "utf8")), "telemetry SQL can create family_notes");
+const askFam = Game.emptyFamily();
+askFam.notes = [{
+  id: "q-classes",
+  from: "bennett",
+  kind: "question",
+  text: "do I need to change classes?",
+  targetType: "event",
+  targetId: "tue-item",
+  at: "2026-08-18T14:00:00-05:00"
+}];
+const askWeek = { work: [], events: [{ id: "tue-item", title: "Tuesday calendar", start: "2026-08-18T09:00:00" }] };
+assert.strictEqual(Game.unansweredAskCount(askFam), 1, "unanswered Bennett ask counts for the badge");
+const inboxHtml = Game.messagesInboxHtml(askFam, askWeek);
+assert(/Send reply/.test(inboxHtml) && /do I need to change classes/.test(inboxHtml), "unanswered asks render a Send reply control");
+const repliedFam = Game.sendParentReply(askFam, "q-classes", "Stay in the class unless the counselor says move.");
+assert.strictEqual(Game.unansweredAskCount(repliedFam), 0, "a parent reply on that target clears the badge");
+assert(!/Send reply/.test(Game.messagesInboxHtml(repliedFam, askWeek)), "answered threads do not keep Send reply");
+assert(/Mom\/Dad replied/.test(Game.messagesInboxHtml(repliedFam, askWeek)), "answered thread shows the parent reply");
 
 function fakeEl(tag) {
   const el = {
@@ -982,6 +1010,8 @@ const parentChip = fakeEl("a");
 parentChip.className = "parent-chip";
 const refsChip = fakeEl("a");
 refsChip.className = "refs-chip";
+const messagesChip = fakeEl("a");
+messagesChip.className = "messages-chip";
 document.body = fakeEl("body");
 document.documentElement = fakeEl("html");
 document.createElement = fakeEl;
@@ -990,6 +1020,7 @@ document.querySelector = (sel) => (sel === ".hud-nav" ? hud : null);
 document.querySelectorAll = (sel) => {
   if (sel === ".hud-nav") return [hud];
   if (String(sel).indexOf("admin-chip") >= 0) return [adminChip, parentChip, refsChip];
+  if (String(sel).indexOf("messages-chip") >= 0) return [messagesChip];
   return [];
 };
 const telBefore = store["bw-telemetry"];
@@ -1001,6 +1032,7 @@ assert.strictEqual(JSON.parse(store["bw-telemetry"]).role, "orin", "device role 
 const viewBox = hud.children[0];
 assert(viewBox && viewBox.getAttribute("aria-label") === "Preview as", "view control exists");
 assert(adminChip.hidden && parentChip.hidden && refsChip.hidden, "bennett hides admin");
+assert(messagesChip.hidden, "Bennett view hides the Messages chip");
 assert(Game.audioAllowed(), "Bennett still hears audio");
 assert(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "tables", "honk"), funLib, "tables"), "Bennett table cue still plays");
 
@@ -1021,6 +1053,7 @@ assert.strictEqual(Game.siteView(), "mom");
 assert(!Game.audioAllowed(), "mom mutes audio");
 assert.strictEqual(JSON.parse(store["bw-telemetry"]).role, "orin", "Mom preview must not change telemetry role");
 assert(adminChip.hidden, "Mom keeps Admin hidden");
+assert(!messagesChip.hidden, "Mom view shows the Messages chip");
 assert.strictEqual(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "tables", "honk"), funLib, "tables"), false, "mom table cue is a no-op");
 assert.strictEqual(Game.honk(), false, "mom honk is a no-op");
 assert.strictEqual(Game.playRandomLibraryItem(funLib), null, "mom library play is a no-op");
