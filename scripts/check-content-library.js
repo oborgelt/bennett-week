@@ -36,23 +36,31 @@ assert(/<h2>Story<\/h2>/.test(adminHtml), "Admin should have a Story section");
 assert(/xAI console/.test(adminHtml) && adminHtml.includes("https://console.x.ai/team/default/usage"), "Admin should link xAI console");
 assert(adminHtml.includes('id="usage-connect"') && adminHtml.includes('id="tel-token"') && adminHtml.includes('id="tel-refresh"'), "Admin should keep connect IDs");
 assert(adminHtml.includes('id="usage-stats"') && adminHtml.includes('id="sound-cues"') && adminHtml.includes('id="library-groups"'), "Admin should keep usage, sound, and library IDs");
-assert(/class="admin-jump"/.test(adminHtml), "Admin needs a sticky jump row");
-["#connect-panel", "#usage-panel", "#spend-panel", "#library-panel", "#sounds-panel", "#story-panel", "#refs"].forEach((href) => {
-  assert(adminHtml.includes('href="' + href + '"'), "Admin jump should link " + href);
+assert(/class="admin-tabs"/.test(adminHtml) && /id="admin-tabs"/.test(adminHtml), "Admin needs a sticky top category bar");
+assert(!/class="admin-jump"/.test(adminHtml), "Admin should not use jump-link anchors");
+["connect", "usage", "spend", "library", "sounds", "story", "refs"].forEach((id) => {
+  assert(adminHtml.includes('data-admin-tab="' + id + '"'), "Admin top tabs include " + id);
+  assert(adminHtml.includes('data-admin-panel="' + id + '"'), "Admin panels include " + id);
 });
+assert(!/href="#connect-panel"/.test(adminHtml) && !/href="#library-panel"/.test(adminHtml), "Admin should not jump to section anchors");
 assert(/id="library-cats"/.test(adminHtml) && /class="library-cats"/.test(adminHtml), "Admin library needs a category tab bar");
 assert(/data-lib-cat="all"/.test(adminHtml) && />All</.test(adminHtml), "Library category tabs include All");
 assert(/data-lib-cat="ace"/.test(adminHtml) && />Ace</.test(adminHtml), "Library category tabs include Ace");
-["riff", "scorch", "deuce", "fuzz", "bennett", "gear", "crew", "fun"].forEach((id) => {
+["riff", "scorch", "deuce", "fuzz", "bennett", "gear", "crew"].forEach((id) => {
   assert(adminHtml.includes('data-lib-cat="' + id + '"'), "Library category tabs include " + id);
 });
-assert(/>Sounds</.test(adminHtml), "Fun shelf is the Sounds category tab");
+assert(!/data-lib-cat="fun"/.test(adminHtml), "Sounds is a top tab, not a buried library category");
+assert(/>Sounds</.test(adminHtml) && /data-admin-tab="sounds"/.test(adminHtml), "Sounds is a top-level admin tab");
+assert(/id="fun-library"/.test(adminHtml), "Sounds should keep the Fun / audio library");
 const soundsBlock = adminHtml.slice(adminHtml.indexOf('id="sounds-panel"'));
 assert(/Treehouse table/.test(soundsBlock) && /Banana-peel table \/ Pedestal/.test(soundsBlock), "Sounds should pin a Treehouse table card");
 assert(soundsBlock.indexOf("Treehouse table") < soundsBlock.indexOf('id="sound-cues"'), "Treehouse table card should sit at the top of Sounds");
 assert(/id="table-cue"/.test(adminHtml), "Treehouse table card needs the assign/save/clear host");
 const adminJs = fs.readFileSync(path.join(root, "js/admin.js"), "utf8");
 assert(/data-lib-shelf/.test(adminJs) && /setLibCat/.test(adminJs) && /applyLibCat/.test(adminJs), "Admin should filter library shelves from the category tabs");
+assert(/setAdminTab/.test(adminJs) && /applyAdminTab/.test(adminJs) && /data-admin-panel/.test(adminJs), "Admin should show only the selected top panel");
+assert(!/scrollIntoView/.test(adminJs), "Admin category changes must not scrollIntoView");
+assert(/bw-admin-tab/.test(adminJs) && /bw-lib-cat/.test(adminJs), "Admin should persist the top tab and library sub-tab");
 const tutorJs = fs.readFileSync(path.join(root, "js/tutor.js"), "utf8");
 const askHtml = fs.readFileSync(path.join(root, "ask.html"), "utf8");
 assert(adminJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/spend"), "Admin should GET the spend function");
@@ -62,7 +70,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=58/.test(askHtml) && /ask\.js\?v=58/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=60/.test(askHtml) && /ask\.js\?v=60/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -662,6 +670,13 @@ assert(!/dataset\.act === "start"/.test(weekJs), "start sound must not listen fo
 assert(/Here's the deal/.test(weekJs) && /Start here/.test(weekJs), "A little help should be deal + first move");
 assert(!/data-mode="notecards"/.test(weekJs), "A little help should not open on notecard tabs");
 assert(/Talk it through/.test(weekJs), "A little help should offer Talk it through, not a study-tool menu");
+assert(/help-thinking/.test(weekJs) && /Looking at the assignment/.test(weekJs) && /Pulling a hint/.test(weekJs) && /Mentor is thinking/.test(weekJs), "A little help should show a changing thinking status before the reply");
+assert(/HELP_THINK_MS = 700/.test(weekJs) && /help-dots/.test(weekJs), "A little help should hold thinking for at least 700ms with dots");
+assert(/Couldn’t reach the mentor/.test(weekJs), "A little help should say so when the mentor is offline");
+const askJs = fs.readFileSync(path.join(root, "js/ask.js"), "utf8");
+assert(/ask-bubble mentor thinking/.test(askJs) && /Thinking…/.test(askJs), "Ask AI should paint a thinking bubble before the reply");
+assert(/700/.test(askJs) && /ask-send/.test(askJs) && /disabled = true/.test(askJs), "Ask AI should disable send and hold thinking if the fallback is instant");
+assert(/do not do the assignment/i.test(tutorJs), "live A little help should use a Socratic first-move prompt");
 const crewJs = fs.readFileSync(path.join(root, "js/characters.js"), "utf8");
 const parentJs = fs.readFileSync(path.join(root, "js/parent.js"), "utf8");
 assert(weekJs.includes('"bennett"') && weekJs.includes("CREW_ORDER") && weekJs.includes("renderPortraitRail"), "window portrait rail should include bennett");
@@ -670,7 +685,9 @@ assert(weekJs.includes("maybeAwardSignIn"), "lobby should award Bennett on first
 assert(/Unlocked by sign-in/.test(parentJs) && /Unlocks the first time he opens the site/.test(parentJs), "parent desk should label Bennett as unlocked-by-sign-in");
 const weekHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const themeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
-assert(/admin-jump/.test(themeCss) && /body\.admin-page \.usage-panel h2/.test(themeCss), "Admin cards need a jump row and distinct headers");
+assert(/admin-tabs/.test(themeCss) && /admin-tab\.on/.test(themeCss) && /body\.admin-page \.usage-panel h2/.test(themeCss), "Admin cards need selected tabs and distinct headers");
+assert(/\.help-thinking/.test(themeCss) && /\.ask-bubble\.thinking/.test(themeCss), "theme should style help and Ask AI thinking states");
+assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation");
 ["trophy-room.jpg", "trophy-pedestal.jpg", "trophy-cubbies.jpg", "trophy-pegboard.jpg", "trophy-lockers.jpg", "trophy-window.jpg"].forEach((name) => {
   const pathName = "img/library/" + name;
   assert(weekJs.includes(pathName) || weekHtml.includes(pathName) || themeCss.includes(pathName), "trophy room should use " + name);
@@ -678,7 +695,7 @@ assert(/admin-jump/.test(themeCss) && /body\.admin-page \.usage-panel h2/.test(t
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=58/.test(weekHtml) && /week\.js\?v=58/.test(weekHtml) && /game\.js\?v=58/.test(weekHtml) && /telemetry\.js\?v=58/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=60/.test(weekHtml) && /week\.js\?v=60/.test(weekHtml) && /game\.js\?v=60/.test(weekHtml) && /telemetry\.js\?v=60/.test(weekHtml), "index should cache-bust css/js");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -845,6 +862,30 @@ assert(Game.alreadyUnlockedGear("daily-pick") && Game.alreadyUnlockedGear("noteb
   };
   const offlineAsk = await Tutor.ask({ title: "English 10: Finish summer comic strips", messages: [{ role: "bennett", text: "stuck" }] });
   assert(offlineAsk.reply && offlineAsk.live === false, "Ask AI should fall back to testAsk");
+
+  askCalls.length = 0;
+  ctx.fetch = async (url, init) => {
+    askCalls.push({ url: String(url), headers: (init && init.headers) || {}, body: init && init.body });
+    if (String(url).indexOf("/functions/v1/ask") >= 0) {
+      return { ok: true, json: async () => ({ reply: "What's the first panel you still owe?", live: true, source: "xai" }) };
+    }
+    throw new Error("no local tutor");
+  };
+  const liveHelp = await Tutor.request({ title: "English 10: Finish summer comic strips", note: "from class", mode: "nudge" });
+  assert.strictEqual(liveHelp.live, true, "A little help should use the live mentor when a family token is set");
+  assert(/panel/i.test(liveHelp.start || ""), "live A little help should put the mentor reply in the first move");
+  assert(askCalls.some((row) => String(row.url).indexOf("/functions/v1/ask") >= 0), "A little help should reuse the Ask edge function");
+  assert(!askCalls.some((row) => row.url === "/api/tutor"), "live A little help should not need /api/tutor");
+  const helpBody = askCalls[0] && askCalls[0].body ? String(askCalls[0].body) : "";
+  assert(/do not do the assignment/i.test(helpBody) && /Finish summer comic strips/.test(helpBody), "A little help should send a Socratic first-move prompt for the card");
+
+  askCalls.length = 0;
+  ctx.fetch = async (url) => {
+    askCalls.push({ url: String(url) });
+    throw new Error("offline");
+  };
+  const offlineHelp = await Tutor.request({ title: "English 10: Finish summer comic strips", mode: "nudge" });
+  assert(offlineHelp.live === false && offlineHelp.start, "A little help should fall back to testHelp offline");
 
   const beep = new File([new Uint8Array([82, 73, 70, 70, 0, 0, 0, 0])], "TEST-beep.wav", { type: "audio/wav" });
   const added = await Game.addDeviceLibraryFile({ items: norm.items.slice() }, beep, { test: true });

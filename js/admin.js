@@ -33,9 +33,11 @@
   let usageDevices = [];
   let drillClass = "";
   let drillAssignment = "";
+  let adminTab = "connect";
   let libCat = "all";
   let funCountLabel = "";
-  const LIB_CATS = ["all", "ace", "riff", "scorch", "deuce", "fuzz", "bennett", "gear", "crew", "fun"];
+  const ADMIN_TABS = ["connect", "usage", "spend", "library", "sounds", "story", "refs"];
+  const LIB_CATS = ["all", "ace", "riff", "scorch", "deuce", "fuzz", "bennett", "gear", "crew"];
 
   function persistLib() {
     Game.saveMomLibrary(library);
@@ -188,23 +190,33 @@
   }
 
   function applyLibCat() {
-    document.querySelectorAll("[data-lib-shelf]").forEach((el) => {
+    document.querySelectorAll("#library-groups [data-lib-shelf]").forEach((el) => {
       const show = libCat === "all" || el.dataset.libShelf === libCat;
       el.hidden = !show;
       if (show && libCat !== "all" && el.tagName === "DETAILS") el.open = true;
     });
-    if (libCat === "fun") {
-      const panel = document.getElementById("fun-audio-panel");
-      const toggle = document.getElementById("toggle-fun-audio");
-      if (panel) panel.removeAttribute("hidden");
-      if (toggle) {
-        toggle.setAttribute("aria-expanded", "true");
-        if (funCountLabel) toggle.textContent = "Hide audio files · " + funCountLabel;
-      }
-    }
   }
 
-  function setLibCat(id, jump) {
+  function applyAdminTab() {
+    document.querySelectorAll("[data-admin-panel]").forEach((el) => {
+      el.hidden = el.dataset.adminPanel !== adminTab;
+    });
+    document.querySelectorAll("[data-admin-tab]").forEach((tab) => {
+      const on = tab.dataset.adminTab === adminTab;
+      tab.classList.toggle("on", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    const libNav = document.getElementById("library-cats");
+    if (libNav) libNav.hidden = adminTab !== "library";
+  }
+
+  function setAdminTab(id) {
+    adminTab = ADMIN_TABS.indexOf(id) >= 0 ? id : "connect";
+    try { localStorage.setItem("bw-admin-tab", adminTab); } catch (_) {}
+    applyAdminTab();
+  }
+
+  function setLibCat(id) {
     libCat = LIB_CATS.indexOf(id) >= 0 ? id : "all";
     try { localStorage.setItem("bw-lib-cat", libCat); } catch (_) {}
     document.querySelectorAll("[data-lib-cat]").forEach((tab) => {
@@ -213,12 +225,24 @@
       tab.setAttribute("aria-selected", on ? "true" : "false");
     });
     applyLibCat();
-    if (!jump) return;
-    const target = libCat === "all"
-      ? document.getElementById("library-groups")
-      : document.querySelector("[data-lib-shelf=\"" + libCat + "\"]");
-    if (!target) return;
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function bindAdminTabs() {
+    const nav = document.getElementById("admin-tabs");
+    if (!nav || nav.dataset.bound === "1") return;
+    nav.dataset.bound = "1";
+    try {
+      const savedTab = localStorage.getItem("bw-admin-tab") || "";
+      const savedLib = localStorage.getItem("bw-lib-cat") || "";
+      if (savedLib === "fun" && !savedTab) adminTab = "sounds";
+      else if (ADMIN_TABS.indexOf(savedTab) >= 0) adminTab = savedTab;
+    } catch (_) {}
+    nav.addEventListener("click", (e) => {
+      const tab = e.target.closest("[data-admin-tab]");
+      if (!tab) return;
+      setAdminTab(tab.dataset.adminTab);
+    });
+    setAdminTab(adminTab);
   }
 
   function bindLibraryCats() {
@@ -232,24 +256,21 @@
     nav.addEventListener("click", (e) => {
       const tab = e.target.closest("[data-lib-cat]");
       if (!tab) return;
-      setLibCat(tab.dataset.libCat, true);
+      setLibCat(tab.dataset.libCat);
     });
-    setLibCat(libCat, false);
+    setLibCat(libCat);
   }
 
-  function renderLibrary() {
-    const host = document.getElementById("library-groups");
+  function renderFunLibrary() {
+    const funHost = document.getElementById("fun-library");
+    if (!funHost) return;
     const funItems = Game.libraryFor(library, "fun", false);
     const funOpen = groupOpen("fun", funItems.length);
-    const charShelves = GROUPS.filter((g) => g.id !== "fun" && g.id !== "crew").map((g) => {
-      return groupBlock(g.id, g.title, Game.libraryFor(library, g.id, false));
-    }).join("");
-    const gear = groupBlock("gear", "Gear", Game.gearLibraryItems(library), "No awardable gear stills yet.");
-    const crew = groupBlock("crew", "Crew", Game.libraryFor(library, "crew", false));
     const funCount = funItems.length === 1 ? "1 audio file" : funItems.length + " audio files";
     funCountLabel = funCount;
-    host.innerHTML = `
+    funHost.innerHTML = `
       <div class="lib-shelf" id="lib-shelf-fun" data-lib-shelf="fun">
+        <h3 style="font-size:0.95rem;margin:18px 0 8px">Fun / Sounds</h3>
         <div class="audio-toolbar">
           <button type="button" class="btn primary" id="toggle-fun-audio" aria-expanded="${funOpen ? "true" : "false"}">
             ${funOpen ? "Hide audio files" : "Show audio files"} · ${Game.esc(funCount)}
@@ -259,11 +280,7 @@
         <div id="fun-audio-panel" class="fun-audio-panel"${funOpen ? "" : " hidden"}>
           <div class="lib-grid">${funItems.map(cardHtml).join("")}</div>
         </div>
-      </div>
-      ${charShelves}
-      ${gear}
-      ${crew}`;
-
+      </div>`;
     const toggle = document.getElementById("toggle-fun-audio");
     const panel = document.getElementById("fun-audio-panel");
     if (toggle && panel) {
@@ -275,10 +292,26 @@
         toggle.textContent = (open ? "Hide audio files" : "Show audio files") + " · " + funCount;
       });
     }
+    bindLibraryClicks(funHost);
+  }
+
+  function renderLibrary() {
+    const host = document.getElementById("library-groups");
+    const charShelves = GROUPS.filter((g) => g.id !== "fun" && g.id !== "crew").map((g) => {
+      return groupBlock(g.id, g.title, Game.libraryFor(library, g.id, false));
+    }).join("");
+    const gear = groupBlock("gear", "Gear", Game.gearLibraryItems(library), "No awardable gear stills yet.");
+    const crew = groupBlock("crew", "Crew", Game.libraryFor(library, "crew", false));
+    host.innerHTML = `
+      ${charShelves}
+      ${gear}
+      ${crew}`;
+
     host.querySelectorAll("details[data-fold]").forEach((el) => {
       el.addEventListener("toggle", () => saveFold(el.dataset.fold, el.open));
     });
     bindLibraryClicks(host);
+    renderFunLibrary();
     applyLibCat();
     renderCues();
   }
@@ -898,6 +931,7 @@
       reader.readAsText(file);
     });
 
+    bindAdminTabs();
     bindLibraryCats();
     renderLibrary();
     renderIngredients();
