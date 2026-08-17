@@ -40,11 +40,19 @@ assert(/class="admin-jump"/.test(adminHtml), "Admin needs a sticky jump row");
 ["#connect-panel", "#usage-panel", "#spend-panel", "#library-panel", "#sounds-panel", "#story-panel", "#refs"].forEach((href) => {
   assert(adminHtml.includes('href="' + href + '"'), "Admin jump should link " + href);
 });
+assert(/id="library-cats"/.test(adminHtml) && /class="library-cats"/.test(adminHtml), "Admin library needs a category tab bar");
+assert(/data-lib-cat="all"/.test(adminHtml) && />All</.test(adminHtml), "Library category tabs include All");
+assert(/data-lib-cat="ace"/.test(adminHtml) && />Ace</.test(adminHtml), "Library category tabs include Ace");
+["riff", "scorch", "deuce", "fuzz", "bennett", "gear", "crew", "fun"].forEach((id) => {
+  assert(adminHtml.includes('data-lib-cat="' + id + '"'), "Library category tabs include " + id);
+});
+assert(/>Sounds</.test(adminHtml), "Fun shelf is the Sounds category tab");
 const soundsBlock = adminHtml.slice(adminHtml.indexOf('id="sounds-panel"'));
 assert(/Treehouse table/.test(soundsBlock) && /Banana-peel table \/ Pedestal/.test(soundsBlock), "Sounds should pin a Treehouse table card");
 assert(soundsBlock.indexOf("Treehouse table") < soundsBlock.indexOf('id="sound-cues"'), "Treehouse table card should sit at the top of Sounds");
 assert(/id="table-cue"/.test(adminHtml), "Treehouse table card needs the assign/save/clear host");
 const adminJs = fs.readFileSync(path.join(root, "js/admin.js"), "utf8");
+assert(/data-lib-shelf/.test(adminJs) && /setLibCat/.test(adminJs) && /applyLibCat/.test(adminJs), "Admin should filter library shelves from the category tabs");
 const tutorJs = fs.readFileSync(path.join(root, "js/tutor.js"), "utf8");
 const askHtml = fs.readFileSync(path.join(root, "ask.html"), "utf8");
 assert(adminJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/spend"), "Admin should GET the spend function");
@@ -54,7 +62,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=56/.test(askHtml) && /ask\.js\?v=56/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=58/.test(askHtml) && /ask\.js\?v=58/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -670,7 +678,7 @@ assert(/admin-jump/.test(themeCss) && /body\.admin-page \.usage-panel h2/.test(t
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=56/.test(weekHtml) && /week\.js\?v=56/.test(weekHtml) && /game\.js\?v=56/.test(weekHtml) && /telemetry\.js\?v=56/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=58/.test(weekHtml) && /week\.js\?v=58/.test(weekHtml) && /game\.js\?v=58/.test(weekHtml) && /telemetry\.js\?v=58/.test(weekHtml), "index should cache-bust css/js");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -718,6 +726,9 @@ assert(/trophy-plaque/.test(weekJs) && /prefersReducedMotion/.test(weekJs), "wal
 assert(/id="trophy-walkup"/.test(weekHtml) && /data-zone="window"/.test(weekHtml) && /data-zone="lockers"/.test(weekHtml), "wide room needs five walk-up lantern plaques");
 const lanternRule = cssRule(themeCss, ".trophy-lantern {");
 assert(/cursor:\s*pointer/.test(lanternRule), "lanterns must show a pointer cursor");
+const trophiesRule = cssRule(themeCss, ".trophies,");
+assert(/cursor:\s*pointer/.test(trophiesRule), "trophy chip must show a pointer cursor");
+assert(/#trophies[\s\S]{0,280}cursor:\s*pointer\s*!important/.test(themeCss) || /\.trophies,[\s\S]{0,220}#trophies[\s\S]{0,220}cursor:\s*pointer\s*!important/.test(themeCss), "trophy chip pointer must beat stage grab");
 assert(/#ffe08a|#f3c34a|#f4d35e/.test(lanternRule), "lanterns need a stronger gold fill");
 assert(themeCss.includes(".trophy-lantern:hover") && themeCss.includes(".trophy-lantern:active"), "lanterns need hover and press states");
 assert(weekJs.includes("zoneFromStagePoint") && weekJs.includes("getBoundingClientRect()"), "a tap on the still must walk up from the stage viewport");

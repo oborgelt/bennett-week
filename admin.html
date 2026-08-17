@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Admin · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=56">
+  <link rel="stylesheet" href="css/theme.css?v=58">
 </head>
 <body class="parent-page admin-page">
   <header class="week-head">
@@ -106,6 +106,18 @@
 
     <section class="usage-panel" id="library-panel">
       <h2>Library</h2>
+      <nav class="library-cats" id="library-cats" aria-label="Library categories">
+        <button type="button" class="library-cat on" data-lib-cat="all" aria-selected="true">All</button>
+        <button type="button" class="library-cat" data-lib-cat="ace" aria-selected="false">Ace</button>
+        <button type="button" class="library-cat" data-lib-cat="riff" aria-selected="false">Riff</button>
+        <button type="button" class="library-cat" data-lib-cat="scorch" aria-selected="false">Scorch</button>
+        <button type="button" class="library-cat" data-lib-cat="deuce" aria-selected="false">Deuce</button>
+        <button type="button" class="library-cat" data-lib-cat="fuzz" aria-selected="false">Fuzz</button>
+        <button type="button" class="library-cat" data-lib-cat="bennett" aria-selected="false">Bennett</button>
+        <button type="button" class="library-cat" data-lib-cat="gear" aria-selected="false">Gear</button>
+        <button type="button" class="library-cat" data-lib-cat="crew" aria-selected="false">Crew</button>
+        <button type="button" class="library-cat" data-lib-cat="fun" aria-selected="false">Sounds</button>
+      </nav>
       <p class="usage-lead">
         Drop audio you already have (mp3 / wav / ogg / m4a), or an image / video. Files stay <strong>on this device</strong> — not in the repo.
         If you drop the whole <code>audio</code> folder and include <code>manifest.json</code>, labels stay as written.
@@ -284,9 +296,9 @@
   ]
 }
   </script>
-  <script src="js/build.js?v=56"></script>
-  <script src="js/game.js?v=56"></script>
-  <script src="js/telemetry.js?v=56"></script>
-  <script src="js/admin.js?v=56"></script>
+  <script src="js/build.js?v=58"></script>
+  <script src="js/game.js?v=58"></script>
+  <script src="js/telemetry.js?v=58"></script>
+  <script src="js/admin.js?v=58"></script>
 </body>
 </html>
