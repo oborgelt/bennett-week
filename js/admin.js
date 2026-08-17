@@ -659,12 +659,16 @@
         Game.toast("Telemetry script did not load.");
         return;
       }
+      const role = document.getElementById("tel-role").value;
       T.setConfig({
         url: document.getElementById("tel-url").value.trim(),
         anonKey: document.getElementById("tel-anon").value.trim(),
         familyToken: document.getElementById("tel-token").value.trim(),
-        role: document.getElementById("tel-role").value
+        role
       });
+      if (typeof Game.setSiteView === "function") {
+        Game.setSiteView(Game.siteViewFromRole(role));
+      }
       Game.toast("Saved on this device. Not in the repo.");
       await loadUsage();
     });
