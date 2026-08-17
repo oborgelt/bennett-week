@@ -200,8 +200,7 @@
     const asked = notes.filter((n) => n.from === "bennett").length;
     const parentNotes = notes.filter((n) => n.from === "parent").length;
     const reflections = ((family.reflections && family.reflections.answers) || []).length;
-    const unlocks = Game.getUnlocks();
-    const trophies = (pack.achievements || []).filter((ach) => unlocks[ach.id]);
+    const trophies = (pack.achievements || []).filter((ach) => Game.alreadyUnlocked(ach.id));
     const eggs = Game.foundEggs(seed.eggNames);
     return {
       started,
@@ -214,7 +213,7 @@
       trophies,
       mates: roster ? Game.unlockedTeammates(roster) : [],
       eggs,
-      bananas: Game.getBananas()
+      bananas: Game.getBananas(pack)
     };
   }
 
@@ -284,12 +283,10 @@
     const eggList = eggs.length
       ? eggs.map((e) => `<li>${Game.esc(e.name)}${e.at ? " · " + Game.esc(Game.fmtStamp(e.at)) : ""}</li>`).join("")
       : `<li class="empty">None found yet. The lobby has a few wholesome surprises.</li>`;
-    const trophyList = trophies.length
-      ? trophies.map((ach) => `<li class="entry-row">${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)} <span class="entry-tools">${Game.gameHref(ach) ? `<a class="tiny primary" href="${Game.esc(Game.gameHref(ach))}">Play</a>` : ""}<button type="button" class="tiny" data-edit="trophy:${Game.esc(ach.id)}">Edit</button><button type="button" class="tiny" data-undo-trophy="${Game.esc(ach.id)}">Undo award</button></span></li>`).join("")
-      : `<li class="empty">No trophies yet — keep the streak going.</li>`;
+    const trophyList = Game.progressTrophyListHtml(pack.achievements);
     const mateList = totals.mates.length
       ? totals.mates.map((ch) => `<li><a href="characters.html">${Game.esc(Game.characterLabel(ch))}</a>${ch.talent ? " · " + Game.esc(ch.talent) : ""}</li>`).join("")
-      : `<li class="empty">No teammates yet — parents award a streak to unlock Ace.</li>`;
+      : `<li class="empty">${Game.siteViewHidesAdult() ? "No teammates yet — keep the streak going." : "No teammates yet — parents award a streak to unlock Ace."}</li>`;
     return `
       <article class="stat-card finds-card">
         <h3>Bananas &amp; finds</h3>
@@ -340,7 +337,7 @@
             </div>
             <div class="entry-tools">
               <button type="button" class="tiny" data-note-item="${Game.esc(item.id)}">Note</button>
-              ${Game.entryButtons("pitem:" + item.id, "pitem:" + item.id)}
+              ${Game.progressCanMutate() ? Game.entryButtons("pitem:" + item.id, "pitem:" + item.id) : ""}
             </div>
           </li>`;
       }).join("")
@@ -360,10 +357,10 @@
         <ul class="class-items">${itemHtml}</ul>
         ${khan}
         <p class="ask-help-link class-ask"><a href="${Game.esc(askHref)}">Ask AI</a></p>
-        <div class="class-card-tools">
+        ${Game.progressCanMutate() ? `<div class="class-card-tools">
           <button type="button" class="mini" data-add-item="${Game.esc(cls.id)}">Add assignment</button>
           ${Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id)}
-        </div>
+        </div>` : ""}
       </details>`;
   }
 
@@ -411,6 +408,7 @@
   }
 
   function openEdit(token) {
+    if (!Game.progressCanMutate()) return;
     const i = (token || "").indexOf(":");
     const kind = i < 0 ? token : token.slice(0, i);
     const id = i < 0 ? "" : token.slice(i + 1);
@@ -516,6 +514,7 @@
   }
 
   function deleteEntry(token) {
+    if (!Game.progressCanMutate()) return;
     const i = (token || "").indexOf(":");
     const kind = i < 0 ? token : token.slice(0, i);
     const id = i < 0 ? "" : token.slice(i + 1);
@@ -534,6 +533,7 @@
   }
 
   function openAddItem(classId) {
+    if (!Game.progressCanMutate()) return;
     const cls = mergeClasses().find((c) => c.id === classId);
     if (!cls) return;
     const today = Game.chicagoYmd(new Date());
@@ -622,6 +622,7 @@
     });
     document.querySelectorAll("[data-undo-trophy]").forEach((btn) => {
       btn.addEventListener("click", () => {
+        if (!Game.progressCanMutate()) return;
         const result = Game.revokeAchievement(pack, family, btn.dataset.undoTrophy);
         family = result.family;
         Game.toast("Award undone. That trophy leaves the room.");
@@ -681,6 +682,10 @@
     document.getElementById("close-sheet").addEventListener("click", closeSheet);
     document.getElementById("sheet").addEventListener("click", (e) => {
       if (e.target.id === "sheet") closeSheet();
+    });
+    document.addEventListener("bw-site-view", () => {
+      if (!pack) return;
+      render();
     });
     render();
   }
