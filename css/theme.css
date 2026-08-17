@@ -1874,6 +1874,19 @@ body.week-page.in-treehouse .peek-monkey {
   justify-content: center;
 }
 
+.help-start .ask-log {
+  max-height: 32vh;
+  margin: 8px 0 0;
+}
+
+.help-composer {
+  margin-top: 2px;
+}
+
+.help-composer .btn.primary {
+  margin-top: 0;
+}
+
 .help-tabs {
   display: flex;
   flex-wrap: wrap;

@@ -71,7 +71,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=72/.test(askHtml) && /ask\.js\?v=72/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=74/.test(askHtml) && /ask\.js\?v=74/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8"), fs.readFileSync(path.join(root, "js/messages.js"), "utf8"), fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -675,6 +675,12 @@ assert(!/dataset\.act === "start"/.test(weekJs), "start sound must not listen fo
 assert(/Here's the deal/.test(weekJs) && /Start here/.test(weekJs), "A little help should be deal + first move");
 assert(!/data-mode="notecards"/.test(weekJs), "A little help should not open on notecard tabs");
 assert(/Talk it through/.test(weekJs), "A little help should offer Talk it through, not a study-tool menu");
+assert(/id="ask-input"/.test(weekJs) && /id="help-send"/.test(weekJs), "week.js help sheet has a composer (ask-input or help-send)");
+assert(/Answer the mentor/.test(weekJs) && /Tutor\.ask/.test(weekJs) && /getAskThread/.test(weekJs) && /addAskMessage/.test(weekJs), "in-sheet Send continues the Ask AI thread");
+assert(!/<a class="btn primary"[^>]*>Talk it through/.test(weekJs), "Talk it through is not the only way to continue");
+assert(/helpComposerHtml/.test(weekJs) && /mode === "proofread"/.test(weekJs) && /feedback/.test(weekJs), "draft mode still has a reply box after feedback");
+const helpBubbleFn = weekJs.slice(weekJs.indexOf("function helpBubbleHtml"), weekJs.indexOf("function helpLogHtml"));
+assert(helpBubbleFn.includes("ask-bubble") && !/Edit/.test(helpBubbleFn) && !/Delete/.test(helpBubbleFn), "kid view: no Edit/Delete on help bubbles");
 assert(/help-thinking/.test(weekJs) && /Looking at the assignment/.test(weekJs) && /Pulling a hint/.test(weekJs) && /Mentor is thinking/.test(weekJs), "A little help should show a changing thinking status before the reply");
 assert(/HELP_THINK_MS = 700/.test(weekJs) && /help-dots/.test(weekJs), "A little help should hold thinking for at least 700ms with dots");
 assert(/Couldn’t reach the mentor/.test(weekJs), "A little help should say so when the mentor is offline");
@@ -709,12 +715,12 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=72/.test(weekHtml) && /week\.js\?v=72/.test(weekHtml) && /game\.js\?v=72/.test(weekHtml) && /telemetry\.js\?v=72/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=74/.test(weekHtml) && /week\.js\?v=74/.test(weekHtml) && /game\.js\?v=74/.test(weekHtml) && /telemetry\.js\?v=74/.test(weekHtml), "index should cache-bust css/js");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=72/.test(progressHtml) && /theme\.css\?v=72/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=74/.test(progressHtml) && /theme\.css\?v=74/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*70/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*72/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
