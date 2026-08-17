@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Admin · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=78">
+  <link rel="stylesheet" href="css/theme.css?v=80">
 </head>
 <body class="parent-page admin-page">
   <header class="week-head">
@@ -99,6 +99,12 @@
       <p class="usage-lead">
         Sessions, clicks, delays, and class activity across devices. Refresh usage also reloads API spend.
       </p>
+      <div class="usage-who" id="usage-who" role="group" aria-label="Usage who">
+        <button type="button" class="usage-who-btn on" data-usage-who="all" aria-pressed="true">All</button>
+        <button type="button" class="usage-who-btn" data-usage-who="bennett" aria-pressed="false">Bennett</button>
+        <button type="button" class="usage-who-btn" data-usage-who="orin" aria-pressed="false">Orin</button>
+        <button type="button" class="usage-who-btn" data-usage-who="parent" aria-pressed="false">Mom</button>
+      </div>
       <div id="usage-health"></div>
       <div id="usage-stats"></div>
       <label class="edit-label">Term
@@ -299,9 +305,9 @@
   ]
 }
   </script>
-  <script src="js/build.js?v=78"></script>
-  <script src="js/game.js?v=78"></script>
-  <script src="js/telemetry.js?v=78"></script>
-  <script src="js/admin.js?v=78"></script>
+  <script src="js/build.js?v=80"></script>
+  <script src="js/game.js?v=80"></script>
+  <script src="js/telemetry.js?v=80"></script>
+  <script src="js/admin.js?v=80"></script>
 </body>
 </html>

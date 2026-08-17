@@ -76,14 +76,51 @@
       "id": "eng-names",
       "title": "English 10: Help me learn your names!",
       "due": "2026-08-17T23:59:00",
-      "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points."
+      "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points.",
+      "canvas": {
+        "status": "submitted",
+        "points": 5
+      }
     },
     {
       "id": "eng-comics",
-      "title": "English 10: Finish summer comic strips",
-      "due": "2026-08-18T13:05:00",
-      "note": "In class Tuesday. Monday card should still say start this.",
-      "suggest_from": "2026-08-15"
+      "title": "English 10: Summer Narrative Comic Strip",
+      "due": "2026-08-20T23:59:00",
+      "note": "In class Tuesday. Official Canvas due Thursday 11:59pm. 10 points, submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence.",
+      "suggest_from": "2026-08-15",
+      "canvas": {
+        "status": "open",
+        "points": 10,
+        "due": "2026-08-20T23:59:00",
+        "submit": "paper",
+        "class_due": "2026-08-18T13:05:00",
+        "absent": "We completed this on paper during class time. If you were absent, see me for the directions!",
+        "rubric": [
+          {
+            "name": "Illustration",
+            "points": 5,
+            "text": "Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only.",
+            "ratings": "5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence"
+          },
+          {
+            "name": "Writing",
+            "points": 5,
+            "text": "On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic.",
+            "ratings": "5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence"
+          }
+        ]
+      }
+    },
+    {
+      "id": "chem-about-me",
+      "title": "Chemistry: About Me Slides",
+      "classId": "chemistry",
+      "due": "2026-08-18T23:59:00",
+      "note": "1 point. Canvas still open.",
+      "canvas": {
+        "status": "open",
+        "points": 1
+      }
     },
     {
       "id": "eng-notebook",
