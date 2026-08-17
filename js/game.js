@@ -2303,9 +2303,19 @@
       if (message) toast(message);
     }
 
+    function filterCueRows(rows) {
+      const only = opts.only;
+      const except = opts.except;
+      return rows.filter((row) => {
+        if (only && only.length && only.indexOf(row.id) < 0) return false;
+        if (except && except.length && except.indexOf(row.id) >= 0) return false;
+        return true;
+      });
+    }
+
     function render() {
-      const catalog = soundCueRows(week);
-      const assigned = assignedCueRows(family, week);
+      const catalog = filterCueRows(soundCueRows(week));
+      const assigned = filterCueRows(assignedCueRows(family, week));
       const taken = new Set(assigned.map((row) => row.id));
       const open = catalog.filter((row) => !taken.has(row.id));
       const savedHtml = assigned.length
