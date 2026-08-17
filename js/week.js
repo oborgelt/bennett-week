@@ -209,7 +209,7 @@
     const touched = ids.filter((id) => progress[id] && (progress[id].started || progress[id].startedAt || progress[id].done)).length;
     document.getElementById("rally-fill").style.width = (ids.length ? (touched / ids.length) * 100 : 0) + "%";
     document.getElementById("rally-count").textContent = `${touched}/${ids.length}`;
-    document.getElementById("trophy-count").textContent = Object.keys(Game.getUnlocks()).length;
+    document.getElementById("trophy-count").textContent = Object.keys(Game.getUnlocks()).filter((id) => Game.alreadyUnlocked(id)).length;
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
     Game.paintStoryChip(roster);
@@ -1632,8 +1632,6 @@
     function openShelf() {
       resetTrophyView();
       preloadTrophyStills();
-      const preview = Game.maybeAutoPreviewAll(pack, family);
-      family = preview.family;
       hud();
       renderShelf();
       document.body.classList.add("in-treehouse");
@@ -1760,14 +1758,9 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
-    const preview = Game.maybeAutoPreviewAll(pack, family);
-    family = preview.family;
-    if (preview.ran) {
-      Game.toast("Parent preview: all rewards unlocked on this device.");
-    }
     const signin = Game.maybeAwardSignIn(pack, family);
     family = signin.family;
-    if (signin.awarded && signin.achievement && !preview.ran) {
+    if (signin.awarded && signin.achievement) {
       Game.celebrate(signin.achievement, pack);
     }
     library = await Game.loadLibrary();
@@ -1791,6 +1784,15 @@
     } else if (!roster) {
       Game.maybePlayContentCelebration(library);
     }
+    document.addEventListener("bw-site-view", () => {
+      if (!pack) return;
+      const next = Game.maybeAwardSignIn(pack, family);
+      family = next.family;
+      if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack);
+      hud();
+      const shelf = document.getElementById("shelf");
+      if (shelf && shelf.classList.contains("open")) renderShelf();
+    });
   }
 
   boot();

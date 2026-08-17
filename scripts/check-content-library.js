@@ -71,7 +71,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=64/.test(askHtml) && /ask\.js\?v=64/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=66/.test(askHtml) && /ask\.js\?v=66/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -703,7 +703,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=64/.test(weekHtml) && /week\.js\?v=64/.test(weekHtml) && /game\.js\?v=64/.test(weekHtml) && /telemetry\.js\?v=64/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=66/.test(weekHtml) && /week\.js\?v=66/.test(weekHtml) && /game\.js\?v=66/.test(weekHtml) && /telemetry\.js\?v=66/.test(weekHtml), "index should cache-bust css/js");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -759,13 +759,15 @@ assert(themeCss.includes(".trophy-lantern:hover") && themeCss.includes(".trophy-
 assert(weekJs.includes("zoneFromStagePoint") && weekJs.includes("getBoundingClientRect()"), "a tap on the still must walk up from the stage viewport");
 assert(weekJs.includes("walkUpFromControl") && /enterTrophyZone\(btn\.dataset\.zone\)/.test(weekJs), "walk-up plaques must call enterTrophyZone");
 assert(!/setPointerCapture/.test(weekJs) && !weekJs.includes("hotspotFromEvent") && !weekJs.includes("elementFromPoint"), "trophy room must not capture the pointer or hit-test the look-layer glows");
-assert((weekJs.match(/maybeAutoPreviewAll/g) || []).length >= 2, "preview should gap-fill on boot and when opening the trophy room");
+assert(!weekJs.includes("maybeAutoPreviewAll"), "This Week must not auto-preview into Bennett's locker");
+assert(!crewJs.includes("maybeAutoPreviewAll"), "Characters must not auto-preview on boot");
+assert(parentJs.includes("awardAllPreview") && parentJs.includes("siteViewHidesAdult"), "parent desk Unlock all stays on Me and ignores kid view");
 assert(!/e\.pointerType !== "mouse"/.test(weekJs), "hover mouse-look should not pan the hotspot layer");
 assert(/id="trophy-order-list"/.test(parentHtml), "parent desk should keep trophy drag-reorder");
 assert(/theme\.css\?v=/.test(parentHtml) && /parent\.js\?v=/.test(parentHtml), "parent desk should cache-bust css/js");
 assert(crewJs.includes("gearThumbHtml") && crewJs.includes("alreadyUnlockedGear"), "loadout should use real gear stills when unlocked");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-signin-seen", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 const previewFamily = Game.emptyFamily();
 const auto = Game.maybeAutoPreviewAll(pack, previewFamily);
@@ -796,7 +798,7 @@ assert(manual.awarded > 0 && Game.alreadyUnlockedCharacter("deuce") && Game.alre
 assert(Game.alreadyUnlockedCharacter("bennett"), "Unlock all should re-award Bennett");
 assert(!localStorage.getItem("bw-preview-locked"), "Unlock all should clear bw-preview-locked");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-signin-seen", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 let signFamily = Game.emptyFamily();
 const signin = Game.maybeAwardSignIn(pack, signFamily);
@@ -819,14 +821,14 @@ assert(!afterUndo.awarded && !Game.alreadyUnlockedCharacter("bennett"), "sign-in
 const reaward = Game.awardStreak(pack, undone.family, "test-bennett-showup");
 assert(reaward.freshCharacter && Game.alreadyUnlockedCharacter("bennett"), "Meet Bennett TEST can re-award after undo");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-signin-seen", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 Game.markCharacterUnlocked("bennett");
 const previewAfterBennett = Game.maybeAutoPreviewAll(pack, Game.emptyFamily());
 assert(previewAfterBennett.ran, "Bennett-only unlock should not block auto-preview of the crew");
 assert(Game.alreadyUnlockedCharacter("ace"), "auto-preview still unlocks teammates after Bennett signed in");
 
-["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-locked", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-signin-seen", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
 localStorage.removeItem("bw-family");
 Game.markCharacterUnlocked("bennett");
 localStorage.setItem("bw-preview-all", "1");
@@ -836,6 +838,43 @@ assert(Game.alreadyUnlockedCharacter("ace") && Game.alreadyUnlockedCharacter("ri
 assert(Game.alreadyUnlockedCharacter("deuce") && Game.alreadyUnlockedCharacter("fuzz") && Game.alreadyUnlockedCharacter("bennett"), "gap-fill should include Deuce, Fuzz, and Bennett");
 assert(Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedGear("field-kit") && Game.alreadyUnlockedGear("unplugged-strap"), "gap-fill should include Angle Finder, Field Kit, Unplugged Strap");
 assert(Game.alreadyUnlockedGear("daily-pick") && Game.alreadyUnlockedGear("notebook-holding") && Game.alreadyUnlockedGear("first-serve"), "gap-fill should include Daily Pick, Notebook of Holding, First Serve");
+
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-signin-seen", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+localStorage.removeItem("bw-family");
+Game.setSiteView("bennett");
+const kidNoop = Game.maybeAutoPreviewAll(pack, Game.emptyFamily());
+assert(!kidNoop.ran && kidNoop.awarded === 0, "maybeAutoPreviewAll is a no-op in kid view");
+assert(!Game.alreadyUnlockedCharacter("ace") && !Game.alreadyUnlockedGear("angle-finder") && !Game.alreadyUnlockedContent("ace-frog"), "kid boot must not dump preview awards");
+
+Game.setSiteView("me");
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-signin-seen", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+localStorage.removeItem("bw-family");
+const previewDump = Game.awardAllPreview(pack, Game.emptyFamily());
+assert(Game.alreadyUnlockedCharacter("ace") && Game.alreadyUnlockedGear("angle-finder") && Game.alreadyUnlockedContent("ace-frog"), "Me view still sees preview awards");
+Game.setSiteView("bennett");
+assert(!Game.alreadyUnlockedCharacter("ace"), "kid view + preview-all must not treat Ace as earned");
+assert(!Game.alreadyUnlockedGear("angle-finder") && !Game.alreadyUnlockedGear("first-serve"), "kid view + preview-all must not treat gear as earned");
+assert(!Game.alreadyUnlockedContent("ace-frog") && !Game.alreadyUnlockedContent("riff-bird") && !Game.alreadyUnlockedContent("scorch-spider"), "kid view + preview-all must not treat fight clips as earned");
+assert(!Game.alreadyUnlockedCharacter("bennett") && !Game.alreadyUnlocked("signin-bennett"), "preview Bennett is not earned in kid view");
+const kidSign = Game.maybeAwardSignIn(pack, previewDump.family);
+assert(kidSign.awarded && kidSign.achievement, "maybeAwardSignIn in kid view awards Bennett even after preview");
+assert(Game.alreadyUnlockedCharacter("bennett") && Game.alreadyUnlocked("signin-bennett"), "first Bennett login earns the avatar");
+assert(!Game.alreadyUnlockedCharacter("ace") && !Game.alreadyUnlockedGear("angle-finder") && !Game.alreadyUnlockedContent("ace-frog"), "first login still leaves Ace/gear/fight clips locked");
+const kidSignAgain = Game.maybeAwardSignIn(pack, kidSign.family);
+assert(kidSignAgain.awarded && kidSignAgain.achievement, "welcome can still play until the clip marks it seen");
+localStorage.setItem("bw-signin-seen", "1");
+const afterWelcome = Game.maybeAwardSignIn(pack, kidSign.family);
+assert(!afterWelcome.awarded, "welcome must not replay after the clip has been seen");
+
+Game.setSiteView("me");
+["bw-unlocks", "bw-character-unlocks", "bw-gear-unlocks", "bw-content-unlocks", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-signin-seen", "bw-bananas"].forEach((key) => localStorage.removeItem(key));
+localStorage.removeItem("bw-family");
+const parentAce = Game.awardStreak(pack, Game.emptyFamily(), "test-ace-closer");
+Game.setSiteView("bennett");
+assert(Game.alreadyUnlockedCharacter("ace"), "parent Award button unlocks should show in Bennett's treehouse");
+Game.setSiteView("me");
+assert(parentAce.freshCharacter, "Meet Ace Award is a real unlock");
+localStorage.removeItem("bw-site-view");
 
 assert.strictEqual(Game.siteView(), "me", "this laptop defaults to Me");
 assert.strictEqual(Game.siteViewFromRole("bennett"), "bennett");
@@ -928,6 +967,18 @@ assert(viewBox && viewBox.getAttribute("aria-label") === "Preview as", "view con
 assert(adminChip.hidden && parentChip.hidden && refsChip.hidden, "bennett hides admin");
 assert(Game.audioAllowed(), "Bennett still hears audio");
 assert(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "tables", "honk"), funLib, "tables"), "Bennett table cue still plays");
+
+localStorage.removeItem("bw-signin-seen");
+const clipChar = { id: "bennett", name: "Bennett", video: "img/characters/bennett.mp4", poster: "img/characters/bennett.jpg" };
+Game.playUnlockClip(Game.defaultCharacters(), clipChar);
+const clipLayer = document.body.children.find((el) => el.id === "char-celebrate") || document.body.children[document.body.children.length - 1];
+assert(clipLayer && /bennett\.mp4/.test(clipLayer.innerHTML) && /bennett\.jpg/.test(clipLayer.innerHTML), "playUnlockClip uses Bennett video + poster");
+assert(/You're in/.test(clipLayer.innerHTML), "Bennett welcome kicker is You're in");
+localStorage.removeItem("bw-signin-seen");
+Game.celebrate({ id: "signin-bennett", title: "Signed in", rewardCharacter: "bennett", rewardUnlock: { type: "character", id: "bennett", label: "Bennett" } }, pack);
+const celebrateLayer = document.body.children.find((el) => el.id === "char-celebrate") || document.body.children[document.body.children.length - 1];
+assert(celebrateLayer && /bennett\.mp4/.test(celebrateLayer.innerHTML) && /bennett\.jpg/.test(celebrateLayer.innerHTML), "kid celebrate path plays Bennett video + poster, not a toast");
+assert.strictEqual(localStorage.getItem("bw-signin-seen"), "1", "welcome clip marks sign-in as seen");
 
 Game.setSiteView("mom");
 assert.strictEqual(Game.siteView(), "mom");

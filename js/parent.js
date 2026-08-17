@@ -904,6 +904,7 @@
     });
 
     document.getElementById("preview-unlock-all").addEventListener("click", () => {
+      if (Game.siteViewHidesAdult()) return;
       const result = Game.awardAllPreview(pack, family);
       family = result.family;
       persistFamily();
