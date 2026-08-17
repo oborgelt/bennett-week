@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Admin · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=58">
+  <link rel="stylesheet" href="css/theme.css?v=60">
 </head>
 <body class="parent-page admin-page">
   <header class="week-head">
@@ -37,18 +37,31 @@
   </header>
 
   <div class="parent-wrap">
-    <nav class="admin-jump" aria-label="Admin sections">
-      <a href="#connect-panel">Connect</a>
-      <a href="#usage-panel">Site usage</a>
-      <a href="#spend-panel">API spend</a>
-      <a href="#library-panel">Library</a>
-      <a href="#sounds-panel">Sounds</a>
-      <a href="#story-panel">Story</a>
-      <a href="#refs">Locker refs</a>
-    </nav>
+    <div class="admin-nav" id="admin-nav">
+      <nav class="admin-tabs" id="admin-tabs" aria-label="Admin sections">
+        <button type="button" class="admin-tab on" data-admin-tab="connect" aria-selected="true">Connect</button>
+        <button type="button" class="admin-tab" data-admin-tab="usage" aria-selected="false">Site usage</button>
+        <button type="button" class="admin-tab" data-admin-tab="spend" aria-selected="false">API spend</button>
+        <button type="button" class="admin-tab" data-admin-tab="library" aria-selected="false">Library</button>
+        <button type="button" class="admin-tab" data-admin-tab="sounds" aria-selected="false">Sounds</button>
+        <button type="button" class="admin-tab" data-admin-tab="story" aria-selected="false">Story</button>
+        <button type="button" class="admin-tab" data-admin-tab="refs" aria-selected="false">Locker refs</button>
+      </nav>
+      <nav class="library-cats" id="library-cats" hidden aria-label="Library categories">
+        <button type="button" class="library-cat on" data-lib-cat="all" aria-selected="true">All</button>
+        <button type="button" class="library-cat" data-lib-cat="ace" aria-selected="false">Ace</button>
+        <button type="button" class="library-cat" data-lib-cat="riff" aria-selected="false">Riff</button>
+        <button type="button" class="library-cat" data-lib-cat="scorch" aria-selected="false">Scorch</button>
+        <button type="button" class="library-cat" data-lib-cat="deuce" aria-selected="false">Deuce</button>
+        <button type="button" class="library-cat" data-lib-cat="fuzz" aria-selected="false">Fuzz</button>
+        <button type="button" class="library-cat" data-lib-cat="bennett" aria-selected="false">Bennett</button>
+        <button type="button" class="library-cat" data-lib-cat="gear" aria-selected="false">Gear</button>
+        <button type="button" class="library-cat" data-lib-cat="crew" aria-selected="false">Crew</button>
+      </nav>
+    </div>
     <p class="draft-flag" id="draft-flag" hidden>This device has a library or family draft. Export the family pack to share.</p>
 
-    <section class="usage-panel" id="connect-panel">
+    <section class="usage-panel" id="connect-panel" data-admin-panel="connect">
       <h2>Connect</h2>
       <p class="usage-lead">
         Paste the Supabase URL, anon key, and family token on this laptop and Bennett’s phone.
@@ -80,7 +93,7 @@
       <p class="usage-status" id="usage-status"></p>
     </section>
 
-    <section class="usage-panel" id="usage-panel">
+    <section class="usage-panel" id="usage-panel" data-admin-panel="usage" hidden>
       <h2>Site usage</h2>
       <p class="usage-lead">
         Sessions, clicks, delays, and class activity across devices. Refresh usage also reloads API spend.
@@ -94,7 +107,7 @@
       <div id="usage-drill"></div>
     </section>
 
-    <section class="usage-panel" id="spend-panel">
+    <section class="usage-panel" id="spend-panel" data-admin-panel="spend" hidden>
       <h2>API spend</h2>
       <p class="usage-lead">
         Live Ask AI cost from this family’s token.
@@ -104,20 +117,8 @@
       <div id="spend-stats"></div>
     </section>
 
-    <section class="usage-panel" id="library-panel">
+    <section class="usage-panel" id="library-panel" data-admin-panel="library" hidden>
       <h2>Library</h2>
-      <nav class="library-cats" id="library-cats" aria-label="Library categories">
-        <button type="button" class="library-cat on" data-lib-cat="all" aria-selected="true">All</button>
-        <button type="button" class="library-cat" data-lib-cat="ace" aria-selected="false">Ace</button>
-        <button type="button" class="library-cat" data-lib-cat="riff" aria-selected="false">Riff</button>
-        <button type="button" class="library-cat" data-lib-cat="scorch" aria-selected="false">Scorch</button>
-        <button type="button" class="library-cat" data-lib-cat="deuce" aria-selected="false">Deuce</button>
-        <button type="button" class="library-cat" data-lib-cat="fuzz" aria-selected="false">Fuzz</button>
-        <button type="button" class="library-cat" data-lib-cat="bennett" aria-selected="false">Bennett</button>
-        <button type="button" class="library-cat" data-lib-cat="gear" aria-selected="false">Gear</button>
-        <button type="button" class="library-cat" data-lib-cat="crew" aria-selected="false">Crew</button>
-        <button type="button" class="library-cat" data-lib-cat="fun" aria-selected="false">Sounds</button>
-      </nav>
       <p class="usage-lead">
         Drop audio you already have (mp3 / wav / ogg / m4a), or an image / video. Files stay <strong>on this device</strong> — not in the repo.
         If you drop the whole <code>audio</code> folder and include <code>manifest.json</code>, labels stay as written.
@@ -191,7 +192,7 @@
       <div id="library-groups"></div>
     </section>
 
-    <section class="usage-panel" id="sounds-panel">
+    <section class="usage-panel" id="sounds-panel" data-admin-panel="sounds" hidden>
       <h2>Sounds</h2>
       <article class="cue-pin" id="treehouse-table-card">
         <h3>Treehouse table</h3>
@@ -208,9 +209,10 @@
         Plays on this device. Export the family pack so Mom gets the same assignments.
       </p>
       <div id="sound-cues"></div>
+      <div id="fun-library"></div>
     </section>
 
-    <section class="usage-panel" id="story-panel">
+    <section class="usage-panel" id="story-panel" data-admin-panel="story" hidden>
       <h2>Story</h2>
       <p class="usage-lead">
         Topics you want in the comic.
@@ -234,7 +236,7 @@
       <div id="ingredients"></div>
     </section>
 
-    <section class="usage-panel" id="refs">
+    <section class="usage-panel" id="refs" data-admin-panel="refs" hidden>
       <h2>Locker refs</h2>
       <p class="usage-lead">
         Six locker stills on one page so you can drag them into Imagine. No Downloads folder. Do not redesign.
@@ -296,9 +298,9 @@
   ]
 }
   </script>
-  <script src="js/build.js?v=58"></script>
-  <script src="js/game.js?v=58"></script>
-  <script src="js/telemetry.js?v=58"></script>
-  <script src="js/admin.js?v=58"></script>
+  <script src="js/build.js?v=60"></script>
+  <script src="js/game.js?v=60"></script>
+  <script src="js/telemetry.js?v=60"></script>
+  <script src="js/admin.js?v=60"></script>
 </body>
 </html>

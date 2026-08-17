@@ -40,18 +40,36 @@
     Game.track("ask_ai", { classId: params().get("class") || Game.classIdForTitle(title), message: title });
     input.value = "";
     renderLog();
-    document.getElementById("ask-send").disabled = true;
+    const sendBtn = document.getElementById("ask-send");
+    sendBtn.disabled = true;
+    const log = document.getElementById("ask-log");
+    const thinking = document.createElement("article");
+    thinking.className = "ask-bubble mentor thinking";
+    thinking.id = "ask-thinking";
+    thinking.setAttribute("role", "status");
+    thinking.innerHTML = `
+      <p class="ask-who">Mentor</p>
+      <p class="ask-thinking-row">
+        <span class="help-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Thinking…</span>
+      </p>`;
+    log.appendChild(thinking);
+    log.scrollTop = log.scrollHeight;
+    const started = Date.now();
     const data = await Tutor.ask({
       title,
       messages: thread.messages
     });
+    const wait = 700 - (Date.now() - started);
+    if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
+    if (thinking.parentNode) thinking.parentNode.removeChild(thinking);
     thread = Game.addAskMessage(thread, {
       role: "mentor",
       text: data.reply || "What's the smallest first move?",
       title,
       test: !data.live
     });
-    document.getElementById("ask-send").disabled = false;
+    sendBtn.disabled = false;
     renderLog();
     if (!data.live) {
       Game.toast("TEST mentor — connect Admin with the family token for live Ask AI.");

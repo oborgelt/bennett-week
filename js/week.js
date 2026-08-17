@@ -532,7 +532,10 @@
       btn.addEventListener("click", () => openAddWork(btn.dataset.addWork));
     });
     track.querySelectorAll("[data-help]").forEach((btn) => {
-      btn.addEventListener("click", () => openHelp(btn.dataset.help));
+      btn.addEventListener("click", () => {
+        btn.disabled = true;
+        openHelp(btn.dataset.help);
+      });
     });
     track.querySelectorAll("[data-play-lib]").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -1424,12 +1427,53 @@
     return href;
   }
 
+  const HELP_THINK_MS = 700;
+  const HELP_THINK_LINES = [
+    "Ace is bouncing the ball…",
+    "Riff is counting the beat…",
+    "The crew is huddling up…",
+    "Fuzz is sniffing this one out…"
+  ];
+
+  function helpThinkLine() {
+    return HELP_THINK_LINES[Math.floor(Math.random() * HELP_THINK_LINES.length)];
+  }
+
+  function helpThinkingHtml(status, line) {
+    return `
+      <div class="help-thinking" role="status" aria-live="polite">
+        <p class="help-thinking-status">${Game.esc(status)}</p>
+        <div class="help-thinking-crew">
+          <span class="help-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <p class="help-thinking-line">${Game.esc(line || helpThinkLine())}</p>
+        </div>
+      </div>`;
+  }
+
+  function setHelpBusy(workId, busy) {
+    document.querySelectorAll("[data-help]").forEach((btn) => {
+      if (!workId || btn.dataset.help === String(workId)) btn.disabled = !!busy;
+    });
+    ["proof-go", "help-draft", "help-back"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = !!busy;
+    });
+  }
+
+  function paintHelpThinking(status, line) {
+    const body = document.getElementById("sheet-body");
+    if (body) body.innerHTML = helpThinkingHtml(status, line);
+  }
+
   function renderHelpBody(work, data, mode, draft) {
     const title = work.title || "This assignment";
     const start = data.start || ((data.cards || [])[2] && data.cards[2].back) || "Do one small first step tonight.";
     const classId = Game.classIdForWork(work);
     const khan = Game.khanStripHtml(work.title || "", classId ? { classId } : undefined);
     const askHref = helpAskHref(work);
+    const banner = data.live
+      ? ""
+      : `<p class="help-banner">Couldn’t reach the mentor — here’s an offline hint</p>`;
     let main = "";
     if (mode === "proofread") {
       main = `
@@ -1462,6 +1506,7 @@
     document.getElementById("sheet-body").innerHTML = `
       <div class="help-nudge">
         <p class="help-work">${Game.esc(title)}</p>
+        ${banner}
         ${main}
         ${extras}
         ${khan}
@@ -1482,21 +1527,47 @@
   }
 
   async function loadHelp(work, mode, draft) {
-    document.getElementById("sheet-body").innerHTML = `<p class="empty">Looking at the assignment…</p>`;
-    const data = await Tutor.request({
-      mode: mode || "nudge",
-      title: work.title,
-      note: work.note || "",
-      draft: draft || ""
-    });
+    const started = Date.now();
+    const line = helpThinkLine();
+    setHelpBusy(work && work.id, true);
+    paintHelpThinking("Looking at the assignment…", line);
+    const statusTimer = window.setTimeout(() => {
+      const status = document.querySelector(".help-thinking-status");
+      if (!status) return;
+      status.textContent = mode === "proofread" ? "Mentor is thinking…" : "Pulling a hint…";
+    }, 280);
+    let data;
+    try {
+      data = await Tutor.request({
+        mode: mode || "nudge",
+        title: work.title,
+        note: work.note || "",
+        draft: draft || ""
+      });
+    } catch (_) {
+      data = Object.assign(Tutor.testHelp({
+        mode: mode || "nudge",
+        title: work.title,
+        note: work.note || "",
+        draft: draft || ""
+      }), { fallback: true });
+    }
+    const wait = HELP_THINK_MS - (Date.now() - started);
+    if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
+    window.clearTimeout(statusTimer);
     renderHelpBody(work, data, mode || "nudge", draft || "");
+    setHelpBusy(work && work.id, false);
   }
 
   function openHelp(workId) {
     const work = findWork(workId);
-    if (!work) return;
+    if (!work) {
+      setHelpBusy(workId, false);
+      return;
+    }
     Game.recordHelp(workId);
-    openSheet("A little help", `<p class="empty">Looking at the assignment…</p>`);
+    setHelpBusy(workId, true);
+    openSheet("A little help", helpThinkingHtml("Looking at the assignment…", helpThinkLine()));
     loadHelp(work, "nudge");
   }
 

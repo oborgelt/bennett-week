@@ -87,7 +87,46 @@
     return out;
   }
 
+  function helpAskText(payload) {
+    const title = String((payload && payload.title) || "This assignment").trim();
+    const note = String((payload && payload.note) || "").trim();
+    const mode = (payload && payload.mode) || "nudge";
+    if (mode === "proofread") {
+      const draft = String((payload && payload.draft) || "").trim();
+      return "Look at this draft for \"" + title + "\". Teacher note: " + (note || "none") + ". Give one or two short nudges. Do not rewrite it. Do not do the assignment.\n\nDraft:\n" + (draft || "(nothing pasted yet)");
+    }
+    return "First move only for this card. Title: " + title + ". Teacher note: " + (note || "none") + ". Ask one Socratic question or name one tiny first step. Do not do the assignment.";
+  }
+
+  function helpFromLive(payload, data) {
+    const mode = (payload && payload.mode) || "nudge";
+    const out = { live: true, source: data.source || "live", mode };
+    if (mode === "proofread") {
+      out.feedback = [data.reply];
+    } else if (mode === "quiz") {
+      out.quiz = [{ q: data.reply, a: "Your move — say it out loud." }];
+    } else if (mode === "notecards") {
+      out.cards = [{ front: "A first question", back: data.reply }];
+    } else if (mode === "explain") {
+      out.explain = data.reply;
+    } else {
+      out.explain = "The mentor looked at this card. One question — not the finished work.";
+      out.start = data.reply;
+    }
+    return out;
+  }
+
   async function request(payload) {
+    const token = familyToken();
+    if (token) {
+      try {
+        const data = await ask({
+          title: (payload && payload.title) || "",
+          messages: [{ role: "bennett", text: helpAskText(payload) }]
+        });
+        if (data && data.live && data.reply) return helpFromLive(payload, data);
+      } catch (_) {}
+    }
     try {
       const res = await fetch("/api/tutor", {
         method: "POST",
@@ -99,7 +138,7 @@
       if (!data || data.error) throw new Error((data && data.error) || "tutor error");
       return Object.assign({ live: true, source: "live" }, data);
     } catch (_) {
-      return testHelp(payload);
+      return Object.assign(testHelp(payload), { fallback: true });
     }
   }
 
