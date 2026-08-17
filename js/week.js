@@ -1445,6 +1445,56 @@
     return href;
   }
 
+  function helpTitle(work) {
+    return (work && work.title) || "This assignment";
+  }
+
+  function helpThreadMessages(work) {
+    const title = helpTitle(work);
+    return ((Game.getAskThread().messages) || []).filter((m) => m && m.title === title);
+  }
+
+  function cardHasAskThread(work) {
+    return helpThreadMessages(work).some((m) => m.role === "mentor");
+  }
+
+  function helpResumeData(work) {
+    const title = helpTitle(work);
+    const msgs = helpThreadMessages(work);
+    const live = msgs.some((m) => m.role === "mentor" && !m.test);
+    const fallback = Tutor.testHelp({ mode: "nudge", title, note: (work && work.note) || "" });
+    const first = msgs.find((m) => m.role === "mentor");
+    return Object.assign({}, fallback, { live, start: (first && first.text) || fallback.start });
+  }
+
+  function rememberMentorLine(work, text, live) {
+    const line = String(text || "").trim();
+    if (!line || cardHasAskThread(work)) return;
+    Game.addAskMessage(Game.getAskThread(), {
+      role: "mentor",
+      text: line,
+      title: helpTitle(work),
+      test: !live
+    });
+  }
+
+  function rememberDraftExchange(work, draft, data) {
+    const title = helpTitle(work);
+    const draftText = String(draft || "").trim();
+    let thread = Game.getAskThread();
+    if (draftText) {
+      thread = Game.addAskMessage(thread, { role: "bennett", text: draftText, title });
+    }
+    const feedback = ((data && data.feedback) || []).filter(Boolean).join("\n\n")
+      || "Read it out loud. Fix one thing you would not say.";
+    Game.addAskMessage(thread, {
+      role: "mentor",
+      text: feedback,
+      title,
+      test: !(data && data.live)
+    });
+  }
+
   const HELP_THINK_MS = 700;
   const HELP_THINK_LINES = [
     "Ace is bouncing the ball…",
@@ -1468,14 +1518,49 @@
       </div>`;
   }
 
+  function helpBubbleHtml(m) {
+    return `
+      <article class="ask-bubble ${m.role === "mentor" ? "mentor" : "kid"}">
+        <p class="ask-who">${m.role === "mentor" ? (m.test ? '<span class="test-tag">TEST</span> Mentor' : "Mentor") : "You"}</p>
+        <p>${Game.esc(m.text)}</p>
+      </article>`;
+  }
+
+  function helpLogHtml(messages, start, live) {
+    if (messages && messages.length) return messages.map(helpBubbleHtml).join("");
+    return helpBubbleHtml({ role: "mentor", text: start, test: !live });
+  }
+
+  function helpComposerHtml() {
+    return `
+      <form class="ask-form help-composer" id="help-ask-form">
+        <label class="sr-only" for="ask-input">Answer the mentor</label>
+        <textarea id="ask-input" maxlength="400" rows="3" placeholder="Answer the mentor…"></textarea>
+        <button type="submit" class="btn primary" id="help-send">Send</button>
+      </form>`;
+  }
+
+  function helpThinkingBubbleHtml() {
+    return `
+      <article class="ask-bubble mentor thinking" id="help-ask-thinking" role="status">
+        <p class="ask-who">Mentor</p>
+        <p class="ask-thinking-row">
+          <span class="help-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>Thinking…</span>
+        </p>
+      </article>`;
+  }
+
   function setHelpBusy(workId, busy) {
     document.querySelectorAll("[data-help]").forEach((btn) => {
       if (!workId || btn.dataset.help === String(workId)) btn.disabled = !!busy;
     });
-    ["proof-go", "help-draft", "help-back"].forEach((id) => {
+    ["proof-go", "help-draft", "help-back", "help-send"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.disabled = !!busy;
     });
+    const input = document.getElementById("ask-input");
+    if (input) input.disabled = !!busy;
   }
 
   function paintHelpThinking(status, line) {
@@ -1483,52 +1568,7 @@
     if (body) body.innerHTML = helpThinkingHtml(status, line);
   }
 
-  function renderHelpBody(work, data, mode, draft) {
-    const title = work.title || "This assignment";
-    const start = data.start || ((data.cards || [])[2] && data.cards[2].back) || "Do one small first step tonight.";
-    const classId = Game.classIdForWork(work);
-    const khan = Game.khanStripHtml(work.title || "", classId ? { classId } : undefined);
-    const askHref = helpAskHref(work);
-    const banner = data.live
-      ? ""
-      : `<p class="help-banner">Couldn’t reach the mentor — here’s an offline hint</p>`;
-    let main = "";
-    if (mode === "proofread") {
-      main = `
-        <section class="help-block">
-          <h3>Check a draft</h3>
-          <p class="help-hint">A nudge, not a rewrite.</p>
-          <textarea class="proof-box" id="proof-draft" maxlength="2000" placeholder="Paste what you have.">${Game.esc(draft || "")}</textarea>
-          <button type="button" class="btn primary" id="proof-go">Look at this</button>
-          <div id="proof-out">${(data.feedback || []).map((f) => `<div class="quiz-item">${Game.esc(f)}</div>`).join("")}</div>
-        </section>
-        <button type="button" class="mini" id="help-back">Back to the first move</button>`;
-    } else {
-      main = `
-        <section class="help-block">
-          <h3>Here's the deal</h3>
-          <p>${Game.esc(data.explain || "Read the title and do one small start.")}</p>
-        </section>
-        <section class="help-block help-start">
-          <h3>Start here</h3>
-          <p>${Game.esc(start)}</p>
-        </section>`;
-    }
-    const extras = mode === "proofread"
-      ? ""
-      : `
-        <div class="help-next">
-          <a class="btn primary" href="${Game.esc(askHref)}">Talk it through</a>
-          ${looksLikeWriting(work) ? `<button type="button" class="btn" id="help-draft">Check a draft</button>` : ""}
-        </div>`;
-    document.getElementById("sheet-body").innerHTML = `
-      <div class="help-nudge">
-        <p class="help-work">${Game.esc(title)}</p>
-        ${banner}
-        ${main}
-        ${extras}
-        ${khan}
-      </div>`;
+  function bindHelpActions(work, mode) {
     const back = document.getElementById("help-back");
     if (back) back.addEventListener("click", () => loadHelp(work, "nudge"));
     const draftBtn = document.getElementById("help-draft");
@@ -1538,13 +1578,131 @@
     const proof = document.getElementById("proof-go");
     if (proof) {
       proof.addEventListener("click", async () => {
-        const text = document.getElementById("proof-draft").value;
-        await loadHelp(work, "proofread", text);
+        const box = document.getElementById("proof-draft");
+        await loadHelp(work, "proofread", box ? box.value : "");
       });
     }
+    const form = document.getElementById("help-ask-form");
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        sendHelpAsk(work, mode);
+      });
+    }
+    const input = document.getElementById("ask-input");
+    if (input && !input.disabled) input.focus();
+  }
+
+  function renderHelpBody(work, data, mode, draft) {
+    const title = helpTitle(work);
+    const start = data.start || ((data.cards || [])[2] && data.cards[2].back) || "Do one small first step tonight.";
+    const classId = Game.classIdForWork(work);
+    const khan = Game.khanStripHtml(work.title || "", classId ? { classId } : undefined);
+    const askHref = helpAskHref(work);
+    const banner = data.live
+      ? ""
+      : `<p class="help-banner">Couldn’t reach the mentor — here’s an offline hint</p>`;
+    const feedback = (data && data.feedback) || [];
+    const showDraftForm = mode === "proofread" && !feedback.length;
+    const messages = helpThreadMessages(work);
+    let main = "";
+    if (showDraftForm) {
+      main = `
+        <section class="help-block">
+          <h3>Check a draft</h3>
+          <p class="help-hint">A nudge, not a rewrite.</p>
+          <textarea class="proof-box" id="proof-draft" maxlength="2000" placeholder="Paste what you have.">${Game.esc(draft || "")}</textarea>
+          <button type="button" class="btn primary" id="proof-go">Look at this</button>
+          <div id="proof-out"></div>
+        </section>
+        <button type="button" class="mini" id="help-back">Back to the first move</button>`;
+    } else {
+      const deal = `
+        <section class="help-block">
+          <h3>Here's the deal</h3>
+          <p>${Game.esc(data.explain || "Read the title and do one small start.")}</p>
+        </section>`;
+      main = `
+        ${mode === "proofread" ? "" : deal}
+        <section class="help-block help-start">
+          <h3>Start here</h3>
+          <div class="ask-log" id="help-ask-log">${helpLogHtml(messages, start, data.live)}</div>
+        </section>
+        ${helpComposerHtml()}
+        ${mode === "proofread" ? `<button type="button" class="mini" id="help-back">Back to the first move</button>` : ""}`;
+    }
+    const extras = showDraftForm
+      ? ""
+      : `
+        <div class="help-next">
+          ${looksLikeWriting(work) && mode !== "proofread" ? `<button type="button" class="btn" id="help-draft">Check a draft</button>` : ""}
+          <a class="btn" href="${Game.esc(askHref)}">Talk it through</a>
+        </div>`;
+    document.getElementById("sheet-body").innerHTML = `
+      <div class="help-nudge">
+        <p class="help-work">${Game.esc(title)}</p>
+        ${banner}
+        ${main}
+        ${extras}
+        ${khan}
+      </div>`;
+    bindHelpActions(work, mode || "nudge");
+  }
+
+  async function sendHelpAsk(work) {
+    const input = document.getElementById("ask-input");
+    const sendBtn = document.getElementById("help-send");
+    const text = ((input && input.value) || "").trim();
+    if (!text) {
+      Game.toast("Type a question first.");
+      return;
+    }
+    const title = helpTitle(work);
+    let thread = Game.addAskMessage(Game.getAskThread(), { role: "bennett", text, title });
+    if (typeof Game.track === "function") {
+      Game.track("ask_ai", { classId: Game.classIdForWork(work), message: title });
+    }
+    if (input) input.value = "";
+    const log = document.getElementById("help-ask-log");
+    if (log) {
+      log.insertAdjacentHTML("beforeend", helpBubbleHtml({ role: "bennett", text, title }));
+      log.insertAdjacentHTML("beforeend", helpThinkingBubbleHtml());
+      log.scrollTop = log.scrollHeight;
+    } else {
+      paintHelpThinking("Mentor is thinking…", helpThinkLine());
+    }
+    if (sendBtn) sendBtn.disabled = true;
+    setHelpBusy(work && work.id, true);
+    const started = Date.now();
+    const data = await Tutor.ask({
+      title,
+      messages: thread.messages
+    });
+    const wait = HELP_THINK_MS - (Date.now() - started);
+    if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
+    Game.addAskMessage(thread, {
+      role: "mentor",
+      text: data.reply || "What's the smallest first move?",
+      title,
+      test: !data.live
+    });
+    renderHelpBody(work, Object.assign(helpResumeData(work), { live: !!data.live }), "nudge", "");
+    setHelpBusy(work && work.id, false);
   }
 
   async function loadHelp(work, mode, draft) {
+    const nextMode = mode || "nudge";
+    const draftText = String(draft || "");
+    if (nextMode !== "proofread" && cardHasAskThread(work)) {
+      renderHelpBody(work, helpResumeData(work), "nudge", "");
+      setHelpBusy(work && work.id, false);
+      return;
+    }
+    if (nextMode === "proofread" && !draftText.trim()) {
+      renderHelpBody(work, { live: true, feedback: [] }, "proofread", "");
+      setHelpBusy(work && work.id, false);
+      return;
+    }
     const started = Date.now();
     const line = helpThinkLine();
     setHelpBusy(work && work.id, true);
@@ -1552,28 +1710,30 @@
     const statusTimer = window.setTimeout(() => {
       const status = document.querySelector(".help-thinking-status");
       if (!status) return;
-      status.textContent = mode === "proofread" ? "Mentor is thinking…" : "Pulling a hint…";
+      status.textContent = nextMode === "proofread" ? "Mentor is thinking…" : "Pulling a hint…";
     }, 280);
     let data;
     try {
       data = await Tutor.request({
-        mode: mode || "nudge",
+        mode: nextMode,
         title: work.title,
         note: work.note || "",
-        draft: draft || ""
+        draft: draftText
       });
     } catch (_) {
       data = Object.assign(Tutor.testHelp({
-        mode: mode || "nudge",
+        mode: nextMode,
         title: work.title,
         note: work.note || "",
-        draft: draft || ""
+        draft: draftText
       }), { fallback: true });
     }
     const wait = HELP_THINK_MS - (Date.now() - started);
     if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
     window.clearTimeout(statusTimer);
-    renderHelpBody(work, data, mode || "nudge", draft || "");
+    if (nextMode === "proofread") rememberDraftExchange(work, draftText, data);
+    else rememberMentorLine(work, data.start || ((data.cards || [])[2] && data.cards[2].back), data.live);
+    renderHelpBody(work, data, nextMode, draftText);
     setHelpBusy(work && work.id, false);
   }
 
@@ -1584,6 +1744,11 @@
       return;
     }
     Game.recordHelp(workId);
+    if (cardHasAskThread(work)) {
+      openSheet("A little help", "<div class=\"help-nudge\"></div>");
+      renderHelpBody(work, helpResumeData(work), "nudge", "");
+      return;
+    }
     setHelpBusy(workId, true);
     openSheet("A little help", helpThinkingHtml("Looking at the assignment…", helpThinkLine()));
     loadHelp(work, "nudge");
