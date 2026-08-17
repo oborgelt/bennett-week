@@ -54,8 +54,10 @@
     { id: "grammar", label: "Khan Academy — Grammar", url: "https://www.khanacademy.org/humanities/grammar" },
     { id: "hs-chemistry", label: "Khan Academy — HS Chemistry", url: "https://www.khanacademy.org/science/hs-chemistry" },
     { id: "geometry-home", label: "Khan Academy — Geometry", url: "https://www.khanacademy.org/math/geometry-home" },
+    { id: "sociology", label: "Khan Academy — Sociology", url: "https://www.khanacademy.org/test-prep/mcat/society-and-culture" },
     { id: "science", label: "Khan Academy — Science", url: "https://www.khanacademy.org/science" }
   ];
+  const KHAN_ROSTER_CLASS_IDS = ["english-10", "geometry", "chemistry", "sociology"];
 
   const EGG_NAMES = {
     "banner-monkey": "Garage-band grin",
@@ -2657,6 +2659,7 @@
     if (id === "english-10") return ["ela", "grammar"];
     if (id === "chemistry") return ["hs-chemistry"];
     if (id === "geometry") return ["geometry-home"];
+    if (id === "sociology") return ["sociology"];
     return [];
   }
 
@@ -2667,6 +2670,20 @@
 
   function khanLinksForClass(cls) {
     return khanLinksByIds(khanIdsForClass(cls));
+  }
+
+  function khanLinksForRoster() {
+    const ids = [];
+    const seen = new Set();
+    KHAN_ROSTER_CLASS_IDS.forEach((id) => {
+      khanIdsForClass({ id }).forEach((khanId) => {
+        if (!seen.has(khanId)) {
+          seen.add(khanId);
+          ids.push(khanId);
+        }
+      });
+    });
+    return khanLinksByIds(ids);
   }
 
   function khanShortLabel(link) {
@@ -2692,6 +2709,9 @@
     if (/geometry/.test(t)) {
       return KHAN.filter((k) => k.id === "geometry-home");
     }
+    if (/sociolog/.test(t)) {
+      return KHAN.filter((k) => k.id === "sociology");
+    }
     if (/science|bio/.test(t)) {
       return KHAN.filter((k) => k.id === "science");
     }
@@ -2709,12 +2729,12 @@
       </div>`;
   }
 
-  function khanStripHtml(title, hint) {
-    return khanStripFromLinks(khanLinksFor(title, hint));
+  function khanStripHtml() {
+    return khanStripFromLinks(khanLinksForRoster());
   }
 
-  function khanStripHtmlForClass(cls) {
-    return khanStripFromLinks(khanLinksForClass(cls));
+  function khanStripHtmlForClass() {
+    return khanStripFromLinks(khanLinksForRoster());
   }
 
   function khanInlineHtml(links) {
@@ -4543,6 +4563,7 @@
     khanIdsForClass,
     khanLinksByIds,
     khanLinksForClass,
+    khanLinksForRoster,
     khanLinksFor,
     khanStripHtml,
     khanStripHtmlForClass,
