@@ -71,7 +71,7 @@ assert(adminJs.includes('only: ["tables"]') && adminJs.includes('except: ["table
 assert(fs.readFileSync(path.join(root, "js/game.js"), "utf8").includes("function filterCueRows"), "sound cue lists should be able to pin or hide a cue");
 assert(tutorJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask"), "Ask AI should try the live function first");
 assert(/x-family-token/.test(tutorJs) && /\/api\/ask/.test(tutorJs) && /testAsk/.test(tutorJs), "Ask AI should send the family token, then /api/ask, then testAsk");
-assert(/tutor\.js\?v=76/.test(askHtml) && /ask\.js\?v=76/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
+assert(/tutor\.js\?v=78/.test(askHtml) && /ask\.js\?v=78/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
 const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8"), fs.readFileSync(path.join(root, "js/messages.js"), "utf8"), fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
@@ -350,6 +350,16 @@ assert.strictEqual(byId.strength.name, "Strength & Conditioning I");
 assert.strictEqual(Game.classPeriodLine(byId["academic-intervention"]), "Academic Intervention / Seminar");
 assert(!Game.classShowsPeriodChip(byId["academic-intervention"]), "do not print Seminar twice on the lobby");
 assert(!(week.work || []).some((w) => /algebra|history|spanish|\bPE\b/i.test(w.title || "")), "do not invent homework in week.json");
+const parenting = week.parenting || [];
+assert(!parenting.some((p) => p.end === "2026-08-22T00:00:00"), "Mom overnight must not run through Friday midnight");
+const momOvernight = parenting.find((p) => p.who === "Mom" && p.start === "2026-08-20T16:30:00");
+assert(momOvernight && momOvernight.end === "2026-08-21T16:30:00", "Mom overnight is Thu 4:30p → Fri 4:30p");
+const dadWeekend = parenting.find((p) => p.who === "Dad" && p.start === "2026-08-21T16:30:00");
+assert(dadWeekend && dadWeekend.end === "2026-08-27T16:30:00", "Dad weekend starts Fri 4:30p");
+function parentingOverlapsDay(block, day) {
+  return block.start < day + "T23:59:59" && block.end > day + "T00:00:00";
+}
+assert(parentingOverlapsDay(momOvernight, "2026-08-21") && parentingOverlapsDay(dadWeekend, "2026-08-21"), "Friday 2026-08-21 overlaps Mom overnight and Dad weekend start");
 
 const khanClassChem = Game.khanLinksForClass(byId.chemistry);
 assert.strictEqual(khanClassChem.length, 1, "Chemistry class chips are HS Chemistry only");
@@ -744,12 +754,12 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=76/.test(weekHtml) && /week\.js\?v=76/.test(weekHtml) && /game\.js\?v=76/.test(weekHtml) && /telemetry\.js\?v=76/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=78/.test(weekHtml) && /week\.js\?v=78/.test(weekHtml) && /game\.js\?v=78/.test(weekHtml) && /telemetry\.js\?v=78/.test(weekHtml), "index should cache-bust css/js");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=76/.test(progressHtml) && /theme\.css\?v=76/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=78/.test(progressHtml) && /theme\.css\?v=78/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*74/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*76/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
