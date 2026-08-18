@@ -6,9 +6,41 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
   <title>Jungle Jam · Base Camp</title>
-  <link rel="stylesheet" href="css/theme.css?v=90">
+  <link rel="stylesheet" href="css/theme.css?v=93">
+  <script>
+    (function () {
+      try {
+        var view = localStorage.getItem("bw-site-view") || "";
+        if (!view) {
+          var tel = localStorage.getItem("bw-telemetry");
+          var role = tel ? ((JSON.parse(tel) || {}).role || "") : "";
+          view = role === "bennett" ? "bennett" : role === "parent" ? "mom" : "me";
+        }
+        if (view !== "bennett" && view !== "mom" && view !== "me") view = "me";
+        var map = JSON.parse(localStorage.getItem("bw-basecamp-intro") || "{}") || {};
+        var parts = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/Chicago",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).formatToParts(new Date());
+        var get = function (t) {
+          return (parts.filter(function (p) { return p.type === t; })[0] || {}).value || "";
+        };
+        var today = get("year") + "-" + get("month") + "-" + get("day");
+        if (map[view] !== today) document.documentElement.classList.add("bc-intro-pending");
+      } catch (e) {
+        document.documentElement.classList.add("bc-intro-pending");
+      }
+    })();
+  </script>
 </head>
 <body class="basecamp-page">
+  <div class="bc-intro" id="bc-intro" hidden>
+    <video id="bc-intro-video" poster="img/library/basecamp-bg.jpg" playsinline preload="none"></video>
+    <button type="button" class="bc-intro-skip" id="bc-intro-skip">Skip</button>
+    <button type="button" class="bc-intro-play" id="bc-intro-play" hidden>Tap to enter</button>
+  </div>
   <header class="week-head">
     <div class="banner-wrap">
       <a class="banner-home" href="index.html" aria-label="Jungle Jam home · This week"></a>
@@ -18,8 +50,8 @@
         <p>Jungle Jam Tutor · questions first, answers last</p>
       </a>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 88</span>
-        <span>8/17, 10:45 PM</span>
+        <span>Build 90</span>
+        <span>8/17, 9:50 PM</span>
       </div>
     </div>
     <div class="hud-bar progress-hud">
@@ -123,10 +155,10 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="js/build.js?v=90"></script>
-  <script src="js/game.js?v=90"></script>
-  <script src="js/telemetry.js?v=90"></script>
-  <script src="js/tutor.js?v=90"></script>
-  <script src="js/basecamp.js?v=90"></script>
+  <script src="js/build.js?v=93"></script>
+  <script src="js/game.js?v=93"></script>
+  <script src="js/telemetry.js?v=93"></script>
+  <script src="js/tutor.js?v=93"></script>
+  <script src="js/basecamp.js?v=93"></script>
 </body>
 </html>
