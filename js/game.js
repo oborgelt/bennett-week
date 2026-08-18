@@ -22,7 +22,8 @@
     previewLocked: "bw-preview-locked",
     signinSeen: "bw-signin-seen",
     siteView: "bw-site-view",
-    basecampIntro: "bw-basecamp-intro"
+    basecampIntro: "bw-basecamp-intro",
+    selectedClass: "bw-selected-class"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -2925,6 +2926,17 @@
     return classIdForTitle(work && work.title);
   }
 
+  const CLASS_SHORT_LABELS = {
+    band: "Band",
+    sociology: "Soc",
+    "web-design": "Web",
+    "academic-intervention": "Seminar",
+    chemistry: "Chem",
+    strength: "Lift",
+    "english-10": "Eng",
+    geometry: "Geo"
+  };
+
   function classNameForId(id) {
     const key = String(id || "").toLowerCase();
     if (key === "band") return "Marching Band";
@@ -2936,6 +2948,131 @@
     if (key === "english-10") return "English 10";
     if (key === "geometry") return "Geometry";
     return "";
+  }
+
+  function classShortLabel(id) {
+    const key = String(id || "").toLowerCase();
+    return CLASS_SHORT_LABELS[key] || classNameForId(key) || key;
+  }
+
+  function ymdFromLocal(value) {
+    if (!value && value !== 0) return "";
+    if (typeof value === "object" && typeof value.getFullYear === "function") {
+      if (Number.isNaN(value.getTime())) return "";
+      const y = value.getFullYear();
+      const m = String(value.getMonth() + 1).padStart(2, "0");
+      const day = String(value.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+    const s = String(value);
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+    return "";
+  }
+
+  function localDateFromYmd(ymd) {
+    const [y, m, d] = String(ymd || "").split("-").map(Number);
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d);
+  }
+
+  function nextNChicagoDays(n) {
+    const [y, m, d] = chicagoYmd().split("-").map(Number);
+    const start = new Date(y, m - 1, d);
+    return Array.from({ length: n || 7 }, (_, i) => {
+      const x = new Date(start);
+      x.setDate(start.getDate() + i);
+      return x;
+    });
+  }
+
+  function workDueOnDay(work, day) {
+    const due = ymdFromLocal(work && work.due);
+    const key = ymdFromLocal(day);
+    return !!(due && key && due === key);
+  }
+
+  function workStartThisOnDay(work, day) {
+    if (!work || !work.due || workDueOnDay(work, day)) return false;
+    const dueD = localDateFromYmd(ymdFromLocal(work.due));
+    const dayD = localDateFromYmd(ymdFromLocal(day));
+    if (!dueD || !dayD) return false;
+    const from = work.suggest_from
+      ? localDateFromYmd(ymdFromLocal(work.suggest_from))
+      : new Date(dueD.getTime() - 3 * 86400000);
+    if (!from) return false;
+    return dayD >= from && dayD < dueD;
+  }
+
+  function workOnBoard(work, days) {
+    return (days || []).some((d) => workDueOnDay(work, d) || workStartThisOnDay(work, d));
+  }
+
+  function eventOnBoard(event, days) {
+    const key = ymdFromLocal(event && event.start);
+    return !!(key && (days || []).some((d) => ymdFromLocal(d) === key));
+  }
+
+  function belongsToClass(item, classId) {
+    return classIdForWork(item) === String(classId || "");
+  }
+
+  function itemsForClassOnDay(week, classId, day) {
+    const want = String(classId || "");
+    return {
+      due: ((week && week.work) || []).filter((w) => belongsToClass(w, want) && workDueOnDay(w, day)),
+      startThis: ((week && week.work) || []).filter((w) => belongsToClass(w, want) && workStartThisOnDay(w, day)),
+      events: ((week && week.events) || []).filter((e) => belongsToClass(e, want) && eventOnBoard(e, [day]))
+    };
+  }
+
+  function looseEventsOnDay(week, day) {
+    return ((week && week.events) || []).filter((e) => {
+      return eventOnBoard(e, [day]) && !classIdForWork(e);
+    });
+  }
+
+  function classAttentionCount(cls, week, days) {
+    const classId = cls && cls.id;
+    if (!classId) return 0;
+    const board = days && days.length ? days : nextNChicagoDays(7);
+    let n = 0;
+    ((week && week.work) || []).forEach((w) => {
+      if (!belongsToClass(w, classId)) return;
+      if (workState(w.id).done) return;
+      if (workOnBoard(w, board)) n += 1;
+    });
+    ((week && week.events) || []).forEach((e) => {
+      if (!belongsToClass(e, classId)) return;
+      if (eventOnBoard(e, board)) n += 1;
+    });
+    return n;
+  }
+
+  function rememberedClassId() {
+    try {
+      return String(localStorage.getItem(KEYS.selectedClass) || "");
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function rememberClassId(id) {
+    const next = String(id || "").trim();
+    try {
+      if (next) localStorage.setItem(KEYS.selectedClass, next);
+    } catch (_) {}
+    return next;
+  }
+
+  function pickClassId(classes, week, days, stored) {
+    const list = (classes || []).filter((c) => c && c.id);
+    const keep = String(stored || "");
+    if (keep && list.some((c) => c.id === keep)) return keep;
+    const badged = list.find((c) => classAttentionCount(c, week, days) > 0);
+    if (badged) return badged.id;
+    if (list.some((c) => c.id === "english-10")) return "english-10";
+    if (list.some((c) => c.id === "geometry")) return "geometry";
+    return list[0] ? list[0].id : "";
   }
 
   function classPeriodLine(cls) {
@@ -4952,6 +5089,20 @@
     latestBennettQuestion,
     classIdForTitle,
     classIdForWork,
+    belongsToClass,
+    itemsForClassOnDay,
+    looseEventsOnDay,
+    classAttentionCount,
+    classShortLabel,
+    pickClassId,
+    rememberedClassId,
+    rememberClassId,
+    workDueOnDay,
+    workStartThisOnDay,
+    workOnBoard,
+    eventOnBoard,
+    nextNChicagoDays,
+    CLASS_SHORT_LABELS,
     termOf,
     DEFAULT_TERM,
     loadTerms,
