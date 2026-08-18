@@ -778,12 +778,12 @@
   function bindBoardRoot(root) {
     if (!root) return;
     root.querySelectorAll("[data-act]").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
         const act = btn.dataset.act;
         const before = Game.workState(id);
         const undo = btn.classList.contains("undo-mini");
-        Game.touchWork(id, act);
+        const touched = Game.touchWork(id, act);
         if (!undo && act === "started" && !before.started) {
           Game.playWorkActionCue(family, library, id, "started");
         }
@@ -792,6 +792,13 @@
         }
         refreshCardsInPlace();
         runUnlocks();
+        try {
+          const sync = touched && touched.synced ? await touched.synced : await Game.syncFamilyProgress();
+          if (sync && sync.failed) Game.toast("Couldn't sync. Try again.");
+          else Game.familySavedToast(undo ? "Undone" : (act === "done" ? "Done" : "Started"));
+        } catch (_) {
+          Game.toast("Couldn't sync. Try again.");
+        }
       });
     });
     root.querySelectorAll("[data-ask]").forEach((btn) => {
@@ -2310,11 +2317,13 @@
       if (!family) return;
       try {
         const before = Game.familySnapshot ? Game.familySnapshot(family) : "";
+        const beforeProgress = JSON.stringify(Game.getProgress ? Game.getProgress() : {});
         const synced = await Game.syncFamilyLive(family);
         family = synced.family;
         paintBoardSync(synced);
         const after = Game.familySnapshot ? Game.familySnapshot(family) : "";
-        if (synced.changed || (before && after && before !== after)) {
+        const afterProgress = JSON.stringify(Game.getProgress ? Game.getProgress() : {});
+        if (synced.changed || (before && after && before !== after) || beforeProgress !== afterProgress) {
           syncWeek();
           renderClassSwitcher();
           refreshCardsInPlace();

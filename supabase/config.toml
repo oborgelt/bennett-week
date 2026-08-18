@@ -1,0 +1,4 @@
+# Jungle Jam edge functions. Ask is deployed live with verify_jwt off;
+# family-sync must match so Bennett can push Done without Admin Connect.
+[functions.family-sync]
+verify_jwt = false

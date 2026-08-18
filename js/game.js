@@ -3489,11 +3489,10 @@
     }
     all[id] = Object.assign({}, cur, { updatedAt: nowIso(), updated: nowIso() });
     write(KEYS.progress, all);
-    queueProgressPush();
-    syncFamilyProgress();
+    const synced = syncFamilyProgress();
     if (kind === "started" && !before.started) track("work_start", { assignmentId: id });
     if (kind === "done" && !before.done) track("work_done", { assignmentId: id });
-    return { first, state: workState(id) };
+    return { first, state: workState(id), synced };
   }
 
   function recordHelp(id) {
@@ -3725,8 +3724,17 @@
     return "Bennett and Mom";
   }
 
+  function familyProgressLive() {
+    try {
+      return !!(global.Telemetry && typeof global.Telemetry.progressSyncAvailable === "function" && global.Telemetry.progressSyncAvailable());
+    } catch (_) {
+      return false;
+    }
+  }
+
   function familyConnected() {
     try {
+      if (familyProgressLive()) return true;
       return !!(global.Telemetry && typeof global.Telemetry.connected === "function" && global.Telemetry.connected());
     } catch (_) {
       return false;
@@ -4693,9 +4701,15 @@
 
   let progressPushTimer = null;
 
-  function queueProgressPush() {
+  function progressSyncReady() {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.connected !== "function" || !tel.connected()) return;
+    if (!tel || typeof tel.fetchProgress !== "function" || typeof tel.upsertProgress !== "function") return false;
+    if (typeof tel.progressSyncAvailable === "function" && tel.progressSyncAvailable()) return true;
+    return typeof tel.connected === "function" && tel.connected();
+  }
+
+  function queueProgressPush() {
+    if (!progressSyncReady()) return;
     if (typeof setTimeout !== "function") {
       pushFamilyProgress();
       return;
@@ -4709,30 +4723,31 @@
 
   async function pushFamilyProgress() {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.upsertProgress !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    if (!progressSyncReady() || typeof tel.upsertProgress !== "function") return { pushed: 0, missing: false, failed: false };
     stampLegacyProgress();
     const rows = progressRowsToPush(getProgress(), []);
-    if (!rows.length) return { pushed: 0, missing: false };
+    if (!rows.length) return { pushed: 0, missing: false, failed: false };
     try {
       await tel.upsertProgress(rows);
-      return { pushed: rows.length, missing: false };
+      return { pushed: rows.length, missing: false, failed: false };
     } catch (err) {
-      return { pushed: 0, missing: missingSync(err) };
+      return { pushed: 0, missing: missingSync(err), failed: true };
     }
   }
 
   async function syncFamilyProgress() {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
-      return { pulled: 0, pushed: 0, missing: false, offline: true };
+    if (!progressSyncReady()) {
+      return { pulled: 0, pushed: 0, missing: false, offline: true, changed: false, failed: false };
     }
     stampLegacyProgress();
+    const before = JSON.stringify(getProgress());
     let remote = [];
     try {
       const rows = await tel.fetchProgress();
       remote = (Array.isArray(rows) ? rows : []).map((row) => tel.rowToProgress ? tel.rowToProgress(row) : row).filter((r) => r && r.id);
     } catch (err) {
-      return { pulled: 0, pushed: 0, missing: missingSync(err), offline: false };
+      return { pulled: 0, pushed: 0, missing: missingSync(err), offline: false, changed: false, failed: true };
     }
     const merged = mergeProgressByUpdatedAt(getProgress(), remote);
     write(KEYS.progress, merged);
@@ -4743,10 +4758,24 @@
         await tel.upsertProgress(toPush);
         pushed = toPush.length;
       } catch (err) {
-        return { pulled: remote.length, pushed: 0, missing: missingSync(err), offline: false };
+        return {
+          pulled: remote.length,
+          pushed: 0,
+          missing: missingSync(err),
+          offline: false,
+          changed: JSON.stringify(merged) !== before,
+          failed: true
+        };
       }
     }
-    return { pulled: remote.length, pushed, missing: false, offline: false };
+    return {
+      pulled: remote.length,
+      pushed,
+      missing: false,
+      offline: false,
+      changed: JSON.stringify(merged) !== before || pushed > 0,
+      failed: false
+    };
   }
 
   function localWorkSyncRows(family) {
@@ -5086,7 +5115,7 @@
       pushed: (notes.pushed || 0) + (progress.pushed || 0) + (overlay.pushed || 0) + (work.pushed || 0),
       missing,
       offline,
-      changed: !!(overlay.changed || notes.pulled || progress.pulled || work.pulled)
+      changed: !!(overlay.changed || notes.pulled || progress.pulled || progress.changed || work.pulled)
     };
   }
 
