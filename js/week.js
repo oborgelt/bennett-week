@@ -21,6 +21,7 @@
   let trophyDrag = null;
   let skipTrophyClick = false;
   let trackBound = false;
+  let selectedClassId = "";
 
   const TROPHY_ZONES = {
     pedestal: {
@@ -238,48 +239,54 @@
     return ((seed && seed.classes) || []).filter((cls) => cls && cls.id);
   }
 
-  function renderStandingClasses() {
-    const host = document.getElementById("standing-class-list");
-    if (!host) return;
+  function selectedClass() {
     const classes = standingClasses();
-    if (!classes.length) {
-      host.innerHTML = `<p class="empty">No classes on the roster yet.</p>`;
-      return;
-    }
-    host.innerHTML = classes.map((cls) => {
-      const due = Game.classDueCount(cls, week);
-      const status = Game.classDueLabel(due);
-      const links = Game.khanLinksForClass(cls);
-      const khan = Game.khanInlineHtml(links);
-      const period = Game.classShowsPeriodChip(cls) ? String(cls.period || "").trim() : "";
-      return `
-        <article class="standing-class" data-class="${Game.esc(cls.id)}">
-          ${period ? `<span class="standing-class-period">${Game.esc(period)}</span>` : ""}
-          <button type="button" class="standing-class-name" data-open-class="${Game.esc(cls.id)}">${Game.esc(cls.name)}</button>
-          ${cls.time ? `<span class="standing-class-time">${Game.esc(cls.time)}</span>` : ""}
-          <span class="standing-class-status">${Game.esc(status)}</span>
-          ${khan ? `<span class="standing-class-khan">${khan}</span>` : ""}
-        </article>`;
-    }).join("");
-    host.querySelectorAll("[data-open-class]").forEach((btn) => {
-      btn.addEventListener("click", () => openClassSheet(btn.dataset.openClass));
-    });
+    return classes.find((cls) => cls.id === selectedClassId) || classes[0] || null;
   }
 
-  function openClassSheet(id) {
-    const cls = standingClasses().find((c) => c.id === id);
-    if (!cls) return;
-    const due = Game.classDueCount(cls, week);
-    const khan = Game.khanStripHtmlForClass(cls);
-    const askHref = `basecamp.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
-    const progressHref = `progress.html?class=${encodeURIComponent(cls.id)}`;
-    const meta = Game.classMetaLine(cls);
-    openSheet(Game.classPeriodLine(cls), `
-      <p class="standing-class-sheet-status">${Game.esc(Game.classDueLabel(due))}${meta ? " · " + Game.esc(meta) : ""}</p>
-      ${khan || `<p class="empty">No Khan course for this class.</p>`}
-      <p class="ask-help-link"><a href="${Game.esc(askHref)}">Base Camp — Jungle Jam Tutor</a></p>
-      <p class="ask-help-link"><a href="${Game.esc(progressHref)}">See Progress for ${Game.esc(cls.name)}</a></p>
-    `);
+  function initSelectedClass() {
+    const days = daysFromToday();
+    selectedClassId = Game.pickClassId(standingClasses(), week, days, Game.rememberedClassId());
+    if (selectedClassId) Game.rememberClassId(selectedClassId);
+  }
+
+  function selectClass(id) {
+    const next = String(id || "");
+    if (!next || !standingClasses().some((cls) => cls.id === next)) return;
+    selectedClassId = next;
+    Game.rememberClassId(next);
+    renderClassSwitcher();
+    refreshCardsInPlace();
+  }
+
+  function renderClassSwitcher() {
+    const host = document.getElementById("class-switcher-list");
+    if (!host) return;
+    const classes = standingClasses();
+    const days = daysFromToday();
+    if (!classes.length) {
+      host.innerHTML = "";
+      return;
+    }
+    if (!selectedClassId || !classes.some((cls) => cls.id === selectedClassId)) {
+      selectedClassId = Game.pickClassId(classes, week, days, selectedClassId);
+    }
+    host.innerHTML = classes.map((cls) => {
+      const count = Game.classAttentionCount(cls, week, days);
+      const on = cls.id === selectedClassId;
+      const badge = count > 0
+        ? `<span class="class-chip-badge" aria-label="${count} need attention">${count}</span>`
+        : "";
+      return `
+        <button type="button" class="class-chip${on ? " on" : ""}" data-class-id="${Game.esc(cls.id)}" aria-pressed="${on ? "true" : "false"}">
+          <span class="class-chip-full">${Game.esc(cls.name)}</span>
+          <span class="class-chip-short">${Game.esc(Game.classShortLabel(cls.id))}</span>
+          ${badge}
+        </button>`;
+    }).join("");
+    host.querySelectorAll("[data-class-id]").forEach((btn) => {
+      btn.addEventListener("click", () => selectClass(btn.dataset.classId));
+    });
   }
 
   function workButtons(w) {
@@ -473,25 +480,26 @@
       </div>`;
   }
 
-  function canvasCheckHtml(isToday) {
+  function canvasCheckHtml(isToday, classId) {
     if (!isToday) return "";
     const work = week.work || [];
+    const want = String(classId || "");
     const lines = [];
     const chem = work.find((w) => w.id === "chem-about-me" && canvasOf(w));
     const comics = work.find((w) => w.id === "eng-comics" && canvasOf(w));
     const names = work.find((w) => w.id === "eng-names" && canvasOf(w) && w.canvas.status === "submitted");
-    if (chem) {
+    if (chem && Game.classIdForWork(chem) === want) {
       lines.push("Chemistry About Me Slides is due " + nightWhen(chem.due) + " (was missing here).");
     }
-    if (comics) {
+    if (comics && Game.classIdForWork(comics) === want) {
       lines.push("Comic official due is Thursday night, paper, plus a paragraph on the back.");
     }
-    if (names) {
+    if (names && Game.classIdForWork(names) === want) {
       lines.push("Name video: Canvas says submitted.");
     }
     if (!lines.length) return "";
     return `
-      <section class="canvas-check span-all">
+      <section class="canvas-check">
         <h3>Canvas check</h3>
         <ul>${lines.map((line) => `<li>${Game.esc(line)}</li>`).join("")}</ul>
       </section>`;
@@ -578,26 +586,35 @@
     dots.innerHTML = "";
 
     days.forEach((d, i) => {
-      const events = (week.events || []).filter((e) => sameDay(e.start, d));
-      const due = (week.work || []).filter((w) => sameDay(w.due, d));
-      const startThis = (week.work || []).filter((w) => {
-        if (sameDay(w.due, d)) return false;
-        const dueD = parseLocal(w.due);
-        const from = w.suggest_from
-          ? parseLocal(w.suggest_from + "T00:00:00")
-          : new Date(dueD.getTime() - 3 * 86400000);
-        return d >= from && d < new Date(dueD.getFullYear(), dueD.getMonth(), dueD.getDate());
-      });
+      const cls = selectedClass();
+      const classId = (cls && cls.id) || selectedClassId || "";
+      const grouped = Game.itemsForClassOnDay(week, classId, d);
+      const events = grouped.events;
+      const due = grouped.due;
+      const startThis = grouped.startThis;
+      const loose = Game.looseEventsOnDay(week, d);
       const notes = (week.notes || []).filter((n) => n.date === ymd(d));
       const who = whoOn(week, d);
+      const khan = cls ? Game.khanStripHtmlForClass(cls) : "";
+      const className = (cls && cls.name) || Game.classNameForId(classId) || "Class";
+      const hasClassItems = !!(events.length || due.length || startThis.length);
+      const emptyLine = hasClassItems ? "" : `<p class="empty">Nothing for ${Game.esc(className)} ${i === 0 ? "today" : "on " + dayLabel(d)}.</p>`;
+      const addRow = Game.siteViewHidesAdult() ? "" : `<p class="add-work-row"><button type="button" class="mini" data-add-work="${ymd(d)}">Add assignment</button></p>`;
+      const eventHtml = (e) => `
+        <div class="item">
+          <div class="title">${titleHtml(e.title)}</div>
+          <div class="meta">${Game.esc(fmtRange(e.start, e.end))}${e.place ? " · " + Game.esc(e.place) : ""}${e.note ? " · " + Game.esc(e.note) : ""}</div>
+          ${itemTools("event", e.id, false)}
+        </div>`;
 
       const card = document.createElement("article");
       card.className = "day";
       card.dataset.dayIndex = String(i);
-      card.dataset.events = events.map((e) => e.id).filter(Boolean).join(",");
+      card.dataset.classId = classId;
+      card.dataset.events = events.concat(loose).map((e) => e.id).filter(Boolean).join(",");
       card.innerHTML = `
         <div class="card">
-          <img class="card-deco" src="${decoFor(events)}" alt="">
+          <img class="card-deco" src="${decoFor(events.concat(loose))}" alt="">
           <div class="card-scroll">
             <div class="when">
               <h2>${i === 0 ? "Today" : dayLabel(d)}</h2>
@@ -605,42 +622,43 @@
             </div>
             <div class="who ${who.cls}">${Game.esc(who.label)}</div>
             ${reflectBlock(i === 0)}
-            ${canvasCheckHtml(i === 0)}
-            <div class="card-grid">
-              ${events.length ? `<section>
-                <h3>On the calendar</h3>
-                ${items(events, (e) => `
-                  <div class="item">
-                    <div class="title">${titleHtml(e.title)}</div>
-                    <div class="meta">${Game.esc(fmtRange(e.start, e.end))}${e.place ? " · " + Game.esc(e.place) : ""}${e.note ? " · " + Game.esc(e.note) : ""}</div>
-                    ${itemTools("event", e.id, false)}
-                  </div>`)}
-              </section>` : ""}
-              ${due.length ? `<section>
-                <h3>Due today</h3>
-                ${items(due, (w) => workCardHtml(w, false))}
-              </section>` : ""}
-              ${startThis.length ? `<section class="start span-all">
-                <h3>Start this</h3>
-                <div class="item-grid">
-                ${items(startThis, (w) => workCardHtml(w, true))}
-                </div>
-              </section>` : ""}
-              ${!events.length && !due.length && !startThis.length ? `<p class="empty">Open day — nothing on the board.</p>` : ""}
-              ${notes.length ? `
-              <section class="note">
-                <h3>Note</h3>
-                ${items(notes, (n) => `
-                  <div class="item">
-                    <div class="title">${titleHtml(n.title)}</div>
-                    <div class="meta">${Game.esc(n.text || "")}</div>
-                    <div class="item-tools">${Game.entryButtons("weeknote:" + n.id, "weeknote:" + n.id)}</div>
-                  </div>`)}
-              </section>` : ""}
-              <p class="add-work-row">
-                <button type="button" class="mini" data-add-work="${ymd(d)}">Add assignment</button>
-              </p>
-            </div>
+            <section class="class-pane" data-class-id="${Game.esc(classId)}">
+              <header class="class-pane-head">
+                <h3 class="class-pane-name">${Game.esc(className)}</h3>
+                ${khan}
+              </header>
+              ${canvasCheckHtml(i === 0, classId)}
+              <div class="class-pane-stack">
+                ${due.length ? `<section>
+                  <h3>Due</h3>
+                  ${items(due, (w) => workCardHtml(w, false))}
+                </section>` : ""}
+                ${startThis.length ? `<section class="start">
+                  <h3>Start this</h3>
+                  ${items(startThis, (w) => workCardHtml(w, true))}
+                </section>` : ""}
+                ${events.length ? `<section>
+                  <h3>On the calendar</h3>
+                  ${items(events, eventHtml)}
+                </section>` : ""}
+                ${emptyLine}
+              </div>
+            </section>
+            ${loose.length ? `<section class="also-cal">
+              <h3>Also on the calendar</h3>
+              ${items(loose, eventHtml)}
+            </section>` : ""}
+            ${notes.length ? `
+            <section class="note">
+              <h3>Note</h3>
+              ${items(notes, (n) => `
+                <div class="item">
+                  <div class="title">${titleHtml(n.title)}</div>
+                  <div class="meta">${Game.esc(n.text || "")}</div>
+                  <div class="item-tools">${Game.entryButtons("weeknote:" + n.id, "weeknote:" + n.id)}</div>
+                </div>`)}
+            </section>` : ""}
+            ${addRow}
           </div>
         </div>`;
       track.appendChild(card);
@@ -765,6 +783,7 @@
 
   function refreshCardsInPlace() {
     const saved = captureBoardScroll();
+    renderClassSwitcher();
     renderCards();
     restoreBoardScroll(saved);
   }
@@ -1272,7 +1291,7 @@
 
   function refreshBoard() {
     syncWeek();
-    renderStandingClasses();
+    renderClassSwitcher();
     refreshCardsInPlace();
     hud();
   }
@@ -1500,7 +1519,7 @@
         { name: "title", label: "Title", value: "" },
         { name: "due", label: "Due", value: dueDefault, type: "datetime-local" },
         { name: "note", label: "Note (optional)", value: "", type: "textarea" }
-      ], "add-work-save").replace('<button type="button" class="btn primary" id="add-work-save">Save</button>', classSelectHtml("") + '<button type="button" class="btn primary" id="add-work-save">Add</button>')}
+      ], "add-work-save").replace('<button type="button" class="btn primary" id="add-work-save">Save</button>', classSelectHtml(selectedClassId) + '<button type="button" class="btn primary" id="add-work-save">Add</button>')}
     `);
     document.getElementById("add-work-save").addEventListener("click", () => {
       const title = fieldValue("title");
@@ -2119,7 +2138,8 @@
     await Game.hydrateLibraryBlobs(library);
     baseSeed = await Game.loadProgress();
     syncWeek();
-    renderStandingClasses();
+    initSelectedClass();
+    renderClassSwitcher();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
       document.getElementById("draft-flag").hidden = false;
     }
@@ -2142,6 +2162,7 @@
       family = next.family;
       if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack);
       hud();
+      refreshCardsInPlace();
       const shelf = document.getElementById("shelf");
       if (shelf && shelf.classList.contains("open")) renderShelf();
     });
