@@ -659,6 +659,16 @@ assert.strictEqual(weekById["eng-letter"].suggest_from, "2026-08-18");
 assert.strictEqual((week.work || []).filter((w) => /English 10/.test(w.title || "")).length, 4, "English still names+comics+letter+notebook");
 assert(!(week.work || []).some((w) => /English 10/.test(w.title || "") && w.classId), "English work stays title-inferred — no invented classId");
 assert.strictEqual(week.as_of, "2026-08-18T14:40:00");
+assert.deepStrictEqual((week.work || []).map((w) => w.id).sort(), [
+  "chem-about-me",
+  "chem-aboutme-disc",
+  "eng-comics",
+  "eng-letter",
+  "eng-names",
+  "eng-notebook",
+  "web-11"
+], "work ids are the live set plus sourced 2:40 rows — not a slice replace");
+assert(!(week.work || []).some((w) => w.id === "chem-aboutme-asg"), "do not rename chem-about-me to the slice id");
 assert.strictEqual((week.parenting || []).length, 30, "merge kept live parenting[] — not the 3-row slice");
 assert.strictEqual((week.events || []).length, 76, "merge kept live events[] — not the 4-event slice");
 const weekText = fs.readFileSync(path.join(root, "week.json"), "utf8");
@@ -682,6 +692,7 @@ assert.strictEqual(weekEventById["band-pm-1026"].start, "2026-10-26T18:30:00");
 assert(!weekEventById["band-pm-1005"], "do not invent a Monday-night rehearsal on 2026-10-05");
 assert(!weekEventById["band-am-1014"], "skip morning marching on 2026-10-14");
 assert(weekEventById["oe-early-dismiss-1014"], "10/14 is a school day with early dismissal");
+assert.strictEqual(weekEventById["forms-0820"].title, "Forms, Fees & Fit Night", "forms-0820 keeps the live title, not the slice’s shorter title");
 assert.strictEqual(weekEventById["forms-0820"].classId, "band", "Forms night attaches to the Band class card");
 assert(/Boosters/.test(weekEventById["forms-0820"].note || "") && /\$350/.test(weekEventById["forms-0820"].note || ""), "forms-0820 keeps the live booster note, not a thin slice");
 const boardTue = [new Date(2026, 7, 18)];
