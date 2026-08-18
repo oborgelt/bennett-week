@@ -50,6 +50,11 @@
   };
   const PTABLE = window.BW_PTABLE || [];
   const RAIL_KEY = "bw-bc-rail";
+  const PDF_MAX_PAGES = 4;
+  const PDF_TEXT_CAP = 9000;
+  const PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  let pdfJsLoading = null;
   let pack = null;
   let family = null;
   let roster = [];
@@ -362,11 +367,161 @@
     }).join("");
     host.querySelectorAll("[data-drop]").forEach((el) => {
       el.querySelector("button").addEventListener("click", () => {
-        const id = el.getAttribute("data-drop");
-        pending = pending.filter((p) => p.id !== id);
-        paintPending();
+        dropPending(el.getAttribute("data-drop"));
       });
     });
+  }
+
+  function revokePreview(url) {
+    if (url && String(url).indexOf("blob:") === 0) {
+      try { URL.revokeObjectURL(url); } catch (_) {}
+    }
+  }
+
+  function dropPending(id) {
+    pending = pending.filter((p) => {
+      if (p.id !== id) return true;
+      revokePreview(p.preview);
+      (p.pages || []).forEach((page) => revokePreview(page && page.preview));
+      return false;
+    });
+    paintPending();
+  }
+
+  function pendingImages() {
+    const out = [];
+    pending.forEach((p) => {
+      if (p.kind === "image" && p.data) out.push(p);
+      if (p.kind === "pdf") {
+        (p.pages || []).forEach((page) => {
+          if (page && page.data) {
+            out.push({
+              id: page.id || p.id,
+              name: p.name,
+              mime: page.mime || "image/jpeg",
+              data: page.data,
+              blob: page.blob,
+              preview: page.preview
+            });
+          }
+        });
+      }
+    });
+    return out;
+  }
+
+  function pendingPdfText() {
+    const parts = pending
+      .filter((p) => p.kind === "pdf" && p.text)
+      .map((p) => String(p.text || "").trim())
+      .filter(Boolean);
+    if (!parts.length) return "";
+    let block = "From the PDF (first pages):\n" + parts.join("\n");
+    if (block.length > 10000) block = block.slice(0, 10000);
+    return block;
+  }
+
+  function loadPdfJs() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    if (pdfJsLoading) return pdfJsLoading;
+    pdfJsLoading = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = PDFJS_SRC;
+      script.async = true;
+      script.onload = () => {
+        if (!window.pdfjsLib) {
+          pdfJsLoading = null;
+          reject(new Error("pdf.js missing"));
+          return;
+        }
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+        resolve(window.pdfjsLib);
+      };
+      script.onerror = () => {
+        pdfJsLoading = null;
+        reject(new Error("pdf.js failed to load"));
+      };
+      document.head.appendChild(script);
+    });
+    return pdfJsLoading;
+  }
+
+  function canvasToJpegFile(canvas, name) {
+    return new Promise((resolve) => {
+      if (!canvas || !canvas.toBlob) {
+        resolve(null);
+        return;
+      }
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          resolve(null);
+          return;
+        }
+        try {
+          resolve(new File([blob], name || "page.jpg", { type: "image/jpeg" }));
+        } catch (_) {
+          resolve(blob);
+        }
+      }, "image/jpeg", JPEG_QUALITY);
+    });
+  }
+
+  async function addPdf(file) {
+    try {
+      const pdfjs = await loadPdfJs();
+      const buf = new Uint8Array(await file.arrayBuffer());
+      const doc = await pdfjs.getDocument({ data: buf }).promise;
+      const max = Math.min(PDF_MAX_PAGES, doc.numPages || 0);
+      const pages = [];
+      const textParts = [];
+      for (let n = 1; n <= max; n += 1) {
+        const page = await doc.getPage(n);
+        const unscaled = page.getViewport({ scale: 1 });
+        const scale = MAX_EDGE / Math.max(unscaled.width, 1);
+        const viewport = page.getViewport({ scale: scale });
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(viewport.width));
+        canvas.height = Math.max(1, Math.round(viewport.height));
+        const ctx = canvas.getContext("2d");
+        if (ctx) await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        const raw = await canvasToJpegFile(canvas, (file.name || "page") + "-p" + n + ".jpg");
+        const compressed = raw ? await compressImage(raw) : null;
+        if (compressed) {
+          const data = await blobToBase64(compressed);
+          pages.push({
+            id: Game.uid("att"),
+            mime: "image/jpeg",
+            data: data,
+            blob: compressed,
+            preview: URL.createObjectURL(compressed)
+          });
+        }
+        const content = await page.getTextContent();
+        const pageText = ((content && content.items) || [])
+          .map((it) => (it && it.str) || "")
+          .join(" ")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (pageText) textParts.push(pageText);
+      }
+      if (!pages.length) {
+        Game.toast("Could not read that PDF.");
+        return;
+      }
+      let text = textParts.join("\n");
+      if (text.length > PDF_TEXT_CAP) text = text.slice(0, PDF_TEXT_CAP);
+      pending.push({
+        id: Game.uid("att"),
+        kind: "pdf",
+        name: file.name || "PDF",
+        mime: file.type || "application/pdf",
+        pages: pages,
+        text: text
+      });
+      paintPending();
+    } catch (_) {
+      Game.toast("Could not read that PDF.");
+    }
   }
 
   function paintHud() {
@@ -775,14 +930,7 @@
     const isPdf = /pdf/.test(file.type || "") || /\.pdf$/i.test(file.name || "");
     const isImage = /^image\//.test(file.type || "") || fromCamera;
     if (isPdf) {
-      pending.push({
-        id: Game.uid("att"),
-        kind: "pdf",
-        name: file.name || "PDF",
-        mime: file.type || "application/pdf"
-      });
-      paintPending();
-      Game.toast("PDF name chip only — Jungle Jam Tutor reads photos, not the file.");
+      await addPdf(file);
       return;
     }
     if (!isImage) {
@@ -828,8 +976,10 @@
   async function send() {
     if (sending) return;
     const input = document.getElementById("bc-input");
-    const text = (input.value || "").trim();
-    const photos = pending.filter((p) => p.kind === "image" && p.data);
+    const typed = (input.value || "").trim();
+    const pdfBlock = pendingPdfText();
+    const text = pdfBlock ? (typed ? (pdfBlock + "\n\n" + typed) : pdfBlock) : typed;
+    const photos = pendingImages();
     if (!text && !photos.length) {
       Game.toast("Type a try, or attach a photo of the work.");
       return;
@@ -868,9 +1018,11 @@
     input.value = "";
     const sentImages = photos.map((p) => ({ mime: p.mime, data: p.data }));
     pending.forEach((p) => {
-      if (p.preview && p.preview.indexOf("blob:") === 0 && (!firstPhoto || p.id !== firstPhoto.id)) {
-        try { URL.revokeObjectURL(p.preview); } catch (_) {}
-      }
+      const keep = firstPhoto && (p.id === firstPhoto.id || (p.pages || []).some((page) => page && page.id === firstPhoto.id));
+      if (!keep) revokePreview(p.preview);
+      (p.pages || []).forEach((page) => {
+        if (!firstPhoto || !page || page.id !== firstPhoto.id) revokePreview(page && page.preview);
+      });
     });
     pending = [];
     paintPending();

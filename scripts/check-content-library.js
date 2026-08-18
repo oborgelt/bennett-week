@@ -432,6 +432,12 @@ assert(/id="bc-ptable"/.test(basecampHtml) && /Periodic table/.test(basecampHtml
 assert(fs.existsSync(path.join(root, "ptable.html")) && /ptable\.html/.test(basecampJs) && /window\.open/.test(basecampJs), "full-size ptable path exists");
 assert(/id="bc-ptable-open"/.test(basecampHtml) && /Open full size/.test(basecampHtml), "Chemistry rail has Open full size");
 assert(/#bc-send,\s*\n\s*\.btn\s*\{[^}]*cursor:\s*pointer/.test(bcThemeCss), "#bc-send / .btn has cursor pointer");
+assert(!/PDF name chip only/.test(basecampJs), "do not toast name-chip-only for PDFs");
+assert(/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js/.test(basecampJs) && /pdf\.worker/.test(basecampJs), "pdf.js loads from a CDN");
+assert(/getTextContent/.test(basecampJs) && /From the PDF \(first pages\)/.test(basecampJs), "PDF text is extracted and prepended on send");
+assert(/PDF_MAX_PAGES = 4/.test(basecampJs) && /compressImage/.test(basecampJs), "first 4 PDF pages use the photo compress path");
+assert(/function addPdf/.test(basecampJs) && /Could not read that PDF/.test(basecampJs), "pdf.js failure is a plain error, not a fake send");
+assert(/pendingImages/.test(basecampJs) && /kind === "pdf"/.test(basecampJs), "PDF pages are sent as pending images");
 assert(/mode !== "ptable"/.test(basecampJs) && /classId === "chemistry"/.test(basecampJs), "periodic table used only when classId === chemistry");
 assert(!/Offline replies stay honest/.test(basecampJs) && !/Photo is OK — still name the givens/.test(basecampJs), "manifesto welcome copy is gone");
 assert(/body\.basecamp-page/.test(bcThemeCss) && /img\/library\/basecamp-bg\.jpg/.test(bcThemeCss), "Base Camp CSS uses the treehouse still as page background");
