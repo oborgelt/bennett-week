@@ -4513,8 +4513,8 @@ body.basecamp-page .toast {
 }
 
 body.basecamp-page .hud-bar {
-  margin: 0 10px 6px;
-  padding: 8px 12px;
+  margin: 0 10px 4px;
+  padding: 4px 10px;
   border-radius: 14px;
   background: rgba(7, 18, 20, 0.58);
   backdrop-filter: blur(16px) saturate(1.1);
@@ -4523,10 +4523,10 @@ body.basecamp-page .hud-bar {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
 }
 
-body.basecamp-page .progress-tagline {
-  color: #d7e0dc;
-  text-shadow: none;
-}
+body.basecamp-page .banner-wrap img { height: 40px; }
+body.basecamp-page .banner-title h1 { font-size: 0.92rem; }
+body.basecamp-page .banner-title p { display: none; }
+body.basecamp-page .progress-tagline { display: none; }
 
 body.basecamp-page .bananas,
 body.basecamp-page .hud-nav a,
@@ -4553,8 +4553,9 @@ body.basecamp-page .bc-rail,
 body.basecamp-page .bc-composer,
 body.basecamp-page .bc-resources {
   border-radius: 16px;
-  padding: 10px;
+  padding: 8px;
 }
+body.basecamp-page .bc-resources { padding: 6px 8px; }
 
 body.basecamp-page .bc-kicker,
 body.basecamp-page .bc-hint,
@@ -4597,12 +4598,13 @@ body.basecamp-page .bc-tools-drawer > summary {
 }
 
 .bc-shell {
-  max-width: 1240px;
+  max-width: none;
+  width: 100%;
   margin: 0 auto;
-  padding: 8px 12px 28px;
+  padding: 6px 10px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .bc-rail {
@@ -4637,9 +4639,10 @@ body.basecamp-page .bc-tools-drawer > summary {
   background: rgba(18, 42, 46, 0.92);
   color: var(--ink);
   border-radius: 999px;
-  min-height: 40px;
-  padding: 0 12px;
+  min-height: 32px;
+  padding: 0 10px;
   font: inherit;
+  font-size: 0.82rem;
   font-weight: 750;
   cursor: pointer;
   white-space: nowrap;
@@ -4666,8 +4669,6 @@ body.basecamp-page .bc-tools-drawer > summary {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 28vh;
-  overflow: auto;
 }
 
 .bc-session-row {
@@ -4743,7 +4744,9 @@ body.basecamp-page .bc-tools-drawer > summary {
   flex-direction: column;
   justify-content: flex-start;
   gap: 8px;
-  min-height: 220px;
+  min-height: min(58dvh, 720px);
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .bc-welcome {
@@ -4787,15 +4790,30 @@ body.basecamp-page .bc-tools-drawer > summary {
   color: var(--muted);
 }
 .bc-resources .khan-strip {
-  margin-top: 0;
-  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
   background: transparent;
-  border-color: rgba(142, 197, 255, 0.16);
+  border: 0;
+  box-shadow: none;
 }
-.bc-resources .khan-kicker,
+.bc-resources .khan-kicker {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  opacity: 0.8;
+}
+.bc-resources .khan-links {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 8px;
+}
 .bc-resources .khan-link {
   font-size: 0.72rem;
   opacity: 0.85;
+  white-space: nowrap;
 }
 
 .bc-msg-img {
@@ -4816,7 +4834,7 @@ body.basecamp-page .bc-tools-drawer > summary {
 
 .bc-composer textarea {
   width: 100%;
-  min-height: 88px;
+  min-height: 56px;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: #0e2426;
@@ -5023,64 +5041,114 @@ body.basecamp-page .bc-tools-drawer > summary {
   font-weight: 750;
 }
 
-@media (min-width: 840px) {
+@media (max-width: 839px) {
   html:has(body.basecamp-page),
   body.basecamp-page {
-    height: 100dvh;
-    overflow: hidden;
+    height: auto;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
+  body.basecamp-page .bc-sessions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  body.basecamp-page .bc-session-row {
+    flex: 0 0 auto;
+    width: min(240px, 78vw);
+  }
+  body.basecamp-page .bc-composer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+  }
+}
+
+@media (min-width: 840px) {
   body.basecamp-page {
+    height: 100dvh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   body.basecamp-page .week-head { flex: 0 0 auto; }
   .bc-shell {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
     width: 100%;
+    max-width: none;
     display: grid;
-    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-columns: 192px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
     align-items: stretch;
-    gap: 16px;
-    padding-bottom: 12px;
+    gap: 12px;
+    padding-bottom: 10px;
   }
-  .bc-shell.has-tools {
-    grid-template-columns: 220px minmax(0, 1fr) 280px;
-  }
-  .bc-rail,
-  .bc-tools-rail {
+  .bc-rail {
+    grid-row: 1 / -1;
     min-height: 0;
-    overflow: auto;
+    overflow: hidden;
   }
-  .bc-classes {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    overflow: visible;
-  }
-  .bc-class {
-    width: 100%;
-    border-radius: 12px;
-    white-space: normal;
-    text-align: left;
-    justify-content: flex-start;
-  }
-  .bc-class-short { display: none; }
-  .bc-class-full { display: inline; }
-  .bc-sessions { max-height: none; }
   .bc-main {
     min-height: 0;
     height: 100%;
     overflow: hidden;
   }
+  .bc-tools-rail {
+    grid-column: 2;
+    min-height: 0;
+  }
+  .bc-classes {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow: visible;
+    gap: 4px;
+  }
+  .bc-class {
+    width: 100%;
+    min-height: 32px;
+    border-radius: 10px;
+    white-space: normal;
+    text-align: left;
+    justify-content: flex-start;
+    padding: 4px 8px;
+  }
+  .bc-class-short { display: none; }
+  .bc-class-full { display: inline; }
+  .bc-sessions {
+    max-height: 16vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
   .bc-log {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
+    overscroll-behavior: contain;
   }
   .bc-composer {
     position: static;
     flex: 0 0 auto;
-    padding-top: 10px;
+    padding-top: 8px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .bc-shell.has-tools {
+    grid-template-columns: 192px minmax(0, 1fr) 240px;
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .bc-rail { grid-row: auto; }
+  .bc-tools-rail {
+    grid-column: auto;
+    min-height: 0;
+    overflow: hidden;
   }
   .bc-tools-drawer {
     height: 100%;

@@ -396,6 +396,35 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  function shouldWheelScrollChat(el) {
+    if (!el || !el.closest) return true;
+    if (el.closest("#bc-log")) return false;
+    if (el.closest("#bc-input")) return false;
+    if (el.closest(".bc-sessions")) return false;
+    if (el.closest("#bc-calc, #bc-ptable, .bc-tools-drawer")) return false;
+    return true;
+  }
+
+  function onBasecampWheel(e) {
+    if (e.ctrlKey) return;
+    if (document.body.classList.contains("bc-intro-on")) return;
+    if (document.documentElement.classList.contains("bc-intro-pending")) return;
+    if (!window.matchMedia || !window.matchMedia("(min-width: 840px)").matches) return;
+    if (!shouldWheelScrollChat(e.target)) return;
+    const log = document.getElementById("bc-log");
+    if (!log) return;
+    log.scrollTop += e.deltaY;
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function onComposerKeydown(e) {
+    if (e.key !== "Enter") return;
+    if (e.shiftKey) return;
+    if (e.isComposing || e.keyCode === 229) return;
+    e.preventDefault();
+    send();
+  }
+
   async function paintLog() {
     const log = document.getElementById("bc-log");
     const session = current();
@@ -1105,6 +1134,8 @@
       e.preventDefault();
       send();
     });
+    document.getElementById("bc-input").addEventListener("keydown", onComposerKeydown);
+    document.addEventListener("wheel", onBasecampWheel, { passive: false });
     document.getElementById("bc-new").addEventListener("click", newSession);
     document.getElementById("bc-camera").addEventListener("change", (e) => {
       const file = e.target.files && e.target.files[0];
