@@ -4595,6 +4595,7 @@ body.basecamp-page .bc-resources {
   border-radius: 16px;
   padding: 8px;
 }
+body.basecamp-page .bc-rail { padding: 10px; }
 body.basecamp-page .bc-resources { padding: 6px 8px; }
 
 body.basecamp-page .bc-kicker,
@@ -4605,9 +4606,7 @@ body.basecamp-page .empty {
 }
 
 body.basecamp-page .bc-class,
-body.basecamp-page .bc-session,
-body.basecamp-page .bc-pin,
-body.basecamp-page .bc-delete,
+body.basecamp-page .bc-session-row,
 body.basecamp-page .bc-ex,
 body.basecamp-page .bc-attach {
   background: rgba(7, 18, 20, 0.78);
@@ -4617,12 +4616,17 @@ body.basecamp-page .bc-attach {
 }
 
 body.basecamp-page .bc-class.on,
-body.basecamp-page .bc-session.on,
-body.basecamp-page .bc-session-row.on .bc-session,
-body.basecamp-page .bc-pin.on {
+body.basecamp-page .bc-session-row.on {
   background: rgba(7, 18, 20, 0.88);
   color: var(--banana);
   border-color: rgba(244, 211, 94, 0.7);
+}
+
+body.basecamp-page .bc-session,
+body.basecamp-page .bc-pin,
+body.basecamp-page .bc-delete {
+  background: transparent;
+  color: inherit;
 }
 
 body.basecamp-page .bc-attach {
@@ -4672,8 +4676,7 @@ body.basecamp-page .bc-tools-drawer > summary {
   -webkit-overflow-scrolling: touch;
 }
 
-.bc-class,
-.bc-session {
+.bc-class {
   appearance: none;
   border: 1px solid rgba(198, 224, 58, 0.28);
   background: rgba(18, 42, 46, 0.92);
@@ -4688,8 +4691,7 @@ body.basecamp-page .bc-tools-drawer > summary {
   white-space: nowrap;
 }
 
-.bc-class.on,
-.bc-session.on {
+.bc-class.on {
   border-color: var(--banana);
   background: rgba(244, 211, 94, 0.18);
   color: var(--banana);
@@ -4708,66 +4710,85 @@ body.basecamp-page .bc-tools-drawer > summary {
 .bc-sessions {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+}
+
+.bc-sessions > .empty {
+  margin: 0;
+  padding: 2px 0 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font-size: 0.78rem;
+  font-weight: 650;
 }
 
 .bc-session-row {
   display: flex;
-  align-items: stretch;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(198, 224, 58, 0.22);
+  background: rgba(18, 42, 46, 0.92);
 }
 
-.bc-session-row.on .bc-session {
-  border-color: var(--banana);
-  background: rgba(244, 211, 94, 0.18);
+.bc-session-row.on {
+  border-color: rgba(244, 211, 94, 0.7);
+  background: rgba(244, 211, 94, 0.14);
   color: var(--banana);
 }
 
 .bc-session {
-  border-radius: 12px;
+  appearance: none;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 8px 12px;
-  white-space: normal;
-  text-align: left;
-  flex: 1;
-  min-width: 0;
-}
-
-.bc-pin {
-  appearance: none;
-  flex: 0 0 40px;
-  width: 40px;
-  min-height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(198, 224, 58, 0.28);
-  background: rgba(18, 42, 46, 0.92);
-  color: var(--banana);
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
   font: inherit;
-  font-size: 1.05rem;
+  font-size: 0.88rem;
+  font-weight: 750;
+  text-align: left;
+  white-space: normal;
   cursor: pointer;
 }
 
-.bc-pin.on {
-  border-color: var(--banana);
-  background: rgba(244, 211, 94, 0.18);
+.bc-session-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  margin: -2px -4px 0 0;
 }
 
+.bc-pin,
 .bc-delete {
   appearance: none;
-  flex: 0 0 auto;
-  min-height: 40px;
-  padding: 0 8px;
-  border-radius: 12px;
-  border: 1px solid rgba(198, 224, 58, 0.28);
-  background: rgba(18, 42, 46, 0.92);
-  color: var(--ink);
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--banana);
   font: inherit;
-  font-size: 0.72rem;
+  font-size: 0.95rem;
   font-weight: 750;
+  line-height: 1;
   cursor: pointer;
 }
+
+.bc-delete { color: var(--muted); }
+.bc-pin.on { color: var(--banana); }
 
 .bc-session-title { font-size: 0.9rem; }
 .bc-session-at { font-size: 0.72rem; color: var(--muted); font-weight: 650; }
@@ -4997,12 +5018,14 @@ body.basecamp-page .bc-tools-drawer > summary {
   appearance: none;
   min-height: 44px;
   border-radius: 10px;
-  border: 1px solid rgba(198, 224, 58, 0.28);
-  background: #102628;
-  color: var(--ink);
+  border: 1px solid rgba(246, 241, 228, 0.2);
+  background: #1a3d40;
+  color: #f6f1e4;
   font: inherit;
   font-weight: 750;
   cursor: pointer;
+  opacity: 1;
+  filter: none;
 }
 
 .bc-calc-key.wide { grid-column: span 2; }
@@ -5092,11 +5115,15 @@ body.basecamp-page .bc-tools-drawer > summary {
   body.basecamp-page .bc-sessions {
     flex-direction: row;
     flex-wrap: nowrap;
-    max-height: none;
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 2px;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  body.basecamp-page .bc-sessions::-webkit-scrollbar {
+    display: none;
+    height: 0;
   }
   body.basecamp-page .bc-session-row {
     flex: 0 0 auto;
@@ -5124,25 +5151,50 @@ body.basecamp-page .bc-tools-drawer > summary {
     max-width: none;
     display: grid;
     grid-template-columns: 192px minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr);
     align-items: stretch;
     gap: 12px;
     padding-bottom: 10px;
   }
+  .bc-shell.has-tools {
+    grid-template-columns: 192px minmax(0, 1fr) 260px;
+  }
   .bc-rail {
-    grid-row: 1 / -1;
     min-height: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .bc-rail::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
   }
   .bc-main {
     min-height: 0;
     height: 100%;
     overflow: hidden;
   }
-  .bc-tools-rail {
-    grid-column: 2;
+  .bc-shell.has-tools .bc-tools-rail {
+    grid-column: 3;
     min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
+  .bc-shell.has-tools .bc-tools-rail::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  .bc-tools-drawer {
+    height: auto;
+    overflow: visible;
+  }
+  .bc-tools-drawer > summary { display: none; }
+  .bc-tools-body { display: block !important; }
   .bc-classes {
     flex-direction: column;
     flex-wrap: nowrap;
@@ -5160,12 +5212,6 @@ body.basecamp-page .bc-tools-drawer > summary {
   }
   .bc-class-short { display: none; }
   .bc-class-full { display: inline; }
-  .bc-sessions {
-    max-height: 16vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
   .bc-log {
     flex: 1 1 auto;
     min-height: 0;
@@ -5177,23 +5223,4 @@ body.basecamp-page .bc-tools-drawer > summary {
     flex: 0 0 auto;
     padding-top: 8px;
   }
-}
-
-@media (min-width: 1100px) {
-  .bc-shell.has-tools {
-    grid-template-columns: 192px minmax(0, 1fr) 240px;
-    grid-template-rows: minmax(0, 1fr);
-  }
-  .bc-rail { grid-row: auto; }
-  .bc-tools-rail {
-    grid-column: auto;
-    min-height: 0;
-    overflow: hidden;
-  }
-  .bc-tools-drawer {
-    height: 100%;
-    overflow: auto;
-  }
-  .bc-tools-drawer > summary { display: none; }
-  .bc-tools-body { display: block !important; }
 }

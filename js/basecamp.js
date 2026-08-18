@@ -304,8 +304,10 @@
         <span class="bc-session-title">${Game.esc(s.title || "New climb")}</span>
         <span class="bc-session-at">${Game.esc(when)}</span>
       </button>
-      <button type="button" class="bc-pin${pinned ? " on" : ""}" data-pin="${Game.esc(s.id)}" aria-pressed="${pinned ? "true" : "false"}" aria-label="${pinned ? "Unpin" : "Pin"}">${pinned ? "★" : "☆"}</button>
-      <button type="button" class="bc-delete" data-delete="${Game.esc(s.id)}" aria-label="Delete this climb">Delete</button>
+      <div class="bc-session-actions">
+        <button type="button" class="bc-pin${pinned ? " on" : ""}" data-pin="${Game.esc(s.id)}" aria-pressed="${pinned ? "true" : "false"}" aria-label="${pinned ? "Unpin" : "Pin"}">${pinned ? "★" : "☆"}</button>
+        <button type="button" class="bc-delete" data-delete="${Game.esc(s.id)}" aria-label="Delete this climb">✕</button>
+      </div>
     </div>`;
   }
 
@@ -336,10 +338,10 @@
     const saved = savedSessions();
     pinnedHost.innerHTML = pinned.length
       ? pinned.map(sessionRowHtml).join("")
-      : `<p class="empty">Pin a climb to keep it up here.</p>`;
+      : `<p class="empty">None pinned.</p>`;
     savedHost.innerHTML = saved.length
       ? saved.map(sessionRowHtml).join("")
-      : `<p class="empty">No climbs yet. New session starts a fresh thread.</p>`;
+      : `<p class="empty">No climbs yet.</p>`;
     bindSessionHost(pinnedHost);
     bindSessionHost(savedHost);
   }
@@ -400,8 +402,8 @@
     if (!el || !el.closest) return true;
     if (el.closest("#bc-log")) return false;
     if (el.closest("#bc-input")) return false;
-    if (el.closest(".bc-sessions")) return false;
-    if (el.closest("#bc-calc, #bc-ptable, .bc-tools-drawer")) return false;
+    if (el.closest(".bc-rail")) return false;
+    if (el.closest("#bc-calc, #bc-ptable, .bc-tools-drawer, .bc-tools-rail")) return false;
     return true;
   }
 
@@ -529,16 +531,24 @@
     host.innerHTML = `<strong>${Game.esc(hit[0])}</strong> · ${Game.esc(hit[1])}<span>#${hit[2]} · ${Game.esc(hit[3])}</span>`;
   }
 
+  function keepToolsDrawerOpen() {
+    const drawer = document.getElementById("bc-tools-drawer");
+    if (!drawer || !toolsMode()) return;
+    drawer.open = true;
+  }
+
   function paintTools() {
     const mode = toolsMode();
     const shell = document.getElementById("bc-shell");
     const rail = document.getElementById("bc-tools-rail");
+    const drawer = document.getElementById("bc-tools-drawer");
     const calc = document.getElementById("bc-calc");
     const table = document.getElementById("bc-ptable");
     const summary = document.getElementById("bc-tools-summary");
-    if (shell) shell.classList.toggle("has-tools", !!mode);
+    const show = !!mode;
+    if (shell) shell.classList.toggle("has-tools", show);
     if (!rail || !calc || !table) return;
-    if (!mode) {
+    if (!show) {
       rail.hidden = true;
       calc.hidden = true;
       table.hidden = true;
@@ -547,6 +557,7 @@
     rail.hidden = false;
     calc.hidden = mode !== "calc";
     table.hidden = mode !== "ptable";
+    if (drawer) drawer.open = true;
     if (summary) summary.textContent = mode === "calc" ? "Calculator" : "Periodic table";
     if (mode === "ptable") buildPeriodicTable();
     paintCalc();
@@ -1118,14 +1129,16 @@
   }
 
   async function boot() {
+    const q = params();
+    const fromQuery = (q.get("class") || "").trim();
+    cardTitle = (q.get("title") || "").trim();
+    if (fromQuery) classId = fromQuery;
+    paintTools();
     maybeStartBasecampIntro();
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
     const progress = await Game.loadProgress();
     roster = (progress && progress.classes) || [];
-    const q = params();
-    const fromQuery = (q.get("class") || "").trim();
-    cardTitle = (q.get("title") || "").trim();
     if (fromQuery && classes().some((c) => c.id === fromQuery)) classId = fromQuery;
     else if (!classes().some((c) => c.id === classId) && classes()[0]) classId = classes()[0].id;
     const list = sessions();
@@ -1156,6 +1169,14 @@
       if (classId !== "geometry") return;
       useCalcResult();
     });
+    const drawer = document.getElementById("bc-tools-drawer");
+    if (drawer) {
+      drawer.open = true;
+      drawer.addEventListener("toggle", () => {
+        if (!window.matchMedia || !window.matchMedia("(min-width: 840px)").matches) return;
+        keepToolsDrawerOpen();
+      });
+    }
     document.addEventListener("bw-site-view", () => paintAll());
     await paintAll();
   }
