@@ -437,7 +437,8 @@
       contentUnlocks: {},
       soundCues: {},
       story: emptyStory(),
-      overlay: emptyOverlay()
+      overlay: emptyOverlay(),
+      basecamp: emptyBasecamp()
     };
   }
 
@@ -465,7 +466,8 @@
       contentUnlocks: asUnlockMap(f.contentUnlocks),
       soundCues: asCueMap(f.soundCues),
       story: normalizeStory(f.story),
-      overlay: normalizeOverlay(f.overlay)
+      overlay: normalizeOverlay(f.overlay),
+      basecamp: normalizeBasecamp(f.basecamp)
     };
   }
 
@@ -2648,6 +2650,162 @@
     return next;
   }
 
+  function emptyBasecamp() {
+    return { sessions: [] };
+  }
+
+  function normalizeBasecampMessage(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const text = String(raw.text || "").trim();
+    const imageId = String(raw.imageId || "").trim();
+    if (!text && !imageId) return null;
+    const row = {
+      role: raw.role === "mentor" ? "mentor" : "bennett",
+      text: text,
+      at: raw.at || nowIso()
+    };
+    if (imageId) row.imageId = imageId;
+    if (raw.test) row.test = true;
+    return row;
+  }
+
+  function normalizeBasecampSession(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const messages = Array.isArray(raw.messages)
+      ? raw.messages.map(normalizeBasecampMessage).filter(Boolean)
+      : [];
+    return {
+      id: String(raw.id || uid("bc")),
+      classId: String(raw.classId || "").trim(),
+      title: String(raw.title || "").trim() || "New climb",
+      messages: messages,
+      created: raw.created || nowIso(),
+      updated: raw.updated || raw.created || nowIso()
+    };
+  }
+
+  function normalizeBasecamp(raw) {
+    const src = raw && typeof raw === "object" ? raw : {};
+    const sessions = Array.isArray(src.sessions)
+      ? src.sessions.map(normalizeBasecampSession).filter(Boolean)
+      : [];
+    return { sessions: sessions };
+  }
+
+  function getBasecamp(family) {
+    return normalizeBasecamp(family && family.basecamp);
+  }
+
+  function basecampSessionsForClass(family, classId) {
+    const want = String(classId || "").trim();
+    return getBasecamp(family).sessions
+      .filter((s) => s && s.classId === want)
+      .slice()
+      .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")));
+  }
+
+  function basecampSession(family, sessionId) {
+    const id = String(sessionId || "");
+    return getBasecamp(family).sessions.find((s) => s && s.id === id) || null;
+  }
+
+  function persistBasecamp(family, basecamp) {
+    const next = normalizeFamily(family);
+    next.basecamp = normalizeBasecamp(basecamp);
+    saveFamily(next);
+    return next;
+  }
+
+  function upsertBasecampSession(family, session) {
+    const row = normalizeBasecampSession(session);
+    if (!row) return normalizeFamily(family);
+    const next = normalizeFamily(family);
+    const list = next.basecamp.sessions.slice();
+    const idx = list.findIndex((s) => s.id === row.id);
+    if (idx >= 0) list[idx] = row;
+    else list.push(row);
+    next.basecamp = { sessions: list };
+    saveFamily(next);
+    return { family: next, session: row };
+  }
+
+  function createBasecampSession(family, classId, title) {
+    const now = nowIso();
+    return upsertBasecampSession(family, {
+      id: uid("bc"),
+      classId: String(classId || "").trim(),
+      title: String(title || "").trim() || "New climb",
+      messages: [],
+      created: now,
+      updated: now
+    });
+  }
+
+  function addBasecampMessage(family, sessionId, msg) {
+    const cur = basecampSession(family, sessionId);
+    if (!cur) return { family: normalizeFamily(family), session: null };
+    const row = normalizeBasecampMessage(Object.assign({ at: nowIso() }, msg || {}));
+    if (!row) return { family: normalizeFamily(family), session: cur };
+    const nextSession = Object.assign({}, cur, {
+      messages: cur.messages.concat([row]),
+      updated: row.at
+    });
+    if (nextSession.title === "New climb" && row.role === "bennett" && row.text) {
+      nextSession.title = row.text.slice(0, 48);
+    }
+    return upsertBasecampSession(family, nextSession);
+  }
+
+  function basecampImageIds(family) {
+    const ids = [];
+    const seen = Object.create(null);
+    getBasecamp(family).sessions.forEach((s) => {
+      (s.messages || []).forEach((m) => {
+        const id = m && m.imageId;
+        if (!id || seen[id]) return;
+        seen[id] = true;
+        ids.push(id);
+      });
+    });
+    return ids;
+  }
+
+  async function collectBasecampBlobs(family) {
+    const blobs = {};
+    const skipped = [];
+    const ids = basecampImageIds(family);
+    for (let i = 0; i < ids.length; i += 1) {
+      const id = ids[i];
+      try {
+        const rec = await getLibraryBlob(id);
+        if (!rec || !rec.blob) {
+          skipped.push(id);
+          continue;
+        }
+        if ((rec.blob.size || 0) > PACK_BLOB_MAX) {
+          skipped.push(id);
+          continue;
+        }
+        blobs[id] = {
+          mime: rec.mime || rec.blob.type || "",
+          name: rec.name || "",
+          data: await blobToBase64(rec.blob)
+        };
+      } catch (_) {
+        skipped.push(id);
+      }
+    }
+    return { blobs: blobs, skipped: skipped };
+  }
+
+  async function hydrateImageId(id) {
+    if (!id) return "";
+    if (blobUrlCache[id]) return blobUrlCache[id];
+    const rec = await getLibraryBlob(id);
+    if (rec && rec.blob) return rememberBlobUrl(id, rec.blob);
+    return "";
+  }
+
   function latestReflection(family) {
     const answers = ((family && family.reflections && family.reflections.answers) || []).slice();
     if (!answers.length) return null;
@@ -3421,6 +3579,7 @@
     }
     mountSiteViewControl();
     mountMessagesChip();
+    mountBaseCampChip();
     hideAdultShortcuts(hideAdult);
     hideMessagesChip(view);
     bounceMessagesIfKid();
@@ -3927,6 +4086,42 @@
     return family;
   }
 
+  function basecampChipHtml(on) {
+    return `<a class="basecamp-chip${on ? " on" : ""}" href="basecamp.html"${on ? ' aria-current="page"' : ""} aria-label="Base Camp"><span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span></a>`;
+  }
+
+  function mountBaseCampChip() {
+    if (!document.querySelectorAll) return null;
+    const navs = document.querySelectorAll(".hud-nav");
+    if (!navs || !navs.length) return null;
+    const on = pageFile() === "basecamp.html" || pageFile() === "ask.html";
+    Array.from(navs).forEach((nav) => {
+      let chip = nav.querySelector ? nav.querySelector(".basecamp-chip") : null;
+      if (!chip && nav.insertAdjacentHTML) {
+        const after = nav.querySelector && (nav.querySelector(".crew-chip") || nav.querySelector(".progress-chip"));
+        if (after && after.insertAdjacentHTML) after.insertAdjacentHTML("afterend", basecampChipHtml(on));
+        else if (nav.insertAdjacentHTML) nav.insertAdjacentHTML("afterbegin", basecampChipHtml(on));
+        chip = nav.querySelector && nav.querySelector(".basecamp-chip");
+      } else if (!chip && document.createElement) {
+        chip = document.createElement("a");
+        chip.className = "basecamp-chip" + (on ? " on" : "");
+        chip.setAttribute("href", "basecamp.html");
+        chip.setAttribute("aria-label", "Base Camp");
+        chip.innerHTML = `<span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span>`;
+        const after = nav.querySelector && (nav.querySelector(".crew-chip") || nav.querySelector(".progress-chip"));
+        if (after && after.parentNode && after.nextSibling) {
+          after.parentNode.insertBefore(chip, after.nextSibling);
+        } else if (after && after.parentNode && after.parentNode.insertBefore) {
+          after.parentNode.insertBefore(chip, after.nextSibling || null);
+        } else if (nav.appendChild) {
+          nav.appendChild(chip);
+        }
+      }
+      if (chip && on && chip.classList && chip.classList.add) chip.classList.add("on");
+    });
+    return navs[0];
+  }
+
   function messagesChipHtml(on) {
     return `<a class="messages-chip${on ? " on" : ""}" href="messages.html"${on ? ' aria-current="page"' : ""} aria-label="Messages"><span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span></a>`;
   }
@@ -4086,8 +4281,9 @@
   async function exportFamilyPack(pack, family, roster, library) {
     const next = exportPack(pack, family, roster, library);
     const collected = await collectLibraryBlobs(next.library);
-    next.libraryBlobs = collected.blobs;
-    return { pack: next, skipped: collected.skipped };
+    const camp = await collectBasecampBlobs(next.family);
+    next.libraryBlobs = Object.assign({}, collected.blobs, camp.blobs);
+    return { pack: next, skipped: collected.skipped.concat(camp.skipped) };
   }
 
   const PREVIEW_AWARD_IDS = [
@@ -4617,6 +4813,19 @@
     getAskThread,
     saveAskThread,
     addAskMessage,
+    emptyBasecamp,
+    normalizeBasecamp,
+    getBasecamp,
+    basecampSessionsForClass,
+    basecampSession,
+    upsertBasecampSession,
+    createBasecampSession,
+    addBasecampMessage,
+    basecampImageIds,
+    collectBasecampBlobs,
+    hydrateImageId,
+    basecampChipHtml,
+    mountBaseCampChip,
     latestReflection,
     latestBennettQuestion,
     classIdForTitle,

@@ -723,17 +723,25 @@
     const box = document.getElementById("ask-inbox");
     if (!box) return;
     const messages = (Game.getAskThread().messages || []);
-    if (!messages.length) {
-      box.innerHTML = `<p class="empty">He has not asked the mentor yet.</p>`;
+    const climbs = (Game.getBasecamp(family).sessions || []).slice().sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")));
+    if (!messages.length && !climbs.length) {
+      box.innerHTML = `<p class="empty">He has not asked Jungle Jam Tutor yet. <a href="basecamp.html">Base Camp</a></p>`;
       return;
     }
-    box.innerHTML = messages.slice().reverse().map((m) => `
+    const camp = climbs.map((s) => `
       <article class="inbox-card">
-        <h3>${m.test ? '<span class="test-tag">TEST</span> ' : ""}${m.role === "mentor" ? "Mentor" : "Bennett"} · Ask AI</h3>
+        <h3>Base Camp · ${Game.esc(Game.classNameForId(s.classId) || s.classId || "Class")} · ${Game.esc(s.title || "New climb")}</h3>
+        <p>${Game.esc(((s.messages || []).slice(-1)[0] || {}).text || "No messages yet.")}</p>
+        <p>${Game.esc(Game.fmtStamp(s.updated))}</p>
+      </article>`).join("");
+    const old = messages.slice().reverse().map((m) => `
+      <article class="inbox-card">
+        <h3>${m.test ? '<span class="test-tag">TEST</span> ' : ""}${m.role === "mentor" ? "Jungle Jam Tutor" : "Bennett"} · Ask AI</h3>
         <p>${Game.esc(m.text)}</p>
         <p>${Game.esc(Game.fmtStamp(m.at))}${m.title ? " · " + Game.esc(m.title) : ""}</p>
       </article>
     `).join("");
+    box.innerHTML = camp + old;
   }
 
   function blankChar() {

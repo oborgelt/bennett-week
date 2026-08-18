@@ -322,7 +322,7 @@
     const items = cls.items || [];
     const khan = Game.khanStripHtmlForClass(cls);
     const summaryKhan = !items.length ? Game.khanInlineHtml(Game.khanLinksForClass(cls)) : "";
-    const askHref = `ask.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
+    const askHref = `basecamp.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
     const itemHtml = items.length
       ? items.map((item) => {
         const status = itemStatus(item);
@@ -356,7 +356,7 @@
         </summary>
         <ul class="class-items">${itemHtml}</ul>
         ${khan}
-        <p class="ask-help-link class-ask"><a href="${Game.esc(askHref)}">Ask AI</a></p>
+        <p class="ask-help-link class-ask"><a href="${Game.esc(askHref)}">Base Camp · Ask AI</a></p>
         ${Game.progressCanMutate() ? `<div class="class-card-tools">
           <button type="button" class="mini" data-add-item="${Game.esc(cls.id)}">Add assignment</button>
           ${Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id)}
