@@ -901,7 +901,130 @@
     }
   }
 
+  const INTRO_SRC = "img/library/basecamp-intro.mp4";
+  let introView = "";
+  let introDone = false;
+  let introBound = false;
+
+  function introEls() {
+    return {
+      layer: document.getElementById("bc-intro"),
+      video: document.getElementById("bc-intro-video"),
+      skip: document.getElementById("bc-intro-skip"),
+      play: document.getElementById("bc-intro-play"),
+      shell: document.getElementById("bc-shell")
+    };
+  }
+
+  function revealBasecampUi() {
+    const { layer, video, play, shell } = introEls();
+    document.documentElement.classList.remove("bc-intro-pending");
+    document.body.classList.remove("bc-intro-on");
+    document.body.classList.add("bc-ready");
+    if (shell) shell.removeAttribute("aria-hidden");
+    if (play) play.hidden = true;
+    if (layer) {
+      layer.classList.add("fade-out");
+      window.setTimeout(() => {
+        layer.hidden = true;
+        layer.classList.remove("open", "fade-out", "needs-tap");
+      }, 560);
+    }
+    if (video) {
+      try { video.pause(); } catch (_) {}
+      try { video.removeAttribute("src"); video.load(); } catch (_) {}
+    }
+  }
+
+  function finishBasecampIntro() {
+    if (introDone) return;
+    introDone = true;
+    if (typeof Game.markBasecampIntroPlayed === "function") {
+      Game.markBasecampIntroPlayed(introView);
+    }
+    revealBasecampUi();
+  }
+
+  function showTapToPlay() {
+    const { layer, play } = introEls();
+    if (layer) layer.classList.add("needs-tap");
+    if (play) play.hidden = false;
+  }
+
+  function playBasecampIntro() {
+    const { video, play } = introEls();
+    if (!video) {
+      finishBasecampIntro();
+      return;
+    }
+    if (play) play.hidden = true;
+    video.muted = false;
+    video.loop = false;
+    const attempt = video.play();
+    if (attempt && typeof attempt.then === "function") {
+      attempt.then(() => {
+        const { layer } = introEls();
+        if (layer) layer.classList.remove("needs-tap");
+      }).catch(() => {
+        showTapToPlay();
+      });
+    }
+  }
+
+  function startBasecampIntro() {
+    const { layer, video, skip, play, shell } = introEls();
+    introView = typeof Game.siteView === "function" ? Game.siteView() : "me";
+    document.documentElement.classList.add("bc-intro-pending");
+    document.body.classList.add("bc-intro-on");
+    if (shell) shell.setAttribute("aria-hidden", "true");
+    if (!layer || !video) {
+      finishBasecampIntro();
+      return;
+    }
+    layer.hidden = false;
+    layer.classList.add("open");
+    video.setAttribute("src", INTRO_SRC);
+    video.setAttribute("poster", "img/library/basecamp-bg.jpg");
+    video.preload = "auto";
+    if (!introBound) {
+      introBound = true;
+      video.addEventListener("ended", finishBasecampIntro);
+      video.addEventListener("error", finishBasecampIntro);
+      if (skip) skip.addEventListener("click", finishBasecampIntro);
+      if (play) {
+        play.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          playBasecampIntro();
+        });
+      }
+      layer.addEventListener("click", (e) => {
+        if (!layer.classList.contains("needs-tap")) return;
+        if (e.target && e.target.closest && e.target.closest("#bc-intro-skip")) return;
+        playBasecampIntro();
+      });
+    }
+    playBasecampIntro();
+  }
+
+  function maybeStartBasecampIntro() {
+    const shouldPlay = typeof Game.shouldPlayBasecampIntro === "function"
+      ? Game.shouldPlayBasecampIntro()
+      : true;
+    if (!shouldPlay) {
+      introDone = true;
+      document.documentElement.classList.remove("bc-intro-pending");
+      document.body.classList.remove("bc-intro-on");
+      document.body.classList.add("bc-ready");
+      const { layer } = introEls();
+      if (layer) layer.hidden = true;
+      return;
+    }
+    startBasecampIntro();
+  }
+
   async function boot() {
+    maybeStartBasecampIntro();
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
     const progress = await Game.loadProgress();

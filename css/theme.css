@@ -3838,12 +3838,19 @@ audio.lib-play {
 
 body.story-page,
 body.ask-page,
-body.basecamp-page,
 body.admin-page {
   min-height: 100dvh;
   background:
     linear-gradient(180deg, rgba(7, 22, 24, 0.78), rgba(7, 22, 24, 0.9)),
     url("../img/monkey-bg.png") center / cover no-repeat;
+}
+
+body.basecamp-page {
+  min-height: 100dvh;
+  background:
+    linear-gradient(180deg, rgba(7, 22, 24, 0.28), rgba(7, 22, 24, 0.42)),
+    url("../img/library/basecamp-bg.jpg") center / cover no-repeat;
+  background-attachment: scroll;
 }
 
 .story-wrap,
@@ -4382,6 +4389,102 @@ body.admin-page .usage-panel h2 {
   .refs-grid { grid-template-columns: 1fr 1fr; }
 }
 
+.bc-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  background: transparent;
+  opacity: 1;
+  transition: opacity 0.55s ease;
+}
+
+.bc-intro.open { display: block; }
+.bc-intro.fade-out { opacity: 0; pointer-events: none; }
+
+.bc-intro video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: transparent;
+}
+
+.bc-intro-skip {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 2;
+  appearance: none;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(246, 241, 228, 0.45);
+  background: rgba(7, 22, 24, 0.55);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+.bc-intro-play {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: none;
+  appearance: none;
+  margin: auto;
+  width: min(280px, calc(100% - 48px));
+  height: 88px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(7, 22, 24, 0.55);
+  color: var(--banana);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.bc-intro.needs-tap .bc-intro-play { display: block; }
+
+html.bc-intro-pending body.basecamp-page .bc-shell,
+body.basecamp-page.bc-intro-on .bc-shell {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.basecamp-page.bc-ready .bc-shell {
+  opacity: 1;
+  transition: opacity 0.55s ease;
+}
+
+html.bc-intro-pending,
+html.bc-intro-pending body,
+body.basecamp-page.bc-intro-on {
+  overflow: hidden;
+}
+
+body.basecamp-page .bc-welcome,
+body.basecamp-page .ask-bubble,
+body.basecamp-page .bc-tools-drawer {
+  background: rgba(18, 42, 46, 0.72);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+body.basecamp-page .bc-class,
+body.basecamp-page .bc-session,
+body.basecamp-page .bc-pin {
+  background: rgba(18, 42, 46, 0.72);
+}
+
+body.basecamp-page .bc-composer {
+  background: linear-gradient(180deg, rgba(7, 22, 24, 0), rgba(7, 22, 24, 0.42) 22%, rgba(7, 22, 24, 0.55));
+}
+
 .bc-shell {
   max-width: 1240px;
   margin: 0 auto;
@@ -4851,7 +4954,7 @@ body.admin-page .usage-panel h2 {
   .bc-composer {
     position: static;
     flex: 0 0 auto;
-    background: rgba(7, 22, 24, 0.92);
+    background: rgba(7, 22, 24, 0.55);
     padding-top: 8px;
   }
   .bc-tools-drawer {

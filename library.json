@@ -250,6 +250,21 @@
       "character": "crew"
     },
     {
+      "id": "basecamp-bg",
+      "label": "Base Camp still",
+      "path": "img/library/basecamp-bg.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "basecamp-intro",
+      "label": "Base Camp intro",
+      "path": "img/library/basecamp-intro.mp4",
+      "poster": "img/library/basecamp-bg.jpg",
+      "kind": "video",
+      "character": "crew"
+    },
+    {
       "id": "tablesloud",
       "label": "Table click",
       "path": "audio/tablesloud.mp3",

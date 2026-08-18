@@ -21,7 +21,8 @@
     previewIds: "bw-preview-ids",
     previewLocked: "bw-preview-locked",
     signinSeen: "bw-signin-seen",
-    siteView: "bw-site-view"
+    siteView: "bw-site-view",
+    basecampIntro: "bw-basecamp-intro"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -3771,6 +3772,36 @@
     } catch (_) {}
   }
 
+  function basecampIntroMap() {
+    try {
+      const raw = localStorage.getItem(KEYS.basecampIntro);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  function hasPlayedBasecampIntroToday(view) {
+    const v = normalizeSiteView(view || siteView());
+    return String(basecampIntroMap()[v] || "") === chicagoYmd();
+  }
+
+  function markBasecampIntroPlayed(view) {
+    const v = normalizeSiteView(view || siteView());
+    const next = Object.assign({}, basecampIntroMap());
+    next[v] = chicagoYmd();
+    try {
+      localStorage.setItem(KEYS.basecampIntro, JSON.stringify(next));
+    } catch (_) {}
+    return next;
+  }
+
+  function shouldPlayBasecampIntro(view) {
+    return !hasPlayedBasecampIntroToday(view);
+  }
+
   function maybeAwardSignIn(pack, family) {
     const next = normalizeFamily(family);
     const st = next.streaks[SIGNIN_ACHIEVEMENT];
@@ -4896,7 +4927,10 @@
     siteViewControlHtml,
     siteViewHidesAdult,
     shouldGateAdultPage,
-    SITE_VIEWS
+    SITE_VIEWS,
+    hasPlayedBasecampIntroToday,
+    markBasecampIntroPlayed,
+    shouldPlayBasecampIntro
   };
 
   function paintStoryChip(roster, force) {
