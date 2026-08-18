@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
   <title>Jungle Jam · Base Camp</title>
-  <link rel="stylesheet" href="css/theme.css?v=105">
+  <link rel="stylesheet" href="css/theme.css?v=106">
   <script>
     (function () {
       try {
@@ -71,7 +71,13 @@
 
   <main class="bc-shell has-tools" id="bc-shell">
     <aside class="bc-rail" aria-label="Class and sessions">
-      <h2 class="bc-kicker">Class</h2>
+      <div class="bc-rail-top">
+        <h2 class="bc-kicker">Class</h2>
+        <button type="button" class="bc-rail-toggle" id="bc-rail-toggle" aria-expanded="true" aria-controls="bc-classes" title="Collapse classes">
+          <span class="bc-rail-chevron" aria-hidden="true"></span>
+          <span class="bc-rail-toggle-text">Classes</span>
+        </button>
+      </div>
       <div class="bc-classes" id="bc-classes" role="list"></div>
       <h2 class="bc-kicker">Pinned</h2>
       <div class="bc-sessions bc-pinned" id="bc-pinned" role="list"></div>
@@ -99,7 +105,7 @@
           </label>
           <button type="submit" class="btn primary" id="bc-send">Send</button>
         </div>
-        <p class="bc-hint">Show a try or a photo. I won’t fill it in.</p>
+        <p class="bc-hint">Upload a picture or file, or just chat with me. I can't give you answers but I can help you get to the answer.</p>
       </form>
       <aside id="bc-resources" class="bc-resources"></aside>
     </section>
@@ -144,6 +150,7 @@
           </div>
           <div class="bc-ptable" id="bc-ptable" hidden>
             <p class="bc-kicker">Periodic table</p>
+            <a class="btn tiny" id="bc-ptable-open" href="ptable.html" target="bw-ptable" rel="noopener">Open full size</a>
             <div class="bc-ptable-detail" id="bc-ptable-detail">Tap an element.</div>
             <div class="bc-ptable-grid" id="bc-ptable-grid" role="grid" aria-label="Periodic table"></div>
           </div>
@@ -154,10 +161,11 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="js/build.js?v=105"></script>
-  <script src="js/game.js?v=105"></script>
-  <script src="js/telemetry.js?v=105"></script>
-  <script src="js/tutor.js?v=105"></script>
-  <script src="js/basecamp.js?v=105"></script>
+  <script src="js/build.js?v=106"></script>
+  <script src="js/game.js?v=106"></script>
+  <script src="js/telemetry.js?v=106"></script>
+  <script src="js/tutor.js?v=106"></script>
+  <script src="js/ptable.js?v=106"></script>
+  <script src="js/basecamp.js?v=106"></script>
 </body>
 </html>

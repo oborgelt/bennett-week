@@ -37,136 +37,24 @@
       "I wrote what I already tried. Ask me the next step."
     ]
   };
+  const TUTOR_LINE = "Upload a picture or file, or just chat with me. I can't give you answers but I can help you get to the answer.";
   const COACH = {
-    geometry: "Foster packet first — name the givens, then we’ll walk the next step.",
-    chemistry: "Show the page or a try. I will not fill the slides.",
-    "english-10": "Show the comic or your sentences. I will not write it.",
-    sociology: "Show what you tried or a photo. I will not draft it.",
-    "web-design": "Show what you tried or a photo. I will not draft it.",
-    band: "Show what you tried or a photo. I will not draft it.",
-    strength: "Show what you tried or a photo. I will not draft it.",
-    "academic-intervention": "Show what you tried or a photo. I will not draft it."
+    geometry: TUTOR_LINE,
+    chemistry: TUTOR_LINE,
+    "english-10": TUTOR_LINE,
+    sociology: TUTOR_LINE,
+    "web-design": TUTOR_LINE,
+    band: TUTOR_LINE,
+    strength: TUTOR_LINE,
+    "academic-intervention": TUTOR_LINE
   };
-  const PTABLE = [
-    ["H", "Hydrogen", 1, "1.008", 1, 1],
-    ["He", "Helium", 2, "4.003", 1, 18],
-    ["Li", "Lithium", 3, "6.94", 2, 1],
-    ["Be", "Beryllium", 4, "9.012", 2, 2],
-    ["B", "Boron", 5, "10.81", 2, 13],
-    ["C", "Carbon", 6, "12.01", 2, 14],
-    ["N", "Nitrogen", 7, "14.01", 2, 15],
-    ["O", "Oxygen", 8, "16.00", 2, 16],
-    ["F", "Fluorine", 9, "19.00", 2, 17],
-    ["Ne", "Neon", 10, "20.18", 2, 18],
-    ["Na", "Sodium", 11, "22.99", 3, 1],
-    ["Mg", "Magnesium", 12, "24.31", 3, 2],
-    ["Al", "Aluminum", 13, "26.98", 3, 13],
-    ["Si", "Silicon", 14, "28.09", 3, 14],
-    ["P", "Phosphorus", 15, "30.97", 3, 15],
-    ["S", "Sulfur", 16, "32.06", 3, 16],
-    ["Cl", "Chlorine", 17, "35.45", 3, 17],
-    ["Ar", "Argon", 18, "39.95", 3, 18],
-    ["K", "Potassium", 19, "39.10", 4, 1],
-    ["Ca", "Calcium", 20, "40.08", 4, 2],
-    ["Sc", "Scandium", 21, "44.96", 4, 3],
-    ["Ti", "Titanium", 22, "47.87", 4, 4],
-    ["V", "Vanadium", 23, "50.94", 4, 5],
-    ["Cr", "Chromium", 24, "52.00", 4, 6],
-    ["Mn", "Manganese", 25, "54.94", 4, 7],
-    ["Fe", "Iron", 26, "55.85", 4, 8],
-    ["Co", "Cobalt", 27, "58.93", 4, 9],
-    ["Ni", "Nickel", 28, "58.69", 4, 10],
-    ["Cu", "Copper", 29, "63.55", 4, 11],
-    ["Zn", "Zinc", 30, "65.38", 4, 12],
-    ["Ga", "Gallium", 31, "69.72", 4, 13],
-    ["Ge", "Germanium", 32, "72.63", 4, 14],
-    ["As", "Arsenic", 33, "74.92", 4, 15],
-    ["Se", "Selenium", 34, "78.97", 4, 16],
-    ["Br", "Bromine", 35, "79.90", 4, 17],
-    ["Kr", "Krypton", 36, "83.80", 4, 18],
-    ["Rb", "Rubidium", 37, "85.47", 5, 1],
-    ["Sr", "Strontium", 38, "87.62", 5, 2],
-    ["Y", "Yttrium", 39, "88.91", 5, 3],
-    ["Zr", "Zirconium", 40, "91.22", 5, 4],
-    ["Nb", "Niobium", 41, "92.91", 5, 5],
-    ["Mo", "Molybdenum", 42, "95.95", 5, 6],
-    ["Tc", "Technetium", 43, "98", 5, 7],
-    ["Ru", "Ruthenium", 44, "101.1", 5, 8],
-    ["Rh", "Rhodium", 45, "102.9", 5, 9],
-    ["Pd", "Palladium", 46, "106.4", 5, 10],
-    ["Ag", "Silver", 47, "107.9", 5, 11],
-    ["Cd", "Cadmium", 48, "112.4", 5, 12],
-    ["In", "Indium", 49, "114.8", 5, 13],
-    ["Sn", "Tin", 50, "118.7", 5, 14],
-    ["Sb", "Antimony", 51, "121.8", 5, 15],
-    ["Te", "Tellurium", 52, "127.6", 5, 16],
-    ["I", "Iodine", 53, "126.9", 5, 17],
-    ["Xe", "Xenon", 54, "131.3", 5, 18],
-    ["Cs", "Cesium", 55, "132.9", 6, 1],
-    ["Ba", "Barium", 56, "137.3", 6, 2],
-    ["La", "Lanthanum", 57, "138.9", 8, 3],
-    ["Hf", "Hafnium", 72, "178.5", 6, 4],
-    ["Ta", "Tantalum", 73, "180.9", 6, 5],
-    ["W", "Tungsten", 74, "183.8", 6, 6],
-    ["Re", "Rhenium", 75, "186.2", 6, 7],
-    ["Os", "Osmium", 76, "190.2", 6, 8],
-    ["Ir", "Iridium", 77, "192.2", 6, 9],
-    ["Pt", "Platinum", 78, "195.1", 6, 10],
-    ["Au", "Gold", 79, "197.0", 6, 11],
-    ["Hg", "Mercury", 80, "200.6", 6, 12],
-    ["Tl", "Thallium", 81, "204.4", 6, 13],
-    ["Pb", "Lead", 82, "207.2", 6, 14],
-    ["Bi", "Bismuth", 83, "209.0", 6, 15],
-    ["Po", "Polonium", 84, "209", 6, 16],
-    ["At", "Astatine", 85, "210", 6, 17],
-    ["Rn", "Radon", 86, "222", 6, 18],
-    ["Fr", "Francium", 87, "223", 7, 1],
-    ["Ra", "Radium", 88, "226", 7, 2],
-    ["Ac", "Actinium", 89, "227", 9, 3],
-    ["Rf", "Rutherfordium", 104, "267", 7, 4],
-    ["Db", "Dubnium", 105, "268", 7, 5],
-    ["Sg", "Seaborgium", 106, "269", 7, 6],
-    ["Bh", "Bohrium", 107, "270", 7, 7],
-    ["Hs", "Hassium", 108, "277", 7, 8],
-    ["Mt", "Meitnerium", 109, "278", 7, 9],
-    ["Ds", "Darmstadtium", 110, "281", 7, 10],
-    ["Rg", "Roentgenium", 111, "282", 7, 11],
-    ["Cn", "Copernicium", 112, "285", 7, 12],
-    ["Nh", "Nihonium", 113, "286", 7, 13],
-    ["Fl", "Flerovium", 114, "289", 7, 14],
-    ["Mc", "Moscovium", 115, "290", 7, 15],
-    ["Lv", "Livermorium", 116, "293", 7, 16],
-    ["Ts", "Tennessine", 117, "294", 7, 17],
-    ["Og", "Oganesson", 118, "294", 7, 18],
-    ["Ce", "Cerium", 58, "140.1", 8, 4],
-    ["Pr", "Praseodymium", 59, "140.9", 8, 5],
-    ["Nd", "Neodymium", 60, "144.2", 8, 6],
-    ["Pm", "Promethium", 61, "145", 8, 7],
-    ["Sm", "Samarium", 62, "150.4", 8, 8],
-    ["Eu", "Europium", 63, "152.0", 8, 9],
-    ["Gd", "Gadolinium", 64, "157.3", 8, 10],
-    ["Tb", "Terbium", 65, "158.9", 8, 11],
-    ["Dy", "Dysprosium", 66, "162.5", 8, 12],
-    ["Ho", "Holmium", 67, "164.9", 8, 13],
-    ["Er", "Erbium", 68, "167.3", 8, 14],
-    ["Tm", "Thulium", 69, "168.9", 8, 15],
-    ["Yb", "Ytterbium", 70, "173.0", 8, 16],
-    ["Lu", "Lutetium", 71, "175.0", 8, 17],
-    ["Th", "Thorium", 90, "232.0", 9, 4],
-    ["Pa", "Protactinium", 91, "231.0", 9, 5],
-    ["U", "Uranium", 92, "238.0", 9, 6],
-    ["Np", "Neptunium", 93, "237", 9, 7],
-    ["Pu", "Plutonium", 94, "244", 9, 8],
-    ["Am", "Americium", 95, "243", 9, 9],
-    ["Cm", "Curium", 96, "247", 9, 10],
-    ["Bk", "Berkelium", 97, "247", 9, 11],
-    ["Cf", "Californium", 98, "251", 9, 12],
-    ["Es", "Einsteinium", 99, "252", 9, 13],
-    ["Fm", "Fermium", 100, "257", 9, 14],
-    ["Md", "Mendelevium", 101, "258", 9, 15],
-    ["No", "Nobelium", 102, "259", 9, 16],
-    ["Lr", "Lawrencium", 103, "266", 9, 17]
-  ];
+  const PTABLE = window.BW_PTABLE || [];
+  const RAIL_KEY = "bw-bc-rail";
+  const PDF_MAX_PAGES = 4;
+  const PDF_TEXT_CAP = 9000;
+  const PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  let pdfJsLoading = null;
   let pack = null;
   let family = null;
   let roster = [];
@@ -288,7 +176,7 @@
     const host = document.getElementById("bc-classes");
     host.innerHTML = classes().map((cls) => {
       const on = cls.id === classId;
-      return `<button type="button" class="bc-class${on ? " on" : ""}" data-class="${Game.esc(cls.id)}" role="listitem" aria-pressed="${on ? "true" : "false"}"><span class="bc-class-full">${Game.esc(cls.name)}</span><span class="bc-class-short">${Game.esc(shortClass(cls))}</span></button>`;
+      return `<button type="button" class="bc-class${on ? " on" : ""}" data-class="${Game.esc(cls.id)}" role="listitem" aria-pressed="${on ? "true" : "false"}" title="${Game.esc(cls.name)}"><span class="bc-class-mark">${Game.esc(shortClass(cls).slice(0, 2))}</span><span class="bc-class-full">${Game.esc(cls.name)}</span><span class="bc-class-short">${Game.esc(shortClass(cls))}</span></button>`;
     }).join("");
     host.querySelectorAll("[data-class]").forEach((btn) => {
       btn.addEventListener("click", () => selectClass(btn.getAttribute("data-class")));
@@ -357,7 +245,7 @@
     const chips = examplesForClass().map((q) => {
       return `<button type="button" class="bc-ex" data-example="${Game.esc(q)}">${Game.esc(q)}</button>`;
     }).join("");
-    const line = COACH[classId] || "Show what you tried or a photo. I will not draft it.";
+    const line = COACH[classId] || TUTOR_LINE;
     return `
       <div class="bc-welcome">
         <p class="ask-who">${Game.esc(Tutor.IDENTITY)}</p>
@@ -479,11 +367,161 @@
     }).join("");
     host.querySelectorAll("[data-drop]").forEach((el) => {
       el.querySelector("button").addEventListener("click", () => {
-        const id = el.getAttribute("data-drop");
-        pending = pending.filter((p) => p.id !== id);
-        paintPending();
+        dropPending(el.getAttribute("data-drop"));
       });
     });
+  }
+
+  function revokePreview(url) {
+    if (url && String(url).indexOf("blob:") === 0) {
+      try { URL.revokeObjectURL(url); } catch (_) {}
+    }
+  }
+
+  function dropPending(id) {
+    pending = pending.filter((p) => {
+      if (p.id !== id) return true;
+      revokePreview(p.preview);
+      (p.pages || []).forEach((page) => revokePreview(page && page.preview));
+      return false;
+    });
+    paintPending();
+  }
+
+  function pendingImages() {
+    const out = [];
+    pending.forEach((p) => {
+      if (p.kind === "image" && p.data) out.push(p);
+      if (p.kind === "pdf") {
+        (p.pages || []).forEach((page) => {
+          if (page && page.data) {
+            out.push({
+              id: page.id || p.id,
+              name: p.name,
+              mime: page.mime || "image/jpeg",
+              data: page.data,
+              blob: page.blob,
+              preview: page.preview
+            });
+          }
+        });
+      }
+    });
+    return out;
+  }
+
+  function pendingPdfText() {
+    const parts = pending
+      .filter((p) => p.kind === "pdf" && p.text)
+      .map((p) => String(p.text || "").trim())
+      .filter(Boolean);
+    if (!parts.length) return "";
+    let block = "From the PDF (first pages):\n" + parts.join("\n");
+    if (block.length > 10000) block = block.slice(0, 10000);
+    return block;
+  }
+
+  function loadPdfJs() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    if (pdfJsLoading) return pdfJsLoading;
+    pdfJsLoading = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = PDFJS_SRC;
+      script.async = true;
+      script.onload = () => {
+        if (!window.pdfjsLib) {
+          pdfJsLoading = null;
+          reject(new Error("pdf.js missing"));
+          return;
+        }
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+        resolve(window.pdfjsLib);
+      };
+      script.onerror = () => {
+        pdfJsLoading = null;
+        reject(new Error("pdf.js failed to load"));
+      };
+      document.head.appendChild(script);
+    });
+    return pdfJsLoading;
+  }
+
+  function canvasToJpegFile(canvas, name) {
+    return new Promise((resolve) => {
+      if (!canvas || !canvas.toBlob) {
+        resolve(null);
+        return;
+      }
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          resolve(null);
+          return;
+        }
+        try {
+          resolve(new File([blob], name || "page.jpg", { type: "image/jpeg" }));
+        } catch (_) {
+          resolve(blob);
+        }
+      }, "image/jpeg", JPEG_QUALITY);
+    });
+  }
+
+  async function addPdf(file) {
+    try {
+      const pdfjs = await loadPdfJs();
+      const buf = new Uint8Array(await file.arrayBuffer());
+      const doc = await pdfjs.getDocument({ data: buf }).promise;
+      const max = Math.min(PDF_MAX_PAGES, doc.numPages || 0);
+      const pages = [];
+      const textParts = [];
+      for (let n = 1; n <= max; n += 1) {
+        const page = await doc.getPage(n);
+        const unscaled = page.getViewport({ scale: 1 });
+        const scale = MAX_EDGE / Math.max(unscaled.width, 1);
+        const viewport = page.getViewport({ scale: scale });
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(viewport.width));
+        canvas.height = Math.max(1, Math.round(viewport.height));
+        const ctx = canvas.getContext("2d");
+        if (ctx) await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        const raw = await canvasToJpegFile(canvas, (file.name || "page") + "-p" + n + ".jpg");
+        const compressed = raw ? await compressImage(raw) : null;
+        if (compressed) {
+          const data = await blobToBase64(compressed);
+          pages.push({
+            id: Game.uid("att"),
+            mime: "image/jpeg",
+            data: data,
+            blob: compressed,
+            preview: URL.createObjectURL(compressed)
+          });
+        }
+        const content = await page.getTextContent();
+        const pageText = ((content && content.items) || [])
+          .map((it) => (it && it.str) || "")
+          .join(" ")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (pageText) textParts.push(pageText);
+      }
+      if (!pages.length) {
+        Game.toast("Could not read that PDF.");
+        return;
+      }
+      let text = textParts.join("\n");
+      if (text.length > PDF_TEXT_CAP) text = text.slice(0, PDF_TEXT_CAP);
+      pending.push({
+        id: Game.uid("att"),
+        kind: "pdf",
+        name: file.name || "PDF",
+        mime: file.type || "application/pdf",
+        pages: pages,
+        text: text
+      });
+      paintPending();
+    } catch (_) {
+      Game.toast("Could not read that PDF.");
+    }
   }
 
   function paintHud() {
@@ -529,6 +567,41 @@
     const host = document.getElementById("bc-ptable-detail");
     if (!hit || !host) return;
     host.innerHTML = `<strong>${Game.esc(hit[0])}</strong> · ${Game.esc(hit[1])}<span>#${hit[2]} · ${Game.esc(hit[3])}</span>`;
+  }
+
+  function railCollapsed() {
+    try {
+      return localStorage.getItem(RAIL_KEY) === "collapsed";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function applyRailState() {
+    const collapsed = railCollapsed();
+    const shell = document.getElementById("bc-shell");
+    const btn = document.getElementById("bc-rail-toggle");
+    if (shell) shell.classList.toggle("rail-collapsed", collapsed);
+    if (btn) {
+      btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      btn.setAttribute("aria-label", collapsed ? "Expand classes" : "Collapse classes");
+      btn.title = collapsed ? "Expand classes" : "Collapse classes";
+    }
+  }
+
+  function toggleRail() {
+    const next = railCollapsed() ? "open" : "collapsed";
+    try {
+      localStorage.setItem(RAIL_KEY, next);
+    } catch (_) {}
+    applyRailState();
+  }
+
+  function openPtableWindow(e) {
+    const w = Math.max(1100, Math.min((screen && screen.availWidth) || 1400, 1600));
+    const h = Math.max(720, Math.min((screen && screen.availHeight) || 900, 960));
+    const win = window.open("ptable.html", "bw-ptable", "width=" + w + ",height=" + h + ",menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes");
+    if (win && e) e.preventDefault();
   }
 
   function keepToolsDrawerOpen() {
@@ -857,14 +930,7 @@
     const isPdf = /pdf/.test(file.type || "") || /\.pdf$/i.test(file.name || "");
     const isImage = /^image\//.test(file.type || "") || fromCamera;
     if (isPdf) {
-      pending.push({
-        id: Game.uid("att"),
-        kind: "pdf",
-        name: file.name || "PDF",
-        mime: file.type || "application/pdf"
-      });
-      paintPending();
-      Game.toast("PDF name chip only — Jungle Jam Tutor reads photos, not the file.");
+      await addPdf(file);
       return;
     }
     if (!isImage) {
@@ -910,8 +976,10 @@
   async function send() {
     if (sending) return;
     const input = document.getElementById("bc-input");
-    const text = (input.value || "").trim();
-    const photos = pending.filter((p) => p.kind === "image" && p.data);
+    const typed = (input.value || "").trim();
+    const pdfBlock = pendingPdfText();
+    const text = pdfBlock ? (typed ? (pdfBlock + "\n\n" + typed) : pdfBlock) : typed;
+    const photos = pendingImages();
     if (!text && !photos.length) {
       Game.toast("Type a try, or attach a photo of the work.");
       return;
@@ -950,9 +1018,11 @@
     input.value = "";
     const sentImages = photos.map((p) => ({ mime: p.mime, data: p.data }));
     pending.forEach((p) => {
-      if (p.preview && p.preview.indexOf("blob:") === 0 && (!firstPhoto || p.id !== firstPhoto.id)) {
-        try { URL.revokeObjectURL(p.preview); } catch (_) {}
-      }
+      const keep = firstPhoto && (p.id === firstPhoto.id || (p.pages || []).some((page) => page && page.id === firstPhoto.id));
+      if (!keep) revokePreview(p.preview);
+      (p.pages || []).forEach((page) => {
+        if (!firstPhoto || !page || page.id !== firstPhoto.id) revokePreview(page && page.preview);
+      });
     });
     pending = [];
     paintPending();
@@ -1150,6 +1220,11 @@
     document.getElementById("bc-input").addEventListener("keydown", onComposerKeydown);
     document.addEventListener("wheel", onBasecampWheel, { passive: false });
     document.getElementById("bc-new").addEventListener("click", newSession);
+    const railToggle = document.getElementById("bc-rail-toggle");
+    if (railToggle) railToggle.addEventListener("click", toggleRail);
+    applyRailState();
+    const ptableOpen = document.getElementById("bc-ptable-open");
+    if (ptableOpen) ptableOpen.addEventListener("click", openPtableWindow);
     document.getElementById("bc-camera").addEventListener("change", (e) => {
       const file = e.target.files && e.target.files[0];
       e.target.value = "";
