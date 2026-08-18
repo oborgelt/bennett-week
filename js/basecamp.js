@@ -305,6 +305,7 @@
         <span class="bc-session-at">${Game.esc(when)}</span>
       </button>
       <button type="button" class="bc-pin${pinned ? " on" : ""}" data-pin="${Game.esc(s.id)}" aria-pressed="${pinned ? "true" : "false"}" aria-label="${pinned ? "Unpin" : "Pin"}">${pinned ? "★" : "☆"}</button>
+      <button type="button" class="bc-delete" data-delete="${Game.esc(s.id)}" aria-label="Delete this climb">Delete</button>
     </div>`;
   }
 
@@ -317,6 +318,13 @@
         e.preventDefault();
         e.stopPropagation();
         togglePin(btn.getAttribute("data-pin"));
+      });
+    });
+    host.querySelectorAll("[data-delete]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        deleteClimb(btn.getAttribute("data-delete"));
       });
     });
   }
@@ -388,6 +396,35 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  function shouldWheelScrollChat(el) {
+    if (!el || !el.closest) return true;
+    if (el.closest("#bc-log")) return false;
+    if (el.closest("#bc-input")) return false;
+    if (el.closest(".bc-sessions")) return false;
+    if (el.closest("#bc-calc, #bc-ptable, .bc-tools-drawer")) return false;
+    return true;
+  }
+
+  function onBasecampWheel(e) {
+    if (e.ctrlKey) return;
+    if (document.body.classList.contains("bc-intro-on")) return;
+    if (document.documentElement.classList.contains("bc-intro-pending")) return;
+    if (!window.matchMedia || !window.matchMedia("(min-width: 840px)").matches) return;
+    if (!shouldWheelScrollChat(e.target)) return;
+    const log = document.getElementById("bc-log");
+    if (!log) return;
+    log.scrollTop += e.deltaY;
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function onComposerKeydown(e) {
+    if (e.key !== "Enter") return;
+    if (e.shiftKey) return;
+    if (e.isComposing || e.keyCode === 229) return;
+    e.preventDefault();
+    send();
+  }
+
   async function paintLog() {
     const log = document.getElementById("bc-log");
     const session = current();
@@ -416,8 +453,12 @@
   }
 
   function paintResources() {
+    const host = document.getElementById("bc-resources");
+    if (!host) return;
     const cls = selectedClass() || { id: classId, name: className() };
-    document.getElementById("bc-resources").innerHTML = Game.khanStripHtmlForClass(cls);
+    const html = Game.khanStripHtmlForClass(cls);
+    host.innerHTML = html;
+    host.hidden = !html;
   }
 
   function paintPending() {
@@ -769,6 +810,30 @@
     paintSessions();
   }
 
+  function deleteClimb(id) {
+    const key = String(id || "");
+    if (!key) return;
+    if (typeof window.confirm === "function" && !window.confirm("Delete this climb?")) return;
+    const y = window.pageYOffset || (document.documentElement && document.documentElement.scrollTop) || 0;
+    const gone = Game.basecampSession(family, key);
+    const wasOpen = key === sessionId;
+    const next = Game.deleteBasecampSession(family, key);
+    family = next.family;
+    if (gone && gone.messages) {
+      gone.messages.forEach((m) => {
+        if (m && m.imageId) delete imageUrls[m.imageId];
+      });
+    }
+    if (wasOpen) {
+      const list = sessions();
+      sessionId = list[0] ? list[0].id : "";
+    }
+    Promise.resolve(paintAll()).then(() => {
+      try { window.scrollTo(0, y); } catch (_) {}
+      scrollLog();
+    });
+  }
+
   function newSession() {
     const made = Game.createBasecampSession(family, classId, "New climb");
     family = made.family;
@@ -856,8 +921,20 @@
     });
     family = added.family;
     sessionId = added.session.id;
+    if (typeof Game.recordBasecampQuery === "function") {
+      const logged = Game.recordBasecampQuery(family, {
+        classId: classId,
+        className: className(),
+        sessionId: added.session.id,
+        sessionTitle: added.session.title || "",
+        text: text,
+        hasImage: !!firstPhoto,
+        view: typeof Game.siteView === "function" ? Game.siteView() : "me"
+      });
+      family = logged.family;
+    }
     if (typeof Game.track === "function") {
-      Game.track("ask_ai", { classId: classId, message: className() });
+      Game.track("ask_ai", { classId: classId, message: text });
     }
     input.value = "";
     const sentImages = photos.map((p) => ({ mime: p.mime, data: p.data }));
@@ -1057,6 +1134,8 @@
       e.preventDefault();
       send();
     });
+    document.getElementById("bc-input").addEventListener("keydown", onComposerKeydown);
+    document.addEventListener("wheel", onBasecampWheel, { passive: false });
     document.getElementById("bc-new").addEventListener("click", newSession);
     document.getElementById("bc-camera").addEventListener("change", (e) => {
       const file = e.target.files && e.target.files[0];

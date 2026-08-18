@@ -78,7 +78,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=93/.test(basecampHtml) && /basecamp\.js\?v=93/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=97/.test(basecampHtml) && /basecamp\.js\?v=97/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -354,9 +354,52 @@ const packOut = Game.exportPack({ achievements: [] }, campFam);
 assert((packOut.family.basecamp.sessions || []).some((s) => s.pinned && s.classId === "geometry"), "export family pack keeps pinned");
 const importedCamp = Game.normalizeFamily(packOut.family);
 assert(importedCamp.basecamp.sessions.some((s) => s.pinned && s.classId === "geometry"), "import family pack keeps pinned");
+assert(Array.isArray(Game.emptyFamily().basecampQueries), "family keeps append-only queries");
+let qFam = Game.emptyFamily();
+const climbA = Game.createBasecampSession(qFam, "geometry", "Angles");
+const climbB = Game.createBasecampSession(climbA.family, "chemistry", "Moles");
+qFam = Game.recordBasecampQuery(climbB.family, {
+  classId: "geometry",
+  className: "Geometry",
+  sessionId: climbA.session.id,
+  sessionTitle: "Angles",
+  text: "are these vertical?",
+  hasImage: false,
+  view: "bennett"
+}).family;
+const afterDel = Game.deleteBasecampSession(qFam, climbA.session.id);
+assert(!Game.basecampSession(afterDel.family, climbA.session.id), "deleted climb is gone");
+assert(Game.basecampSession(afterDel.family, climbB.session.id), "other class climb remains");
+assert.strictEqual(Game.basecampSessionsForClass(afterDel.family, "geometry").length, 0, "delete removes one climb");
+assert.strictEqual(Game.basecampSessionsForClass(afterDel.family, "chemistry").length, 1, "delete leaves other classes");
+assert((afterDel.family.basecampQueries || []).some((q) => q.sessionId === climbA.session.id && /vertical/.test(q.text)), "queries survive session delete");
+const packedQ = Game.exportPack({ achievements: [] }, afterDel.family);
+assert((packedQ.family.basecampQueries || []).some((q) => /vertical/.test(q.text)), "family pack export keeps queries");
+assert(Game.normalizeFamily(packedQ.family).basecampQueries.some((q) => /vertical/.test(q.text)), "family pack import keeps queries");
+assert(/data-delete/.test(basecampJs) && /Delete this climb\?/.test(basecampJs), "kid view can delete a climb");
+assert(/bc-delete/.test(basecampJs) && !/data-admin/.test(basecampJs), "Base Camp delete has no Admin chrome");
+assert(!/usage-queries/.test(basecampHtml) && !/usage-queries/.test(basecampJs) && !/<h3[^>]*>Queries<\/h3>/.test(basecampHtml), "kid view / basecamp has no Admin queries list");
+assert(/id="usage-queries"/.test(adminHtml) && /<h2>Site usage<\/h2>/.test(adminHtml), "Admin queries markup exists");
+assert(/renderQueries/.test(adminJs) && /usage-queries/.test(adminJs) && /photo yes/.test(adminJs), "Admin Usage paints a Queries block");
+assert(/filterUsageQueries/.test(adminJs) && /queryRole/.test(adminJs), "Admin queries use the who-filter");
+assert(/recordBasecampQuery/.test(basecampJs) && /hasImage/.test(basecampJs), "Base Camp appends a query row on send");
+assert(/ask_ai/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")) && /slice\(0,\s*kind === "ask_ai" \? 500 : 280\)/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "ask_ai telemetry keeps ~500 chars");
+assert(!/startBasecampIntro|maybeStartBasecampIntro/.test(basecampJs.slice(basecampJs.indexOf("function deleteClimb"), basecampJs.indexOf("function newSession"))), "deleting a climb does not replay the daily intro");
+assert(/scrollTo\(0,\s*y\)/.test(basecampJs), "delete keeps the page from jumping to the top");
 const bcThemeCss = fs.readFileSync(path.join(root, "css/theme.css"), "utf8");
 assert(/bc-tools-rail/.test(basecampHtml) && /bc-shell/.test(basecampHtml), "tools rail exists in Base Camp markup");
-assert(/grid-template-columns:\s*220px minmax\(0, 1fr\) 280px/.test(bcThemeCss) || /has-tools/.test(bcThemeCss), "Base Camp shell is 3-column on desktop when tools show");
+assert(/192px minmax\(0,\s*1fr\) 240px/.test(bcThemeCss), "chat column is the widest grid track when tools are showing");
+const deskBc = bcThemeCss.slice(bcThemeCss.indexOf("@media (min-width: 840px)"), bcThemeCss.indexOf("@media (min-width: 1100px)"));
+assert(/\.bc-log\s*\{[^}]*flex:\s*1 1 auto/.test(deskBc) && /\.bc-log\s*\{[^}]*overflow:\s*auto/.test(deskBc), ".bc-log is the flex/overflow scroller");
+assert(/\.bc-rail\s*\{[^}]*overflow:\s*hidden/.test(deskBc), "left rail does not steal wheel as a page scroller");
+assert(!/\.bc-rail,\s*\n\s*\.bc-tools-rail\s*\{[^}]*overflow:\s*auto/.test(deskBc), "desktop does not make the left rail the only scroller");
+const phoneBc = bcThemeCss.slice(bcThemeCss.indexOf("@media (max-width: 839px)"), bcThemeCss.indexOf("@media (min-width: 840px)"));
+assert(/overflow-y:\s*auto/.test(phoneBc) && /flex-direction:\s*row/.test(phoneBc), "mobile Base Camp page can scroll; saved climbs are a compact strip");
+assert(/function onComposerKeydown/.test(basecampJs) && /getElementById\("bc-input"\)\.addEventListener\("keydown", onComposerKeydown\)/.test(basecampJs), "Enter key on #bc-input is bound");
+const enterFn = basecampJs.slice(basecampJs.indexOf("function onComposerKeydown"), basecampJs.indexOf("function onComposerKeydown") + 280);
+assert(/e\.key !== "Enter"/.test(enterFn) && /e\.shiftKey/.test(enterFn) && /send\(\)/.test(enterFn), "Enter key on #bc-input calls send (and Shift+Enter does not)");
+assert(/isComposing/.test(enterFn) || /isComposing/.test(basecampJs), "IME composing does not send");
+assert(/onBasecampWheel/.test(basecampJs) && /shouldWheelScrollChat/.test(basecampJs), "wheel over the page/chat moves the chat log");
 assert(/has-tools/.test(basecampJs) && /classId === "geometry"/.test(basecampJs) && /classId === "chemistry"/.test(basecampJs), "tools rail shown only for geometry/chemistry");
 assert(/bc-ex/.test(basecampJs) && /I took a picture of #4/.test(basecampJs) && /vertical angles/.test(basecampJs), "example-question chips include a Geometry photo / vertical angles starter");
 assert(/Show a try or a photo/.test(basecampHtml), "composer keeps the tiny Socratic hint");
@@ -464,11 +507,20 @@ assert(khanElaStrip.indexOf("hs-chemistry") >= 0, "English help strip still list
 assert(khanElaStrip.indexOf("geometry-home") >= 0, "English help strip still lists Geometry");
 assert(khanElaStrip.indexOf("society-and-culture") >= 0, "English help strip still lists Sociology");
 const khanClassStrip = Game.khanStripHtmlForClass({ id: "english-10" });
-assert(khanClassStrip.indexOf("geometry-home") >= 0, "class strip builder includes Geometry");
-assert(khanClassStrip.indexOf("society-and-culture") >= 0, "class strip builder includes Sociology");
-assert(khanClassStrip.indexOf("hs-chemistry") >= 0, "class strip builder includes HS Chemistry");
-assert(khanClassStrip.indexOf("/ela") >= 0, "class strip builder includes ELA");
-assert(khanClassStrip.indexOf("humanities/grammar") >= 0, "class strip builder includes Grammar");
+assert(khanClassStrip.indexOf("/ela") >= 0, "English 10 class strip includes ELA");
+assert(khanClassStrip.indexOf("humanities/grammar") >= 0, "English 10 class strip includes Grammar");
+assert(khanClassStrip.indexOf("geometry-home") < 0, "English 10 class strip omits Geometry");
+assert(khanClassStrip.indexOf("society-and-culture") < 0, "English 10 class strip omits Sociology");
+assert(khanClassStrip.indexOf("hs-chemistry") < 0, "English 10 class strip omits HS Chemistry");
+const khanGeoStrip = Game.khanStripHtmlForClass({ id: "geometry" });
+assert(/Geometry/.test(khanGeoStrip), "Geometry class strip contains Geometry");
+assert(!/HS Chemistry/.test(khanGeoStrip) && khanGeoStrip.indexOf("hs-chemistry") < 0, "Geometry class strip omits HS Chemistry");
+assert(!/Sociology/.test(khanGeoStrip) && khanGeoStrip.indexOf("society-and-culture") < 0, "Geometry class strip omits Sociology");
+const khanChemStrip = Game.khanStripHtmlForClass({ id: "chemistry" });
+assert(/HS Chemistry/.test(khanChemStrip), "Chem class strip contains HS Chemistry");
+assert(!/Geometry/.test(khanChemStrip) && khanChemStrip.indexOf("geometry-home") < 0, "Chem class strip omits Geometry");
+assert.strictEqual(Game.khanStripHtmlForClass({ id: "band" }), "", "Band class strip is empty");
+assert(/HS Chemistry/.test(khanHtml) && /Geometry/.test(khanHtml) && /Sociology/.test(khanHtml) && /ELA/.test(khanHtml), "khanStripHtml still has the full roster");
 
 const progress = readJson("progress.json");
 const week = readJson("week.json");
@@ -974,7 +1026,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=93/.test(weekHtml) && /week\.js\?v=93/.test(weekHtml) && /game\.js\?v=93/.test(weekHtml) && /telemetry\.js\?v=93/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=97/.test(weekHtml) && /week\.js\?v=97/.test(weekHtml) && /game\.js\?v=97/.test(weekHtml) && /telemetry\.js\?v=97/.test(weekHtml), "index should cache-bust css/js");
 const weekMobileStart = themeCss.indexOf("@media (max-width: 719px)");
 assert(weekMobileStart >= 0, "phone-width breakpoint exists");
 const weekMobileNext = themeCss.indexOf("@media (max-width: 719px)", weekMobileStart + 1);
@@ -1006,11 +1058,12 @@ assert(/data-usage-who="bennett"/.test(usageBlock) && />Bennett</.test(usageBloc
 assert(/data-usage-who="orin"/.test(usageBlock) && />Orin</.test(usageBlock), "usage who-filter includes Orin");
 assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "usage who-filter includes Mom");
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
+assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=93/.test(progressHtml) && /theme\.css\?v=93/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=97/.test(progressHtml) && /theme\.css\?v=97/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*91/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*95/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");

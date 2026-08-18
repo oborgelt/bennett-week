@@ -247,7 +247,7 @@
       class_id: String(src.classId || src.class_id || ""),
       assignment_id: String(src.assignmentId || src.assignment_id || ""),
       ms: src.ms == null ? null : Number(src.ms) || 0,
-      message: src.message ? String(src.message).slice(0, 280) : "",
+      message: src.message ? String(src.message).slice(0, kind === "ask_ai" ? 500 : 280) : "",
       href: src.href ? String(src.href).slice(0, 280) : ""
     };
     enqueue(row);

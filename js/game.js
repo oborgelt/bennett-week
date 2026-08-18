@@ -439,7 +439,8 @@
       soundCues: {},
       story: emptyStory(),
       overlay: emptyOverlay(),
-      basecamp: emptyBasecamp()
+      basecamp: emptyBasecamp(),
+      basecampQueries: []
     };
   }
 
@@ -468,7 +469,8 @@
       soundCues: asCueMap(f.soundCues),
       story: normalizeStory(f.story),
       overlay: normalizeOverlay(f.overlay),
-      basecamp: normalizeBasecamp(f.basecamp)
+      basecamp: normalizeBasecamp(f.basecamp),
+      basecampQueries: normalizeBasecampQueries(f.basecampQueries)
     };
   }
 
@@ -2785,6 +2787,60 @@
     return upsertBasecampSession(family, nextSession);
   }
 
+  function normalizeBasecampQuery(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const text = String(raw.text || "");
+    const hasImage = !!raw.hasImage;
+    if (!text && !hasImage && !raw.sessionId && !raw.classId) return null;
+    return {
+      id: String(raw.id || uid("bq")),
+      at: raw.at || nowIso(),
+      classId: String(raw.classId || "").trim(),
+      className: String(raw.className || "").trim(),
+      sessionId: String(raw.sessionId || "").trim(),
+      sessionTitle: String(raw.sessionTitle || "").trim(),
+      text: text,
+      hasImage: hasImage,
+      view: String(raw.view || "").trim()
+    };
+  }
+
+  function normalizeBasecampQueries(raw) {
+    return Array.isArray(raw) ? raw.map(normalizeBasecampQuery).filter(Boolean) : [];
+  }
+
+  function listBasecampQueries(family) {
+    return normalizeFamily(family).basecampQueries.slice();
+  }
+
+  function recordBasecampQuery(family, query) {
+    const next = normalizeFamily(family);
+    const row = normalizeBasecampQuery(Object.assign({
+      id: uid("bq"),
+      at: nowIso()
+    }, query || {}));
+    if (!row) return { family: next, query: null };
+    next.basecampQueries = next.basecampQueries.concat([row]);
+    saveFamily(next);
+    return { family: next, query: row };
+  }
+
+  function deleteBasecampSession(family, sessionId) {
+    const id = String(sessionId || "");
+    const next = normalizeFamily(family);
+    const removed = next.basecamp.sessions.find((s) => s && s.id === id) || null;
+    if (!removed) return { family: next, session: null };
+    const sessions = next.basecamp.sessions.filter((s) => s && s.id !== id);
+    const saved = persistBasecamp(next, { sessions: sessions });
+    const keep = new Set(basecampImageIds(saved));
+    (removed.messages || []).forEach((m) => {
+      const imageId = m && m.imageId;
+      if (!imageId || keep.has(imageId)) return;
+      Promise.resolve(deleteLibraryBlob(imageId)).catch(() => {});
+    });
+    return { family: saved, session: removed };
+  }
+
   function basecampImageIds(family) {
     const ids = [];
     const seen = Object.create(null);
@@ -2986,8 +3042,8 @@
     return khanStripFromLinks(khanLinksForRoster());
   }
 
-  function khanStripHtmlForClass() {
-    return khanStripFromLinks(khanLinksForRoster());
+  function khanStripHtmlForClass(cls) {
+    return khanStripFromLinks(khanLinksForClass(cls));
   }
 
   function khanInlineHtml(links) {
@@ -4883,6 +4939,10 @@
     upsertBasecampSession,
     createBasecampSession,
     addBasecampMessage,
+    deleteBasecampSession,
+    recordBasecampQuery,
+    basecampQueries: listBasecampQueries,
+    normalizeBasecampQueries,
     basecampImageIds,
     collectBasecampBlobs,
     hydrateImageId,
