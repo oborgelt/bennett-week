@@ -78,7 +78,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=97/.test(basecampHtml) && /basecamp\.js\?v=97/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=99/.test(basecampHtml) && /basecamp\.js\?v=99/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1026,7 +1026,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=97/.test(weekHtml) && /week\.js\?v=97/.test(weekHtml) && /game\.js\?v=97/.test(weekHtml) && /telemetry\.js\?v=97/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=99/.test(weekHtml) && /week\.js\?v=99/.test(weekHtml) && /game\.js\?v=99/.test(weekHtml) && /telemetry\.js\?v=99/.test(weekHtml), "index should cache-bust css/js");
 const weekMobileStart = themeCss.indexOf("@media (max-width: 719px)");
 assert(weekMobileStart >= 0, "phone-width breakpoint exists");
 const weekMobileNext = themeCss.indexOf("@media (max-width: 719px)", weekMobileStart + 1);
@@ -1037,6 +1037,26 @@ assert(weekMobileLock && /overflow-y:\s*auto/.test(weekMobileLock[0]) && !/overf
 assert(/standing-classes[\s\S]*max-height:\s*min\(\s*22vh/.test(weekMobileCss), "class lobby shrinks on mobile so assignments fit");
 assert(/body\.week-page \.day[\s\S]*overflow:\s*visible/.test(weekMobileCss) && /body\.week-page \.card-scroll[\s\S]*overflow:\s*visible/.test(weekMobileCss), "day/card/card-scroll do not trap vertical scroll on mobile");
 assert(/safe-area-inset-bottom/.test(weekMobileCss), "mobile week-page keeps home-indicator padding");
+const weekDesktopCss = themeCss.slice(0, weekMobileStart);
+const weekDesktopLock = weekDesktopCss.match(/html:has\(body\.week-page\),\s*body\.week-page\s*\{[^}]+\}/);
+assert(weekDesktopLock && /overflow-y:\s*auto/.test(weekDesktopLock[0]) && !/overflow:\s*hidden/.test(weekDesktopLock[0]), "desktop week-page is not overflow:hidden");
+assert(/html:has\(body\.week-page\.in-treehouse\)/.test(weekDesktopCss) && /body\.week-page\.in-treehouse[\s\S]{0,80}overflow:\s*hidden/.test(weekDesktopCss), "treehouse can keep its own lock");
+assert(/body\.week-page \.card[\s\S]*height:\s*auto/.test(weekDesktopCss) && /body\.week-page \.card[\s\S]*overflow:\s*visible/.test(weekDesktopCss), "week-page desktop cards are height auto / overflow visible");
+assert(/body\.week-page \.card-scroll[\s\S]*overflow:\s*visible/.test(weekDesktopCss) && /body\.week-page \.card::after[\s\S]{0,80}display:\s*none/.test(weekDesktopCss), "week-page desktop card-scroll is visible and fade is off");
+const messagesHtml = fs.readFileSync(path.join(root, "messages.html"), "utf8");
+const messagesHud = messagesHtml.slice(messagesHtml.indexOf('class="hud-bar'), messagesHtml.indexOf("</header>"));
+assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tagline inside the HUD");
+["parent.html", "progress.html", "admin.html", "characters.html", "basecamp.html"].forEach((file) => {
+  const html = fs.readFileSync(path.join(root, file), "utf8");
+  const hud = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
+  assert(!/progress-tagline/.test(hud) || /\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), file + " HUD tagline is gone or hidden");
+});
+assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
+["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html"].forEach((file) => {
+  const html = fs.readFileSync(path.join(root, file), "utf8");
+  assert(!/\?v=97\b/.test(html), file + " should not still cache-bust as v=97");
+  assert(/\?v=99/.test(html), file + " should cache-bust v=99");
+});
 const actBind = weekJs.slice(weekJs.indexOf('track.querySelectorAll("[data-act]")'), weekJs.indexOf('track.querySelectorAll("[data-ask]")'));
 assert(/refreshCardsInPlace|restoreBoardScroll/.test(actBind), "Done/Undo restores scroll");
 assert(!/goTo\(dayIndex,\s*true\)/.test(actBind), "Done/Undo does not call goTo snap");
@@ -1060,10 +1080,10 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=97/.test(progressHtml) && /theme\.css\?v=97/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=99/.test(progressHtml) && /theme\.css\?v=99/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*95/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*97/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
