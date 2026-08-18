@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-18",
+  "as_of": "2026-08-18T14:40:00",
   "parenting": [
     {
       "who": "Mom",
@@ -827,17 +827,18 @@
       "id": "eng-names",
       "title": "English 10: Help me learn your names!",
       "due": "2026-08-17T23:59:00",
-      "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points.",
+      "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points. Submitted 8/17 1:14pm. Ungraded.",
       "canvas": {
         "status": "submitted",
-        "points": 5
+        "points": 5,
+        "submitted_at": "2026-08-17T13:14:00"
       }
     },
     {
       "id": "eng-comics",
       "title": "English 10: Summer Narrative Comic Strip",
       "due": "2026-08-20T23:59:00",
-      "note": "In class Tuesday. Official Canvas due Thursday 11:59pm. 10 points, submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence.",
+      "note": "In class Tuesday. Official Canvas due Thursday 11:59pm. 10 points, submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence. Due Thursday night after 4:30 handoff to Mom.",
       "suggest_from": "2026-08-15",
       "canvas": {
         "status": "open",
@@ -864,14 +865,43 @@
     },
     {
       "id": "chem-about-me",
-      "title": "Chemistry: About Me Slides",
+      "title": "Chemistry: About Me Slides (assignment)",
       "classId": "chemistry",
       "due": "2026-08-18T23:59:00",
-      "note": "1 point. Canvas still open.",
+      "note": "1 pt. Canvas 15683. Not submitted as of 2:40pm. Dad's night.",
       "canvas": {
         "status": "open",
         "points": 1
       }
+    },
+    {
+      "id": "chem-aboutme-disc",
+      "title": "Chemistry: About Me Slides (discussion)",
+      "classId": "chemistry",
+      "due": "2026-08-18T23:59:00",
+      "note": "1 pt plus replies. Separate from the assignment. Not submitted as of 2:40pm.",
+      "canvas": {
+        "status": "open",
+        "points": 1
+      }
+    },
+    {
+      "id": "web-11",
+      "title": "Web Design: 1.1 What is the Web?",
+      "classId": "web-design",
+      "due": "2026-08-19T09:20:00",
+      "note": "20 pts. Posted today after 7am. Not submitted. Period 3.",
+      "canvas": {
+        "status": "open",
+        "points": 20
+      }
+    },
+    {
+      "id": "eng-letter",
+      "title": "English 10: Letter to the teacher",
+      "due": "2026-08-20T13:50:00",
+      "note": "In class Wed–Thu. Personalize writing notebooks the same days.",
+      "suggest_from": "2026-08-18"
     },
     {
       "id": "eng-notebook",

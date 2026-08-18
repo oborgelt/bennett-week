@@ -53,7 +53,13 @@
       "time": "9:20–10:05",
       "room": "Rm 513",
       "teacher": "Linn",
-      "items": []
+      "items": [
+        {
+          "id": "web-11",
+          "title": "1.1 What is the Web?",
+          "kind": "assignment"
+        }
+      ]
     },
     {
       "id": "academic-intervention",
@@ -79,6 +85,11 @@
         {
           "id": "chem-about-me",
           "title": "About Me Slides",
+          "kind": "assignment"
+        },
+        {
+          "id": "chem-aboutme-disc",
+          "title": "About Me Slides (discussion)",
           "kind": "assignment"
         }
       ]
@@ -111,6 +122,11 @@
         {
           "id": "eng-comics",
           "title": "Summer Narrative Comic Strip",
+          "kind": "assignment"
+        },
+        {
+          "id": "eng-letter",
+          "title": "Letter to the teacher",
           "kind": "assignment"
         },
         {
