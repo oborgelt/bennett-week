@@ -271,13 +271,13 @@
     if (!cls) return;
     const due = Game.classDueCount(cls, week);
     const khan = Game.khanStripHtmlForClass(cls);
-    const askHref = `ask.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
+    const askHref = `basecamp.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
     const progressHref = `progress.html?class=${encodeURIComponent(cls.id)}`;
     const meta = Game.classMetaLine(cls);
     openSheet(Game.classPeriodLine(cls), `
       <p class="standing-class-sheet-status">${Game.esc(Game.classDueLabel(due))}${meta ? " · " + Game.esc(meta) : ""}</p>
       ${khan || `<p class="empty">No Khan course for this class.</p>`}
-      <p class="ask-help-link"><a href="${Game.esc(askHref)}">Ask AI — Socratic mentor</a></p>
+      <p class="ask-help-link"><a href="${Game.esc(askHref)}">Base Camp — Jungle Jam Tutor</a></p>
       <p class="ask-help-link"><a href="${Game.esc(progressHref)}">See Progress for ${Game.esc(cls.name)}</a></p>
     `);
   }
@@ -1604,7 +1604,7 @@
   function helpAskHref(work) {
     const title = (work && work.title) || "";
     const classId = Game.classIdForWork(work);
-    let href = "ask.html?title=" + encodeURIComponent(title);
+    let href = "basecamp.html?title=" + encodeURIComponent(title);
     if (classId) href += "&class=" + encodeURIComponent(classId);
     return href;
   }

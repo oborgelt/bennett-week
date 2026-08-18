@@ -64,6 +64,8 @@ assert(!/scrollIntoView/.test(adminJs), "Admin category changes must not scrollI
 assert(/bw-admin-tab/.test(adminJs) && /bw-lib-cat/.test(adminJs), "Admin should persist the top tab and library sub-tab");
 const tutorJs = fs.readFileSync(path.join(root, "js/tutor.js"), "utf8");
 const askHtml = fs.readFileSync(path.join(root, "ask.html"), "utf8");
+const basecampHtml = fs.readFileSync(path.join(root, "basecamp.html"), "utf8");
+const basecampJs = fs.readFileSync(path.join(root, "js/basecamp.js"), "utf8");
 assert(adminJs.includes("https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/spend"), "Admin should GET the spend function");
 assert(/x-family-token/.test(adminJs) && /loadSpend/.test(adminJs) && /await loadSpend/.test(adminJs), "Refresh usage should also refresh spend");
 assert(/spend today/.test(adminJs) && /calls today/.test(adminJs) && /spend 7d/.test(adminJs) && /all-time/.test(adminJs) && /last call/.test(adminJs), "spend tiles should cover today, 7d, all-time, and last call");
@@ -76,8 +78,24 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=86/.test(askHtml) && /ask\.js\?v=86/.test(askHtml), "Ask AI page should cache-bust tutor/ask");
-const secretScan = [adminJs, tutorJs, adminHtml, askHtml, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8"), fs.readFileSync(path.join(root, "js/messages.js"), "utf8"), fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")].join("\n");
+assert(/tutor\.js\?v=88/.test(basecampHtml) && /basecamp\.js\?v=88/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
+assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
+assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
+assert(/Jungle Jam · Base Camp/.test(basecampHtml), "Base Camp page title");
+assert(/basecamp-chip/.test(basecampHtml) && /Base Camp/.test(basecampHtml), "HUD chip present on Base Camp");
+assert(/id="bc-camera"/.test(basecampHtml) && /capture="environment"/.test(basecampHtml), "Take photo input exists");
+assert(/id="bc-upload"/.test(basecampHtml) && /image\/\*/.test(basecampHtml), "Upload input exists");
+assert(/className/.test(basecampJs) && /images:/.test(basecampJs), "Base Camp posts className and images");
+assert(/MAX_EDGE = 1200/.test(basecampJs) && /image\/jpeg/.test(basecampJs), "client compresses images to ~1200px jpeg");
+assert(/Jungle Jam Tutor/.test(tutorJs) && /Jungle Jam Tutor/.test(basecampJs) && /Jungle Jam Tutor/.test(basecampHtml), "Base Camp copy/identity is Jungle Jam Tutor");
+assert(tutorJs.includes("https://www.khanacademy.org/math/geometry"), "Geometry Khan handoff URL present");
+assert(!/here is the answer to #4/i.test(tutorJs) && !/here is the answer to #4/i.test(basecampJs), "no here-is-the-answer-to-#4 style fallback");
+["index.html", "progress.html", "characters.html", "ask.html", "messages.html", "admin.html", "parent.html"].forEach((file) => {
+  const html = fs.readFileSync(path.join(root, file), "utf8");
+  assert(/basecamp-chip/.test(html) && /basecamp\.html/.test(html), file + " HUD includes Base Camp");
+});
+const secretScan = [adminJs, tutorJs, adminHtml, askHtml, basecampHtml, basecampJs, fs.readFileSync(path.join(root, "js/week.js"), "utf8"), fs.readFileSync(path.join(root, "js/game.js"), "utf8"), fs.readFileSync(path.join(root, "js/messages.js"), "utf8"), fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")].join("\n");
 assert(!/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(secretScan), "do not put JWT/anon keys in the repo");
 assert(!/xai-[A-Za-z0-9]{10,}/.test(secretScan), "do not put xAI keys in the repo");
 assert(!/FAMILY_TOKEN\s*[:=]\s*["'][^"']+["']/.test(secretScan), "do not put the family token in the repo");
@@ -287,6 +305,29 @@ assert(Game, "Game failed to load");
 vm.runInContext(fs.readFileSync(path.join(root, "js/tutor.js"), "utf8"), ctx);
 const Tutor = ctx.window.Tutor;
 assert(Tutor, "Tutor failed to load");
+assert.strictEqual(Tutor.IDENTITY, "Jungle Jam Tutor", "coach identity is Jungle Jam Tutor");
+assert.strictEqual(Tutor.GEOMETRY_KHAN, "https://www.khanacademy.org/math/geometry", "Geometry Khan handoff URL");
+assert(/## 2\. Personality/.test(Tutor.SYSTEM) && /## 6\. Math can be wrong/.test(Tutor.SYSTEM), "local spec keeps sections 2–6");
+assert(/I can walk it with you/.test(Tutor.SYSTEM), "Socratic lock stays in the spec");
+let campFam = Game.emptyFamily();
+const chemA = Game.createBasecampSession(campFam, "chemistry", "Quiz 1");
+const geoA = Game.createBasecampSession(chemA.family, "geometry", "Packet p1");
+const chemB = Game.createBasecampSession(geoA.family, "chemistry", "Lab");
+campFam = chemB.family;
+const chemSessions = Game.basecampSessionsForClass(campFam, "chemistry");
+const geoSessions = Game.basecampSessionsForClass(campFam, "geometry");
+assert.strictEqual(chemSessions.length, 2, "Chemistry sessions group by classId");
+assert.strictEqual(geoSessions.length, 1, "Geometry sessions group by classId");
+assert(chemSessions.every((s) => s.classId === "chemistry"), "Chemistry list is only Chemistry");
+assert(geoSessions.every((s) => s.classId === "geometry"), "Geometry list is only Geometry");
+const n4 = Tutor.testAsk("Geometry", "What's the answer to number 4", { className: "Geometry", classId: "geometry" });
+assert(/Show me what you have/.test(n4.reply) && !/here is the answer/i.test(n4.reply), "What's #4 is not an answer dump");
+assert.strictEqual(n4.live, false);
+const idk = Tutor.testAsk("Geometry", "idk", { className: "Geometry", classId: "geometry" });
+assert(/vertical|adjacent|linear pair/i.test(idk.reply), "idk asks for one concrete try");
+assert(!/133/.test(idk.reply), "offline fallback does not announce the arithmetic");
+const photoOff = Tutor.testAsk("Geometry", "is this photo right?", { className: "Geometry", classId: "geometry", images: [{ mime: "image/jpeg", data: "xx" }] });
+assert(/can't see a photo/i.test(photoOff.reply) && /given/i.test(photoOff.reply), "offline does not fake seeing a photo");
 const namesHelp = Tutor.testHelp({ title: "English 10: Help me learn your names!", mode: "nudge" });
 assert(namesHelp.explain && namesHelp.start, "nudge help should explain and give a first move");
 assert(!namesHelp.cards, "nudge help should not dump flip cards");
@@ -470,7 +511,7 @@ assert(localStorage.getItem("bw-telemetry"), "clean-slate must not wipe telemetr
 assert.strictEqual(localStorage.getItem("bw-device-id"), "dev-keep");
 assert(localStorage.getItem("bw-session-at"), "clean-slate must not wipe session stamp");
 
-["index.html", "progress.html", "parent.html", "admin.html", "ask.html", "egg.html", "story.html", "characters.html", "refs.html", "messages.html"].forEach((file) => {
+["index.html", "progress.html", "parent.html", "admin.html", "ask.html", "basecamp.html", "egg.html", "story.html", "characters.html", "refs.html", "messages.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(/class="banner-title"[^>]*href="index.html"|href="index.html"[^>]*class="banner-title"/.test(html), file + " banner should link home");
   assert(html.indexOf("hud-nav") < 0 || /hud-nav[\s\S]{0,80}week-chip/.test(html), file + " should keep This week first in the HUD");
@@ -836,7 +877,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=86/.test(weekHtml) && /week\.js\?v=86/.test(weekHtml) && /game\.js\?v=86/.test(weekHtml) && /telemetry\.js\?v=86/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=88/.test(weekHtml) && /week\.js\?v=88/.test(weekHtml) && /game\.js\?v=88/.test(weekHtml) && /telemetry\.js\?v=88/.test(weekHtml), "index should cache-bust css/js");
 const weekMobileStart = themeCss.indexOf("@media (max-width: 719px)");
 assert(weekMobileStart >= 0, "phone-width breakpoint exists");
 const weekMobileNext = themeCss.indexOf("@media (max-width: 719px)", weekMobileStart + 1);
@@ -869,10 +910,10 @@ assert(/data-usage-who="orin"/.test(usageBlock) && />Orin</.test(usageBlock), "u
 assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "usage who-filter includes Mom");
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=86/.test(progressHtml) && /theme\.css\?v=86/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=88/.test(progressHtml) && /theme\.css\?v=88/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*84/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*86/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1173,6 +1214,8 @@ const refsChip = fakeEl("a");
 refsChip.className = "refs-chip";
 const messagesChip = fakeEl("a");
 messagesChip.className = "messages-chip";
+const basecampChip = fakeEl("a");
+basecampChip.className = "basecamp-chip";
 document.body = fakeEl("body");
 document.documentElement = fakeEl("html");
 document.createElement = fakeEl;
@@ -1182,6 +1225,7 @@ document.querySelectorAll = (sel) => {
   if (sel === ".hud-nav") return [hud];
   if (String(sel).indexOf("admin-chip") >= 0) return [adminChip, parentChip, refsChip];
   if (String(sel).indexOf("messages-chip") >= 0) return [messagesChip];
+  if (String(sel).indexOf("basecamp-chip") >= 0) return [basecampChip];
   return [];
 };
 const telBefore = store["bw-telemetry"];
@@ -1194,6 +1238,8 @@ const viewBox = hud.children[0];
 assert(viewBox && viewBox.getAttribute("aria-label") === "Preview as", "view control exists");
 assert(adminChip.hidden && parentChip.hidden && refsChip.hidden, "bennett hides admin");
 assert(messagesChip.hidden, "Bennett view hides the Messages chip");
+assert(!basecampChip.hidden, "Bennett kid view can reach Base Camp");
+assert(!Game.shouldGateAdultPage("basecamp.html", "bennett"), "Base Camp is not an adult desk");
 assert(Game.audioAllowed(), "Bennett still hears audio");
 assert(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "tables", "honk"), funLib, "tables"), "Bennett table cue still plays");
 assert(Game.playSoundCue(Game.emptyFamily(), null, "undo"), "Bennett hears the shipped undo click");
@@ -1254,16 +1300,25 @@ document.documentElement = prevRoot;
 (async () => {
   const askCalls = [];
   ctx.fetch = async (url, init) => {
-    askCalls.push({ url: String(url), headers: (init && init.headers) || {} });
+    askCalls.push({ url: String(url), headers: (init && init.headers) || {}, body: init && init.body });
     if (String(url).indexOf("/functions/v1/ask") >= 0) {
       return { ok: true, json: async () => ({ reply: "What's the first serve?", live: true, source: "xai" }) };
     }
     throw new Error("no local ask");
   };
-  const liveAsk = await Tutor.ask({ title: "English 10", messages: [{ role: "bennett", text: "help" }] });
+  const liveAsk = await Tutor.ask({
+    title: "English 10",
+    className: "English 10",
+    classId: "english-10",
+    messages: [{ role: "bennett", text: "help" }],
+    images: [{ mime: "image/jpeg", data: "ZmFrZQ" }]
+  });
   assert.strictEqual(liveAsk.reply, "What's the first serve?", "live Ask AI should use the family-token function first");
   assert.strictEqual(askCalls[0] && askCalls[0].headers["x-family-token"], "fam", "live Ask AI should send x-family-token");
   assert(!askCalls.some((row) => row.url === "/api/ask"), "live Ask AI should not fall through when the function replies");
+  const liveBody = askCalls[0] && askCalls[0].body ? JSON.parse(String(askCalls[0].body)) : {};
+  assert.strictEqual(liveBody.className, "English 10", "tutor posts className");
+  assert(Array.isArray(liveBody.images) && liveBody.images[0] && liveBody.images[0].data === "ZmFrZQ", "tutor posts images field");
 
   askCalls.length = 0;
   delete store["bw-telemetry"];

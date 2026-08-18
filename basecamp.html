@@ -8,14 +8,14 @@
   <title>Jungle Jam · Base Camp</title>
   <link rel="stylesheet" href="css/theme.css?v=88">
 </head>
-<body class="ask-page">
+<body class="basecamp-page">
   <header class="week-head">
     <div class="banner-wrap">
       <a class="banner-home" href="index.html" aria-label="Jungle Jam home · This week"></a>
       <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
       <a class="banner-title" href="index.html">
         <h1>Base Camp</h1>
-        <p>Jungle Jam Tutor moved here</p>
+        <p>Jungle Jam Tutor · questions first, answers last</p>
       </a>
       <div class="build-stamp" id="build-stamp">
         <span>Build 86</span>
@@ -24,7 +24,7 @@
     </div>
     <div class="hud-bar progress-hud">
       <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
-      <p class="progress-tagline">The full chat is Base Camp. A little help still lives on week cards.</p>
+      <p class="progress-tagline">Coach, not an answer key. Geometry packet first — name the givens.</p>
       <div class="hud-nav">
         <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
         <a class="progress-chip" href="progress.html"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
@@ -33,25 +33,50 @@
         <a class="messages-chip" href="messages.html" aria-label="Messages"><span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span></a>
         <a class="parent-chip" href="parent.html"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
         <a class="admin-chip" href="admin.html">Admin</a>
+        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
     </div>
   </header>
 
-  <main class="ask-wrap">
-    <p class="ask-lead">Ask AI is now <strong>Base Camp</strong> — Jungle Jam Tutor, class by class. Old <code>?class=</code> and <code>?title=</code> links still work.</p>
-    <p class="ask-help-link"><a id="basecamp-handoff" href="basecamp.html">Continue to Base Camp</a></p>
+  <main class="bc-shell">
+    <aside class="bc-rail" aria-label="Class and sessions">
+      <h2 class="bc-kicker">Class</h2>
+      <div class="bc-classes" id="bc-classes" role="list"></div>
+      <div class="bc-session-head">
+        <h2 class="bc-kicker">Climbs</h2>
+        <button type="button" class="btn tiny primary" id="bc-new">New session</button>
+      </div>
+      <div class="bc-sessions" id="bc-sessions" role="list"></div>
+    </aside>
+
+    <section class="bc-main">
+      <div class="bc-log" id="bc-log" aria-live="polite"></div>
+      <form class="bc-composer" id="bc-form">
+        <div class="bc-pending" id="bc-pending" hidden></div>
+        <label class="sr-only" for="bc-input">Message Jungle Jam Tutor</label>
+        <textarea id="bc-input" rows="3" maxlength="2000" placeholder="What did you already try?"></textarea>
+        <div class="bc-tools">
+          <label class="bc-attach">
+            Take photo
+            <input id="bc-camera" type="file" accept="image/*" capture="environment">
+          </label>
+          <label class="bc-attach">
+            Upload
+            <input id="bc-upload" type="file" accept="image/*,application/pdf">
+          </label>
+          <button type="submit" class="btn primary" id="bc-send">Send</button>
+        </div>
+      </form>
+      <aside id="bc-resources"></aside>
+    </section>
   </main>
+
+  <div class="toast" id="toast" role="status"></div>
 
   <script src="js/build.js?v=88"></script>
   <script src="js/game.js?v=88"></script>
   <script src="js/telemetry.js?v=88"></script>
-  <script>
-    (function () {
-      var q = location.search || "";
-      var a = document.getElementById("basecamp-handoff");
-      if (a) a.setAttribute("href", "basecamp.html" + q);
-      location.replace("basecamp.html" + q);
-    })();
-  </script>
+  <script src="js/tutor.js?v=88"></script>
+  <script src="js/basecamp.js?v=88"></script>
 </body>
 </html>
