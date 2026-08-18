@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-17",
+  "as_of": "2026-08-18",
   "parenting": [
     {
       "who": "Mom",
@@ -21,22 +21,165 @@
       "who": "Dad",
       "start": "2026-08-21T16:30:00",
       "end": "2026-08-27T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-08-27T16:30:00",
+      "end": "2026-08-30T18:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-08-30T18:00:00",
+      "end": "2026-09-03T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-09-03T16:30:00",
+      "end": "2026-09-04T16:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-09-04T16:00:00",
+      "end": "2026-09-10T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-09-10T16:30:00",
+      "end": "2026-09-13T18:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-09-13T18:00:00",
+      "end": "2026-09-17T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-09-17T16:30:00",
+      "end": "2026-09-18T16:30:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-09-18T16:30:00",
+      "end": "2026-09-24T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-09-24T16:30:00",
+      "end": "2026-09-27T18:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-09-27T18:00:00",
+      "end": "2026-10-01T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-10-01T16:30:00",
+      "end": "2026-10-02T16:30:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-10-02T16:30:00",
+      "end": "2026-10-08T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-10-08T16:30:00",
+      "end": "2026-10-11T18:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-10-11T18:00:00",
+      "end": "2026-10-15T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-10-15T16:30:00",
+      "end": "2026-10-16T16:30:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-10-16T16:30:00",
+      "end": "2026-10-22T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-10-22T16:30:00",
+      "end": "2026-10-25T18:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-10-25T18:00:00",
+      "end": "2026-10-29T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-10-29T16:30:00",
+      "end": "2026-10-30T16:30:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-10-30T16:30:00",
+      "end": "2026-11-05T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-11-05T16:30:00",
+      "end": "2026-11-08T18:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-11-08T18:00:00",
+      "end": "2026-11-12T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-11-12T16:30:00",
+      "end": "2026-11-13T16:30:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-11-13T16:30:00",
+      "end": "2026-11-19T16:30:00"
+    },
+    {
+      "who": "Mom",
+      "start": "2026-11-19T16:30:00",
+      "end": "2026-11-22T17:00:00"
+    },
+    {
+      "who": "Dad",
+      "start": "2026-11-22T17:00:00",
+      "end": "2026-12-03T16:30:00"
     }
   ],
   "events": [
     {
       "id": "band-am-0817",
-      "title": "Band rehearsal",
-      "start": "2026-08-17T06:50:00",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-17T07:00:00",
+      "end": "2026-08-17T08:40:00",
       "kind": "calendar",
-      "note": "Arrive by 6:40. Dad's time. Rehearsals from here are graded, including 6:50am MTWF."
+      "classId": "band",
+      "place": "Olathe East",
+      "note": "Official OE Band times (oeband.com): Mon 7:00–8:40 a.m. and 6:30–8:30 p.m.; Tue/Fri 7:00–8:40; Wed 7:00–9:15; Thu none. Rehearsals are graded. Drumline may differ."
     },
     {
       "id": "band-pm-0817",
-      "title": "Marching band",
+      "title": "Band: Marching Band Rehearsal",
       "start": "2026-08-17T18:30:00",
       "end": "2026-08-17T20:30:00",
       "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0818",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-18T07:00:00",
+      "end": "2026-08-18T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
       "place": "Olathe East"
     },
     {
@@ -55,6 +198,33 @@
       "note": "10th grade printed pickup. Calendar note, not homework."
     },
     {
+      "id": "band-meet-instrument-0818",
+      "title": "Band: Meet the Instrument Night - 5th Grade",
+      "start": "2026-08-18T17:30:00",
+      "end": "2026-08-18T19:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0819",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-19T07:00:00",
+      "end": "2026-08-19T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "oe-first-block-0819",
+      "title": "OE: First Block Day",
+      "start": "2026-08-19T07:40:00",
+      "end": "2026-08-19T14:40:00",
+      "kind": "calendar",
+      "place": "Olathe East",
+      "note": "School. First block-day schedule."
+    },
+    {
       "id": "pe-uniform-0819",
       "title": "PE uniform starts",
       "start": "2026-08-19T07:40:00",
@@ -67,8 +237,589 @@
       "start": "2026-08-20T17:30:00",
       "end": "2026-08-20T19:00:00",
       "kind": "calendar",
+      "classId": "band",
       "place": "Band/Orchestra rooms",
       "note": "Due by 7pm: medical form + handbook agreement. Pay uniform accessories $60 (shirt $15, shoes $40, gloves $5) and yearly contribution $350 to OE Band Boosters (check to Olathe East Band Boosters; Fillingham/Reed or Boosters that night). After 4:30pm handoff to Mom."
+    },
+    {
+      "id": "band-am-0821",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-21T07:00:00",
+      "end": "2026-08-21T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0824",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-24T07:00:00",
+      "end": "2026-08-24T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-pm-0824",
+      "title": "Band: Marching Band Rehearsal",
+      "start": "2026-08-24T18:30:00",
+      "end": "2026-08-24T20:30:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0825",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-25T07:00:00",
+      "end": "2026-08-25T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0826",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-26T07:00:00",
+      "end": "2026-08-26T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0828",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-28T07:00:00",
+      "end": "2026-08-28T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0831",
+      "title": "Marching band rehearsal",
+      "start": "2026-08-31T07:00:00",
+      "end": "2026-08-31T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-pm-0831",
+      "title": "Band: Marching Band Rehearsal",
+      "start": "2026-08-31T18:30:00",
+      "end": "2026-08-31T20:30:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0901",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-01T07:00:00",
+      "end": "2026-09-01T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0902",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-02T07:00:00",
+      "end": "2026-09-02T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0904",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-04T07:00:00",
+      "end": "2026-09-04T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "oe-labor-day-0907",
+      "title": "OE: Labor Day - No School",
+      "start": "2026-09-07",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0908",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-08T07:00:00",
+      "end": "2026-09-08T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0909",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-09T07:00:00",
+      "end": "2026-09-09T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0911",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-11T07:00:00",
+      "end": "2026-09-11T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-loadout-home-0911",
+      "title": "Band: Load Out / In for Home Game",
+      "start": "2026-09-11T16:00:00",
+      "end": "2026-09-11T21:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-loadout-parade-0912",
+      "title": "Band: Load Out / In for Old Settlers Parade",
+      "start": "2026-09-12T07:00:00",
+      "end": "2026-09-12T08:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0914",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-14T07:00:00",
+      "end": "2026-09-14T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-pm-0914",
+      "title": "Band: Marching Band Rehearsal",
+      "start": "2026-09-14T18:30:00",
+      "end": "2026-09-14T20:30:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0915",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-15T07:00:00",
+      "end": "2026-09-15T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0916",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-16T07:00:00",
+      "end": "2026-09-16T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0918",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-18T07:00:00",
+      "end": "2026-09-18T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-loadout-bluesprings-0919",
+      "title": "Band: Load Out / In for Blue Springs Marching Invitational",
+      "start": "2026-09-19T07:00:00",
+      "end": "2026-09-19T16:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0921",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-21T07:00:00",
+      "end": "2026-09-21T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-pm-0921",
+      "title": "Band: Marching Band Rehearsal",
+      "start": "2026-09-21T18:30:00",
+      "end": "2026-09-21T20:30:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0922",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-22T07:00:00",
+      "end": "2026-09-22T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0923",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-23T07:00:00",
+      "end": "2026-09-23T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0925",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-25T07:00:00",
+      "end": "2026-09-25T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-sat-0926",
+      "title": "Saturday Marching Band Rehearsal",
+      "start": "2026-09-26T08:00:00",
+      "end": "2026-09-26T12:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0928",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-28T07:00:00",
+      "end": "2026-09-28T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-pm-0928",
+      "title": "Band: Marching Band Rehearsal",
+      "start": "2026-09-28T18:30:00",
+      "end": "2026-09-28T20:30:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-0929",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-29T07:00:00",
+      "end": "2026-09-29T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-0930",
+      "title": "Marching band rehearsal",
+      "start": "2026-09-30T07:00:00",
+      "end": "2026-09-30T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-fall-concert-0930",
+      "title": "Fall Band Concert",
+      "start": "2026-09-30T19:00:00",
+      "end": "2026-09-30T20:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-loadout-home-1001",
+      "title": "Band: Load Out / In for Home Game",
+      "start": "2026-10-01T16:00:00",
+      "end": "2026-10-01T21:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-1002",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-02T07:00:00",
+      "end": "2026-10-02T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-1005",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-05T07:00:00",
+      "end": "2026-10-05T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-loadout-district-1005",
+      "title": "Band: Load Out / In for District Marching Festival",
+      "start": "2026-10-05T17:00:00",
+      "end": "2026-10-05T21:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-1006",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-06T07:00:00",
+      "end": "2026-10-06T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-1007",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-07T07:00:00",
+      "end": "2026-10-07T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "oe-q1-ends-1008",
+      "title": "OE: 1st Quarter Ends",
+      "start": "2026-10-08",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "oe-no-school-1009",
+      "title": "OE: No School for Students",
+      "start": "2026-10-09",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-sat-1009",
+      "title": "Saturday Marching Band Rehearsal",
+      "start": "2026-10-09T13:00:00",
+      "end": "2026-10-09T15:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-loadout-olathe-1010",
+      "title": "Band: Load Out / In for Olathe Marching Invitational",
+      "start": "2026-10-10T07:00:00",
+      "end": "2026-10-10T08:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "oe-q2-begins-1012",
+      "title": "OE: 2nd Quarter Begins",
+      "start": "2026-10-12",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-1012",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-12T07:00:00",
+      "end": "2026-10-12T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-pm-1012",
+      "title": "Band: Marching Band Rehearsal",
+      "start": "2026-10-12T18:30:00",
+      "end": "2026-10-12T20:30:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-1013",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-13T07:00:00",
+      "end": "2026-10-13T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "oe-early-dismiss-1014",
+      "title": "OE: Early Dismissal @ 11:05 am (1/2 day)",
+      "start": "2026-10-14T07:40:00",
+      "end": "2026-10-14T11:05:00",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "oe-conferences-1014",
+      "title": "OE: Parent/Teacher Conferences - In Person",
+      "start": "2026-10-14T16:30:00",
+      "end": "2026-10-14T20:30:00",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "oe-conferences-noschool-1015",
+      "title": "OE: Conferences - No School",
+      "start": "2026-10-15",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "oe-no-school-1016",
+      "title": "OE: No School",
+      "start": "2026-10-16",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-sat-1016",
+      "title": "Saturday Marching Band Rehearsal",
+      "start": "2026-10-16T13:00:00",
+      "end": "2026-10-16T15:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-loadout-home-1016",
+      "title": "Band: Load Out / In for Home Game",
+      "start": "2026-10-16T16:00:00",
+      "end": "2026-10-16T21:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-1019",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-19T07:00:00",
+      "end": "2026-10-19T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-pm-1019",
+      "title": "Band: Marching Band Rehearsal",
+      "start": "2026-10-19T18:30:00",
+      "end": "2026-10-19T20:30:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-1020",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-20T07:00:00",
+      "end": "2026-10-20T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-1021",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-21T07:00:00",
+      "end": "2026-10-21T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-1023",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-23T07:00:00",
+      "end": "2026-10-23T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-loadout-home-1023",
+      "title": "Band: Load Out / In for Home Game",
+      "start": "2026-10-23T16:00:00",
+      "end": "2026-10-23T21:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-1026",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-26T07:00:00",
+      "end": "2026-10-26T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-pm-1026",
+      "title": "Band: Marching Band Rehearsal",
+      "start": "2026-10-26T18:30:00",
+      "end": "2026-10-26T20:30:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
+    },
+    {
+      "id": "band-am-1027",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-27T07:00:00",
+      "end": "2026-10-27T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-1028",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-28T07:00:00",
+      "end": "2026-10-28T09:15:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-am-1030",
+      "title": "Marching band rehearsal",
+      "start": "2026-10-30T07:00:00",
+      "end": "2026-10-30T08:40:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East"
+    },
+    {
+      "id": "band-loadout-kba-1031",
+      "title": "Band: Load Out / In for KBA Marching Invitational",
+      "start": "2026-10-31T07:00:00",
+      "end": "2026-10-31T23:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "Olathe East High School"
     }
   ],
   "work": [
