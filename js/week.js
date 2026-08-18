@@ -666,8 +666,7 @@
         if (!undo && act === "done" && !before.done) {
           Game.playWorkActionCue(family, library, id, "done");
         }
-        renderCards();
-        goTo(dayIndex, true);
+        refreshCardsInPlace();
         hud();
       });
     });
@@ -726,14 +725,48 @@
         });
         Game.saveFamily(family);
         Game.toast("Sent to the parent desk.");
-        renderCards();
-        goTo(dayIndex, true);
+        refreshCardsInPlace();
       });
     }
   }
 
   function clampDay(i) {
     return Math.max(0, Math.min(DAY_COUNT - 1, i));
+  }
+
+  function pageScrollY() {
+    return window.scrollY || (document.documentElement && document.documentElement.scrollTop) || (document.body && document.body.scrollTop) || 0;
+  }
+
+  function captureBoardScroll() {
+    const track = document.getElementById("track");
+    const scroller = track ? track.querySelectorAll(".card-scroll")[dayIndex] : null;
+    return {
+      dayIndex,
+      pageY: pageScrollY(),
+      trackLeft: track ? track.scrollLeft : 0,
+      cardTop: scroller ? scroller.scrollTop : 0
+    };
+  }
+
+  function restoreBoardScroll(saved) {
+    if (!saved) return;
+    dayIndex = clampDay(saved.dayIndex);
+    const track = document.getElementById("track");
+    if (track) track.scrollLeft = saved.trackLeft;
+    const scroller = track ? track.querySelectorAll(".card-scroll")[dayIndex] : null;
+    if (scroller) scroller.scrollTop = saved.cardTop;
+    const y = saved.pageY || 0;
+    if (window.scrollTo) window.scrollTo(0, y);
+    if (document.documentElement) document.documentElement.scrollTop = y;
+    if (document.body) document.body.scrollTop = y;
+    syncChrome();
+  }
+
+  function refreshCardsInPlace() {
+    const saved = captureBoardScroll();
+    renderCards();
+    restoreBoardScroll(saved);
   }
 
   function syncChrome() {
@@ -1240,8 +1273,7 @@
   function refreshBoard() {
     syncWeek();
     renderStandingClasses();
-    renderCards();
-    goTo(dayIndex, true);
+    refreshCardsInPlace();
     hud();
   }
 
@@ -1525,8 +1557,7 @@
       });
       closeSheet();
       Game.toast("Note saved on this device.");
-      renderCards();
-      goTo(dayIndex, true);
+      refreshCardsInPlace();
     });
     document.getElementById("note-text").focus();
   }
@@ -1560,8 +1591,7 @@
       });
       closeSheet();
       Game.toast("Sent to Messages.");
-      renderCards();
-      goTo(dayIndex, true);
+      refreshCardsInPlace();
     });
     document.getElementById("ask-text").focus();
   }
