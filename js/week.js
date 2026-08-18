@@ -203,7 +203,7 @@
 
   function hud() {
     const cur = Game.currency(pack);
-    document.getElementById("bananas").textContent = `${cur.emoji} ${Game.getBananas()}`;
+    document.getElementById("bananas").textContent = `${cur.emoji} ${Game.getBananas(pack, family)}`;
     const days = daysFromToday();
     const ids = weekWorkIds(days);
     const progress = Game.getProgress();
@@ -247,18 +247,9 @@
       el.className = "draft-flag";
       flag.parentNode.insertBefore(el, flag.nextSibling);
     }
-    if (sync && sync.missing) {
-      el.hidden = false;
-      el.textContent = "Connect tables for Done, notes, and new assignments are not set up yet. Paste scripts/telemetry.sql in Admin / Supabase.";
-      return;
-    }
-    if (sync && sync.offline) {
-      el.hidden = true;
-      el.textContent = "";
-      return;
-    }
-    el.hidden = true;
-    el.textContent = "";
+    const text = Game.boardSyncNotice(sync);
+    el.hidden = !text;
+    el.textContent = text;
   }
 
   function standingClasses() {
@@ -2009,9 +2000,8 @@
 
     document.getElementById("hidden-ball").addEventListener("click", () => {
       if (Game.recordEgg("hidden-ball")) {
-        Game.addBananas(2);
         document.getElementById("hidden-ball").classList.add("found");
-        Game.toast("A stray tennis ball! +2 bananas");
+        Game.toast("A stray tennis ball!");
         hud();
       } else {
         Game.toast("That ball already bounced your way.");

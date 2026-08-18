@@ -213,7 +213,7 @@
       trophies,
       mates: roster ? Game.unlockedTeammates(roster) : [],
       eggs,
-      bananas: Game.getBananas(pack)
+      bananas: Game.getBananas(pack, family)
     };
   }
 

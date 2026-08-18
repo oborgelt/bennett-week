@@ -19,7 +19,7 @@
 
   function hud() {
     const el = document.getElementById("bananas");
-    if (el && pack) el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
+    if (el && pack) el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas(pack, family)}`;
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
     Game.paintMessagesChip(family);

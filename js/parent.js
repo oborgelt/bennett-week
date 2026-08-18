@@ -17,9 +17,24 @@
   function hud() {
     const el = document.getElementById("bananas");
     if (!el) return;
-    el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
+    el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas(pack, family)}`;
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+  }
+
+  function paintBoardSync(sync) {
+    let el = document.getElementById("board-sync");
+    if (!el) {
+      const flag = document.getElementById("draft-flag");
+      if (!flag || !flag.parentNode) return;
+      el = document.createElement("p");
+      el.id = "board-sync";
+      el.className = "draft-flag";
+      flag.parentNode.insertBefore(el, flag.nextSibling);
+    }
+    const text = Game.boardSyncNotice(sync);
+    el.hidden = !text;
+    el.textContent = text;
   }
 
   function persistAch() {
@@ -886,6 +901,7 @@
     try {
       const synced = await Game.syncFamilyBoard(family);
       family = synced.family;
+      paintBoardSync(synced);
     } catch (_) {}
     family = Game.maybeAutoPreviewAll(pack, family).family;
     roster = await Game.loadCharacters();

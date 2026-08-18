@@ -227,9 +227,24 @@
     return Number(read(KEYS.bananas, 0)) || 0;
   }
 
-  function getBananas(pack) {
-    if (kidViewHidesPreview()) return kidBananas(pack);
-    return storedBananas();
+  function bennettEarnedBananas(family) {
+    let n = 0;
+    const all = getProgress();
+    Object.keys(all).forEach((id) => {
+      const rec = all[id];
+      if (!rec || typeof rec !== "object") return;
+      if (rec.startedAwarded || workState(id).started) n += WORK_ACTION_BANANAS;
+      if (rec.doneAwarded || workState(id).done) n += WORK_ACTION_BANANAS;
+    });
+    const notes = ((family && family.notes) || (getFamilyDraft() && getFamilyDraft().notes) || []);
+    notes.forEach((note) => {
+      if (note && note.from === "bennett" && String(note.text || "").trim()) n += WORK_ACTION_BANANAS;
+    });
+    return n;
+  }
+
+  function getBananas(pack, family) {
+    return bennettEarnedBananas(family || getFamilyDraft());
   }
 
   function addBananas(n) {
@@ -4598,6 +4613,20 @@
     }).filter(Boolean);
   }
 
+  function stampLegacyProgress() {
+    const all = getProgress();
+    let changed = false;
+    Object.keys(all).forEach((id) => {
+      const rec = all[id];
+      if (!rec || typeof rec !== "object" || rec.updatedAt) return;
+      if (!(rec.done || rec.startedAwarded || rec.doneAwarded || rec.started || rec.started === false)) return;
+      rec.updatedAt = nowIso();
+      changed = true;
+    });
+    if (changed) write(KEYS.progress, all);
+    return all;
+  }
+
   let progressPushTimer = null;
 
   function queueProgressPush() {
@@ -4617,6 +4646,7 @@
   async function pushFamilyProgress() {
     const tel = global.Telemetry;
     if (!tel || typeof tel.upsertProgress !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    stampLegacyProgress();
     const rows = progressRowsToPush(getProgress(), []);
     if (!rows.length) return { pushed: 0, missing: false };
     try {
@@ -4632,6 +4662,7 @@
     if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
       return { pulled: 0, pushed: 0, missing: false, offline: true };
     }
+    stampLegacyProgress();
     let remote = [];
     try {
       const rows = await tel.fetchProgress();
@@ -4783,6 +4814,16 @@
       }
     }
     return { family: merged, pulled: remote.length, pushed, missing: false, offline: false };
+  }
+
+  function boardSyncNotice(sync) {
+    if (sync && sync.missing) {
+      return "Connect tables for Done, notes, and new assignments are not set up yet. Paste scripts/telemetry.sql in Admin / Supabase, then refresh This Week on Bennett's phone and here.";
+    }
+    if (sync && sync.offline) {
+      return "Connect is off on this device. Bennett's Done, notes, and bananas stay on the phone that earned them until Admin → Connect uses the same family token.";
+    }
+    return "";
   }
 
   async function syncFamilyBoard(family) {
@@ -5559,6 +5600,8 @@
     syncFamilyProgress,
     syncFamilyWork,
     syncFamilyBoard,
+    boardSyncNotice,
+    stampLegacyProgress,
     mergeProgressByUpdatedAt,
     localWorkSyncRows,
     workIsLater,
