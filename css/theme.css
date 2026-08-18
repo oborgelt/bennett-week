@@ -4383,7 +4383,7 @@ body.admin-page .usage-panel h2 {
 }
 
 .bc-shell {
-  max-width: 1100px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 8px 12px 28px;
   display: flex;
@@ -4452,6 +4452,20 @@ body.admin-page .usage-panel h2 {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-height: 28vh;
+  overflow: auto;
+}
+
+.bc-session-row {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.bc-session-row.on .bc-session {
+  border-color: var(--banana);
+  background: rgba(244, 211, 94, 0.18);
+  color: var(--banana);
 }
 
 .bc-session {
@@ -4462,6 +4476,27 @@ body.admin-page .usage-panel h2 {
   padding: 8px 12px;
   white-space: normal;
   text-align: left;
+  flex: 1;
+  min-width: 0;
+}
+
+.bc-pin {
+  appearance: none;
+  flex: 0 0 40px;
+  width: 40px;
+  min-height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(198, 224, 58, 0.28);
+  background: rgba(18, 42, 46, 0.92);
+  color: var(--banana);
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.bc-pin.on {
+  border-color: var(--banana);
+  background: rgba(244, 211, 94, 0.18);
 }
 
 .bc-session-title { font-size: 0.9rem; }
@@ -4477,8 +4512,13 @@ body.admin-page .usage-panel h2 {
 .bc-log {
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   gap: 8px;
-  min-height: 42vh;
+  min-height: 220px;
+}
+
+.bc-welcome {
+  flex: 0 0 auto;
 }
 
 .bc-welcome,
@@ -4490,9 +4530,44 @@ body.admin-page .usage-panel h2 {
 }
 
 .bc-welcome { border-color: rgba(244, 211, 94, 0.4); }
-.bc-welcome-math,
-.bc-welcome-khan { font-size: 0.88rem; color: var(--muted); }
-.bc-welcome-khan a { color: var(--dad); font-weight: 750; }
+.bc-coach { margin: 0 0 8px; }
+.bc-ex-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bc-ex {
+  appearance: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(244, 211, 94, 0.35);
+  background: rgba(244, 211, 94, 0.08);
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+.bc-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+.bc-resources .khan-strip {
+  margin-top: 0;
+  padding: 6px 8px;
+  background: transparent;
+  border-color: rgba(142, 197, 255, 0.16);
+}
+.bc-resources .khan-kicker,
+.bc-resources .khan-link {
+  font-size: 0.72rem;
+  opacity: 0.85;
+}
 
 .bc-msg-img {
   display: block;
@@ -4582,18 +4657,207 @@ body.admin-page .usage-panel h2 {
   cursor: pointer;
 }
 
+.bc-tools-rail {
+  min-width: 0;
+}
+
+.bc-tools-drawer {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 8px 10px;
+}
+
+.bc-tools-drawer > summary {
+  cursor: pointer;
+  font-weight: 750;
+  color: var(--banana);
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.bc-calc-screen {
+  border-radius: 10px;
+  background: #0e2426;
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  min-height: 56px;
+}
+
+.bc-calc-expr {
+  min-height: 1.1em;
+  font-size: 0.78rem;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.bc-calc-out {
+  font-size: 1.25rem;
+  font-weight: 750;
+  color: var(--banana);
+}
+
+.bc-calc-pad {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.bc-calc-key {
+  appearance: none;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(198, 224, 58, 0.28);
+  background: #102628;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.bc-calc-key.wide { grid-column: span 2; }
+.bc-calc-key.op { color: var(--banana); }
+.bc-calc-key.eq {
+  background: rgba(244, 211, 94, 0.18);
+  border-color: var(--banana);
+  color: var(--banana);
+}
+
+.bc-ptable-detail {
+  margin: 0 0 8px;
+  min-height: 2.4em;
+  font-size: 0.88rem;
+}
+
+.bc-ptable-detail strong {
+  font-size: 1.15rem;
+  color: var(--banana);
+}
+
+.bc-ptable-detail span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.bc-ptable { overflow-x: auto; }
+
+.bc-ptable-grid {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(0, 1fr));
+  gap: 2px;
+  min-width: 520px;
+}
+
+.bc-el {
+  appearance: none;
+  min-width: 0;
+  min-height: 28px;
+  padding: 1px 0;
+  border-radius: 4px;
+  border: 1px solid rgba(198, 224, 58, 0.22);
+  background: #102628;
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.05;
+  cursor: pointer;
+}
+
+.bc-el.empty {
+  visibility: hidden;
+  pointer-events: none;
+  border: 0;
+  background: transparent;
+}
+
+.bc-el.marker {
+  font-size: 0.48rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.bc-el-z {
+  display: block;
+  font-size: 0.45rem;
+  color: var(--muted);
+}
+
+.bc-el-s {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 750;
+}
+
 @media (min-width: 840px) {
+  html:has(body.basecamp-page),
+  body.basecamp-page {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  body.basecamp-page {
+    display: flex;
+    flex-direction: column;
+  }
+  body.basecamp-page .week-head { flex: 0 0 auto; }
   .bc-shell {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
     display: grid;
     grid-template-columns: 240px minmax(0, 1fr);
-    align-items: start;
+    align-items: stretch;
     gap: 16px;
+    padding-bottom: 12px;
+  }
+  .bc-shell.has-tools {
+    grid-template-columns: 220px minmax(0, 1fr) 280px;
+  }
+  .bc-rail,
+  .bc-tools-rail {
+    min-height: 0;
+    overflow: auto;
   }
   .bc-classes {
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
     overflow: visible;
+  }
+  .bc-class {
+    width: 100%;
+    border-radius: 12px;
+    white-space: normal;
+    text-align: left;
+    justify-content: flex-start;
   }
   .bc-class-short { display: none; }
   .bc-class-full { display: inline; }
-  .bc-log { min-height: 52vh; }
+  .bc-sessions { max-height: none; }
+  .bc-main {
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  .bc-log {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+  .bc-composer {
+    position: static;
+    flex: 0 0 auto;
+    background: rgba(7, 22, 24, 0.92);
+    padding-top: 8px;
+  }
+  .bc-tools-drawer {
+    height: 100%;
+    overflow: auto;
+  }
+  .bc-tools-drawer > summary { display: none; }
+  .bc-tools-body { display: block !important; }
 }
