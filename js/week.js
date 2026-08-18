@@ -308,13 +308,11 @@
   function noteBubble(n) {
     const kid = n.from === "bennett";
     const reply = !kid && Game.isParentReply(n);
-    const label = kid
-      ? (n.kind === "note" ? "You noted: " : "You asked: ")
-      : (reply ? "Mom/Dad replied: " : "Parent note: ");
+    const label = Game.noteAuthorLabel(n, Game.siteView());
     const cls = kid ? "kid" : (reply ? "parent reply" : "parent");
     return `
       <div class="bubble ${cls}">
-        ${n.test ? '<span class="test-tag">TEST</span> ' : ""}${label}${Game.esc(n.text)}
+        ${n.test ? '<span class="test-tag">TEST</span> ' : ""}<strong class="bubble-who">${Game.esc(label)}:</strong> ${Game.esc(n.text)}
         <div class="entry-tools">${Game.entryButtons("note:" + n.id, "note:" + n.id)}</div>
       </div>`;
   }

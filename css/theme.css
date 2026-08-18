@@ -254,7 +254,6 @@ body.site-view-gated .admin-nav {
 html[data-site-view="bennett"] .admin-chip,
 html[data-site-view="bennett"] .parent-chip,
 html[data-site-view="bennett"] .refs-chip,
-html[data-site-view="bennett"] .messages-chip,
 html[data-site-view="mom"] .admin-chip,
 html[data-site-view="mom"] .parent-chip,
 html[data-site-view="mom"] .refs-chip,
@@ -262,7 +261,6 @@ html[data-site-view="bennett"] a[href="admin.html"],
 html[data-site-view="bennett"] a[href="parent.html"],
 html[data-site-view="bennett"] a[href="refs.html"],
 html[data-site-view="bennett"] a[href="mom.html"],
-html[data-site-view="bennett"] a[href="messages.html"],
 html[data-site-view="mom"] a[href="admin.html"],
 html[data-site-view="mom"] a[href="parent.html"],
 html[data-site-view="mom"] a[href="refs.html"],
@@ -1137,6 +1135,10 @@ a.tiny {
 .bubble.kid {
   background: rgba(198, 224, 58, 0.1);
   color: #e8f3c4;
+}
+
+.bubble-who {
+  font-weight: 800;
 }
 
 .reflect {
@@ -2764,6 +2766,13 @@ a.btn {
 }
 
 .msg-card-done .msg-kicker { color: var(--muted); }
+
+.msg-ask-from {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--banana);
+}
 
 .msg-ask {
   margin: 0 0 6px;

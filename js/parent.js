@@ -219,7 +219,7 @@
   function renderInbox() {
     const box = document.getElementById("inbox");
     const questions = (family.notes || []).filter((n) => n.from === "bennett");
-    const parentNotes = (family.notes || []).filter((n) => n.from === "parent");
+    const parentNotes = (family.notes || []).filter((n) => Game.isParentAuthor(n));
     const answers = (family.reflections && family.reflections.answers) || [];
     if (!questions.length && !parentNotes.length && !answers.length) {
       box.innerHTML = `<p class="empty">No questions, notes, or check-ins yet.</p>`;
@@ -242,7 +242,7 @@
     `).join("");
     const pHtml = parentNotes.map((n) => `
       <article class="inbox-card">
-        <h3>${n.test ? '<span class="test-tag">TEST</span> ' : ""}Parent note · ${Game.esc(itemLabel(n.targetType, n.targetId))}</h3>
+        <h3>${n.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(Game.noteAuthorLabel(n))} · ${Game.esc(itemLabel(n.targetType, n.targetId))}</h3>
         <p>${Game.esc(n.text)}</p>
         <p>${Game.esc(Game.fmtStamp(n.at))}</p>
         <div class="parent-actions">
@@ -273,16 +273,7 @@
           Game.toast("Write a note first.");
           return;
         }
-        family = Game.addNote(family, {
-          id: Game.uid("note"),
-          targetType: q.targetType,
-          targetId: q.targetId,
-          from: "parent",
-          kind: "reply",
-          replyTo: q.id,
-          text,
-          at: Game.nowIso()
-        });
+        family = Game.sendParentReply(family, q.id, text);
         Game.toast("Note saved. Bennett will see it on that item.");
         renderInbox();
       });
@@ -999,7 +990,7 @@
         id: Game.uid("note"),
         targetType,
         targetId,
-        from: "parent",
+        from: Game.parentNoteFrom(),
         kind: "note",
         text,
         at: Game.nowIso()
