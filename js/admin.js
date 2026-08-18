@@ -376,6 +376,28 @@
     document.getElementById("tel-role").value = cfg.role || "bennett";
   }
 
+  function paintConnectTables(T) {
+    const el = document.getElementById("connect-tables");
+    if (!el) return;
+    if (!T || typeof T.probeFamilyTables !== "function") {
+      el.hidden = true;
+      return;
+    }
+    T.probeFamilyTables().then((missing) => {
+      const gone = Array.isArray(missing) ? missing : [];
+      const need = gone.filter((name) => name === "family_notes" || name === "family_progress" || name === "family_overlay");
+      if (!need.length) {
+        el.hidden = true;
+        el.textContent = "";
+        return;
+      }
+      el.hidden = false;
+      el.textContent = "Cloud table is not set up: " + need.join(", ") + ". Paste scripts/telemetry.sql in the Supabase SQL editor, then refresh Connect.";
+    }).catch(() => {
+      el.hidden = true;
+    });
+  }
+
   function paintUsageStatus(text) {
     const el = document.getElementById("usage-status");
     if (el) el.textContent = text;
@@ -689,6 +711,11 @@
     fillTerms();
     if (!T || !T.connected()) {
       paintUsageStatus("Not connected. Events stay on this device until you paste URL, anon key, and family token.");
+      const hint = document.getElementById("connect-tables");
+      if (hint) {
+        hint.hidden = true;
+        hint.textContent = "";
+      }
       usageEvents = [];
       usageDevices = [];
       paintUsage();
@@ -703,9 +730,11 @@
       usageDevices = await T.fetchDevices() || [];
       const queued = await T.queuedCount();
       paintUsageStatus("Connected · " + usageEvents.length + " events" + (queued ? " · " + queued + " waiting to send" : "") + " · this device " + T.deviceId());
+      paintConnectTables(T);
       paintUsage();
     } catch (err) {
       paintUsageStatus("Could not read usage. Check the URL, anon key, family token, and that telemetry.sql ran.");
+      paintConnectTables(T);
       usageEvents = [];
       usageDevices = [];
       paintUsage();

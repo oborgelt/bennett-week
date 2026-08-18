@@ -418,17 +418,19 @@
 
   function progressToRow(id, rec, familyToken, device) {
     const r = rec && typeof rec === "object" ? rec : {};
+    const key = String(id || r.assignment_id || r.assignmentId || r.id || "");
     const done = r.done == null || r.done === false || r.done === "" ? null : Number(r.done);
     return {
-      id: String(id || ""),
+      id: key,
+      assignment_id: key,
       family_token: familyToken,
       started: r.started === false ? false : !!r.started,
-      started_at: r.startedAt || null,
+      started_at: r.startedAt || r.started_at || null,
       done: Number.isFinite(done) ? done : null,
-      started_history: Array.isArray(r.startedHistory) ? r.startedHistory : [],
-      started_awarded: !!r.startedAwarded,
-      done_awarded: !!r.doneAwarded,
-      updated_at: r.updatedAt || new Date().toISOString(),
+      started_history: Array.isArray(r.startedHistory) ? r.startedHistory : (Array.isArray(r.started_history) ? r.started_history : []),
+      started_awarded: !!(r.startedAwarded || r.started_awarded),
+      done_awarded: !!(r.doneAwarded || r.done_awarded),
+      updated_at: r.updatedAt || r.updated_at || r.updated || new Date().toISOString(),
       device_id: device || ""
     };
   }
@@ -437,14 +439,15 @@
     const r = row && typeof row === "object" ? row : {};
     const done = r.done == null || r.done === "" ? null : Number(r.done);
     return {
-      id: String(r.id || ""),
+      id: String(r.assignment_id || r.id || ""),
+      assignment_id: String(r.assignment_id || r.id || ""),
       started: r.started === false ? false : !!r.started,
       startedAt: r.started_at || null,
       done: Number.isFinite(done) ? done : null,
       startedHistory: Array.isArray(r.started_history) ? r.started_history : [],
       startedAwarded: !!r.started_awarded,
       doneAwarded: !!r.done_awarded,
-      updatedAt: r.updated_at || ""
+      updatedAt: r.updated_at || r.updated || ""
     };
   }
 
@@ -456,17 +459,29 @@
   async function upsertProgress(rows) {
     const cfg = getConfig();
     const payload = (rows || []).map((row) => {
-      if (row && row.id && row.family_token) return row;
       const rec = row && row.rec ? row.rec : row;
-      const id = (row && row.id) || (rec && rec.id);
-      return progressToRow(id, rec, cfg.familyToken, deviceId());
-    }).filter((row) => row && row.id);
+      const id = (row && (row.assignment_id || row.id)) || (rec && (rec.assignment_id || rec.id));
+      const mapped = progressToRow(id, rec, cfg.familyToken, deviceId());
+      if (row && row.family_token) mapped.family_token = row.family_token;
+      return mapped;
+    }).filter((row) => row && (row.assignment_id || row.id));
     if (!payload.length) return [];
-    return rest("/rest/v1/family_progress?on_conflict=id", {
-      method: "POST",
-      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await rest("/rest/v1/family_progress?on_conflict=family_token,assignment_id", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      if (!isMissingTable(err) && err && err.status >= 400) {
+        return rest("/rest/v1/family_progress?on_conflict=id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(payload)
+        });
+      }
+      throw err;
+    }
   }
 
   function parsePayload(raw) {
@@ -521,6 +536,56 @@
     });
   }
 
+  function overlayToRow(overlay, familyToken) {
+    const src = overlay && typeof overlay === "object" ? overlay : {};
+    return {
+      family_token: familyToken,
+      week: src.week && typeof src.week === "object" ? src.week : {},
+      progress: src.progress && typeof src.progress === "object" ? src.progress : {},
+      updated_at: src.updatedAt || src.updated_at || new Date().toISOString()
+    };
+  }
+
+  function rowToOverlay(row) {
+    const r = row && typeof row === "object" ? row : {};
+    return {
+      family_token: String(r.family_token || ""),
+      week: r.week && typeof r.week === "object" ? r.week : {},
+      progress: r.progress && typeof r.progress === "object" ? r.progress : {},
+      updatedAt: r.updated_at || r.updatedAt || ""
+    };
+  }
+
+  async function fetchOverlay() {
+    const rows = await query("/rest/v1/family_overlay?select=*&limit=1");
+    const list = Array.isArray(rows) ? rows : [];
+    return list.length ? list[0] : null;
+  }
+
+  async function upsertOverlay(overlay) {
+    const cfg = getConfig();
+    const payload = overlayToRow(overlay, cfg.familyToken);
+    return rest("/rest/v1/family_overlay?on_conflict=family_token", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify([payload])
+    });
+  }
+
+  async function probeFamilyTables() {
+    const names = ["family_notes", "family_progress", "family_overlay"];
+    const missing = [];
+    for (let i = 0; i < names.length; i += 1) {
+      const name = names[i];
+      try {
+        await query("/rest/v1/" + name + "?select=*&limit=1");
+      } catch (err) {
+        if (isMissingTable(err)) missing.push(name);
+      }
+    }
+    return missing;
+  }
+
   async function queuedCount() {
     return (await pending()).length;
   }
@@ -552,6 +617,11 @@
     rowToWork,
     fetchWork,
     upsertWork,
+    overlayToRow,
+    rowToOverlay,
+    fetchOverlay,
+    upsertOverlay,
+    probeFamilyTables,
     queuedCount,
     boot
   };

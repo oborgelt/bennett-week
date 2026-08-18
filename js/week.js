@@ -620,15 +620,14 @@
       const events = grouped.events;
       const due = grouped.due;
       const startThis = grouped.startThis;
-      const later = Game.laterWorkForClass(week, days, classId);
       const loose = Game.looseEventsOnDay(week, d);
       const notes = (week.notes || []).filter((n) => n.date === ymd(d));
       const who = whoOn(week, d);
       const khan = cls ? Game.khanStripHtmlForClass(cls) : "";
       const className = (cls && cls.name) || Game.classNameForId(classId) || "Class";
-      const hasClassItems = !!(events.length || due.length || startThis.length || later.length);
+      const hasClassItems = !!(events.length || due.length || startThis.length);
       const emptyLine = hasClassItems ? "" : `<p class="empty">Nothing for ${Game.esc(className)} ${i === 0 ? "today" : "on " + dayLabel(d)}.</p>`;
-      const addRow = Game.siteViewHidesAdult() ? "" : `<p class="add-work-row"><button type="button" class="mini" data-add-work="${ymd(d)}">Add assignment</button></p>`;
+      const addRow = `<p class="add-work-row"><button type="button" class="mini" data-add-work="${ymd(d)}">Add assignment</button></p>`;
       const eventHtml = (e) => `
         <div class="item">
           <div class="title">${titleHtml(e.title)}</div>
@@ -666,10 +665,6 @@
                   <h3>Start this</h3>
                   ${items(startThis, (w) => workCardHtml(w, true))}
                 </section>` : ""}
-                ${later.length ? `<section class="later">
-                  <h3>Later</h3>
-                  ${items(later, (w) => workCardHtml(w, true))}
-                </section>` : ""}
                 ${events.length ? `<section>
                   <h3>On the calendar</h3>
                   ${items(events, eventHtml)}
@@ -704,60 +699,8 @@
       dots.appendChild(b);
     });
 
-    track.querySelectorAll("[data-act]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.id;
-        const act = btn.dataset.act;
-        const before = Game.workState(id);
-        const undo = btn.classList.contains("undo-mini");
-        Game.touchWork(id, act);
-        if (!undo && act === "started" && !before.started) {
-          Game.playWorkActionCue(family, library, id, "started");
-        }
-        if (!undo && act === "done" && !before.done) {
-          Game.playWorkActionCue(family, library, id, "done");
-        }
-        refreshCardsInPlace();
-        runUnlocks();
-      });
-    });
-    track.querySelectorAll("[data-ask]").forEach((btn) => {
-      btn.addEventListener("click", () => openAsk(btn.dataset.ask));
-    });
-    track.querySelectorAll("[data-note]").forEach((btn) => {
-      btn.addEventListener("click", () => openItemNote(btn.dataset.note));
-    });
-    track.querySelectorAll("[data-add-work]").forEach((btn) => {
-      btn.addEventListener("click", () => openAddWork(btn.dataset.addWork));
-    });
-    track.querySelectorAll("[data-help]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        btn.disabled = true;
-        openHelp(btn.dataset.help);
-      });
-    });
-    track.querySelectorAll("[data-work-detail]").forEach((btn) => {
-      btn.addEventListener("click", () => openWorkDetail(btn.dataset.workDetail));
-    });
-    track.querySelectorAll("[data-play-lib]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const item = Game.libraryItem(library, btn.dataset.playLib);
-        if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
-      });
-    });
-    track.querySelectorAll("[data-open-lib]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const item = Game.libraryItem(library, btn.dataset.openLib);
-        const src = item && Game.librarySrc(item);
-        if (src && src !== "#") window.open(src, "_blank", "noopener");
-      });
-    });
-    track.querySelectorAll("[data-edit]").forEach((btn) => {
-      btn.addEventListener("click", () => openEdit(btn.dataset.edit));
-    });
-    track.querySelectorAll("[data-del]").forEach((btn) => {
-      btn.addEventListener("click", () => deleteEntry(btn.dataset.del));
-    });
+    bindBoardRoot(track);
+    renderLaterBoard();
     const send = document.getElementById("reflect-send");
     if (send) {
       send.addEventListener("click", () => {
@@ -779,6 +722,115 @@
         refreshCardsInPlace();
       });
     }
+  }
+
+  function laterWeekStart(ymdStr) {
+    const d = parseLocal(String(ymdStr || "").slice(0, 10) + "T00:00:00");
+    if (!d || Number.isNaN(d.getTime())) return "";
+    const dow = d.getDay();
+    const offset = dow === 0 ? -6 : 1 - dow;
+    d.setDate(d.getDate() + offset);
+    return ymd(d);
+  }
+
+  function laterGroups(list) {
+    const groups = [];
+    const map = Object.create(null);
+    (list || []).forEach((w) => {
+      const key = laterWeekStart(w && w.due) || "later";
+      if (!map[key]) {
+        const d = parseLocal(key + "T00:00:00");
+        const label = key === "later"
+          ? "Later"
+          : "Week of " + d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        map[key] = { key, label, items: [] };
+        groups.push(map[key]);
+      }
+      map[key].items.push(w);
+    });
+    return groups;
+  }
+
+  function renderLaterBoard() {
+    const host = document.getElementById("later-board");
+    if (!host) return;
+    const days = daysFromToday();
+    const classId = (selectedClass() && selectedClass().id) || selectedClassId || "";
+    const later = Game.laterWorkForClass(week, days, classId);
+    if (!later.length) {
+      host.hidden = true;
+      host.innerHTML = "";
+      return;
+    }
+    const groups = laterGroups(later);
+    host.hidden = false;
+    host.innerHTML = `
+      <h3>Later</h3>
+      ${groups.map((g) => `
+        <section class="later-group">
+          <h4 class="later-week">${Game.esc(g.label)}</h4>
+          ${items(g.items, (w) => workCardHtml(w, true))}
+        </section>`).join("")}
+      <p class="add-work-row"><button type="button" class="mini" data-add-work="${ymd(days[days.length - 1])}">Add assignment</button></p>`;
+    bindBoardRoot(host);
+  }
+
+  function bindBoardRoot(root) {
+    if (!root) return;
+    root.querySelectorAll("[data-act]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        const act = btn.dataset.act;
+        const before = Game.workState(id);
+        const undo = btn.classList.contains("undo-mini");
+        Game.touchWork(id, act);
+        if (!undo && act === "started" && !before.started) {
+          Game.playWorkActionCue(family, library, id, "started");
+        }
+        if (!undo && act === "done" && !before.done) {
+          Game.playWorkActionCue(family, library, id, "done");
+        }
+        refreshCardsInPlace();
+        runUnlocks();
+      });
+    });
+    root.querySelectorAll("[data-ask]").forEach((btn) => {
+      btn.addEventListener("click", () => openAsk(btn.dataset.ask));
+    });
+    root.querySelectorAll("[data-note]").forEach((btn) => {
+      btn.addEventListener("click", () => openItemNote(btn.dataset.note));
+    });
+    root.querySelectorAll("[data-add-work]").forEach((btn) => {
+      btn.addEventListener("click", () => openAddWork(btn.dataset.addWork));
+    });
+    root.querySelectorAll("[data-help]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        btn.disabled = true;
+        openHelp(btn.dataset.help);
+      });
+    });
+    root.querySelectorAll("[data-work-detail]").forEach((btn) => {
+      btn.addEventListener("click", () => openWorkDetail(btn.dataset.workDetail));
+    });
+    root.querySelectorAll("[data-play-lib]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = Game.libraryItem(library, btn.dataset.playLib);
+        if (item && Game.canPlayLibraryItem(item)) Game.playLibraryItem(item);
+      });
+    });
+    root.querySelectorAll("[data-open-lib]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = Game.libraryItem(library, btn.dataset.openLib);
+        const src = item && Game.librarySrc(item);
+        if (src && src !== "#") window.open(src, "_blank", "noopener");
+      });
+    });
+    root.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => openEdit(btn.dataset.edit));
+    });
+    root.querySelectorAll("[data-del]").forEach((btn) => {
+      btn.addEventListener("click", () => deleteEntry(btn.dataset.del));
+    });
   }
 
   function clampDay(i) {
@@ -1376,7 +1428,7 @@
           note: fieldValue("note")
         });
         closeSheet();
-        Game.toast("Saved on this device. Export the family pack to share.");
+        Game.familySavedToast("Saved");
         refreshBoard();
       });
       return;
@@ -1398,7 +1450,7 @@
           note: fieldValue("note")
         });
         closeSheet();
-        Game.toast("Saved on this device. Export the family pack to share.");
+        Game.familySavedToast("Saved");
         refreshBoard();
       });
       return;
@@ -1437,7 +1489,7 @@
         }
         family = Game.updateNote(family, id, { text });
         closeSheet();
-        Game.toast("Saved on this device.");
+        Game.familySavedToast("Saved");
         refreshBoard();
       });
       return;
@@ -1528,7 +1580,8 @@
     else if (kind === "prompt") family = Game.deletePrompt(family, id);
     else if (kind === "answer") family = Game.deleteAnswer(family, id);
     else return;
-    Game.toast("Deleted on this device. Export the family pack to share.");
+    if (kind === "work" || kind === "note" || kind === "weeknote") Game.familyDeletedToast();
+    else Game.toast("Deleted on this device. Export the family pack to share.");
     refreshBoard();
   }
 
@@ -1547,13 +1600,29 @@
 
   function openAddWork(day) {
     const dueDefault = day ? day + "T23:59" : "";
+    const today = ymd(todayInChicago());
     openSheet("Add assignment", `
       ${editForm([
         { name: "title", label: "Title", value: "" },
         { name: "due", label: "Due", value: dueDefault, type: "datetime-local" },
+        { name: "suggest", label: "Start this from (optional)", value: "", type: "date" },
         { name: "note", label: "Note (optional)", value: "", type: "textarea" }
       ], "add-work-save").replace('<button type="button" class="btn primary" id="add-work-save">Save</button>', classSelectHtml(selectedClassId) + '<button type="button" class="btn primary" id="add-work-save">Add</button>')}
     `);
+    const dueEl = document.getElementById("ef-due");
+    const suggestEl = document.getElementById("ef-suggest");
+    const fillSuggest = () => {
+      if (!dueEl || !suggestEl || suggestEl.value) return;
+      const due = Game.fromLocalInput(dueEl.value);
+      if (!due) return;
+      const dueDay = parseLocal(String(due).slice(0, 10) + "T00:00:00");
+      const start = todayInChicago();
+      if (dueDay && (dueDay.getTime() - start.getTime()) / 86400000 > 7 && !suggestEl.value) {
+        suggestEl.value = today;
+      }
+    };
+    if (dueEl) dueEl.addEventListener("change", fillSuggest);
+    fillSuggest();
     document.getElementById("add-work-save").addEventListener("click", () => {
       const title = fieldValue("title");
       if (!title) {
@@ -1569,13 +1638,23 @@
         title,
         classId: fieldValue("classId"),
         due,
+        suggest_from: Game.fromLocalInput(fieldValue("suggest"), true) || undefined,
         note: fieldValue("note"),
-        addedBy: "bennett"
+        addedBy: Game.siteViewHidesAdult() ? "bennett" : (Game.siteView() === "mom" ? "parent" : "bennett")
       });
       family = result.family;
       closeSheet();
-      Game.toast("Added on this device.");
+      Game.familySavedToast("Added");
       refreshBoard();
+      const days = daysFromToday();
+      const added = (week.work || []).find((w) => w.id === result.id);
+      if (added && Game.workIsLater(added, days)) {
+        const later = document.getElementById("later-board");
+        if (later) {
+          const top = later.getBoundingClientRect().top + pageScrollY() - 16;
+          if (window.scrollTo) window.scrollTo(0, Math.max(0, top));
+        }
+      }
     });
     document.getElementById("ef-title").focus();
   }
@@ -1608,7 +1687,7 @@
         termId
       });
       closeSheet();
-      Game.toast("Note saved on this device.");
+      Game.familySavedToast("Saved");
       refreshCardsInPlace();
       hud();
     });
@@ -2186,7 +2265,7 @@
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
     try {
-      const synced = await Game.syncFamilyBoard(family);
+      const synced = await Game.syncFamilyLive(family);
       family = synced.family;
       paintBoardSync(synced);
     } catch (_) {}
@@ -2227,18 +2306,32 @@
       const shelf = document.getElementById("shelf");
       if (shelf && shelf.classList.contains("open")) renderShelf();
     });
-    window.addEventListener("focus", async () => {
+    async function pullFamilyLive() {
       if (!family) return;
       try {
-        const synced = await Game.syncFamilyBoard(family);
+        const before = Game.familySnapshot ? Game.familySnapshot(family) : "";
+        const synced = await Game.syncFamilyLive(family);
         family = synced.family;
         paintBoardSync(synced);
-        syncWeek();
-        renderClassSwitcher();
-        refreshCardsInPlace();
-        hud();
+        const after = Game.familySnapshot ? Game.familySnapshot(family) : "";
+        if (synced.changed || (before && after && before !== after)) {
+          syncWeek();
+          renderClassSwitcher();
+          refreshCardsInPlace();
+          hud();
+        }
       } catch (_) {}
+    }
+    window.addEventListener("focus", () => { pullFamilyLive(); });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") pullFamilyLive();
     });
+    if (typeof setInterval === "function") {
+      setInterval(() => {
+        if (document.visibilityState && document.visibilityState !== "visible") return;
+        pullFamilyLive();
+      }, 25000);
+    }
   }
 
   boot();

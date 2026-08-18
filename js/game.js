@@ -288,7 +288,8 @@
         itemEdits: {},
         addedClasses: [],
         addedItems: []
-      }
+      },
+      updatedAt: ""
     };
   }
 
@@ -399,7 +400,8 @@
         itemEdits: asIdMap(progress.itemEdits),
         addedClasses: normalizeAddedClasses(progress.addedClasses),
         addedItems: normalizeAddedItems(progress.addedItems)
-      }
+      },
+      updatedAt: o.updatedAt || o.updated_at || week.updatedAt || ""
     };
   }
 
@@ -615,13 +617,19 @@
     return next;
   }
 
+  function stampOverlay(next, at) {
+    next.overlay.updatedAt = at || nowIso();
+    return next;
+  }
+
   function editWeekOverlay(family, kind, id, patch, stamp) {
     const next = normalizeFamily(family);
     if (!next.overlay.week.edits[kind]) next.overlay.week.edits[kind] = {};
     const at = stamp || (patch && patch.updatedAt) || nowIso();
     next.overlay.week.edits[kind][id] = Object.assign({}, next.overlay.week.edits[kind][id] || {}, patch, { id, updatedAt: at });
+    stampOverlay(next, at);
     saveFamily(next);
-    if (!overlaySyncing && kind === "work") queueWorkPush(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     return next;
   }
 
@@ -630,9 +638,11 @@
     next.overlay.week.deleted[kind] = pushUnique(next.overlay.week.deleted[kind] || [], id);
     if (!next.overlay.week.deletedAt) next.overlay.week.deletedAt = { events: {}, work: {}, notes: {} };
     if (!next.overlay.week.deletedAt[kind]) next.overlay.week.deletedAt[kind] = {};
-    next.overlay.week.deletedAt[kind][id] = stamp || nowIso();
+    const at = stamp || nowIso();
+    next.overlay.week.deletedAt[kind][id] = at;
+    stampOverlay(next, at);
     saveFamily(next);
-    if (!overlaySyncing && kind === "work") queueWorkPush(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     return next;
   }
 
@@ -641,9 +651,11 @@
     if (!item || !item.id || !next.overlay.week.added[kind]) return next;
     const list = next.overlay.week.added[kind];
     if (list.some((row) => row && row.id === item.id)) return next;
-    next.overlay.week.added[kind] = list.concat([Object.assign({}, item, { updatedAt: item.updatedAt || nowIso() })]);
+    const at = item.updatedAt || nowIso();
+    next.overlay.week.added[kind] = list.concat([Object.assign({}, item, { updatedAt: at })]);
+    stampOverlay(next, at);
     saveFamily(next);
-    if (!overlaySyncing && kind === "work") queueWorkPush(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     return next;
   }
 
@@ -654,7 +666,9 @@
     const list = next.overlay.progress.addedItems || [];
     if (list.some((row) => row && row.id === item.id)) return next;
     next.overlay.progress.addedItems = list.concat([Object.assign({}, item, { classId: cid })]);
+    stampOverlay(next);
     saveFamily(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     return next;
   }
 
@@ -674,11 +688,21 @@
     if (!title) return { family: normalizeFamily(family), id: "" };
     const id = src.id || uid("w");
     const term = termOf(seed);
+    const dueYmd = ymdFromLocal(src.due);
+    const today = chicagoYmd();
+    let suggest = src.suggest_from || undefined;
+    if (!suggest && dueYmd && today) {
+      const dueD = localDateFromYmd(dueYmd);
+      const todayD = localDateFromYmd(today);
+      if (dueD && todayD && (dueD.getTime() - todayD.getTime()) / 86400000 > 7) {
+        suggest = today;
+      }
+    }
     const work = {
       id,
       title: assignmentTitle(classId, title),
       due: src.due,
-      suggest_from: src.suggest_from || undefined,
+      suggest_from: suggest,
       note: src.note ? String(src.note).trim() : undefined,
       classId: classId || undefined,
       termId: term.id,
@@ -3037,6 +3061,12 @@
     const dueD = localDateFromYmd(ymdFromLocal(work.due));
     const dayD = localDateFromYmd(ymdFromLocal(day));
     if (!dueD || !dayD) return false;
+    const todayD = localDateFromYmd(chicagoYmd());
+    const farDue = !!(todayD && dueD.getTime() - todayD.getTime() > 6 * 86400000);
+    if (farDue) {
+      const from = ymdFromLocal(work.suggest_from);
+      return !!(from && from === ymdFromLocal(day));
+    }
     const from = work.suggest_from
       ? localDateFromYmd(ymdFromLocal(work.suggest_from))
       : new Date(dueD.getTime() - 3 * 86400000);
@@ -3054,10 +3084,13 @@
   }
 
   function workIsLater(work, days) {
-    if (!work || workOnBoard(work, days)) return false;
-    const due = ymdFromLocal(work.due);
+    if (!work) return false;
     const last = lastBoardYmd(days);
-    return !!(due && last && due > last);
+    const due = ymdFromLocal(work.due);
+    if (due && last && due > last) return true;
+    const from = ymdFromLocal(work.suggest_from);
+    if (from && last && from > last && !workOnBoard(work, days)) return true;
+    return false;
   }
 
   function laterWorkForClass(week, days, classId) {
@@ -3454,9 +3487,10 @@
         }
       }
     }
-    all[id] = Object.assign({}, cur, { updatedAt: nowIso() });
+    all[id] = Object.assign({}, cur, { updatedAt: nowIso(), updated: nowIso() });
     write(KEYS.progress, all);
     queueProgressPush();
+    syncFamilyProgress();
     if (kind === "started" && !before.started) track("work_start", { assignmentId: id });
     if (kind === "done" && !before.done) track("work_done", { assignmentId: id });
     return { first, state: workState(id) };
@@ -3681,6 +3715,35 @@
     el.classList.add("show");
     clearTimeout(toast._t);
     toast._t = setTimeout(() => el.classList.remove("show"), 3200);
+  }
+
+  function familyAudienceLabel() {
+    const role = String(telemetryDeviceRole() || "").trim().toLowerCase();
+    const view = normalizeSiteView(siteView());
+    if (role === "bennett" || view === "bennett") return "Mom and Dad";
+    if (role === "parent" || view === "mom") return "Bennett and Dad";
+    return "Bennett and Mom";
+  }
+
+  function familyConnected() {
+    try {
+      return !!(global.Telemetry && typeof global.Telemetry.connected === "function" && global.Telemetry.connected());
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function familySavedToast(action) {
+    const verb = action || "Saved";
+    if (familyConnected()) {
+      const who = familyAudienceLabel();
+      toast(who === "Mom and Dad" ? verb + ". Mom and Dad will see this." : verb + ". " + who + " will see this.");
+    } else toast(verb + " on this device until Connect is on.");
+  }
+
+  function familyDeletedToast() {
+    if (familyConnected()) toast("Deleted. " + familyAudienceLabel() + " will see this.");
+    else toast("Deleted on this device until Connect is on.");
   }
 
   function confetti() {
@@ -4279,6 +4342,7 @@
       termId: row.termId || ""
     });
     queueNotePush(next);
+    pushFamilyNotes(next);
     return next;
   }
 
@@ -4585,7 +4649,7 @@
     const all = Object.assign({}, local && typeof local === "object" ? local : {});
     (remoteRows || []).forEach((row) => {
       const rec = progressRecordFromRemote(row);
-      const id = String((row && row.id) || rec.id || "");
+      const id = String((row && (row.assignment_id || row.id)) || rec.assignment_id || rec.id || "");
       if (!id) return;
       const cur = all[id] || {};
       if (String(rec.updatedAt || "") >= String(cur.updatedAt || "")) all[id] = rec;
@@ -4597,7 +4661,7 @@
     const remoteMap = Object.create(null);
     (remoteRows || []).forEach((row) => {
       const rec = progressRecordFromRemote(row);
-      const id = String((row && row.id) || rec.id || "");
+      const id = String((row && (row.assignment_id || row.id)) || rec.assignment_id || rec.id || "");
       if (id) remoteMap[id] = rec;
     });
     const tel = global.Telemetry;
@@ -4816,6 +4880,177 @@
     return { family: merged, pulled: remote.length, pushed, missing: false, offline: false };
   }
 
+  function mergeAddedById(localList, remoteList) {
+    const map = Object.create(null);
+    const put = (row) => {
+      if (!row || !row.id) return;
+      const cur = map[row.id];
+      if (!cur || String(row.updatedAt || "") >= String(cur.updatedAt || "")) map[row.id] = row;
+    };
+    (localList || []).forEach(put);
+    (remoteList || []).forEach(put);
+    return Object.keys(map).map((id) => map[id]);
+  }
+
+  function mergeEditsById(localMap, remoteMap) {
+    const out = Object.assign({}, localMap || {});
+    Object.keys(remoteMap || {}).forEach((id) => {
+      const remote = remoteMap[id];
+      const local = out[id];
+      if (!local || String((remote && remote.updatedAt) || "") >= String((local && local.updatedAt) || "")) {
+        out[id] = remote;
+      }
+    });
+    return out;
+  }
+
+  function unionIds(a, b) {
+    return Array.from(new Set([].concat(a || [], b || []).filter((id) => id != null && id !== "")));
+  }
+
+  function mergeWeekOverlay(local, remote) {
+    const L = normalizeOverlay({ week: local }).week;
+    const R = normalizeOverlay({ week: remote }).week;
+    const deletedAt = {
+      events: Object.assign({}, L.deletedAt.events, R.deletedAt.events),
+      work: Object.assign({}, L.deletedAt.work, R.deletedAt.work),
+      notes: Object.assign({}, L.deletedAt.notes, R.deletedAt.notes)
+    };
+    Object.keys(R.deletedAt.events || {}).forEach((id) => {
+      if (String(R.deletedAt.events[id] || "") >= String(L.deletedAt.events[id] || "")) deletedAt.events[id] = R.deletedAt.events[id];
+    });
+    Object.keys(R.deletedAt.work || {}).forEach((id) => {
+      if (String(R.deletedAt.work[id] || "") >= String(L.deletedAt.work[id] || "")) deletedAt.work[id] = R.deletedAt.work[id];
+    });
+    Object.keys(R.deletedAt.notes || {}).forEach((id) => {
+      if (String(R.deletedAt.notes[id] || "") >= String(L.deletedAt.notes[id] || "")) deletedAt.notes[id] = R.deletedAt.notes[id];
+    });
+    return {
+      deleted: {
+        events: unionIds(L.deleted.events, R.deleted.events),
+        work: unionIds(L.deleted.work, R.deleted.work),
+        notes: unionIds(L.deleted.notes, R.deleted.notes)
+      },
+      deletedAt,
+      edits: {
+        events: mergeEditsById(L.edits.events, R.edits.events),
+        work: mergeEditsById(L.edits.work, R.edits.work),
+        notes: mergeEditsById(L.edits.notes, R.edits.notes)
+      },
+      added: {
+        events: mergeAddedById(L.added.events, R.added.events),
+        work: mergeAddedById(L.added.work, R.added.work),
+        notes: mergeAddedById(L.added.notes, R.added.notes)
+      }
+    };
+  }
+
+  function mergeProgressOverlay(local, remote) {
+    const L = normalizeOverlay({ progress: local }).progress;
+    const R = normalizeOverlay({ progress: remote }).progress;
+    return {
+      deletedClasses: unionIds(L.deletedClasses, R.deletedClasses),
+      deletedItems: unionIds(L.deletedItems, R.deletedItems),
+      classEdits: mergeEditsById(L.classEdits, R.classEdits),
+      itemEdits: mergeEditsById(L.itemEdits, R.itemEdits),
+      addedClasses: mergeAddedById(L.addedClasses, R.addedClasses),
+      addedItems: mergeAddedById(L.addedItems, R.addedItems)
+    };
+  }
+
+  function mergeFamilyOverlay(localOverlay, remoteOverlay) {
+    const local = normalizeOverlay(localOverlay);
+    const remote = normalizeOverlay(remoteOverlay);
+    const merged = {
+      week: mergeWeekOverlay(local.week, remote.week),
+      progress: mergeProgressOverlay(local.progress, remote.progress),
+      updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
+    };
+    return merged;
+  }
+
+  function overlayFingerprint(overlay) {
+    const o = normalizeOverlay(overlay);
+    return JSON.stringify({
+      week: o.week,
+      progress: o.progress
+    });
+  }
+
+  let overlayPushTimer = null;
+
+  function queueOverlayPush(family) {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.connected !== "function" || !tel.connected()) return;
+    if (typeof setTimeout !== "function") {
+      pushFamilyOverlay(family);
+      queueWorkPush(family);
+      return;
+    }
+    if (overlayPushTimer) clearTimeout(overlayPushTimer);
+    overlayPushTimer = setTimeout(() => {
+      overlayPushTimer = null;
+      pushFamilyOverlay(family);
+      queueWorkPush(family);
+    }, 400);
+  }
+
+  async function pushFamilyOverlay(family) {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.upsertOverlay !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    const next = normalizeFamily(family);
+    try {
+      await tel.upsertOverlay(next.overlay);
+      return { pushed: 1, missing: false };
+    } catch (err) {
+      return { pushed: 0, missing: missingSync(err) };
+    }
+  }
+
+  async function syncFamilyOverlay(family) {
+    const next = normalizeFamily(family);
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
+      return { family: next, pulled: 0, pushed: 0, missing: false, offline: true, changed: false };
+    }
+    let remote = null;
+    try {
+      const row = await tel.fetchOverlay();
+      remote = row ? (tel.rowToOverlay ? tel.rowToOverlay(row) : row) : null;
+    } catch (err) {
+      return { family: next, pulled: 0, pushed: 0, missing: missingSync(err), offline: false, changed: false };
+    }
+    const before = overlayFingerprint(next.overlay);
+    overlaySyncing = true;
+    try {
+      if (remote) {
+        next.overlay = mergeFamilyOverlay(next.overlay, remote);
+        saveFamily(next);
+      }
+    } finally {
+      overlaySyncing = false;
+    }
+    const after = overlayFingerprint(next.overlay);
+    const localNewer = !remote || String(next.overlay.updatedAt || "") > String(remote.updatedAt || "") || after !== overlayFingerprint(remote);
+    let pushed = 0;
+    if (localNewer && (next.overlay.updatedAt || after !== overlayFingerprint(emptyOverlay()))) {
+      try {
+        await tel.upsertOverlay(next.overlay);
+        pushed = 1;
+      } catch (err) {
+        return { family: next, pulled: remote ? 1 : 0, pushed: 0, missing: missingSync(err), offline: false, changed: before !== after };
+      }
+    }
+    return {
+      family: next,
+      pulled: remote ? 1 : 0,
+      pushed,
+      missing: false,
+      offline: false,
+      changed: before !== after
+    };
+  }
+
   function boardSyncNotice(sync) {
     if (sync && sync.missing) {
       return "Connect tables for Done, notes, and new assignments are not set up yet. Paste scripts/telemetry.sql in Admin / Supabase, then refresh This Week on Bennett's phone and here.";
@@ -4826,19 +5061,37 @@
     return "";
   }
 
-  async function syncFamilyBoard(family) {
+  function familySnapshot(family) {
+    const next = normalizeFamily(family);
+    return JSON.stringify({
+      notes: next.notes,
+      overlay: overlayFingerprint(next.overlay),
+      progress: getProgress()
+    });
+  }
+
+  async function syncFamilyLive(family) {
     const notes = await syncFamilyNotes(family);
     let next = notes.family;
     const progress = await syncFamilyProgress();
+    const overlay = await syncFamilyOverlay(next);
+    next = overlay.family;
     const work = await syncFamilyWork(next);
     next = work.family;
+    const missing = !!(notes.missing || progress.missing || overlay.missing || work.missing);
+    const offline = !!(notes.offline && progress.offline && overlay.offline && work.offline);
     return {
       family: next,
-      pulled: (notes.pulled || 0) + (progress.pulled || 0) + (work.pulled || 0),
-      pushed: (notes.pushed || 0) + (progress.pushed || 0) + (work.pushed || 0),
-      missing: !!(notes.missing || progress.missing || work.missing),
-      offline: !!(notes.offline && progress.offline && work.offline)
+      pulled: (notes.pulled || 0) + (progress.pulled || 0) + (overlay.pulled || 0) + (work.pulled || 0),
+      pushed: (notes.pushed || 0) + (progress.pushed || 0) + (overlay.pushed || 0) + (work.pushed || 0),
+      missing,
+      offline,
+      changed: !!(overlay.changed || notes.pulled || progress.pulled || work.pulled)
     };
+  }
+
+  async function syncFamilyBoard(family) {
+    return syncFamilyLive(family);
   }
 
   function sendParentReply(family, askId, text) {
@@ -5599,7 +5852,15 @@
     syncFamilyNotes,
     syncFamilyProgress,
     syncFamilyWork,
+    syncFamilyOverlay,
+    syncFamilyLive,
     syncFamilyBoard,
+    mergeWeekOverlay,
+    mergeFamilyOverlay,
+    familySavedToast,
+    familyDeletedToast,
+    familyConnected,
+    familySnapshot,
     boardSyncNotice,
     stampLegacyProgress,
     mergeProgressByUpdatedAt,
