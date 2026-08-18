@@ -490,8 +490,9 @@ body.site-view-kid .add-work-row {
 
 .class-switcher {
   flex: 0 0 auto;
-  margin: 4px 12px 2px;
-  padding: 0;
+  margin: 2px 12px 2px;
+  padding: 8px 2px 6px;
+  overflow: visible;
 }
 
 .class-switcher-list {
