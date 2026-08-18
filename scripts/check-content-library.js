@@ -78,7 +78,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=103/.test(basecampHtml) && /basecamp\.js\?v=103/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=104/.test(basecampHtml) && /basecamp\.js\?v=104/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1063,7 +1063,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=103/.test(weekHtml) && /week\.js\?v=103/.test(weekHtml) && /game\.js\?v=103/.test(weekHtml) && /telemetry\.js\?v=103/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=104/.test(weekHtml) && /week\.js\?v=104/.test(weekHtml) && /game\.js\?v=104/.test(weekHtml) && /telemetry\.js\?v=104/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1110,8 +1110,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=101\b/.test(html), file + " should not still cache-bust as v=101");
-  assert(/\?v=103/.test(html), file + " should cache-bust v=103");
+  assert(!/\?v=103\b/.test(html), file + " should not still cache-bust as v=103");
+  assert(/\?v=104/.test(html), file + " should cache-bust v=104");
 });
 const actBind = weekJs.slice(weekJs.indexOf('track.querySelectorAll("[data-act]")'), weekJs.indexOf('track.querySelectorAll("[data-ask]")'));
 assert(/refreshCardsInPlace|restoreBoardScroll/.test(actBind), "Done/Undo restores scroll");
@@ -1136,10 +1136,10 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=103/.test(progressHtml) && /theme\.css\?v=103/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=104/.test(progressHtml) && /theme\.css\?v=104/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*101/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
+assert(/build:\s*102/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should bump two steps");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1359,13 +1359,27 @@ assert(!Game.shouldGateAdultPage("index.html", "bennett") && !Game.shouldGateAdu
 assert(fs.existsSync(path.join(root, "messages.html")), "messages.html exists");
 assert(fs.existsSync(path.join(root, "js/messages.js")), "messages.js exists");
 assert(!Game.shouldGateAdultPage("messages.html", "mom") && !Game.shouldGateAdultPage("messages.html", "bennett") && !Game.shouldGateAdultPage("messages.html", "me"), "Mom view does not gate Messages");
-assert(Game.shouldBounceMessagesPage("messages.html", "bennett") && !Game.shouldBounceMessagesPage("messages.html", "mom") && !Game.shouldBounceMessagesPage("messages.html", "me"), "Bennett hitting Messages bounces to This Week");
-assert(/html\[data-site-view="bennett"\][\s\S]*\.messages-chip/.test(themeCss), "Bennett CSS hides the Messages chip");
+assert(!Game.shouldBounceMessagesPage("messages.html", "bennett") && !Game.shouldBounceMessagesPage("messages.html", "mom") && !Game.shouldBounceMessagesPage("messages.html", "me"), "Bennett can open Messages");
+assert(!/html\[data-site-view="bennett"\] \.messages-chip/.test(themeCss), "Bennett CSS must not hide the Messages chip");
+assert(!/html\[data-site-view="bennett"\] a\[href="messages\.html"\]/.test(themeCss), "Bennett CSS must not hide messages.html");
 assert(!/html\[data-site-view="mom"\] a\[href="messages\.html"\]/.test(themeCss), "Mom CSS must not hide messages.html");
 assert(/Inbox is now/.test(parentHtml) && parentHtml.includes("messages.html"), "parent desk points Inbox to Messages");
-assert(/Mom\/Dad replied:/.test(weekJs), "Bennett cards show Mom/Dad replied bubbles");
+assert(/noteAuthorLabel/.test(weekJs) && !/Mom\/Dad replied:/.test(weekJs), "week cards use noteAuthorLabel, not a hardcoded Mom/Dad reply");
 assert(/family_notes/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "notes sync uses family_notes");
 assert(/family_notes/.test(fs.readFileSync(path.join(root, "scripts/telemetry.sql"), "utf8")), "telemetry SQL can create family_notes");
+assert(/bw-messages-seen-/.test(gameSrc), "inbox last-seen is per-role localStorage");
+assert(!/family\.inboxSeen/.test(gameSrc) && !/inboxSeen:\s*\{/.test(gameSrc), "do not store inboxSeen on the family pack");
+const hideFn = gameSrc.slice(gameSrc.indexOf("function hideMessagesChip"), gameSrc.indexOf("function shouldBounceMessagesPage"));
+assert(/hidden\s*=\s*false/.test(hideFn) && !/===\s*["']bennett["']/.test(hideFn), "hideMessagesChip does not hide for Bennett");
+const paintFn = gameSrc.slice(gameSrc.indexOf("function paintMessagesChip"), gameSrc.indexOf("function hideMessagesChip"));
+assert(/inboxUnreadCount/.test(paintFn), "paintMessagesChip uses per-view unread");
+assert(!/unansweredAskCount/.test(paintFn), "paintMessagesChip is not only unansweredAskCount");
+assert(typeof Game.noteAuthorLabel === "function" && typeof Game.parentNoteFrom === "function" && typeof Game.inboxUnreadCount === "function", "named-sender helpers exist");
+assert(Game.isParentReply({ from: "parent", kind: "reply", text: "ok" }), "isParentReply accepts legacy parent");
+assert(Game.isParentReply({ from: "mom", kind: "reply", text: "ok" }), "isParentReply accepts mom");
+assert(Game.isParentReply({ from: "orin", kind: "reply", text: "ok" }), "isParentReply accepts orin");
+assert(!Game.isParentReply({ from: "bennett", kind: "question", text: "ok" }), "Bennett asks are not parent replies");
+["bw-messages-seen-bennett", "bw-messages-seen-mom", "bw-messages-seen-me"].forEach((key) => localStorage.removeItem(key));
 const askFam = Game.emptyFamily();
 askFam.notes = [{
   id: "q-classes",
@@ -1377,13 +1391,56 @@ askFam.notes = [{
   at: "2026-08-18T14:00:00-05:00"
 }];
 const askWeek = { work: [], events: [{ id: "tue-item", title: "Tuesday calendar", start: "2026-08-18T09:00:00" }] };
-assert.strictEqual(Game.unansweredAskCount(askFam), 1, "unanswered Bennett ask counts for the badge");
-const inboxHtml = Game.messagesInboxHtml(askFam, askWeek);
+assert.strictEqual(Game.unansweredAskCount(askFam), 1, "unanswered Bennett ask still counts");
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "orin" });
+Game.setSiteView("bennett");
+assert.strictEqual(Game.parentNoteFrom(), "orin", "preview Bennett on an Orin device still stamps orin");
+const inboxHtml = Game.messagesInboxHtml(askFam, askWeek, { canEdit: true, view: "me" });
 assert(/Send reply/.test(inboxHtml) && /do I need to change classes/.test(inboxHtml), "unanswered asks render a Send reply control");
+assert(/Bennett asked/.test(inboxHtml), "parent inbox names Bennett on the ask");
+const kidInbox = Game.messagesInboxHtml(askFam, askWeek, { canEdit: false, view: "bennett" });
+assert(!/data-send-reply/.test(kidInbox) && !/Send reply/.test(kidInbox), "kid inbox path has no reply composer");
+assert(/You asked/.test(kidInbox), "kid inbox labels his own ask as You asked");
 const repliedFam = Game.sendParentReply(askFam, "q-classes", "Stay in the class unless the counselor says move.");
-assert.strictEqual(Game.unansweredAskCount(repliedFam), 0, "a parent reply on that target clears the badge");
-assert(!/Send reply/.test(Game.messagesInboxHtml(repliedFam, askWeek)), "answered threads do not keep Send reply");
-assert(/Mom\/Dad replied/.test(Game.messagesInboxHtml(repliedFam, askWeek)), "answered thread shows the parent reply");
+const stamped = (repliedFam.notes || []).find((n) => n.kind === "reply");
+assert(stamped && stamped.from === "orin", "sendParentReply stamps orin from the Orin device");
+assert(!stamped.from || stamped.from !== "dad", "never write from dad");
+assert.strictEqual(Game.noteAuthorLabel(stamped, "bennett"), "Dad replied");
+assert.strictEqual(Game.noteAuthorLabel(stamped, "me"), "You replied");
+assert.strictEqual(Game.noteAuthorLabel(stamped, "mom"), "Dad replied");
+assert.strictEqual(Game.noteAuthorLabel({ from: "parent", kind: "reply", text: "old" }, "bennett"), "Mom/Dad replied");
+assert.strictEqual(Game.noteAuthorLabel({ from: "mom", kind: "note", text: "n" }, "bennett"), "Mom noted");
+assert.strictEqual(Game.unansweredAskCount(repliedFam), 0, "a parent reply on that target clears unanswered");
+assert(!/Send reply/.test(Game.messagesInboxHtml(repliedFam, askWeek, { canEdit: true, view: "me" })), "answered threads do not keep Send reply");
+assert(/Dad replied|You replied/.test(Game.messagesInboxHtml(repliedFam, askWeek, { canEdit: true, view: "me" })), "answered thread shows the named reply");
+assert(!/data-send-reply/.test(Game.messagesInboxHtml(repliedFam, askWeek, { canEdit: false, view: "bennett" })), "answered kid inbox still has no composer");
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "parent" });
+Game.setSiteView("me");
+const momStampFam = Game.sendParentReply(askFam, "q-classes", "Stay put.");
+assert.strictEqual((momStampFam.notes || []).find((n) => n.kind === "reply").from, "mom", "Mom device stamps mom even while previewing Me");
+store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "orin" });
+Game.setSiteView("me");
+["bw-messages-seen-bennett", "bw-messages-seen-mom", "bw-messages-seen-me"].forEach((key) => localStorage.removeItem(key));
+assert.strictEqual(Game.inboxUnreadCount(repliedFam, "bennett"), 0, "first paint stamps seen so old TEST threads do not flood");
+assert(localStorage.getItem("bw-messages-seen-bennett"), "bennett seen cursor is localStorage");
+localStorage.setItem("bw-messages-seen-bennett", "2026-08-18T00:00:00.000Z");
+const lateReply = Object.assign({}, stamped, { id: "r-late", at: "2026-08-18T12:00:00.000Z", from: "mom", text: "new for Bennett" });
+const lateFam = Game.emptyFamily();
+lateFam.notes = askFam.notes.concat([lateReply]);
+assert(Game.inboxUnreadCount(lateFam, "bennett") >= 1, "Bennett badges a parent reply newer than his cursor");
+localStorage.setItem("bw-messages-seen-mom", "2020-01-01T00:00:00.000Z");
+assert(Game.inboxUnreadCount(lateFam, "mom") >= 1, "Mom badges Bennett asks newer than her cursor");
+localStorage.setItem("bw-messages-seen-me", "2020-01-01T00:00:00.000Z");
+assert(Game.inboxUnreadCount(lateFam, "me") >= 1, "Dad badges Mom replies newer than his cursor");
+Game.markInboxSeen("bennett");
+assert.strictEqual(Game.inboxUnreadCount(lateFam, "bennett"), 0, "opening Messages clears only Bennett's badge");
+assert(Game.inboxUnreadCount(lateFam, "me") >= 1, "clearing Bennett seen must not clear Dad");
+const parentJsSrc = fs.readFileSync(path.join(root, "js/parent.js"), "utf8");
+assert(/parentNoteFrom\(\)/.test(parentJsSrc) && /sendParentReply/.test(parentJsSrc), "parent desk stamps mom/orin on replies and notes");
+assert(/isParentAuthor/.test(parentJsSrc), "parent desk lists mom/orin/parent notes");
+assert(!/from:\s*["']parent["']/.test(parentJsSrc), "parent.js no longer writes from parent");
+assert(!/from:\s*["']dad["']/.test(gameSrc) && !/from:\s*["']dad["']/.test(parentJsSrc), "do not write from dad");
+assert.strictEqual(Game.emptyFamily().inboxSeen, undefined, "empty family has no inboxSeen");
 
 function fakeEl(tag) {
   const el = {
@@ -1463,7 +1520,7 @@ assert.strictEqual(JSON.parse(store["bw-telemetry"]).role, "orin", "device role 
 const viewBox = hud.children[0];
 assert(viewBox && viewBox.getAttribute("aria-label") === "Preview as", "view control exists");
 assert(adminChip.hidden && parentChip.hidden && refsChip.hidden, "bennett hides admin");
-assert(messagesChip.hidden, "Bennett view hides the Messages chip");
+assert(!messagesChip.hidden, "Bennett view shows the Messages chip");
 assert(!basecampChip.hidden, "Bennett kid view can reach Base Camp");
 assert(!Game.shouldGateAdultPage("basecamp.html", "bennett"), "Base Camp is not an adult desk");
 assert(Game.audioAllowed(), "Bennett still hears audio");

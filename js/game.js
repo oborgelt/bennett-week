@@ -659,7 +659,7 @@
         id: uid("n"),
         targetType: "work",
         targetId: id,
-        from: src.addedBy === "parent" ? "parent" : "bennett",
+        from: src.addedBy === "parent" ? parentNoteFrom() : "bennett",
         kind: "note",
         text: noteText,
         at: nowIso(),
@@ -4072,8 +4072,101 @@
     return !!(n && n.from === "bennett" && n.kind !== "note" && String(n.text || "").trim());
   }
 
+  function isParentAuthor(n) {
+    const from = n && typeof n === "object" ? n.from : n;
+    return from === "parent" || from === "mom" || from === "orin";
+  }
+
   function isParentReply(n) {
-    return !!(n && n.from === "parent" && (n.kind === "reply" || n.replyTo) && String(n.text || "").trim());
+    return !!(n && isParentAuthor(n) && (n.kind === "reply" || n.replyTo) && String(n.text || "").trim());
+  }
+
+  function parentNoteFrom() {
+    const role = String(telemetryDeviceRole() || "").trim().toLowerCase();
+    if (role === "parent") return "mom";
+    if (role === "orin") return "orin";
+    if (!role) return siteView() === "mom" ? "mom" : "orin";
+    return "orin";
+  }
+
+  function noteAuthorLabel(note, view) {
+    const v = normalizeSiteView(view || siteView());
+    const from = note && note.from;
+    const reply = isParentReply(note);
+    const noted = !!(note && note.kind === "note" && !reply);
+    const own = (from === "bennett" && v === "bennett")
+      || (from === "mom" && v === "mom")
+      || (from === "orin" && v === "me");
+    if (own) {
+      if (reply) return "You replied";
+      if (noted) return "You noted";
+      return "You asked";
+    }
+    if (from === "bennett") return noted ? "Bennett noted" : "Bennett asked";
+    if (from === "mom") return reply ? "Mom replied" : "Mom noted";
+    if (from === "orin") return reply ? "Dad replied" : "Dad noted";
+    if (from === "parent") return reply ? "Mom/Dad replied" : "Parent note";
+    if (reply) return "Mom/Dad replied";
+    if (noted) return "Parent note";
+    return "Note";
+  }
+
+  function inboxSeenStorageKey(view) {
+    return "bw-messages-seen-" + normalizeSiteView(view || siteView());
+  }
+
+  function getInboxSeen(view) {
+    try {
+      return String(localStorage.getItem(inboxSeenStorageKey(view)) || "");
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function setInboxSeen(view, iso) {
+    try {
+      localStorage.setItem(inboxSeenStorageKey(view), String(iso || nowIso()));
+    } catch (_) {}
+    return getInboxSeen(view);
+  }
+
+  function ensureInboxSeen(view) {
+    const cur = getInboxSeen(view);
+    if (cur) return cur;
+    return setInboxSeen(view, nowIso());
+  }
+
+  function markInboxSeen(view) {
+    return setInboxSeen(view, nowIso());
+  }
+
+  function noteIsNewer(note, seen) {
+    return !!(note && note.at && String(note.at) > String(seen || ""));
+  }
+
+  function inboxUnreadCount(family, view) {
+    const v = normalizeSiteView(view || siteView());
+    if (!getInboxSeen(v)) {
+      setInboxSeen(v, nowIso());
+      return 0;
+    }
+    const seen = getInboxSeen(v);
+    const notes = (family && family.notes) || [];
+    let n = 0;
+    notes.forEach((note) => {
+      if (!note || !String(note.text || "").trim()) return;
+      if (!noteIsNewer(note, seen)) return;
+      if (v === "bennett") {
+        if (isParentReply(note)) n += 1;
+        return;
+      }
+      if (v === "mom") {
+        if (isBennettAsk(note) || (isParentReply(note) && note.from === "orin")) n += 1;
+        return;
+      }
+      if (isBennettAsk(note) || (isParentReply(note) && note.from === "mom")) n += 1;
+    });
+    return n;
   }
 
   function parentRepliesForAsk(family, ask) {
@@ -4255,7 +4348,7 @@
       id: uid("note"),
       targetType: q.targetType,
       targetId: q.targetId,
-      from: "parent",
+      from: parentNoteFrom(),
       kind: "reply",
       replyTo: q.id,
       text: body,
@@ -4267,17 +4360,26 @@
 
   function messagesInboxHtml(family, week, opts) {
     const o = opts || {};
+    const view = normalizeSiteView(o.view || siteView());
+    const canEdit = o.canEdit !== false && view !== "bennett";
     const asks = sortNotesNewest(bennettAsks(family));
     const open = asks.filter((ask) => !askHasParentReply(family, ask));
     const done = asks.filter((ask) => askHasParentReply(family, ask));
     if (!asks.length) {
+      const kid = view === "bennett";
       const hint = o.missingTable
-        ? "Asks still save on this device. The cloud table is not set up yet."
+        ? (kid
+          ? "Asks still save on this device. The cloud table is not set up yet."
+          : "Asks still save on this device. The cloud table is not set up yet.")
         : (o.offline
-          ? "Asks stay on this phone until Admin → Connect. Then Mom, Dad, and this laptop share them."
-          : "When he taps Ask on a week card, it shows up here on every connected phone.");
+          ? (kid
+            ? "Asks stay on this phone until a parent turns on Connect."
+            : "Asks stay on this phone until Admin → Connect. Then Mom, Dad, and this laptop share them.")
+          : (kid
+            ? "Ask on a week card. When Mom or Dad writes back, you can read who replied here."
+            : "When he taps Ask on a week card, it shows up here on every connected phone."));
       return `<div class="messages-empty">
-        <p class="empty">No asks from Bennett yet.</p>
+        <p class="empty">${kid ? "No messages yet." : "No asks from Bennett yet."}</p>
         <p class="messages-empty-hint">${esc(hint)}</p>
       </div>`;
     }
@@ -4287,27 +4389,37 @@
       const replies = parentRepliesForAsk(family, ask);
       const replyHtml = replies.map((r) => `
         <div class="msg-reply">
-          <p class="msg-reply-kicker">Mom/Dad replied</p>
+          <p class="msg-reply-kicker">${esc(noteAuthorLabel(r, view))}</p>
           <p class="msg-reply-text">${esc(r.text)}</p>
           <p class="msg-stamp">${esc(fmtStamp(r.at))}</p>
         </div>`).join("");
-      const composer = unanswered ? `
+      const composer = (canEdit && unanswered) ? `
         <label class="msg-reply-label">Reply
           <textarea data-reply="${esc(ask.id)}" maxlength="280" rows="3" placeholder="A short answer he will see on that card"></textarea>
         </label>
         <div class="parent-actions">
           <button type="button" class="btn primary" data-send-reply="${esc(ask.id)}">Send reply</button>
         </div>` : "";
+      const kicker = canEdit
+        ? (unanswered ? "Needs a reply" : "Answered")
+        : noteAuthorLabel(ask, view);
+      const askFrom = canEdit
+        ? `<p class="msg-ask-from">${esc(noteAuthorLabel(ask, view))}</p>`
+        : "";
       return `
         <article class="inbox-card msg-card${unanswered ? " msg-card-open" : " msg-card-done"}">
-          <p class="msg-kicker">${unanswered ? "Needs a reply" : "Answered"}</p>
+          <p class="msg-kicker">${esc(kicker)}</p>
           <h3>${ask.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}${day ? " · " + esc(day) : ""}</h3>
+          ${askFrom}
           <p class="msg-ask">${esc(ask.text)}</p>
           <p class="msg-stamp">${esc(fmtStamp(ask.at))}</p>
           ${replyHtml}
           ${composer}
         </article>`;
     };
+    if (!canEdit) {
+      return `<section class="msg-section">${asks.map((ask) => card(ask, false)).join("")}</section>`;
+    }
     const openHtml = open.length
       ? `<section class="msg-section"><h2>Needs a reply</h2>${open.map((ask) => card(ask, true)).join("")}</section>`
       : "";
@@ -4321,6 +4433,7 @@
     const o = opts || {};
     let family = o.family;
     if (!root || !root.querySelectorAll) return family;
+    if (o.canEdit === false || siteView() === "bennett") return family;
     root.querySelectorAll("[data-send-reply]").forEach((b) => {
       b.addEventListener("click", () => {
         const id = b.getAttribute("data-send-reply");
@@ -4412,7 +4525,7 @@
   function paintMessagesChip(family) {
     if (!document.querySelectorAll) return 0;
     const fam = family || getFamilyDraft() || emptyFamily();
-    const n = unansweredAskCount(fam);
+    const n = inboxUnreadCount(fam);
     Array.from(document.querySelectorAll(".messages-chip") || []).forEach((chip) => {
       if (!chip) return;
       if (chip.classList && chip.classList.toggle) chip.classList.toggle("has-unread", n > 0);
@@ -4426,26 +4539,24 @@
         badge.hidden = n === 0;
       }
       if (chip.setAttribute) {
-        chip.setAttribute("aria-label", n ? "Messages, " + n + " unanswered" : "Messages");
+        chip.setAttribute("aria-label", n ? "Messages, " + n + " new" : "Messages");
       }
     });
     return n;
   }
 
-  function hideMessagesChip(view) {
+  function hideMessagesChip() {
     if (!document.querySelectorAll) return;
-    const hide = normalizeSiteView(view || siteView()) === "bennett";
     const nodes = document.querySelectorAll(".messages-chip, a[href='messages.html']");
     Array.from(nodes || []).forEach((el) => {
       if (!el) return;
       if (el.closest && el.closest(".site-view-gate")) return;
-      el.hidden = !!hide;
+      el.hidden = false;
     });
   }
 
-  function shouldBounceMessagesPage(file, view) {
-    const name = String(file || pageFile()).toLowerCase();
-    return name === "messages.html" && normalizeSiteView(view || siteView()) === "bennett";
+  function shouldBounceMessagesPage() {
+    return false;
   }
 
   function bounceMessagesIfKid() {
@@ -4965,7 +5076,13 @@
     notesFor,
     addNote,
     isBennettAsk,
+    isParentAuthor,
     isParentReply,
+    parentNoteFrom,
+    noteAuthorLabel,
+    markInboxSeen,
+    getInboxSeen,
+    inboxUnreadCount,
     parentRepliesForAsk,
     askHasParentReply,
     bennettAsks,
