@@ -437,6 +437,11 @@
     const status = canvasStatusLabel(c);
     if (status) bits.push(status);
     if (c.points != null) bits.push(c.points + " pt" + (Number(c.points) === 1 ? "" : "s"));
+    if (c.submitted_at) {
+      const submitted = parseLocal(c.submitted_at);
+      bits.push("submitted " + dateLabel(submitted) + " " + fmtTime(c.submitted_at));
+    }
+    if (c.status === "submitted" && c.score == null && c.grade == null) bits.push("ungraded");
     if (c.submit === "paper") bits.push("submitting on paper");
     const dueBits = canvasDueBits(w);
     return `
@@ -484,16 +489,24 @@
     const want = String(classId || "");
     const lines = [];
     const chem = work.find((w) => w.id === "chem-about-me" && canvasOf(w));
+    const chemDisc = work.find((w) => w.id === "chem-aboutme-disc" && canvasOf(w));
+    const web11 = work.find((w) => w.id === "web-11" && canvasOf(w));
     const comics = work.find((w) => w.id === "eng-comics" && canvasOf(w));
     const names = work.find((w) => w.id === "eng-names" && canvasOf(w) && w.canvas.status === "submitted");
     if (chem && Game.classIdForWork(chem) === want) {
-      lines.push("Chemistry About Me Slides is due " + nightWhen(chem.due) + " (was missing here).");
+      lines.push("Chemistry About Me Slides assignment is due " + nightWhen(chem.due) + " (was missing here).");
+    }
+    if (chemDisc && Game.classIdForWork(chemDisc) === want) {
+      lines.push("Chemistry About Me Slides discussion is due " + nightWhen(chemDisc.due) + ".");
+    }
+    if (web11 && Game.classIdForWork(web11) === want) {
+      lines.push("Web Design 1.1 What is the Web is open, 20 points, due Wednesday 9:20 a.m.");
     }
     if (comics && Game.classIdForWork(comics) === want) {
       lines.push("Comic official due is Thursday night, paper, plus a paragraph on the back.");
     }
     if (names && Game.classIdForWork(names) === want) {
-      lines.push("Name video: Canvas says submitted.");
+      lines.push("Name video: Canvas says submitted 8/17 1:14pm, ungraded.");
     }
     if (!lines.length) return "";
     return `
