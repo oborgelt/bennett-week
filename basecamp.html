@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
   <title>Jungle Jam · Base Camp</title>
-  <link rel="stylesheet" href="css/theme.css?v=106">
+  <link rel="stylesheet" href="css/theme.css?v=107">
   <script>
     (function () {
       try {
@@ -42,6 +42,21 @@
     <button type="button" class="bc-intro-play" id="bc-intro-play" hidden>Tap to enter</button>
   </div>
   <header class="week-head">
+    <div class="hud-bar progress-hud">
+      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
+    <div class="hud-nav">
+        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
+        <a class="trophy-chip" href="index.html?room=1" aria-label="Trophy Room"><span class="trophy-chip-full">Trophy Room</span><span class="trophy-chip-short">Trophies</span></a>
+        <a class="progress-chip" href="progress.html" aria-label="Progress"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
+        <a class="crew-chip" href="characters.html" aria-label="Characters"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
+        <a class="basecamp-chip on" href="basecamp.html" aria-current="page" aria-label="Base Camp"><span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span></a>
+        <a class="story-chip" id="story-chip" href="story.html" hidden>Story</a>
+        <a class="messages-chip" href="messages.html" aria-label="Messages"><span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span></a>
+        <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
+        <a class="admin-chip" href="admin.html">Admin</a>
+        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
+      </div>
+    </div>
     <div class="banner-wrap">
       <a class="banner-home" href="index.html" aria-label="Jungle Jam home · This week"></a>
       <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
@@ -52,19 +67,6 @@
       <div class="build-stamp" id="build-stamp">
         <span>Build 101</span>
         <span>8/17, 10:42 PM</span>
-      </div>
-    </div>
-    <div class="hud-bar progress-hud">
-      <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
-      <div class="hud-nav">
-        <a class="week-chip" href="index.html"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
-        <a class="progress-chip" href="progress.html"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
-        <a class="crew-chip" href="characters.html"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
-        <a class="basecamp-chip on" href="basecamp.html" aria-current="page"><span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span></a>
-        <a class="messages-chip" href="messages.html" aria-label="Messages"><span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span></a>
-        <a class="parent-chip" href="parent.html"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
-        <a class="admin-chip" href="admin.html">Admin</a>
-        <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
     </div>
   </header>
@@ -161,11 +163,11 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="js/build.js?v=106"></script>
-  <script src="js/game.js?v=106"></script>
-  <script src="js/telemetry.js?v=106"></script>
-  <script src="js/tutor.js?v=106"></script>
-  <script src="js/ptable.js?v=106"></script>
-  <script src="js/basecamp.js?v=106"></script>
+  <script src="js/build.js?v=107"></script>
+  <script src="js/game.js?v=107"></script>
+  <script src="js/telemetry.js?v=107"></script>
+  <script src="js/tutor.js?v=107"></script>
+  <script src="js/ptable.js?v=107"></script>
+  <script src="js/basecamp.js?v=107"></script>
 </body>
 </html>
