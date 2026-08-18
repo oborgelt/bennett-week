@@ -1987,11 +1987,32 @@
     const shelf = document.getElementById("shelf");
     const stage = document.getElementById("trophy-stage");
     const door = document.getElementById("trophies");
+    function syncTrophyHud(on) {
+      if (Game.paintHudCurrent) Game.paintHudCurrent(on ? "trophy" : "week");
+    }
+    function clearTrophyRoomUrl() {
+      try {
+        if (!window.history || !history.replaceState) return;
+        const url = new URL(location.href);
+        let dirty = false;
+        if (url.searchParams.get("room") === "1") {
+          url.searchParams.delete("room");
+          dirty = true;
+        }
+        if (url.hash === "#trophy" || url.hash === "#trophies") {
+          url.hash = "";
+          dirty = true;
+        }
+        if (dirty) history.replaceState({}, "", url.pathname + url.search + url.hash);
+      } catch (_) {}
+    }
     function closeShelf() {
       resetTrophyView();
       renderTrophyChrome();
       shelf.classList.remove("open");
       document.body.classList.remove("in-treehouse");
+      clearTrophyRoomUrl();
+      syncTrophyHud(false);
       if (door) door.focus();
     }
     function openShelf() {
@@ -2001,6 +2022,7 @@
       renderShelf();
       document.body.classList.add("in-treehouse");
       shelf.classList.add("open");
+      syncTrophyHud(true);
       applyTrophyLook();
       const leave = document.getElementById("trophy-leave");
       if (leave) leave.focus();
@@ -2019,7 +2041,11 @@
       }, Game.prefersReducedMotion() ? 0 : 1200);
     }
     door.addEventListener("click", openShelf);
-    if (location.hash === "#trophies") openShelf();
+    document.addEventListener("bw-open-trophy-room", openShelf);
+    document.addEventListener("bw-close-trophy-room", closeShelf);
+    if ((Game.wantsTrophyRoom && Game.wantsTrophyRoom()) || location.hash === "#trophies" || /(?:^|[?&])room=1(?:&|$)/.test(location.search || "")) {
+      openShelf();
+    }
     document.getElementById("trophy-leave").addEventListener("click", (e) => {
       e.stopPropagation();
       if (trophyZone) leaveTrophyZone();

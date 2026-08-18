@@ -96,8 +96,7 @@ header.week-head {
 
 .banner-wrap {
   position: relative;
-  margin: 0 10px;
-  margin-top: max(6px, env(safe-area-inset-top));
+  margin: 6px 10px 0;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -160,11 +159,15 @@ header.week-head {
 }
 
 .hud-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: grid;
   grid-template-columns: auto 1fr auto auto;
   gap: 6px;
   align-items: center;
-  padding: 6px 12px 2px;
+  padding: max(6px, env(safe-area-inset-top)) 12px 6px;
+  background: var(--bg);
 }
 
 .hud-nav {
@@ -334,6 +337,7 @@ body.site-view-kid .add-work-row {
 .progress-chip,
 .crew-chip,
 .week-chip,
+.trophy-chip,
 .basecamp-chip,
 .messages-chip {
   min-height: 36px;
@@ -352,6 +356,7 @@ body.site-view-kid .add-work-row {
 .progress-chip,
 .crew-chip,
 .week-chip,
+.trophy-chip,
 .basecamp-chip,
 .messages-chip {
   display: inline-flex;
@@ -376,13 +381,15 @@ body.site-view-kid .add-work-row {
   background: rgba(198, 224, 58, 0.22);
 }
 
-.week-chip {
+.week-chip,
+.trophy-chip {
   border-color: rgba(244, 211, 94, 0.4);
   background: rgba(244, 211, 94, 0.12);
   color: var(--banana);
 }
 
-.week-chip.on {
+.week-chip.on,
+.trophy-chip.on {
   background: rgba(244, 211, 94, 0.22);
 }
 
@@ -421,6 +428,23 @@ body.site-view-kid .add-work-row {
   background: rgba(244, 211, 94, 0.22);
 }
 
+.hud-nav a.on,
+.week-chip.on,
+.trophy-chip.on,
+.progress-chip.on,
+.crew-chip.on,
+.basecamp-chip.on,
+.messages-chip.on,
+.parent-chip.on,
+.admin-chip.on,
+.story-chip.on,
+.egg-chip.on {
+  background: linear-gradient(180deg, #ffe08a, #f3c34a);
+  color: #2a1d08;
+  border-color: rgba(243, 195, 74, 0.95);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
 .messages-chip.has-unread {
   background: linear-gradient(180deg, #ffe08a, #f3c34a);
   color: #2a1d08;
@@ -450,6 +474,7 @@ body.site-view-kid .add-work-row {
 .progress-chip-short,
 .crew-chip-short,
 .week-chip-short,
+.trophy-chip-short,
 .basecamp-chip-short,
 .messages-chip-short { display: none; }
 
@@ -458,12 +483,14 @@ body.site-view-kid .add-work-row {
   .progress-chip-full,
   .crew-chip-full,
   .week-chip-full,
+  .trophy-chip-full,
   .basecamp-chip-full,
   .messages-chip-full { display: none; }
   .parent-chip-short,
   .progress-chip-short,
   .crew-chip-short,
   .week-chip-short,
+  .trophy-chip-short,
   .basecamp-chip-short,
   .messages-chip-short { display: inline; }
   .hud-bar {
@@ -1318,7 +1345,7 @@ body.week-page .peek-monkey {
   transition: opacity 0.5s ease;
 }
 
-body.week-page.in-treehouse .week-head,
+body.week-page.in-treehouse .banner-wrap,
 body.week-page.in-treehouse .dots,
 body.week-page.in-treehouse .track,
 body.week-page.in-treehouse nav.week-nav,
@@ -1327,6 +1354,13 @@ body.week-page.in-treehouse .class-switcher,
 body.week-page.in-treehouse .peek-monkey {
   opacity: 0;
   pointer-events: none;
+}
+
+body.week-page.in-treehouse .week-head,
+body.week-page.in-treehouse .hud-bar {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 50;
 }
 
 .sheet-panel {
@@ -1387,6 +1421,7 @@ body.week-page.in-treehouse .peek-monkey {
 .progress-chip,
 .crew-chip,
 .week-chip,
+.trophy-chip,
 .basecamp-chip,
 .messages-chip,
 .site-view-btn,
@@ -4632,17 +4667,27 @@ body.basecamp-page .toast {
   z-index: 1;
 }
 
+body.basecamp-page .week-head,
 body.basecamp-page .hud-bar {
-  margin: 0 10px 4px;
-  padding: 4px 10px;
-  border-radius: 14px;
-  background: rgba(7, 18, 20, 0.58);
-  backdrop-filter: blur(16px) saturate(1.1);
-  -webkit-backdrop-filter: blur(16px) saturate(1.1);
-  border: 1px solid rgba(246, 241, 228, 0.12);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+  flex: 0 0 auto;
 }
 
+body.basecamp-page .hud-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  margin: 0;
+  padding: max(6px, env(safe-area-inset-top)) 12px 6px;
+  border-radius: 0;
+  background: #071618;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 0;
+  border-bottom: 1px solid rgba(246, 241, 228, 0.12);
+  box-shadow: none;
+}
+
+body.basecamp-page .banner-wrap { display: none; }
 body.basecamp-page .banner-wrap img { height: 40px; }
 body.basecamp-page .banner-title h1 { font-size: 0.92rem; }
 body.basecamp-page .banner-title p { display: none; }
@@ -5230,8 +5275,21 @@ body.basecamp-page .bc-tools-drawer > summary {
   .bc-rail-toggle { display: none; }
   html:has(body.basecamp-page),
   body.basecamp-page {
-    height: auto;
+    height: 100dvh;
     min-height: 100dvh;
+    overflow: hidden;
+  }
+  body.basecamp-page {
+    display: flex;
+    flex-direction: column;
+  }
+  body.basecamp-page .week-head,
+  body.basecamp-page .hud-bar {
+    flex: 0 0 auto;
+  }
+  body.basecamp-page .bc-shell {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-x: hidden;
     overflow-y: auto;
   }
@@ -5266,7 +5324,8 @@ body.basecamp-page .bc-tools-drawer > summary {
     flex-direction: column;
     overflow: hidden;
   }
-  body.basecamp-page .week-head { flex: 0 0 auto; }
+  body.basecamp-page .week-head,
+  body.basecamp-page .hud-bar { flex: 0 0 auto; }
   .bc-shell {
     flex: 1 1 auto;
     min-height: 0;

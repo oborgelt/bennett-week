@@ -3674,6 +3674,133 @@
     }
   }
 
+  function wantsTrophyRoom() {
+    try {
+      const loc = global.location || {};
+      const search = String(loc.search || "");
+      const hash = String(loc.hash || "");
+      if (/(?:^|[?&])room=1(?:&|$)/.test(search)) return true;
+      if (hash === "#trophy" || hash === "#trophies") return true;
+    } catch (_) {}
+    return false;
+  }
+
+  function hudCurrent() {
+    const file = String(pageFile() || "").toLowerCase();
+    if (file === "progress.html") return "progress";
+    if (file === "characters.html") return "crew";
+    if (file === "basecamp.html" || file === "ask.html") return "basecamp";
+    if (file === "messages.html") return "messages";
+    if (file === "parent.html") return "parent";
+    if (file === "admin.html") return "admin";
+    if (file === "story.html") return "story";
+    if (file === "egg.html") return "egg";
+    if (document.body && document.body.classList && document.body.classList.contains("in-treehouse")) return "trophy";
+    if (wantsTrophyRoom()) return "trophy";
+    return "week";
+  }
+
+  function hudChip(current, id, cls, href, extraAttrs, inner) {
+    const on = current === id;
+    return `<a class="${cls}${on ? " on" : ""}" href="${href}"${on ? ' aria-current="page"' : ""}${extraAttrs || ""}>${inner}</a>`;
+  }
+
+  function hudNavHtml(current) {
+    const cur = current || hudCurrent();
+    return [
+      hudChip(cur, "week", "week-chip", "index.html", "", `<span class="week-chip-full">This week</span><span class="week-chip-short">Week</span>`),
+      hudChip(cur, "trophy", "trophy-chip", "index.html?room=1", ' aria-label="Trophy Room"', `<span class="trophy-chip-full">Trophy Room</span><span class="trophy-chip-short">Trophies</span>`),
+      hudChip(cur, "progress", "progress-chip", "progress.html", ' aria-label="Progress"', `<span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span>`),
+      hudChip(cur, "crew", "crew-chip", "characters.html", ' aria-label="Characters"', `<span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span>`),
+      hudChip(cur, "basecamp", "basecamp-chip", "basecamp.html", ' aria-label="Base Camp"', `<span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span>`),
+      `<a class="story-chip${cur === "story" ? " on" : ""}" id="story-chip" href="story.html"${cur === "story" ? ' aria-current="page"' : ""} hidden>Story</a>`,
+      hudChip(cur, "messages", "messages-chip", "messages.html", ' aria-label="Messages"', `<span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span>`),
+      hudChip(cur, "parent", "parent-chip", "parent.html", ' aria-label="Parent desk"', `<span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span>`),
+      hudChip(cur, "admin", "admin-chip", "admin.html", "", "Admin"),
+      `<a class="egg-chip${cur === "egg" ? " on" : ""}" id="egg-chip" href="egg.html"${cur === "egg" ? ' aria-current="page"' : ""} hidden>🥚 Play</a>`
+    ].join("");
+  }
+
+  function mountHudNav(current) {
+    if (!document.querySelectorAll) return null;
+    const navs = document.querySelectorAll(".hud-nav");
+    if (!navs || !navs.length) return null;
+    const cur = current || hudCurrent();
+    const storyEl = document.getElementById ? document.getElementById("story-chip") : null;
+    const eggEl = document.getElementById ? document.getElementById("egg-chip") : null;
+    const storyOpen = !!(storyEl && !storyEl.hidden) || cur === "story";
+    const eggOpen = !!(eggEl && !eggEl.hidden) || cur === "egg";
+    const html = hudNavHtml(cur);
+    Array.from(navs).forEach((nav) => {
+      if (!nav) return;
+      try { nav.innerHTML = html; } catch (_) {}
+    });
+    const story = document.getElementById ? document.getElementById("story-chip") : null;
+    const egg = document.getElementById ? document.getElementById("egg-chip") : null;
+    if (story) story.hidden = !storyOpen;
+    if (egg) egg.hidden = !eggOpen;
+    return navs[0];
+  }
+
+  function paintHudCurrent(current) {
+    if (!document.querySelectorAll) return current || hudCurrent();
+    const cur = current || hudCurrent();
+    const map = {
+      week: ".week-chip",
+      trophy: ".trophy-chip",
+      progress: ".progress-chip",
+      crew: ".crew-chip",
+      basecamp: ".basecamp-chip",
+      messages: ".messages-chip",
+      parent: ".parent-chip",
+      admin: ".admin-chip",
+      story: ".story-chip",
+      egg: ".egg-chip"
+    };
+    Object.keys(map).forEach((id) => {
+      Array.from(document.querySelectorAll(map[id]) || []).forEach((el) => {
+        if (!el) return;
+        const on = id === cur;
+        if (el.classList && el.classList.toggle) el.classList.toggle("on", on);
+        else if (el.classList && el.classList.add && el.classList.remove) {
+          if (on) el.classList.add("on");
+          else el.classList.remove("on");
+        }
+        if (el.setAttribute && el.removeAttribute) {
+          if (on) el.setAttribute("aria-current", "page");
+          else el.removeAttribute("aria-current");
+        }
+      });
+    });
+    return cur;
+  }
+
+  function bindHudNavClicks() {
+    if (!document.addEventListener) return;
+    document.addEventListener("click", (e) => {
+      if (!e || !e.target || !e.target.closest) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const trophy = e.target.closest("a.trophy-chip");
+      if (trophy) {
+        const file = pageFile();
+        if (file === "index.html" || file === "" || file === "/") {
+          e.preventDefault();
+          try {
+            document.dispatchEvent(new CustomEvent("bw-open-trophy-room"));
+          } catch (_) {}
+        }
+        return;
+      }
+      const week = e.target.closest("a.week-chip");
+      if (week && document.body && document.body.classList && document.body.classList.contains("in-treehouse")) {
+        e.preventDefault();
+        try {
+          document.dispatchEvent(new CustomEvent("bw-close-trophy-room"));
+        } catch (_) {}
+      }
+    });
+  }
+
   function isAdultDeskPage(file) {
     const name = String(file || pageFile()).toLowerCase();
     return name === "admin.html" || name === "parent.html" || name === "refs.html" || name === "mom.html";
@@ -3799,6 +3926,7 @@
         }
       }
     }
+    mountHudNav();
     mountSiteViewControl();
     mountMessagesChip();
     mountBaseCampChip();
@@ -5098,6 +5226,11 @@
     messagesChipHtml,
     mountMessagesChip,
     paintMessagesChip,
+    hudNavHtml,
+    mountHudNav,
+    paintHudCurrent,
+    hudCurrent,
+    wantsTrophyRoom,
     hideMessagesChip,
     shouldBounceMessagesPage,
     bounceMessagesIfKid,
@@ -5286,11 +5419,13 @@
     paintBuild();
     bindUndoCue();
     applySiteView();
+    bindHudNavClicks();
   } else {
     document.addEventListener("DOMContentLoaded", () => {
       paintBuild();
       bindUndoCue();
       applySiteView();
+      bindHudNavClicks();
     });
   }
 })(window);
