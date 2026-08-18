@@ -2433,6 +2433,50 @@ body.progress-page .peek-monkey {
 .class-item .status.idle { color: var(--muted); }
 
 @media (max-width: 719px) {
+  html:has(body.week-page),
+  body.week-page {
+    height: auto;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  html:has(body.week-page.in-treehouse),
+  body.week-page.in-treehouse {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  body.week-page .standing-classes {
+    max-height: min(22vh, 148px);
+  }
+  body.week-page .track {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+  body.week-page .day,
+  body.week-page .card,
+  body.week-page .card-scroll {
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+  }
+  body.week-page .card-scroll {
+    flex: 0 0 auto;
+    overflow-x: hidden;
+    overflow-y: visible;
+    overscroll-behavior: auto;
+    padding-bottom: max(36px, env(safe-area-inset-bottom));
+  }
+  body.week-page .card::after { display: none; }
+  body.week-page nav.week-nav {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 719px) {
   html:has(body.progress-page),
   body.progress-page {
     height: auto;
