@@ -33,7 +33,14 @@ html, body {
 
 html:has(body.week-page),
 body.week-page {
-  height: 100%;
+  height: auto;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+html:has(body.week-page.in-treehouse),
+body.week-page.in-treehouse {
   height: 100dvh;
   overflow: hidden;
 }
@@ -679,6 +686,34 @@ body.site-view-kid .class-card-tools {
   overscroll-behavior: contain;
   padding-bottom: 28px;
   scrollbar-width: thin;
+}
+
+body.week-page .track {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+body.week-page .day,
+body.week-page .card,
+body.week-page .card-scroll {
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  overflow: visible;
+}
+
+body.week-page .card-scroll {
+  flex: 0 0 auto;
+  overflow-x: hidden;
+  overflow-y: visible;
+  overscroll-behavior: auto;
+}
+
+body.week-page .card::after {
+  display: none;
 }
 
 .card-deco {
@@ -2158,7 +2193,7 @@ body.progress-page .peek-monkey {
 }
 
 .progress-hud {
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
 }
 
 .progress-tagline {
@@ -2167,6 +2202,11 @@ body.progress-page .peek-monkey {
   font-size: 0.72rem;
   font-weight: 650;
   min-width: 0;
+}
+
+.hud-bar .progress-tagline,
+.progress-hud .progress-tagline {
+  display: none;
 }
 
 .dash {
