@@ -103,10 +103,22 @@
       "streak": { "target": 1, "unit": "time" }
     },
     {
+      "id": "ace-three-done",
+      "title": "Meet Ace",
+      "description": "Marked 3 assignments done.",
+      "how": "Bennett taps Done on three assignments. Parents can still award Meet Ace from the desk.",
+      "incentive": "Unlocks Ace",
+      "icon": "tennis",
+      "reward": 0,
+      "rewardCharacter": "ace",
+      "rewardUnlock": { "type": "character", "id": "ace", "label": "Ace" },
+      "unlock": { "type": "done_count", "count": 3 }
+    },
+    {
       "id": "test-ace-closer",
       "title": "Meet Ace",
-      "description": "Award this to unlock Ace for Bennett. Loading the site does not auto-unlock.",
-      "how": "Parents award this when they want Bennett to meet Ace.",
+      "description": "Award this to unlock Ace for Bennett without waiting for 3 dones.",
+      "how": "Parents award this when they want Bennett to meet Ace early. The live path is 3 assignments marked done.",
       "incentive": "Unlocks Ace",
       "icon": "tennis",
       "reward": 10,

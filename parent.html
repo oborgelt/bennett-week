@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Parent desk · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=109">
+  <link rel="stylesheet" href="css/theme.css?v=110">
 </head>
 <body class="parent-page">
   <header class="week-head">
@@ -349,7 +349,8 @@
     {"id": "wrong-number-eggs", "title": "Wrong number of eggs", "description": "Unlocks the office egg game — the dumb one where the eggs are never the right number.", "how": "Parents award this to unlock the game.", "incentive": "Unlocks the egg game", "icon": "banana", "reward": 15, "unlocksGame": "egg", "streak": {"target": 1, "unit": "time"}},
     {"id": "signin-bennett", "title": "Signed in", "description": "Opened Jungle Jam.", "how": "Earned the first time this device opens the lobby or Characters.", "incentive": "Unlocks Bennett", "icon": "badge", "reward": 10, "rewardCharacter": "bennett", "rewardUnlock": {"type": "character", "id": "bennett", "label": "Bennett"}, "streak": {"target": 1, "unit": "time"}},
     {"id": "test-bennett-showup", "title": "Meet Bennett", "description": "Award this to unlock Bennett again. The live path is first sign-in.", "how": "Parents can re-award this from the desk.", "incentive": "Unlocks Bennett", "icon": "badge", "reward": 10, "rewardCharacter": "bennett", "rewardUnlock": {"type": "character", "id": "bennett", "label": "Bennett"}, "streak": {"target": 1, "unit": "time"}},
-    {"id": "test-ace-closer", "title": "Meet Ace", "description": "Award this to unlock Ace for Bennett. Loading the site does not auto-unlock.", "how": "Parents award this when they want Bennett to meet Ace.", "incentive": "Unlocks Ace", "icon": "tennis", "reward": 10, "rewardCharacter": "ace", "rewardUnlock": {"type": "character", "id": "ace", "label": "Ace"}, "streak": {"target": 1, "unit": "time"}},
+    {"id": "ace-three-done", "title": "Meet Ace", "description": "Marked 3 assignments done.", "how": "Bennett taps Done on three assignments.", "incentive": "Unlocks Ace", "icon": "tennis", "reward": 0, "rewardCharacter": "ace", "rewardUnlock": {"type": "character", "id": "ace", "label": "Ace"}, "unlock": {"type": "done_count", "count": 3}},
+    {"id": "test-ace-closer", "title": "Meet Ace", "description": "Award this to unlock Ace for Bennett without waiting for 3 dones.", "how": "Parents award this when they want Bennett to meet Ace early. The live path is 3 assignments marked done.", "incentive": "Unlocks Ace", "icon": "tennis", "reward": 10, "rewardCharacter": "ace", "rewardUnlock": {"type": "character", "id": "ace", "label": "Ace"}, "streak": {"target": 1, "unit": "time"}},
     {"id": "test-riff-reps", "title": "Meet Riff", "reward": 10, "rewardCharacter": "riff", "rewardUnlock": {"type": "character", "id": "riff", "label": "Riff"}, "streak": {"target": 1, "unit": "time"}},
     {"id": "test-scorch-recover", "title": "Meet Scorch", "reward": 10, "rewardCharacter": "scorch", "rewardUnlock": {"type": "character", "id": "scorch", "label": "Scorch"}, "streak": {"target": 1, "unit": "time"}},
     {"id": "test-deuce-return", "title": "Meet Deuce", "reward": 10, "rewardCharacter": "deuce", "rewardUnlock": {"type": "character", "id": "deuce", "label": "Deuce"}, "streak": {"target": 1, "unit": "time"}},
@@ -398,9 +399,9 @@
   }
 }
   </script>
-  <script src="js/build.js?v=109"></script>
-  <script src="js/game.js?v=109"></script>
-  <script src="js/telemetry.js?v=109"></script>
-  <script src="js/parent.js?v=109"></script>
+  <script src="js/build.js?v=110"></script>
+  <script src="js/game.js?v=110"></script>
+  <script src="js/telemetry.js?v=110"></script>
+  <script src="js/parent.js?v=110"></script>
 </body>
 </html>

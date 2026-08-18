@@ -30,6 +30,9 @@
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew", "fun"];
   const TEAMMATE_IDS = ["ace", "riff", "scorch", "deuce", "fuzz"];
+  const WORK_ACTION_BANANAS = 1;
+  const ACE_DONE_COUNT = 3;
+  const ACE_DONE_ACHIEVEMENT = "ace-three-done";
   const SIGNIN_ACHIEVEMENT = "signin-bennett";
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
   const GEAR_SLOTS = ["tool", "weapon", "ability", "outfit"];
@@ -3421,7 +3424,7 @@
         first = !cur.startedAwarded;
         if (first) {
           cur.startedAwarded = true;
-          addBananas(2);
+          addBananas(WORK_ACTION_BANANAS);
         }
       }
     } else if (kind === "done") {
@@ -3432,7 +3435,7 @@
         first = !cur.doneAwarded;
         if (first) {
           cur.doneAwarded = true;
-          addBananas(3);
+          addBananas(WORK_ACTION_BANANAS);
         }
       }
     }
@@ -3482,15 +3485,38 @@
 
   function evaluate(ach, ctx) {
     const rule = ach.unlock || {};
-    if (rule.type === "easter_egg") return !!(ctx.eggs && ctx.eggs[rule.egg]);
+    if (rule.type === "easter_egg") return !!(ctx && ctx.eggs && ctx.eggs[rule.egg]);
+    if (rule.type === "done_count") return doneAssignmentCount() >= (Number(rule.count) || 0);
     return false;
   }
 
+  function doneAssignmentCount() {
+    const all = getProgress();
+    return Object.keys(all).filter((id) => !!(all[id] && workState(id).done)).length;
+  }
+
+  function applyLiveUnlocks(pack, family, ctx) {
+    let next = normalizeFamily(family);
+    const fresh = [];
+    const grantedCharacters = [];
+    ((pack && pack.achievements) || []).forEach((ach) => {
+      if (!ach || alreadyUnlocked(ach.id)) return;
+      if (!evaluate(ach, ctx || {})) return;
+      const result = awardStreak(pack, next, ach.id);
+      next = result.family;
+      if (result.achievement) fresh.push(result.achievement);
+      if (result.freshCharacter && result.grantedCharacter) grantedCharacters.push(result.grantedCharacter);
+    });
+    return { family: next, fresh, grantedCharacters };
+  }
+
   function checkUnlocks(pack, ctx) {
+    const family = ctx && ctx.family;
+    if (family) return applyLiveUnlocks(pack, family, ctx).fresh;
     const fresh = [];
     (pack.achievements || []).forEach((ach) => {
       if (alreadyUnlocked(ach.id)) return;
-      if (!evaluate(ach, ctx)) return;
+      if (!evaluate(ach, ctx || {})) return;
       if (markUnlocked(ach.id)) {
         addBananas(bananasOf(ach));
         fresh.push(ach);
@@ -4229,6 +4255,9 @@
     if (!row.at) row.at = nowIso();
     next.notes = next.notes.concat([row]);
     saveFamily(next);
+    if (row.from === "bennett" && String(row.text || "").trim()) {
+      addBananas(WORK_ACTION_BANANAS);
+    }
     track(row.kind === "question" ? "ask_parent" : "work_note", {
       assignmentId: row.targetId || "",
       classId: row.classId || "",
@@ -5307,10 +5336,10 @@
     const ids = [];
     const seen = Object.create(null);
     ((pack && pack.achievements) || []).forEach((ach) => {
-      if (ach && ach.id && !seen[ach.id]) {
-        seen[ach.id] = true;
-        ids.push(ach.id);
-      }
+      if (!ach || !ach.id || seen[ach.id]) return;
+      if (ach.unlock && ach.unlock.type) return;
+      seen[ach.id] = true;
+      ids.push(ach.id);
     });
     PREVIEW_AWARD_IDS.forEach((id) => {
       if (!seen[id]) {
@@ -5484,6 +5513,11 @@
     recordHelp,
     helpOpens,
     checkUnlocks,
+    applyLiveUnlocks,
+    doneAssignmentCount,
+    WORK_ACTION_BANANAS,
+    ACE_DONE_COUNT,
+    ACE_DONE_ACHIEVEMENT,
     awardAchievement,
     awardStreak,
     revokeUnlock,

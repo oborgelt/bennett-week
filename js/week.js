@@ -218,13 +218,15 @@
   }
 
   function runUnlocks(extra) {
-    const fresh = Game.checkUnlocks(pack, {
+    const result = Game.applyLiveUnlocks(pack, family, {
       week,
       eggs: Game.getEggs(),
       viewedEvents,
       ...(extra || {})
     });
-    fresh.forEach((ach) => Game.celebrate(ach, pack));
+    family = result.family;
+    result.fresh.forEach((ach) => Game.celebrate(ach, pack));
+    if (roster) Game.maybePlayUnlockCelebration(roster);
     hud();
     if (document.getElementById("shelf").classList.contains("open")) renderShelf();
   }
@@ -725,7 +727,7 @@
           Game.playWorkActionCue(family, library, id, "done");
         }
         refreshCardsInPlace();
-        hud();
+        runUnlocks();
       });
     });
     track.querySelectorAll("[data-ask]").forEach((btn) => {
@@ -1617,6 +1619,7 @@
       closeSheet();
       Game.toast("Note saved on this device.");
       refreshCardsInPlace();
+      hud();
     });
     document.getElementById("note-text").focus();
   }
@@ -1651,6 +1654,7 @@
       closeSheet();
       Game.toast("Sent to Messages.");
       refreshCardsInPlace();
+      hud();
     });
     document.getElementById("ask-text").focus();
   }
