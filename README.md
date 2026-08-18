@@ -11,7 +11,7 @@ Orin’s DNA: **high learning + high silliness**. Story, unlocks, and school wor
 1. Download this repo (Code → Download ZIP) or clone it.
 2. Open `index.html` in a browser. Works on a phone or laptop, including `file://`.
 3. Swipe the cards, tap the dots, or use **Prev / Next** (arrow keys work on a laptop).
-4. Tap **I started this** / **Done** on work items. **Undo**, **Edit**, and **Delete** are the small buttons. Done stays the big lime control. No confirm on undo. Scroll a day card if notes sit below the fold. The **Classes** strip is Bennett’s S1 ParentVUE roster (period + name + time) — all 8 classes, even with nothing due, plus Khan links where we have a real public course.
+4. Tap **I started this** / **Done** on work items. **Undo**, **Edit**, and **Delete** are the small buttons. Done stays the big lime control. No confirm on undo. Scroll a day card if notes sit below the fold. The **Classes** strip is Bennett’s S1 ParentVUE roster (period + name + time) — all 8 classes, even with nothing due, plus Khan links where we have a real public course. Done / Started sync through `POST https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/family-sync` — same public function pattern as Ask AI, no Admin Connect on Bennett’s phone. Keys stay out of the repo.
 5. Tap **🏆** to walk into the treehouse. The still is the room — look around, tap a glowing spot to walk up. Earned trophies sit in the scene; tap one for a small plaque. Empty room is still the treehouse. Edit / Undo / drag-reorder live on the **Parent desk**, not in Bennett’s room. Open **Characters** (HUD **Crew** on a phone) for teammates. Locked slots are silhouettes — no talent spoilers. Bennett (his own avatar) unlocks the first time he opens the lobby or Characters. When Ace / Riff / Scorch / Deuce / Fuzz is awarded, play that locker clip. After 3 teammate unlocks, **Story** appears on the HUD (not just a toast). Bennett does not count toward that 3.
 6. **Ask** on any task or event sends a question to the parent desk. Parent notes show on that item.
 7. One reflection prompt at a time on Today. A sentence or two lands in the parent inbox.
@@ -113,6 +113,7 @@ On the lobby **Classes** strip, Progress empty-class rows, **A little help**, As
 - Big chat + composer. Take photo (`capture="environment"`) or upload. Images compress on the phone (max edge ~1200px JPEG) and go to the tutor. PDF shows a name chip only.
 - Photo is OK; he still has to name the givens. Geometry packet first (Foster): points/lines/planes, angles, vertical/adjacent, complementary/supplementary, triangle sum.
 - Live: `POST https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/ask` with `className`, `messages`, optional `images: [{ mime, data }]`. Token header only if Connect is present. Then `/api/ask`. Keys never go in frontend JS or this repo.
+- Done / Started: `POST https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/family-sync` (`{ pull: true }` or assignment rows). No anon key, service role, or family token in the browser. Admin Connect remains a REST fallback.
 - Offline fallback is the same coach: attempt first, no packet answers, no fake “I can see your photo.”
 - Kid view: no Admin / Edit / Delete / Parent desk chrome. He can start a new session.
 - Export / import includes Base Camp sessions; image blobs are best-effort IndexedDB, not localStorage JPEGs.

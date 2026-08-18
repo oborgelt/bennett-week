@@ -8,6 +8,7 @@
   const SLOW_MS = 2000;
   const FLUSH_MS = 8000;
   const ROLES = ["bennett", "parent", "orin"];
+  const FAMILY_SYNC_URL = "https://uhbpfmbfhyqjvkcymbxf.supabase.co/functions/v1/family-sync";
 
   const memoryQueue = [];
   let dbReady = null;
@@ -65,6 +66,27 @@
   function connected() {
     const cfg = getConfig();
     return !!(cfg.url && cfg.anonKey && cfg.familyToken);
+  }
+
+  function progressSyncAvailable() {
+    return !!FAMILY_SYNC_URL;
+  }
+
+  async function familySyncRequest(method, body) {
+    const init = {
+      method: method || "POST",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store"
+    };
+    if (body !== undefined) init.body = JSON.stringify(body);
+    const res = await fetch(FAMILY_SYNC_URL, init);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || (data && data.error)) {
+      const err = new Error((data && data.error) || ("family-sync " + res.status));
+      err.status = res.status;
+      throw err;
+    }
+    return data;
   }
 
   function deviceId() {
@@ -451,36 +473,63 @@
     };
   }
 
-  async function fetchProgress() {
-    const rows = await query("/rest/v1/family_progress?select=*&order=updated_at.asc");
-    return Array.isArray(rows) ? rows : [];
-  }
-
-  async function upsertProgress(rows) {
-    const cfg = getConfig();
-    const payload = (rows || []).map((row) => {
+  function progressRowsForSync(rows, familyToken) {
+    return (rows || []).map((row) => {
       const rec = row && row.rec ? row.rec : row;
       const id = (row && (row.assignment_id || row.id)) || (rec && (rec.assignment_id || rec.id));
-      const mapped = progressToRow(id, rec, cfg.familyToken, deviceId());
+      const mapped = progressToRow(id, rec, familyToken || "", deviceId());
       if (row && row.family_token) mapped.family_token = row.family_token;
       return mapped;
     }).filter((row) => row && (row.assignment_id || row.id));
-    if (!payload.length) return [];
+  }
+
+  function progressRowsForFunction(rows) {
+    return progressRowsForSync(rows, "").map((row) => {
+      const next = Object.assign({}, row);
+      delete next.family_token;
+      return next;
+    });
+  }
+
+  async function fetchProgress() {
     try {
-      return await rest("/rest/v1/family_progress?on_conflict=family_token,assignment_id", {
-        method: "POST",
-        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-        body: JSON.stringify(payload)
-      });
+      const data = await familySyncRequest("POST", { pull: true });
+      return Array.isArray(data && data.progress) ? data.progress : [];
     } catch (err) {
-      if (!isMissingTable(err) && err && err.status >= 400) {
-        return rest("/rest/v1/family_progress?on_conflict=id", {
-          method: "POST",
-          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-          body: JSON.stringify(payload)
-        });
+      if (connected()) {
+        const rows = await query("/rest/v1/family_progress?select=*&order=updated_at.asc");
+        return Array.isArray(rows) ? rows : [];
       }
       throw err;
+    }
+  }
+
+  async function upsertProgress(rows) {
+    const payload = progressRowsForFunction(rows);
+    if (!payload.length) return { ok: true, n: 0 };
+    try {
+      return await familySyncRequest("POST", { rows: payload });
+    } catch (err) {
+      if (!connected()) throw err;
+      const cfg = getConfig();
+      const restPayload = progressRowsForSync(rows, cfg.familyToken);
+      if (!restPayload.length) return [];
+      try {
+        return await rest("/rest/v1/family_progress?on_conflict=family_token,assignment_id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify(restPayload)
+        });
+      } catch (restErr) {
+        if (!isMissingTable(restErr) && restErr && restErr.status >= 400) {
+          return rest("/rest/v1/family_progress?on_conflict=id", {
+            method: "POST",
+            headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+            body: JSON.stringify(restPayload)
+          });
+        }
+        throw restErr;
+      }
     }
   }
 
@@ -598,6 +647,8 @@
     getConfig,
     setConfig,
     connected,
+    progressSyncAvailable,
+    FAMILY_SYNC_URL,
     deviceId,
     track,
     flush,
