@@ -274,8 +274,7 @@ body.site-view-kid [data-edit],
 body.site-view-kid [data-del],
 body.site-view-kid [data-undo-trophy],
 body.site-view-kid [data-add-item],
-body.site-view-kid .class-card-tools,
-body.site-view-kid .add-work-row {
+body.site-view-kid .class-card-tools {
   display: none !important;
 }
 
@@ -653,6 +652,45 @@ body.site-view-kid .add-work-row {
 
 .class-pane-stack .later h3 {
   color: var(--due);
+}
+
+.later-board {
+  margin: 4px 14px 28px;
+  padding: 12px 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(7, 22, 24, 0.55);
+  overflow: visible;
+}
+
+.later-board[hidden] {
+  display: none;
+}
+
+.later-board h3 {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--due);
+}
+
+.later-board .later-group {
+  margin: 0 0 14px;
+}
+
+.later-board .later-group:last-child {
+  margin-bottom: 0;
+}
+
+.later-board .later-week {
+  margin: 0 0 6px;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.later-board .add-work-row {
+  margin: 10px 0 0;
 }
 
 .dots {
@@ -1343,6 +1381,7 @@ body.week-page .week-head,
 body.week-page .dots,
 body.week-page .track,
 body.week-page nav.week-nav,
+body.week-page .later-board,
 body.week-page .draft-flag,
 body.week-page .class-switcher,
 body.week-page .peek-monkey {
@@ -1353,6 +1392,7 @@ body.week-page.in-treehouse .banner-wrap,
 body.week-page.in-treehouse .dots,
 body.week-page.in-treehouse .track,
 body.week-page.in-treehouse nav.week-nav,
+body.week-page.in-treehouse .later-board,
 body.week-page.in-treehouse .draft-flag,
 body.week-page.in-treehouse .class-switcher,
 body.week-page.in-treehouse .peek-monkey {
@@ -2599,7 +2639,11 @@ body.progress-page .peek-monkey {
   }
   body.week-page .card::after { display: none; }
   body.week-page nav.week-nav {
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding-bottom: 8px;
+  }
+  body.week-page .later-board {
+    margin-bottom: max(28px, env(safe-area-inset-bottom));
+    overflow: visible;
   }
 }
 

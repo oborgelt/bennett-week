@@ -3,7 +3,7 @@
 -- Intent — [RUN THIS]
 -- Location — paste the whole file into the new project's SQL editor
 -- Done check — Admin → Connect saves; Bennett opens This Week; this laptop Admin shows a session within a minute.
--- Paste this whole file again to add family_progress and family_work (Done, notes, new assignments). Existing tables stay.
+-- Paste this whole file again to add family_progress and family_overlay (Done, notes, added work). Existing tables stay.
 --
 -- Do not commit the service role key. Do not put the family token in git.
 
@@ -96,8 +96,9 @@ create policy family_notes_all on public.family_notes
 grant select, insert, update, delete on public.family_notes to anon;
 
 create table if not exists public.family_progress (
-  id text primary key,
   family_token text not null,
+  assignment_id text not null,
+  id text,
   started boolean,
   started_at timestamptz,
   done bigint,
@@ -105,10 +106,22 @@ create table if not exists public.family_progress (
   started_awarded boolean,
   done_awarded boolean,
   updated_at timestamptz not null default now(),
-  device_id text
+  device_id text,
+  primary key (family_token, assignment_id)
 );
 
+alter table public.family_progress add column if not exists assignment_id text;
+alter table public.family_progress add column if not exists id text;
+update public.family_progress
+  set assignment_id = coalesce(nullif(assignment_id, ''), id)
+  where assignment_id is null or assignment_id = '';
+update public.family_progress
+  set id = coalesce(nullif(id, ''), assignment_id)
+  where id is null or id = '';
+
 create index if not exists family_progress_family_updated_idx on public.family_progress (family_token, updated_at desc);
+create unique index if not exists family_progress_id_uidx on public.family_progress (id);
+create unique index if not exists family_progress_assignment_uidx on public.family_progress (family_token, assignment_id);
 
 alter table public.family_progress enable row level security;
 
@@ -141,3 +154,20 @@ create policy family_work_all on public.family_work
   with check (family_token = public.requesting_family_token());
 
 grant select, insert, update, delete on public.family_work to anon;
+
+create table if not exists public.family_overlay (
+  family_token text primary key,
+  week jsonb,
+  progress jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.family_overlay enable row level security;
+
+drop policy if exists family_overlay_all on public.family_overlay;
+create policy family_overlay_all on public.family_overlay
+  for all to anon
+  using (family_token = public.requesting_family_token())
+  with check (family_token = public.requesting_family_token());
+
+grant select, insert, update, delete on public.family_overlay to anon;
