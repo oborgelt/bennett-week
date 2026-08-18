@@ -59,7 +59,7 @@
       onChange(next) {
         family = next;
         hud();
-        Game.syncFamilyNotes(family).catch(() => {});
+        Game.syncFamilyBoard(family).catch(() => {});
         render();
       }
     });
@@ -79,7 +79,7 @@
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
     const baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
-    const sync = await Game.syncFamilyNotes(family);
+    const sync = await Game.syncFamilyBoard(family);
     family = sync.family;
     week = Game.applyWeekOverlay(baseWeek, family);
     markThisViewerSeen();

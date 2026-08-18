@@ -883,6 +883,10 @@
   async function boot() {
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
+    try {
+      const synced = await Game.syncFamilyBoard(family);
+      family = synced.family;
+    } catch (_) {}
     family = Game.maybeAutoPreviewAll(pack, family).family;
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();

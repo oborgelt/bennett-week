@@ -259,6 +259,7 @@
     return {
       week: {
         deleted: { events: [], work: [], notes: [] },
+        deletedAt: { events: {}, work: {}, notes: {} },
         edits: { events: {}, work: {}, notes: {} },
         added: { events: [], work: [], notes: [] }
       },
@@ -275,6 +276,15 @@
 
   function asStringList(value) {
     return Array.isArray(value) ? value.filter((id) => id != null && id !== "").map(String) : [];
+  }
+
+  function asStringMap(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    const out = {};
+    Object.keys(value).forEach((id) => {
+      if (value[id] != null && value[id] !== "") out[id] = String(value[id]);
+    });
+    return out;
   }
 
   function asIdMap(value) {
@@ -340,12 +350,18 @@
     const deleted = week.deleted && typeof week.deleted === "object" ? week.deleted : {};
     const edits = week.edits && typeof week.edits === "object" ? week.edits : {};
     const added = week.added && typeof week.added === "object" ? week.added : {};
+    const deletedAt = week.deletedAt && typeof week.deletedAt === "object" ? week.deletedAt : {};
     return {
       week: {
         deleted: {
           events: asStringList(deleted.events),
           work: asStringList(deleted.work),
           notes: asStringList(deleted.notes)
+        },
+        deletedAt: {
+          events: asStringMap(deletedAt.events),
+          work: asStringMap(deletedAt.work),
+          notes: asStringMap(deletedAt.notes)
         },
         edits: {
           events: asIdMap(edits.events),
@@ -581,18 +597,24 @@
     return next;
   }
 
-  function editWeekOverlay(family, kind, id, patch) {
+  function editWeekOverlay(family, kind, id, patch, stamp) {
     const next = normalizeFamily(family);
     if (!next.overlay.week.edits[kind]) next.overlay.week.edits[kind] = {};
-    next.overlay.week.edits[kind][id] = Object.assign({}, next.overlay.week.edits[kind][id] || {}, patch, { id });
+    const at = stamp || (patch && patch.updatedAt) || nowIso();
+    next.overlay.week.edits[kind][id] = Object.assign({}, next.overlay.week.edits[kind][id] || {}, patch, { id, updatedAt: at });
     saveFamily(next);
+    if (!overlaySyncing && kind === "work") queueWorkPush(next);
     return next;
   }
 
-  function deleteWeekOverlay(family, kind, id) {
+  function deleteWeekOverlay(family, kind, id, stamp) {
     const next = normalizeFamily(family);
     next.overlay.week.deleted[kind] = pushUnique(next.overlay.week.deleted[kind] || [], id);
+    if (!next.overlay.week.deletedAt) next.overlay.week.deletedAt = { events: {}, work: {}, notes: {} };
+    if (!next.overlay.week.deletedAt[kind]) next.overlay.week.deletedAt[kind] = {};
+    next.overlay.week.deletedAt[kind][id] = stamp || nowIso();
     saveFamily(next);
+    if (!overlaySyncing && kind === "work") queueWorkPush(next);
     return next;
   }
 
@@ -601,8 +623,9 @@
     if (!item || !item.id || !next.overlay.week.added[kind]) return next;
     const list = next.overlay.week.added[kind];
     if (list.some((row) => row && row.id === item.id)) return next;
-    next.overlay.week.added[kind] = list.concat([Object.assign({}, item)]);
+    next.overlay.week.added[kind] = list.concat([Object.assign({}, item, { updatedAt: item.updatedAt || nowIso() })]);
     saveFamily(next);
+    if (!overlaySyncing && kind === "work") queueWorkPush(next);
     return next;
   }
 
@@ -3007,6 +3030,28 @@
     return (days || []).some((d) => workDueOnDay(work, d) || workStartThisOnDay(work, d));
   }
 
+  function lastBoardYmd(days) {
+    if (!days || !days.length) return "";
+    return ymdFromLocal(days[days.length - 1]);
+  }
+
+  function workIsLater(work, days) {
+    if (!work || workOnBoard(work, days)) return false;
+    const due = ymdFromLocal(work.due);
+    const last = lastBoardYmd(days);
+    return !!(due && last && due > last);
+  }
+
+  function laterWorkForClass(week, days, classId) {
+    const want = String(classId || "");
+    return ((week && week.work) || []).filter((w) => {
+      if (!w || !w.id) return false;
+      if (want && !belongsToClass(w, want)) return false;
+      if (workState(w.id).done) return false;
+      return workIsLater(w, days);
+    }).sort((a, b) => String(ymdFromLocal(a.due)).localeCompare(String(ymdFromLocal(b.due))));
+  }
+
   function eventOnBoard(event, days) {
     const key = ymdFromLocal(event && event.start);
     return !!(key && (days || []).some((d) => ymdFromLocal(d) === key));
@@ -3039,7 +3084,7 @@
     ((week && week.work) || []).forEach((w) => {
       if (!belongsToClass(w, classId)) return;
       if (workState(w.id).done) return;
-      if (workOnBoard(w, board)) n += 1;
+      if (workOnBoard(w, board) || workIsLater(w, board)) n += 1;
     });
     ((week && week.events) || []).forEach((e) => {
       if (!belongsToClass(e, classId)) return;
@@ -3391,8 +3436,9 @@
         }
       }
     }
-    all[id] = cur;
+    all[id] = Object.assign({}, cur, { updatedAt: nowIso() });
     write(KEYS.progress, all);
+    queueProgressPush();
     if (kind === "started" && !before.started) track("work_start", { assignmentId: id });
     if (kind === "done" && !before.done) track("work_done", { assignmentId: id });
     return { first, state: workState(id) };
@@ -4467,6 +4513,264 @@
     return { family: next, pulled: pulled.notes.length, pushed, missing: false, offline: false };
   }
 
+  function missingSync(err) {
+    const tel = global.Telemetry;
+    if (tel && typeof tel.isMissingTable === "function") return tel.isMissingTable(err);
+    return !!(err && (err.status === 404 || err.status === 406));
+  }
+
+  function progressRecordFromRemote(row) {
+    const src = row && typeof row === "object" ? row : {};
+    const tel = global.Telemetry;
+    const mapped = (src.updated_at || src.started_at != null || src.started_history)
+      ? (tel && typeof tel.rowToProgress === "function" ? tel.rowToProgress(src) : src)
+      : src;
+    const done = mapped.done == null ? src.done : mapped.done;
+    return {
+      started: mapped.started === false ? false : !!mapped.started,
+      startedAt: mapped.startedAt || mapped.started_at || src.startedAt || null,
+      done: done == null || done === false || done === "" ? null : done,
+      startedHistory: Array.isArray(mapped.startedHistory) ? mapped.startedHistory : (Array.isArray(src.startedHistory) ? src.startedHistory : []),
+      startedAwarded: !!(mapped.startedAwarded || src.startedAwarded),
+      doneAwarded: !!(mapped.doneAwarded || src.doneAwarded),
+      updatedAt: mapped.updatedAt || mapped.updated_at || src.updatedAt || src.updated_at || ""
+    };
+  }
+
+  function mergeProgressByUpdatedAt(local, remoteRows) {
+    const all = Object.assign({}, local && typeof local === "object" ? local : {});
+    (remoteRows || []).forEach((row) => {
+      const rec = progressRecordFromRemote(row);
+      const id = String((row && row.id) || rec.id || "");
+      if (!id) return;
+      const cur = all[id] || {};
+      if (String(rec.updatedAt || "") >= String(cur.updatedAt || "")) all[id] = rec;
+    });
+    return all;
+  }
+
+  function progressRowsToPush(local, remoteRows) {
+    const remoteMap = Object.create(null);
+    (remoteRows || []).forEach((row) => {
+      const rec = progressRecordFromRemote(row);
+      const id = String((row && row.id) || rec.id || "");
+      if (id) remoteMap[id] = rec;
+    });
+    const tel = global.Telemetry;
+    const cfg = tel && tel.getConfig ? tel.getConfig() : {};
+    const device = tel && tel.deviceId ? tel.deviceId() : "";
+    return Object.keys(local || {}).map((id) => {
+      const rec = local[id];
+      if (!rec || typeof rec !== "object") return null;
+      if (!rec.updatedAt && !rec.started && !rec.done && rec.started !== false) return null;
+      const other = remoteMap[id];
+      if (other && String(rec.updatedAt || "") <= String(other.updatedAt || "")) return null;
+      return tel && tel.progressToRow ? tel.progressToRow(id, rec, cfg.familyToken, device) : Object.assign({ id }, rec);
+    }).filter(Boolean);
+  }
+
+  let progressPushTimer = null;
+
+  function queueProgressPush() {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.connected !== "function" || !tel.connected()) return;
+    if (typeof setTimeout !== "function") {
+      pushFamilyProgress();
+      return;
+    }
+    if (progressPushTimer) clearTimeout(progressPushTimer);
+    progressPushTimer = setTimeout(() => {
+      progressPushTimer = null;
+      pushFamilyProgress();
+    }, 400);
+  }
+
+  async function pushFamilyProgress() {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.upsertProgress !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    const rows = progressRowsToPush(getProgress(), []);
+    if (!rows.length) return { pushed: 0, missing: false };
+    try {
+      await tel.upsertProgress(rows);
+      return { pushed: rows.length, missing: false };
+    } catch (err) {
+      return { pushed: 0, missing: missingSync(err) };
+    }
+  }
+
+  async function syncFamilyProgress() {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
+      return { pulled: 0, pushed: 0, missing: false, offline: true };
+    }
+    let remote = [];
+    try {
+      const rows = await tel.fetchProgress();
+      remote = (Array.isArray(rows) ? rows : []).map((row) => tel.rowToProgress ? tel.rowToProgress(row) : row).filter((r) => r && r.id);
+    } catch (err) {
+      return { pulled: 0, pushed: 0, missing: missingSync(err), offline: false };
+    }
+    const merged = mergeProgressByUpdatedAt(getProgress(), remote);
+    write(KEYS.progress, merged);
+    const toPush = progressRowsToPush(merged, remote);
+    let pushed = 0;
+    if (toPush.length) {
+      try {
+        await tel.upsertProgress(toPush);
+        pushed = toPush.length;
+      } catch (err) {
+        return { pulled: remote.length, pushed: 0, missing: missingSync(err), offline: false };
+      }
+    }
+    return { pulled: remote.length, pushed, missing: false, offline: false };
+  }
+
+  function localWorkSyncRows(family) {
+    const o = normalizeFamily(family).overlay.week;
+    const byId = Object.create(null);
+    const bump = (id, row) => {
+      const cur = byId[id];
+      if (!cur || String(row.updatedAt || "") >= String(cur.updatedAt || "")) byId[id] = row;
+    };
+    (o.added.work || []).forEach((w) => {
+      if (w && w.id) bump(w.id, { id: w.id, payload: w, deleted: false, updatedAt: w.updatedAt || "" });
+    });
+    Object.keys(o.edits.work || {}).forEach((id) => {
+      const patch = o.edits.work[id];
+      if (!patch) return;
+      bump(id, { id, payload: Object.assign({ id }, patch), deleted: false, updatedAt: patch.updatedAt || "" });
+    });
+    (o.deleted.work || []).forEach((id) => {
+      bump(id, {
+        id,
+        payload: { id },
+        deleted: true,
+        updatedAt: (o.deletedAt && o.deletedAt.work && o.deletedAt.work[id]) || ""
+      });
+    });
+    return Object.keys(byId).map((id) => byId[id]);
+  }
+
+  function applyRemoteWorkRow(family, row) {
+    const rec = row && typeof row === "object" ? row : {};
+    const id = String(rec.id || "");
+    if (!id) return normalizeFamily(family);
+    const at = rec.updatedAt || nowIso();
+    if (rec.deleted) return deleteWeekOverlay(family, "work", id, at);
+    const payload = Object.assign({}, rec.payload || {}, { id, updatedAt: at });
+    let next = addWeekItem(family, "work", payload);
+    next = editWeekOverlay(next, "work", id, payload, at);
+    if (payload.classId) {
+      next = addProgressItem(next, payload.classId, {
+        id,
+        title: String(payload.title || "").replace(/^[^:]+:\s*/, "") || payload.title,
+        kind: "assignment",
+        classId: payload.classId,
+        termId: payload.termId,
+        due: payload.due
+      });
+    }
+    return next;
+  }
+
+  function mergeWorkByUpdatedAt(family, remoteRows) {
+    overlaySyncing = true;
+    try {
+      let next = normalizeFamily(family);
+      const local = localWorkSyncRows(next);
+      const localMap = Object.create(null);
+      local.forEach((row) => { localMap[row.id] = row; });
+      (remoteRows || []).forEach((row) => {
+        if (!row || !row.id) return;
+        const cur = localMap[row.id];
+        if (cur && String(cur.updatedAt || "") > String(row.updatedAt || "")) return;
+        next = applyRemoteWorkRow(next, row);
+      });
+      return next;
+    } finally {
+      overlaySyncing = false;
+    }
+  }
+
+  let workPushTimer = null;
+  let overlaySyncing = false;
+
+  function queueWorkPush(family) {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.connected !== "function" || !tel.connected()) return;
+    if (typeof setTimeout !== "function") {
+      pushFamilyWork(family);
+      return;
+    }
+    if (workPushTimer) clearTimeout(workPushTimer);
+    workPushTimer = setTimeout(() => {
+      workPushTimer = null;
+      pushFamilyWork(family);
+    }, 400);
+  }
+
+  async function pushFamilyWork(family) {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.upsertWork !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    const rows = localWorkSyncRows(family);
+    if (!rows.length) return { pushed: 0, missing: false };
+    try {
+      await tel.upsertWork(rows);
+      return { pushed: rows.length, missing: false };
+    } catch (err) {
+      return { pushed: 0, missing: missingSync(err) };
+    }
+  }
+
+  async function syncFamilyWork(family) {
+    const next = normalizeFamily(family);
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
+      return { family: next, pulled: 0, pushed: 0, missing: false, offline: true };
+    }
+    let remote = [];
+    try {
+      const rows = await tel.fetchWork();
+      remote = (Array.isArray(rows) ? rows : []).map((row) => tel.rowToWork ? tel.rowToWork(row) : row).filter((r) => r && r.id);
+    } catch (err) {
+      return { family: next, pulled: 0, pushed: 0, missing: missingSync(err), offline: false };
+    }
+    const merged = mergeWorkByUpdatedAt(next, remote);
+    const local = localWorkSyncRows(merged);
+    const remoteMap = Object.create(null);
+    remote.forEach((row) => { remoteMap[row.id] = row; });
+    const toPush = local.filter((row) => {
+      const other = remoteMap[row.id];
+      if (!other) return true;
+      return String(row.updatedAt || "") > String(other.updatedAt || "");
+    });
+    let pushed = 0;
+    if (toPush.length) {
+      try {
+        await tel.upsertWork(toPush);
+        pushed = toPush.length;
+      } catch (err) {
+        return { family: merged, pulled: remote.length, pushed: 0, missing: missingSync(err), offline: false };
+      }
+    }
+    return { family: merged, pulled: remote.length, pushed, missing: false, offline: false };
+  }
+
+  async function syncFamilyBoard(family) {
+    const notes = await syncFamilyNotes(family);
+    let next = notes.family;
+    const progress = await syncFamilyProgress();
+    const work = await syncFamilyWork(next);
+    next = work.family;
+    return {
+      family: next,
+      pulled: (notes.pulled || 0) + (progress.pulled || 0) + (work.pulled || 0),
+      pushed: (notes.pushed || 0) + (progress.pushed || 0) + (work.pushed || 0),
+      missing: !!(notes.missing || progress.missing || work.missing),
+      offline: !!(notes.offline && progress.offline && work.offline)
+    };
+  }
+
   function sendParentReply(family, askId, text) {
     const next = normalizeFamily(family);
     const q = (next.notes || []).find((n) => n && n.id === askId);
@@ -5218,6 +5522,13 @@
     unansweredAskCount,
     mergeNotesById,
     syncFamilyNotes,
+    syncFamilyProgress,
+    syncFamilyWork,
+    syncFamilyBoard,
+    mergeProgressByUpdatedAt,
+    localWorkSyncRows,
+    workIsLater,
+    laterWorkForClass,
     pullFamilyNotes,
     pushFamilyNotes,
     sendParentReply,

@@ -410,6 +410,117 @@
     return rest("/rest/v1/family_notes?id=eq." + encodeURIComponent(key), { method: "DELETE" });
   }
 
+  function isMissingTable(err) {
+    if (!err) return false;
+    if (err.status === 404 || err.status === 406) return true;
+    return /PGRST205|schema cache|does not exist/i.test(String(err.body || err.message || ""));
+  }
+
+  function progressToRow(id, rec, familyToken, device) {
+    const r = rec && typeof rec === "object" ? rec : {};
+    const done = r.done == null || r.done === false || r.done === "" ? null : Number(r.done);
+    return {
+      id: String(id || ""),
+      family_token: familyToken,
+      started: r.started === false ? false : !!r.started,
+      started_at: r.startedAt || null,
+      done: Number.isFinite(done) ? done : null,
+      started_history: Array.isArray(r.startedHistory) ? r.startedHistory : [],
+      started_awarded: !!r.startedAwarded,
+      done_awarded: !!r.doneAwarded,
+      updated_at: r.updatedAt || new Date().toISOString(),
+      device_id: device || ""
+    };
+  }
+
+  function rowToProgress(row) {
+    const r = row && typeof row === "object" ? row : {};
+    const done = r.done == null || r.done === "" ? null : Number(r.done);
+    return {
+      id: String(r.id || ""),
+      started: r.started === false ? false : !!r.started,
+      startedAt: r.started_at || null,
+      done: Number.isFinite(done) ? done : null,
+      startedHistory: Array.isArray(r.started_history) ? r.started_history : [],
+      startedAwarded: !!r.started_awarded,
+      doneAwarded: !!r.done_awarded,
+      updatedAt: r.updated_at || ""
+    };
+  }
+
+  async function fetchProgress() {
+    const rows = await query("/rest/v1/family_progress?select=*&order=updated_at.asc");
+    return Array.isArray(rows) ? rows : [];
+  }
+
+  async function upsertProgress(rows) {
+    const cfg = getConfig();
+    const payload = (rows || []).map((row) => {
+      if (row && row.id && row.family_token) return row;
+      const rec = row && row.rec ? row.rec : row;
+      const id = (row && row.id) || (rec && rec.id);
+      return progressToRow(id, rec, cfg.familyToken, deviceId());
+    }).filter((row) => row && row.id);
+    if (!payload.length) return [];
+    return rest("/rest/v1/family_progress?on_conflict=id", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  function parsePayload(raw) {
+    if (raw && typeof raw === "object") return raw;
+    if (typeof raw === "string") {
+      try { return JSON.parse(raw); } catch (_) { return {}; }
+    }
+    return {};
+  }
+
+  function workToRow(row, familyToken) {
+    const r = row && typeof row === "object" ? row : {};
+    const payload = parsePayload(r.payload);
+    if (!payload.id && r.id) payload.id = r.id;
+    return {
+      id: String(r.id || payload.id || ""),
+      family_token: familyToken,
+      payload,
+      deleted: !!r.deleted,
+      updated_at: r.updatedAt || r.updated_at || new Date().toISOString(),
+      class_id: String(r.classId || (payload && payload.classId) || ""),
+      term_id: String((payload && payload.termId) || "")
+    };
+  }
+
+  function rowToWork(row) {
+    const r = row && typeof row === "object" ? row : {};
+    const payload = parsePayload(r.payload);
+    if (!payload.id && r.id) payload.id = String(r.id);
+    return {
+      id: String(r.id || payload.id || ""),
+      payload,
+      deleted: !!r.deleted,
+      updatedAt: r.updated_at || r.updatedAt || "",
+      classId: String(r.class_id || payload.classId || "")
+    };
+  }
+
+  async function fetchWork() {
+    const rows = await query("/rest/v1/family_work?select=*&order=updated_at.asc");
+    return Array.isArray(rows) ? rows : [];
+  }
+
+  async function upsertWork(rows) {
+    const cfg = getConfig();
+    const payload = (rows || []).map((row) => workToRow(row, cfg.familyToken)).filter((row) => row.id);
+    if (!payload.length) return [];
+    return rest("/rest/v1/family_work?on_conflict=id", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(payload)
+    });
+  }
+
   async function queuedCount() {
     return (await pending()).length;
   }
@@ -432,6 +543,15 @@
     deleteNote: deleteRemoteNote,
     noteToRow,
     rowToNote,
+    isMissingTable,
+    progressToRow,
+    rowToProgress,
+    fetchProgress,
+    upsertProgress,
+    workToRow,
+    rowToWork,
+    fetchWork,
+    upsertWork,
     queuedCount,
     boot
   };

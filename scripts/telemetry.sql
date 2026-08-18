@@ -3,6 +3,7 @@
 -- Intent — [RUN THIS]
 -- Location — paste the whole file into the new project's SQL editor
 -- Done check — Admin → Connect saves; Bennett opens This Week; this laptop Admin shows a session within a minute.
+-- Paste this whole file again to add family_progress and family_work (Done, notes, new assignments). Existing tables stay.
 --
 -- Do not commit the service role key. Do not put the family token in git.
 
@@ -93,3 +94,50 @@ create policy family_notes_all on public.family_notes
   with check (family_token = public.requesting_family_token());
 
 grant select, insert, update, delete on public.family_notes to anon;
+
+create table if not exists public.family_progress (
+  id text primary key,
+  family_token text not null,
+  started boolean,
+  started_at timestamptz,
+  done bigint,
+  started_history jsonb,
+  started_awarded boolean,
+  done_awarded boolean,
+  updated_at timestamptz not null default now(),
+  device_id text
+);
+
+create index if not exists family_progress_family_updated_idx on public.family_progress (family_token, updated_at desc);
+
+alter table public.family_progress enable row level security;
+
+drop policy if exists family_progress_all on public.family_progress;
+create policy family_progress_all on public.family_progress
+  for all to anon
+  using (family_token = public.requesting_family_token())
+  with check (family_token = public.requesting_family_token());
+
+grant select, insert, update, delete on public.family_progress to anon;
+
+create table if not exists public.family_work (
+  id text primary key,
+  family_token text not null,
+  payload jsonb not null default '{}'::jsonb,
+  deleted boolean not null default false,
+  updated_at timestamptz not null default now(),
+  class_id text,
+  term_id text
+);
+
+create index if not exists family_work_family_updated_idx on public.family_work (family_token, updated_at desc);
+
+alter table public.family_work enable row level security;
+
+drop policy if exists family_work_all on public.family_work;
+create policy family_work_all on public.family_work
+  for all to anon
+  using (family_token = public.requesting_family_token())
+  with check (family_token = public.requesting_family_token());
+
+grant select, insert, update, delete on public.family_work to anon;

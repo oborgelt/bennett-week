@@ -78,7 +78,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=108/.test(basecampHtml) && /basecamp\.js\?v=108/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=109/.test(basecampHtml) && /basecamp\.js\?v=109/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1164,7 +1164,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=108/.test(weekHtml) && /week\.js\?v=108/.test(weekHtml) && /game\.js\?v=108/.test(weekHtml) && /telemetry\.js\?v=108/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=109/.test(weekHtml) && /week\.js\?v=109/.test(weekHtml) && /game\.js\?v=109/.test(weekHtml) && /telemetry\.js\?v=109/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1211,8 +1211,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=107\b/.test(html), file + " should not still cache-bust as v=107");
-  assert(/\?v=108/.test(html), file + " should cache-bust v=108");
+  assert(!/\?v=108\b/.test(html), file + " should not still cache-bust as v=108");
+  assert(/\?v=109/.test(html), file + " should cache-bust v=109");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1250,10 +1250,10 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=108/.test(progressHtml) && /theme\.css\?v=108/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=109/.test(progressHtml) && /theme\.css\?v=109/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*106/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 106");
+assert(/build:\s*107/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 107");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1481,6 +1481,34 @@ assert(/Inbox is now/.test(parentHtml) && parentHtml.includes("messages.html"), 
 assert(/noteAuthorLabel/.test(weekJs) && !/Mom\/Dad replied:/.test(weekJs), "week cards use noteAuthorLabel, not a hardcoded Mom/Dad reply");
 assert(/family_notes/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "notes sync uses family_notes");
 assert(/family_notes/.test(fs.readFileSync(path.join(root, "scripts/telemetry.sql"), "utf8")), "telemetry SQL can create family_notes");
+assert(/family_progress/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")) && /family_work/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "Done and new assignments sync on family tables");
+assert(/family_progress/.test(fs.readFileSync(path.join(root, "scripts/telemetry.sql"), "utf8")) && /family_work/.test(fs.readFileSync(path.join(root, "scripts/telemetry.sql"), "utf8")), "telemetry SQL can create family_progress and family_work");
+assert(typeof Game.syncFamilyBoard === "function" && typeof Game.laterWorkForClass === "function", "board sync and Later list helpers exist");
+assert(/<h3>Later<\/h3>/.test(weekJs) || /Later<\/h3>/.test(weekJs), "This Week renders a Later list");
+assert(/syncFamilyBoard/.test(weekJs) && /syncFamilyBoard/.test(fs.readFileSync(path.join(root, "js/progress.js"), "utf8")), "This Week and Progress pull the family board");
+const laterDays = Array.from({ length: 7 }, (_, i) => new Date(2026, 7, 18 + i));
+const laterWork = { id: "book-report", title: "English 10: Book report", due: "2026-09-15", classId: "english-10" };
+assert(Game.workIsLater(laterWork, laterDays), "a September book report is Later, not This Week");
+assert(!Game.workOnBoard(laterWork, laterDays), "Later work is not on the 7-day board");
+assert.strictEqual(Game.laterWorkForClass({ work: [laterWork] }, laterDays, "english-10")[0].id, "book-report");
+assert(!Game.laterWorkForClass({ work: [laterWork] }, laterDays, "geometry").length, "Later list is class-scoped");
+const thisWeekDue = { id: "quiz", title: "Quiz", due: "2026-08-20", classId: "english-10" };
+assert(!Game.workIsLater(thisWeekDue, laterDays) && Game.workOnBoard(thisWeekDue, laterDays), "work due inside 7 days stays on the board");
+const remoteDone = Game.mergeProgressByUpdatedAt(
+  { a1: { started: true, updatedAt: "2026-08-18T10:00:00.000Z" } },
+  [{ id: "a1", started: true, done: 99, updatedAt: "2026-08-18T12:00:00.000Z" }]
+);
+assert.strictEqual(remoteDone.a1.done, 99, "newer remote Done wins");
+const localNewer = Game.mergeProgressByUpdatedAt(
+  { a1: { done: 5, updatedAt: "2026-08-18T13:00:00.000Z" } },
+  [{ id: "a1", done: 1, updatedAt: "2026-08-18T12:00:00.000Z" }]
+);
+assert.strictEqual(localNewer.a1.done, 5, "newer local Done wins");
+const boardAddedFam = Game.addAssignment(Game.emptyFamily(), { term: { id: "2025-26-s1" } }, { title: "Book report", classId: "english-10", due: "2026-09-15", addedBy: "bennett" }).family;
+const workRows = Game.localWorkSyncRows(boardAddedFam);
+assert(workRows.some((row) => row.payload && /Book report/.test(row.payload.title) && !row.deleted), "new assignments are family_work rows");
+assert(typeof Telemetry.progressToRow === "function" && Telemetry.progressToRow("a1", { done: 1, updatedAt: "t" }, "fam", "dev").id === "a1", "progress rows map for upsert");
+assert(typeof Telemetry.workToRow === "function" && Telemetry.workToRow({ id: "w1", payload: { id: "w1", title: "X" }, updatedAt: "t" }, "fam").id === "w1", "work rows map for upsert");
 assert(/bw-messages-seen-/.test(gameSrc), "inbox last-seen is per-role localStorage");
 assert(!/family\.inboxSeen/.test(gameSrc) && !/inboxSeen:\s*\{/.test(gameSrc), "do not store inboxSeen on the family pack");
 const hideFn = gameSrc.slice(gameSrc.indexOf("function hideMessagesChip"), gameSrc.indexOf("function shouldBounceMessagesPage"));

@@ -235,6 +235,30 @@
     return week;
   }
 
+  function paintBoardSync(sync) {
+    let el = document.getElementById("board-sync");
+    if (!el) {
+      const flag = document.getElementById("draft-flag");
+      if (!flag || !flag.parentNode) return;
+      el = document.createElement("p");
+      el.id = "board-sync";
+      el.className = "draft-flag";
+      flag.parentNode.insertBefore(el, flag.nextSibling);
+    }
+    if (sync && sync.missing) {
+      el.hidden = false;
+      el.textContent = "Connect tables for Done, notes, and new assignments are not set up yet. Paste scripts/telemetry.sql in Admin / Supabase.";
+      return;
+    }
+    if (sync && sync.offline) {
+      el.hidden = true;
+      el.textContent = "";
+      return;
+    }
+    el.hidden = true;
+    el.textContent = "";
+  }
+
   function standingClasses() {
     return ((seed && seed.classes) || []).filter((cls) => cls && cls.id);
   }
@@ -603,12 +627,13 @@
       const events = grouped.events;
       const due = grouped.due;
       const startThis = grouped.startThis;
+      const later = Game.laterWorkForClass(week, days, classId);
       const loose = Game.looseEventsOnDay(week, d);
       const notes = (week.notes || []).filter((n) => n.date === ymd(d));
       const who = whoOn(week, d);
       const khan = cls ? Game.khanStripHtmlForClass(cls) : "";
       const className = (cls && cls.name) || Game.classNameForId(classId) || "Class";
-      const hasClassItems = !!(events.length || due.length || startThis.length);
+      const hasClassItems = !!(events.length || due.length || startThis.length || later.length);
       const emptyLine = hasClassItems ? "" : `<p class="empty">Nothing for ${Game.esc(className)} ${i === 0 ? "today" : "on " + dayLabel(d)}.</p>`;
       const addRow = Game.siteViewHidesAdult() ? "" : `<p class="add-work-row"><button type="button" class="mini" data-add-work="${ymd(d)}">Add assignment</button></p>`;
       const eventHtml = (e) => `
@@ -647,6 +672,10 @@
                 ${startThis.length ? `<section class="start">
                   <h3>Start this</h3>
                   ${items(startThis, (w) => workCardHtml(w, true))}
+                </section>` : ""}
+                ${later.length ? `<section class="later">
+                  <h3>Later</h3>
+                  ${items(later, (w) => workCardHtml(w, true))}
                 </section>` : ""}
                 ${events.length ? `<section>
                   <h3>On the calendar</h3>
@@ -2163,8 +2192,9 @@
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
     try {
-      const synced = await Game.syncFamilyNotes(family);
+      const synced = await Game.syncFamilyBoard(family);
       family = synced.family;
+      paintBoardSync(synced);
     } catch (_) {}
     const signin = Game.maybeAwardSignIn(pack, family);
     family = signin.family;
@@ -2202,6 +2232,18 @@
       refreshCardsInPlace();
       const shelf = document.getElementById("shelf");
       if (shelf && shelf.classList.contains("open")) renderShelf();
+    });
+    window.addEventListener("focus", async () => {
+      if (!family) return;
+      try {
+        const synced = await Game.syncFamilyBoard(family);
+        family = synced.family;
+        paintBoardSync(synced);
+        syncWeek();
+        renderClassSwitcher();
+        refreshCardsInPlace();
+        hud();
+      } catch (_) {}
     });
   }
 

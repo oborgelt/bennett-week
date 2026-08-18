@@ -651,6 +651,10 @@ body.site-view-kid .add-work-row {
   color: var(--muted);
 }
 
+.class-pane-stack .later h3 {
+  color: var(--due);
+}
+
 .dots {
   display: flex;
   gap: 8px;
