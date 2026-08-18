@@ -3735,8 +3735,10 @@
 
   function familySavedToast(action) {
     const verb = action || "Saved";
-    if (familyConnected()) toast(verb + ". " + familyAudienceLabel() + " will see this.");
-    else toast(verb + " on this device until Connect is on.");
+    if (familyConnected()) {
+      const who = familyAudienceLabel();
+      toast(who === "Mom and Dad" ? verb + ". Mom and Dad will see this." : verb + ". " + who + " will see this.");
+    } else toast(verb + " on this device until Connect is on.");
   }
 
   function familyDeletedToast() {

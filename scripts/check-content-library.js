@@ -1229,9 +1229,10 @@ assert(/\.hud-bar[\s\S]{0,180}position:\s*sticky/.test(themeCss) && /\.hud-bar[\
 assert(/body\.basecamp-page \.hud-bar[\s\S]{0,160}flex:\s*0 0 auto/.test(themeCss), "Base Camp HUD does not flex with the camp shell");
 assert(/body\.basecamp-page \.week-head[\s\S]{0,80}flex:\s*0 0 auto/.test(themeCss), "Base Camp header stays out of the scrolling shell");
 assert(/body\.basecamp-page \.bc-shell[\s\S]{0,120}overflow-y:\s*auto/.test(themeCss), "only the Base Camp shell scrolls");
-const actBind = weekJs.slice(weekJs.indexOf('track.querySelectorAll("[data-act]")'), weekJs.indexOf('track.querySelectorAll("[data-ask]")'));
+const actBind = weekJs.slice(weekJs.indexOf("function bindBoardRoot"), weekJs.indexOf("function clampDay"));
 assert(/refreshCardsInPlace|restoreBoardScroll/.test(actBind), "Done/Undo restores scroll");
 assert(!/goTo\(dayIndex,\s*true\)/.test(actBind), "Done/Undo does not call goTo snap");
+assert(/\[data-act\]/.test(actBind), "Done/Undo still binds work actions");
 assert(/function captureBoardScroll/.test(weekJs) && /window\.scrollY/.test(weekJs) && /scrollLeft/.test(weekJs) && /card-scroll/.test(weekJs), "in-card updates remember page, track, and card-scroll positions");
 assert(!/scrollIntoView/.test(weekJs), "week actions must not scrollIntoView");
 const restoreFn = weekJs.slice(weekJs.indexOf("function restoreBoardScroll"), weekJs.indexOf("function refreshCardsInPlace"));
@@ -1495,7 +1496,7 @@ assert(/syncFamilyLive/.test(weekJs) && /syncFamilyBoard/.test(fs.readFileSync(p
 assert(/visibilitychange/.test(weekJs) && /25000/.test(weekJs), "This Week pulls on focus, visibility, and every 20-30s");
 assert(/data-add-work/.test(weekJs) && !/const addRow = Game\.siteViewHidesAdult\(\) \? ""/.test(weekJs), "Bennett kid view can add assignments");
 assert(!/body\.site-view-kid \.add-work-row/.test(themeCss), "kid CSS does not hide Add assignment");
-assert(/familySavedToast/.test(weekJs) && /Mom and Dad will see this/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "connected toasts tell Mom and Dad they will see this");
+assert(/familySavedToast/.test(weekJs) && /Mom and Dad will see this/.test(gameSrc), "connected toasts tell Mom and Dad they will see this");
 assert(/pushFamilyNotes\(next\)/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "addNote pushes immediately");
 assert(/syncFamilyProgress\(\)/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "touchWork syncs family progress");
 assert(/fetchOverlay/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")) && /upsertOverlay/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "telemetry talks to family_overlay");
