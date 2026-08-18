@@ -3847,10 +3847,17 @@ body.admin-page {
 
 body.basecamp-page {
   min-height: 100dvh;
-  background:
-    linear-gradient(180deg, rgba(7, 22, 24, 0.28), rgba(7, 22, 24, 0.42)),
-    url("../img/library/basecamp-bg.jpg") center / cover no-repeat;
-  background-attachment: scroll;
+  background-color: #071618;
+}
+
+/* Same crop as `.bc-intro video` (fixed, center / cover). No tint — last frame == still. */
+body.basecamp-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: url("../img/library/basecamp-bg.jpg") center / cover no-repeat;
+  pointer-events: none;
 }
 
 .story-wrap,
@@ -4441,7 +4448,7 @@ body.admin-page .usage-panel h2 {
   border: 0;
   border-radius: 999px;
   background: rgba(7, 22, 24, 0.55);
-  color: var(--banana);
+  color: var(--ink);
   font: inherit;
   font-size: 1.2rem;
   font-weight: 800;
@@ -4468,21 +4475,94 @@ body.basecamp-page.bc-intro-on {
   overflow: hidden;
 }
 
+body.basecamp-page .week-head,
+body.basecamp-page .bc-shell,
+body.basecamp-page .toast {
+  position: relative;
+  z-index: 1;
+}
+
+body.basecamp-page .hud-bar {
+  margin: 0 10px 6px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(7, 18, 20, 0.58);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  border: 1px solid rgba(246, 241, 228, 0.12);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+}
+
+body.basecamp-page .progress-tagline {
+  color: #d7e0dc;
+  text-shadow: none;
+}
+
+body.basecamp-page .bananas,
+body.basecamp-page .hud-nav a,
+body.basecamp-page .hud-nav .site-view-seg {
+  background: rgba(7, 18, 20, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+body.basecamp-page .bc-rail,
+body.basecamp-page .bc-tools-drawer,
 body.basecamp-page .bc-welcome,
 body.basecamp-page .ask-bubble,
-body.basecamp-page .bc-tools-drawer {
-  background: rgba(18, 42, 46, 0.72);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+body.basecamp-page .bc-resources,
+body.basecamp-page .bc-composer {
+  background: rgba(7, 18, 20, 0.62);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  border: 1px solid rgba(246, 241, 228, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+}
+
+body.basecamp-page .bc-rail,
+body.basecamp-page .bc-composer,
+body.basecamp-page .bc-resources {
+  border-radius: 16px;
+  padding: 10px;
+}
+
+body.basecamp-page .bc-kicker,
+body.basecamp-page .bc-hint,
+body.basecamp-page .bc-session-at,
+body.basecamp-page .empty {
+  color: #c5d2ce;
 }
 
 body.basecamp-page .bc-class,
 body.basecamp-page .bc-session,
-body.basecamp-page .bc-pin {
-  background: rgba(18, 42, 46, 0.72);
+body.basecamp-page .bc-pin,
+body.basecamp-page .bc-ex,
+body.basecamp-page .bc-attach {
+  background: rgba(7, 18, 20, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--ink);
 }
 
-body.basecamp-page .bc-composer {
-  background: linear-gradient(180deg, rgba(7, 22, 24, 0), rgba(7, 22, 24, 0.42) 22%, rgba(7, 22, 24, 0.55));
+body.basecamp-page .bc-class.on,
+body.basecamp-page .bc-session.on,
+body.basecamp-page .bc-session-row.on .bc-session,
+body.basecamp-page .bc-pin.on {
+  background: rgba(7, 18, 20, 0.88);
+  color: var(--banana);
+  border-color: rgba(244, 211, 94, 0.7);
+}
+
+body.basecamp-page .bc-attach {
+  color: var(--banana);
+}
+
+body.basecamp-page .bc-composer textarea {
+  background: rgba(7, 18, 20, 0.72);
+}
+
+body.basecamp-page .bc-tools-drawer > summary {
+  color: #f4d35e;
 }
 
 .bc-shell {
@@ -4954,8 +5034,7 @@ body.basecamp-page .bc-composer {
   .bc-composer {
     position: static;
     flex: 0 0 auto;
-    background: rgba(7, 22, 24, 0.55);
-    padding-top: 8px;
+    padding-top: 10px;
   }
   .bc-tools-drawer {
     height: 100%;

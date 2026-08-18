@@ -902,9 +902,11 @@
   }
 
   const INTRO_SRC = "img/library/basecamp-intro.mp4";
+  const INTRO_MS = 10000;
   let introView = "";
   let introDone = false;
   let introBound = false;
+  let introTimer = 0;
 
   function introEls() {
     return {
@@ -916,29 +918,41 @@
     };
   }
 
+  function clearIntroTimer() {
+    if (!introTimer) return;
+    window.clearTimeout(introTimer);
+    introTimer = 0;
+  }
+
+  function armIntroTimer() {
+    clearIntroTimer();
+    introTimer = window.setTimeout(finishBasecampIntro, INTRO_MS + 500);
+  }
+
   function revealBasecampUi() {
     const { layer, video, play, shell } = introEls();
     document.documentElement.classList.remove("bc-intro-pending");
-    document.body.classList.remove("bc-intro-on");
     document.body.classList.add("bc-ready");
     if (shell) shell.removeAttribute("aria-hidden");
     if (play) play.hidden = true;
-    if (layer) {
-      layer.classList.add("fade-out");
-      window.setTimeout(() => {
+    if (layer) layer.classList.add("fade-out");
+    window.setTimeout(() => {
+      document.body.classList.remove("bc-intro-on");
+      if (layer) {
         layer.hidden = true;
         layer.classList.remove("open", "fade-out", "needs-tap");
-      }, 560);
-    }
-    if (video) {
-      try { video.pause(); } catch (_) {}
-      try { video.removeAttribute("src"); video.load(); } catch (_) {}
-    }
+      }
+      if (video) {
+        try { video.pause(); } catch (_) {}
+        try { video.removeAttribute("src"); video.load(); } catch (_) {}
+      }
+    }, 560);
   }
 
   function finishBasecampIntro() {
     if (introDone) return;
     introDone = true;
+    clearIntroTimer();
     if (typeof Game.markBasecampIntroPlayed === "function") {
       Game.markBasecampIntroPlayed(introView);
     }
@@ -965,9 +979,12 @@
       attempt.then(() => {
         const { layer } = introEls();
         if (layer) layer.classList.remove("needs-tap");
+        armIntroTimer();
       }).catch(() => {
         showTapToPlay();
       });
+    } else {
+      armIntroTimer();
     }
   }
 
