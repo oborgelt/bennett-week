@@ -460,7 +460,44 @@
     const devices = filterUsageDevices(usageDevices);
     renderHealth(events, devices);
     renderStats(events);
+    renderQueries();
     renderClasses(events);
+  }
+
+  function queryRole(row) {
+    const view = String((row && row.view) || "").toLowerCase();
+    if (view === "bennett") return "bennett";
+    if (view === "mom" || view === "parent") return "parent";
+    return "orin";
+  }
+
+  function filterUsageQueries(rows) {
+    if (usageWho === "all") return rows || [];
+    return (rows || []).filter((q) => queryRole(q) === usageWho);
+  }
+
+  function renderQueries() {
+    const host = document.getElementById("usage-queries");
+    if (!host) return;
+    const fam = (typeof Game.getFamilyDraft === "function" && Game.getFamilyDraft()) || family || Game.emptyFamily();
+    const rows = filterUsageQueries(fam.basecampQueries || [])
+      .slice()
+      .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    host.innerHTML = `
+      <h3 class="usage-queries-title">Queries</h3>
+      <ul class="usage-queries">
+        ${rows.map((q) => {
+          const role = queryRole(q);
+          const who = role === "bennett" ? "Bennett" : role === "parent" ? "Mom" : "Orin";
+          const klass = q.className || classLabel(q.classId);
+          const photo = q.hasImage ? "photo yes" : "photo no";
+          return `<li>
+            <span class="usage-query-meta">${Game.esc(Game.fmtStamp(q.at))} · ${Game.esc(who)} · ${Game.esc(klass)}</span>
+            <span class="usage-query-text">${Game.esc(q.text || "")}</span>
+            <span class="usage-query-photo">${photo}</span>
+          </li>`;
+        }).join("") || `<li class="empty">No queries yet.</li>`}
+      </ul>`;
   }
 
   function setUsageWho(who) {

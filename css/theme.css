@@ -4232,6 +4232,36 @@ body.admin-page .usage-panel h2 {
   padding: 0;
 }
 
+.usage-queries-title {
+  font-size: 0.95rem;
+  margin: 16px 0 8px;
+}
+
+.usage-queries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.usage-queries li {
+  display: grid;
+  grid-template-columns: minmax(9rem, auto) 1fr auto;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(51, 88, 92, 0.45);
+  font-size: 0.84rem;
+}
+
+.usage-query-text {
+  word-break: break-word;
+}
+
+.usage-query-photo {
+  color: var(--muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .ask-lead {
   color: var(--muted);
   font-size: 0.88rem;
@@ -4536,6 +4566,7 @@ body.basecamp-page .empty {
 body.basecamp-page .bc-class,
 body.basecamp-page .bc-session,
 body.basecamp-page .bc-pin,
+body.basecamp-page .bc-delete,
 body.basecamp-page .bc-ex,
 body.basecamp-page .bc-attach {
   background: rgba(7, 18, 20, 0.78);
@@ -4680,6 +4711,21 @@ body.basecamp-page .bc-tools-drawer > summary {
 .bc-pin.on {
   border-color: var(--banana);
   background: rgba(244, 211, 94, 0.18);
+}
+
+.bc-delete {
+  appearance: none;
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(198, 224, 58, 0.28);
+  background: rgba(18, 42, 46, 0.92);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 750;
+  cursor: pointer;
 }
 
 .bc-session-title { font-size: 0.9rem; }
