@@ -2674,14 +2674,18 @@
     const messages = Array.isArray(raw.messages)
       ? raw.messages.map(normalizeBasecampMessage).filter(Boolean)
       : [];
-    return {
+    const row = {
       id: String(raw.id || uid("bc")),
       classId: String(raw.classId || "").trim(),
       title: String(raw.title || "").trim() || "New climb",
       messages: messages,
       created: raw.created || nowIso(),
-      updated: raw.updated || raw.created || nowIso()
+      updated: raw.updated || raw.created || nowIso(),
+      pinned: !!raw.pinned
     };
+    const pinnedAt = String(raw.pinnedAt || "").trim();
+    if (row.pinned && pinnedAt) row.pinnedAt = pinnedAt;
+    return row;
   }
 
   function normalizeBasecamp(raw) {
@@ -2702,6 +2706,29 @@
       .filter((s) => s && s.classId === want)
       .slice()
       .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")));
+  }
+
+  function pinStamp(session) {
+    return String((session && (session.pinnedAt || session.updated)) || "");
+  }
+
+  function basecampPinnedForClass(family, classId) {
+    return basecampSessionsForClass(family, classId)
+      .filter((s) => s && s.pinned)
+      .sort((a, b) => pinStamp(b).localeCompare(pinStamp(a)));
+  }
+
+  function basecampSavedForClass(family, classId) {
+    return basecampSessionsForClass(family, classId).filter((s) => s && !s.pinned);
+  }
+
+  function setBasecampPinned(family, sessionId, pinned) {
+    const cur = basecampSession(family, sessionId);
+    if (!cur) return { family: normalizeFamily(family), session: null };
+    const nextSession = Object.assign({}, cur, { pinned: !!pinned });
+    if (pinned) nextSession.pinnedAt = nowIso();
+    else delete nextSession.pinnedAt;
+    return upsertBasecampSession(family, nextSession);
   }
 
   function basecampSession(family, sessionId) {
@@ -2736,6 +2763,7 @@
       classId: String(classId || "").trim(),
       title: String(title || "").trim() || "New climb",
       messages: [],
+      pinned: false,
       created: now,
       updated: now
     });
@@ -4817,6 +4845,9 @@
     normalizeBasecamp,
     getBasecamp,
     basecampSessionsForClass,
+    basecampPinnedForClass,
+    basecampSavedForClass,
+    setBasecampPinned,
     basecampSession,
     upsertBasecampSession,
     createBasecampSession,
