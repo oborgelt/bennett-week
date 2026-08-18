@@ -3,7 +3,7 @@
 -- Intent — [RUN THIS]
 -- Location — paste the whole file into the new project's SQL editor
 -- Done check — Admin → Connect saves; Bennett opens This Week; this laptop Admin shows a session within a minute.
--- Paste this whole file again to add family_progress and family_overlay (Done, notes, added work). Existing tables stay.
+-- Paste this whole file again to add missing columns plus family_progress and family_overlay (Done, notes, added work). Existing devices, events, and notes stay.
 --
 -- Do not commit the service role key. Do not put the family token in git.
 
@@ -83,6 +83,18 @@ create table if not exists public.family_notes (
   test boolean
 );
 
+alter table public.family_notes add column if not exists family_token text;
+alter table public.family_notes add column if not exists target_type text;
+alter table public.family_notes add column if not exists target_id text;
+alter table public.family_notes add column if not exists from_role text;
+alter table public.family_notes add column if not exists kind text;
+alter table public.family_notes add column if not exists reply_to text;
+alter table public.family_notes add column if not exists text text;
+alter table public.family_notes add column if not exists at timestamptz default now();
+alter table public.family_notes add column if not exists class_id text;
+alter table public.family_notes add column if not exists term_id text;
+alter table public.family_notes add column if not exists test boolean;
+
 create index if not exists family_notes_family_at_idx on public.family_notes (family_token, at desc);
 
 alter table public.family_notes enable row level security;
@@ -110,8 +122,17 @@ create table if not exists public.family_progress (
   primary key (family_token, assignment_id)
 );
 
+alter table public.family_progress add column if not exists family_token text;
 alter table public.family_progress add column if not exists assignment_id text;
 alter table public.family_progress add column if not exists id text;
+alter table public.family_progress add column if not exists started boolean;
+alter table public.family_progress add column if not exists started_at timestamptz;
+alter table public.family_progress add column if not exists done bigint;
+alter table public.family_progress add column if not exists started_history jsonb;
+alter table public.family_progress add column if not exists started_awarded boolean;
+alter table public.family_progress add column if not exists done_awarded boolean;
+alter table public.family_progress add column if not exists updated_at timestamptz default now();
+alter table public.family_progress add column if not exists device_id text;
 update public.family_progress
   set assignment_id = coalesce(nullif(assignment_id, ''), id)
   where assignment_id is null or assignment_id = '';
@@ -143,6 +164,13 @@ create table if not exists public.family_work (
   term_id text
 );
 
+alter table public.family_work add column if not exists family_token text;
+alter table public.family_work add column if not exists payload jsonb default '{}'::jsonb;
+alter table public.family_work add column if not exists deleted boolean default false;
+alter table public.family_work add column if not exists updated_at timestamptz default now();
+alter table public.family_work add column if not exists class_id text;
+alter table public.family_work add column if not exists term_id text;
+
 create index if not exists family_work_family_updated_idx on public.family_work (family_token, updated_at desc);
 
 alter table public.family_work enable row level security;
@@ -161,6 +189,10 @@ create table if not exists public.family_overlay (
   progress jsonb,
   updated_at timestamptz not null default now()
 );
+
+alter table public.family_overlay add column if not exists week jsonb;
+alter table public.family_overlay add column if not exists progress jsonb;
+alter table public.family_overlay add column if not exists updated_at timestamptz default now();
 
 alter table public.family_overlay enable row level security;
 
