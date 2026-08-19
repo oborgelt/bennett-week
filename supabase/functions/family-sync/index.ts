@@ -65,7 +65,7 @@ function mapNote(input: Record<string, unknown>, family: string) {
     from_role: String(input.from || input.from_role || ""),
     kind: String(input.kind || ""),
     reply_to: String(input.replyTo || input.reply_to || ""),
-    text: String(input.text || "").slice(0, 280),
+    text: String(input.text || "").slice(0, 2000),
     at: stampOrNull(input.at) || new Date().toISOString(),
     class_id: String(input.classId || input.class_id || ""),
     term_id: String(input.termId || input.term_id || ""),
@@ -103,13 +103,78 @@ function mapWork(input: Record<string, unknown>, family: string) {
 }
 
 function mapOverlay(input: Record<string, unknown>, family: string) {
-  const week = input.week && typeof input.week === "object" ? input.week : {};
+  const week = input.week && typeof input.week === "object" ? input.week as Record<string, unknown> : {};
   const progress = input.progress && typeof input.progress === "object" ? input.progress : {};
+  if (input.library && typeof input.library === "object") week._jjLibrary = input.library;
+  if (input.ask && typeof input.ask === "object") week._jjAsk = input.ask;
   return {
     family_token: family,
     week,
     progress,
     updated_at: stampOrNull(input.updatedAt ?? input.updated_at) || new Date().toISOString(),
+  };
+}
+
+function extOf(name: string, mime: string): string {
+  const fromName = String(name || "").split(".").pop() || "";
+  const clean = fromName.replace(/[^a-z0-9]/gi, "").slice(0, 8).toLowerCase();
+  if (clean) return clean;
+  if (/wav/.test(mime)) return "wav";
+  if (/ogg/.test(mime)) return "ogg";
+  if (/mp4|m4a/.test(mime)) return "m4a";
+  if (/png/.test(mime)) return "png";
+  if (/jpe?g/.test(mime)) return "jpg";
+  if (/webm/.test(mime)) return "webm";
+  return "mp3";
+}
+
+function decodeB64(raw: string): Uint8Array {
+  const s = String(raw || "").replace(/^data:[^;]+;base64,/, "");
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i += 1) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+async function uploadLibraryFile(input: Record<string, unknown>) {
+  const id = String(input.id || "").replace(/[^a-zA-Z0-9._-]/g, "").slice(0, 64);
+  const data = String(input.data || "");
+  if (!id || !data) return null;
+  const bytes = decodeB64(data);
+  if (!bytes.length || bytes.length > 2 * 1024 * 1024) {
+    const err = new Error("file too large");
+    (err as { status?: number }).status = 413;
+    throw err;
+  }
+  const mime = String(input.mime || "application/octet-stream");
+  const filename = String(input.filename || id);
+  const path = "clips/" + id + "." + extOf(filename, mime);
+  const url = env("SUPABASE_URL").replace(/\/+$/, "");
+  const key = env("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) {
+    const err = new Error("not configured");
+    (err as { status?: number }).status = 503;
+    throw err;
+  }
+  const res = await fetch(url + "/storage/v1/object/family-library/" + path, {
+    method: "POST",
+    headers: {
+      apikey: key,
+      Authorization: "Bearer " + key,
+      "Content-Type": mime || "application/octet-stream",
+      "x-upsert": "true",
+    },
+    body: bytes,
+  });
+  if (!res.ok) {
+    const err = new Error("storage");
+    (err as { status?: number }).status = res.status;
+    throw err;
+  }
+  return {
+    id,
+    path,
+    url: url + "/storage/v1/object/public/family-library/" + path,
   };
 }
 
@@ -305,13 +370,19 @@ Deno.serve(async (req: Request) => {
       n += await writeOverlay(family, mapOverlay(body.overlay as Record<string, unknown>, family));
     }
 
+    let audio = null;
+    if (body.audio && typeof body.audio === "object") {
+      audio = await uploadLibraryFile(body.audio as Record<string, unknown>);
+      if (audio) n += 1;
+    }
+
     const deleteIds = Array.isArray(body.deleteNoteIds)
       ? (body.deleteNoteIds as unknown[]).map((id) => String(id || "")).filter(Boolean)
       : [];
     if (deleteIds.length) n += await deleteNotes(family, deleteIds);
 
     if (!n) return json(400, { error: "nothing to write" });
-    return json(200, { ok: true, n });
+    return json(200, Object.assign({ ok: true, n }, audio ? { audio } : {}));
   } catch {
     return json(502, { error: wantsPull ? "pull failed" : "write failed" });
   }

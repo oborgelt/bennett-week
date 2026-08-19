@@ -942,6 +942,7 @@
     family = Game.maybeAutoPreviewAll(pack, family).family;
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
+    if (Game.pushLocalLibraryToCloud) library = await Game.pushLocalLibraryToCloud(library);
     baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
     baseSeed = await Game.loadProgress();
     week = Game.applyWeekOverlay(baseWeek, family);

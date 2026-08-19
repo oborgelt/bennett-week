@@ -298,7 +298,9 @@
         addedItems: []
       },
       updatedAt: "",
-      soundCues: {}
+      soundCues: {},
+      library: { items: [] },
+      ask: { messages: [] }
     };
   }
 
@@ -411,6 +413,12 @@
         addedItems: normalizeAddedItems(progress.addedItems)
       },
       soundCues: asCueMap(o.soundCues || week._jjSoundCues),
+      library: (o.library && typeof o.library === "object")
+        ? o.library
+        : ((week._jjLibrary && typeof week._jjLibrary === "object") ? week._jjLibrary : { items: [] }),
+      ask: (o.ask && typeof o.ask === "object")
+        ? o.ask
+        : ((week._jjAsk && typeof week._jjAsk === "object") ? week._jjAsk : { messages: [] }),
       updatedAt: o.updatedAt || o.updated_at || week.updatedAt || ""
     };
   }
@@ -1511,6 +1519,37 @@
     return { stored, skipped };
   }
 
+  async function uploadLibraryFile(item, blob) {
+    const tel = global.Telemetry;
+    if (!item || !blob || !tel || typeof tel.uploadAudio !== "function" || !familySyncReady()) return null;
+    if ((blob.size || 0) > PACK_BLOB_MAX) return null;
+    try {
+      const data = await blobToBase64(blob);
+      const res = await tel.uploadAudio({
+        id: item.id,
+        filename: item.filename || item.label || item.id,
+        mime: item.mime || blob.type || "application/octet-stream",
+        data
+      });
+      const audio = res && res.audio ? res.audio : res;
+      if (!audio || !isSafeHttpUrl(audio.url)) return null;
+      return { url: audio.url, path: audio.path || "" };
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function stampLibraryOnFamily(lib) {
+    const family = getFamilyDraft();
+    if (!family) return null;
+    family.overlay = normalizeOverlay(family.overlay);
+    family.overlay.library = libraryCatalog(lib);
+    family.overlay.updatedAt = nowIso();
+    saveFamily(family);
+    if (!overlaySyncing) queueOverlayPush(family);
+    return family;
+  }
+
   async function addDeviceLibraryFile(lib, file, extras) {
     const kind = kindFromFile(file);
     if (!kind) return { ok: false, reason: "kind" };
@@ -1534,10 +1573,16 @@
       mime,
       test
     }, next.items.length);
+    const uploaded = await uploadLibraryFile(item, file);
+    if (uploaded) {
+      item.url = uploaded.url;
+      item.storagePath = uploaded.path;
+    }
     next.items.push(item);
     saveMomLibrary(next);
     if (lib && Array.isArray(lib.items)) lib.items = next.items;
-    return { ok: true, item, library: next };
+    stampLibraryOnFamily(next);
+    return { ok: true, item, library: next, cloud: !!item.url };
   }
 
   function youtubeId(url) {
@@ -1562,16 +1607,28 @@
 
   function librarySrc(item) {
     if (!item) return "";
-    if (item.device) {
-      const blobUrl = libraryBlobUrl(item.id);
-      if (blobUrl) return blobUrl;
-    }
     const url = String(item.url || "").trim();
     const path = String(item.path || "").trim();
     if (url === "#") return "#";
     if (url && isSafeHttpUrl(url)) return url;
+    if (item.device) {
+      const blobUrl = libraryBlobUrl(item.id);
+      if (blobUrl) return blobUrl;
+    }
     if (path && (isLocalLibraryPath(path) || isSafeHttpUrl(path))) return path;
     return "";
+  }
+
+  function libraryOnBoard(item) {
+    return !!(item && isSafeHttpUrl(item.url));
+  }
+
+  function libraryBoardLabel(item) {
+    if (!item) return "";
+    if (item.synth) return "Generated beep";
+    if (libraryOnBoard(item)) return "On the family board";
+    if (item.device) return "This device only" + (item.filename ? " · " + item.filename : "");
+    return item.path || item.url || "—";
   }
 
   function libraryKindLabel(item) {
@@ -1590,6 +1647,7 @@
     const device = !!src.device;
     const filename = String(src.filename || "").trim();
     const mime = String(src.mime || "").trim();
+    const storagePath = String(src.storagePath || "").trim();
     const character = LIBRARY_GROUPS.indexOf(src.character) >= 0 ? src.character : (device ? "fun" : "crew");
     const kind = inferKind(path || filename, url, src.kind);
     const rawSlot = String(src.slot || "").trim();
@@ -1608,6 +1666,7 @@
       device,
       filename,
       mime,
+      storagePath,
       test: !!src.test
     };
   }
@@ -1638,6 +1697,12 @@
     return tag;
   }
 
+  function pickLibraryUrl(a, b) {
+    if (isSafeHttpUrl(a)) return String(a || "").trim();
+    if (isSafeHttpUrl(b)) return String(b || "").trim();
+    return String(a || b || "").trim();
+  }
+
   function mergeLibrary(shippedRaw, draftRaw) {
     const shipped = normalizeLibrary(shippedRaw || defaultLibrary());
     const draft = normalizeLibrary(draftRaw || { items: [] });
@@ -1652,20 +1717,22 @@
         seen[ship.id] = true;
         return;
       }
+      const shippedFile = !!(ship.path && isLocalLibraryPath(ship.path));
       items.push(normalizeLibraryItem({
         id: ship.id,
         label: mom.label || ship.label,
-        path: ship.path,
-        url: ship.url,
-        poster: ship.poster,
-        kind: ship.kind,
+        path: ship.path || mom.path,
+        url: shippedFile ? ship.url : pickLibraryUrl(mom.url, ship.url),
+        poster: ship.poster || mom.poster,
+        kind: ship.kind || mom.kind,
         character: keepDraftCharacter(ship, mom),
-        slot: ship.slot,
-        synth: ship.synth,
-        device: false,
-        filename: ship.filename,
-        mime: ship.mime,
-        test: !!ship.test
+        slot: ship.slot || mom.slot,
+        synth: ship.synth || mom.synth,
+        device: shippedFile ? false : !!(ship.device || mom.device),
+        filename: mom.filename || ship.filename,
+        mime: mom.mime || ship.mime,
+        storagePath: mom.storagePath || ship.storagePath,
+        test: !!(ship.test || mom.test)
       }, items.length));
       seen[ship.id] = true;
     });
@@ -1675,6 +1742,57 @@
       seen[mom.id] = true;
     });
     return normalizeLibrary({ items });
+  }
+
+  function libraryCatalog(lib) {
+    return {
+      items: normalizeLibrary(lib || { items: [] }).items.map((item) => ({
+        id: item.id,
+        label: item.label,
+        path: item.path,
+        url: item.url,
+        poster: item.poster,
+        kind: item.kind,
+        character: item.character,
+        slot: item.slot,
+        synth: item.synth,
+        device: item.device,
+        filename: item.filename,
+        mime: item.mime,
+        storagePath: item.storagePath || "",
+        test: !!item.test
+      }))
+    };
+  }
+
+  function applyOverlayLibrary(cloud) {
+    const cloudLib = normalizeLibrary(cloud || { items: [] });
+    if (!cloudLib.items.length) return getMomLibrary();
+    const mom = getMomLibrary() || { items: [] };
+    const next = mergeLibrary(mom, cloudLib);
+    saveMomLibrary(next);
+    return next;
+  }
+
+  async function pushLocalLibraryToCloud(lib) {
+    const next = normalizeLibrary(lib || getMomLibrary() || { items: [] });
+    let changed = false;
+    for (let i = 0; i < next.items.length; i += 1) {
+      const item = next.items[i];
+      if (!item || !item.device || libraryOnBoard(item)) continue;
+      const rec = await getLibraryBlob(item.id);
+      if (!rec || !rec.blob) continue;
+      const uploaded = await uploadLibraryFile(item, rec.blob);
+      if (!uploaded) continue;
+      item.url = uploaded.url;
+      item.storagePath = uploaded.path;
+      changed = true;
+    }
+    if (changed) {
+      saveMomLibrary(next);
+      stampLibraryOnFamily(next);
+    }
+    return next;
   }
 
   function shippedLibrary(file) {
@@ -1703,7 +1821,9 @@
     const file = await fetchJson("library.json", null);
     const shipped = shippedLibrary(file);
     const draft = getMomLibrary();
-    const lib = mergeLibrary(shipped, draft);
+    const family = getFamilyDraft();
+    const cloud = family && family.overlay ? family.overlay.library : null;
+    const lib = mergeLibrary(shipped, mergeLibrary(draft || { items: [] }, cloud || { items: [] }));
     saveMomLibrary(lib);
     await hydrateLibraryBlobs(lib);
     return lib;
@@ -2743,10 +2863,44 @@
     write(KEYS.ask, normalizeAskThread(thread));
   }
 
+  function mergeAskThreads(localRaw, remoteRaw) {
+    const local = normalizeAskThread(localRaw);
+    const remote = normalizeAskThread(remoteRaw);
+    const byId = Object.create(null);
+    local.messages.forEach((m) => { if (m && m.id) byId[m.id] = m; });
+    remote.messages.forEach((m) => {
+      if (!m || !m.id) return;
+      if (!byId[m.id]) byId[m.id] = m;
+    });
+    const messages = Object.keys(byId).map((id) => byId[id])
+      .sort((a, b) => String(a.at || "").localeCompare(String(b.at || "")));
+    return { messages };
+  }
+
+  function applyOverlayAsk(cloud) {
+    const remote = normalizeAskThread(cloud);
+    if (!remote.messages.length) return getAskThread();
+    const next = mergeAskThreads(getAskThread(), remote);
+    saveAskThread(next);
+    return next;
+  }
+
+  function stampAskOnFamily(thread) {
+    const family = getFamilyDraft();
+    if (!family) return null;
+    family.overlay = normalizeOverlay(family.overlay);
+    family.overlay.ask = normalizeAskThread(thread || getAskThread());
+    family.overlay.updatedAt = nowIso();
+    saveFamily(family);
+    if (!overlaySyncing) queueOverlayPush(family);
+    return family;
+  }
+
   function addAskMessage(thread, msg) {
     const next = normalizeAskThread(thread);
     next.messages = next.messages.concat([Object.assign({ id: uid("ask"), at: nowIso() }, msg)]);
     saveAskThread(next);
+    stampAskOnFamily(next);
     return next;
   }
 
@@ -4606,7 +4760,7 @@
       termId: row.termId || ""
     });
     queueNotePush(next);
-    pushFamilyNotes(next);
+    next._notesFlush = flushFamilyNotes(next);
     return next;
   }
 
@@ -4887,8 +5041,15 @@
       return { pushed: notes.length, missing: false };
     } catch (err) {
       const missing = !!(err && (err.status === 404 || err.status === 406));
-      return { pushed: 0, missing };
+      return { pushed: 0, missing, failed: true };
     }
+  }
+
+  async function flushFamilyNotes(family) {
+    const next = normalizeFamily(family || getFamilyDraft() || emptyFamily());
+    await pushFamilyNotes(next);
+    const synced = await syncFamilyNotes(getFamilyDraft() || next);
+    return synced.family;
   }
 
   async function pullFamilyNotes() {
@@ -5302,6 +5463,8 @@
       soundCues: String(local.updatedAt || "") >= String(remote.updatedAt || "")
         ? Object.assign({}, remote.soundCues, local.soundCues)
         : Object.assign({}, local.soundCues, remote.soundCues),
+      library: mergeLibrary(local.library, remote.library),
+      ask: mergeAskThreads(local.ask, remote.ask),
       updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
     };
     return merged;
@@ -5312,7 +5475,9 @@
     return JSON.stringify({
       week: o.week,
       progress: o.progress,
-      soundCues: o.soundCues
+      soundCues: o.soundCues,
+      library: ((o.library && o.library.items) || []).map((item) => [item.id, item.url || "", item.path || ""]),
+      ask: ((o.ask && o.ask.messages) || []).map((m) => m.id)
     });
   }
 
@@ -5334,12 +5499,19 @@
     }, 400);
   }
 
-  async function pushFamilyOverlay(family) {
-    const tel = global.Telemetry;
-    if (!tel || typeof tel.upsertOverlay !== "function" || !familySyncReady()) return { pushed: 0, missing: false };
+  function packOverlayBoard(family) {
     const next = normalizeFamily(family);
     const packed = normalizeOverlay(next.overlay);
     packed.soundCues = asCueMap(next.soundCues);
+    packed.library = libraryCatalog(getMomLibrary() || packed.library || { items: [] });
+    packed.ask = normalizeAskThread(getAskThread());
+    return packed;
+  }
+
+  async function pushFamilyOverlay(family) {
+    const tel = global.Telemetry;
+    if (!tel || typeof tel.upsertOverlay !== "function" || !familySyncReady()) return { pushed: 0, missing: false };
+    const packed = packOverlayBoard(family);
     try {
       await tel.upsertOverlay(packed);
       return { pushed: 1, missing: false };
@@ -5367,6 +5539,8 @@
       if (remote) {
         next.overlay = mergeFamilyOverlay(next.overlay, remote);
         next.soundCues = asCueMap(next.overlay.soundCues);
+        applyOverlayLibrary(next.overlay.library);
+        applyOverlayAsk(next.overlay.ask);
         saveFamily(next);
       }
     } finally {
@@ -5377,7 +5551,7 @@
     let pushed = 0;
     if (localNewer && (next.overlay.updatedAt || after !== overlayFingerprint(emptyOverlay()))) {
       try {
-        await tel.upsertOverlay(next.overlay);
+        await tel.upsertOverlay(packOverlayBoard(next));
         pushed = 1;
       } catch (err) {
         return { family: next, pulled: remote ? 1 : 0, pushed: 0, missing: missingSync(err), offline: false, changed: before !== after };
@@ -5529,6 +5703,10 @@
         family = sendParentReply(family, id, text);
         toast("Reply sent. Bennett will see it on that card.");
         if (typeof o.onChange === "function") o.onChange(family);
+        flushFamilyNotes(family).then((next) => {
+          family = next;
+          if (typeof o.onChange === "function") o.onChange(family);
+        }).catch(() => {});
       });
     });
     return family;
@@ -6071,6 +6249,10 @@
     isSkippedDeviceSound,
     labelsFromManifest,
     addDeviceLibraryFile,
+    pushLocalLibraryToCloud,
+    libraryCatalog,
+    libraryOnBoard,
+    libraryBoardLabel,
     putLibraryBlob,
     getLibraryBlob,
     deleteLibraryBlob,
@@ -6163,6 +6345,7 @@
     markUnlocked,
     notesFor,
     addNote,
+    flushFamilyNotes,
     promoteHelpAskToInbox,
     promoteAskThreadToInbox,
     isBennettAsk,

@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=115/.test(basecampHtml) && /basecamp\.js\?v=115/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=116/.test(basecampHtml) && /basecamp\.js\?v=116/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -963,6 +963,20 @@ assert.strictEqual(cueFam.overlay.soundCues["work-start"], "honk", "setSoundCue 
 const packedCues = Telemetry.overlayToRow(cueFam.overlay, "fam");
 assert.strictEqual(packedCues.week._jjSoundCues["work-start"], "honk", "overlay row embeds sound cues in week JSON");
 assert.strictEqual(Telemetry.rowToOverlay(packedCues).soundCues["work-start"], "honk", "overlay row round-trips sound cues");
+const packedLib = Telemetry.overlayToRow({
+  week: {},
+  library: { items: [{ id: "yousure", url: "https://example.com/y.mp3", device: true, kind: "audio" }] },
+  ask: { messages: [{ id: "ask-1", role: "bennett", text: "stuck" }] },
+  updatedAt: "t"
+}, "fam");
+assert.strictEqual(packedLib.week._jjLibrary.items[0].id, "yousure", "overlay row embeds library catalog in week JSON");
+assert.strictEqual(Telemetry.rowToOverlay(packedLib).library.items[0].url, "https://example.com/y.mp3", "overlay row round-trips library URLs");
+assert.strictEqual(Telemetry.rowToOverlay(packedLib).ask.messages[0].id, "ask-1", "overlay row round-trips ask thread");
+assert.strictEqual(Game.librarySrc({ id: "cloud-clip", device: true, kind: "audio", url: "https://example.com/a.mp3" }), "https://example.com/a.mp3", "cloud URL plays before a missing local blob");
+assert(/function flushFamilyNotes/.test(gameJs), "notes wait for a family board write");
+assert(/This device only/.test(adminJs) || /libraryBoardLabel/.test(adminJs), "Admin labels clips that have not reached Storage");
+assert(/family-library/.test(fs.readFileSync(path.join(root, "scripts/telemetry.sql"), "utf8")), "SQL creates the family-library bucket");
+assert(/slice\(0,\s*2000\)/.test(telemetryJs), "notes keep help-length text");
 const playFn = fs.readFileSync(path.join(root, "js/game.js"), "utf8");
 const playItemFn = playFn.slice(playFn.indexOf("function playLibraryItem("), playFn.indexOf("function audioLibraryItems"));
 assert(playItemFn.indexOf("playHtmlAudio(src)") >= 0, "playLibraryItem starts HTMLAudio in the click turn");
@@ -972,6 +986,8 @@ assert(/Bennett hears this on This Week/.test(playFn), "Admin sound save no long
 assert(fs.statSync(path.join(root, "audio/tablesloud.mp3")).size > 1000, "tablesloud.mp3 is a real file");
 assert(fs.statSync(path.join(root, "audio/undo.wav")).size > 100, "undo.wav is a real file");
 assert(/writeOverlay/.test(familySyncFn) && /mapOverlay/.test(familySyncFn) && /pullOverlay/.test(familySyncFn), "family-sync reads and writes overlay");
+assert(/uploadLibraryFile/.test(familySyncFn) && /family-library/.test(familySyncFn), "family-sync uploads clips to Storage");
+assert(/_jjLibrary/.test(familySyncFn) && /_jjAsk/.test(familySyncFn), "overlay packs library catalog and ask thread");
 assert.strictEqual(Game.shippedUndoClick().id, "undo-click");
 assert.strictEqual(Game.shippedUndoClick().path, "audio/undo.wav");
 assert.strictEqual(Game.shippedUndoClick().label, "Undo");
@@ -1198,7 +1214,7 @@ assert(/playWorkActionCue/.test(weekJs) && /act === "started"/.test(weekJs) && /
 assert(/primeLibraryAudio/.test(weekJs), "week Start/Done primes the audio element in the same click");
 assert(/warmupLibraryAudio/.test(weekJs), "week boot warms the library so the first click is not a cold decode");
 assert(/done-tag/.test(weekJs) && /function sortWorkOpenFirst/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "Done items get a badge and sort under open work");
-assert(/promoteHelpAskToInbox/.test(weekJs) && /promoteAskThreadToInbox/.test(weekJs), "A little help copies Bennett's question into Messages");
+assert(/promoteHelpAskToInbox/.test(weekJs) && /promoteAskThreadToInbox/.test(weekJs) && /await board/.test(weekJs), "A little help copies Bennett's question into Messages");
 assert(/data-parent-tab="awards"/.test(parentHtml) && /data-parent-panel="crew"/.test(parentHtml) && /id="parent-tabs"/.test(parentHtml), "Parent desk is tabbed");
 assert(/bindParentTabs/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")) && /data-parent-tab/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk tabs switch panels");
 assert(/\.item\.done/.test(fs.readFileSync(path.join(root, "css/theme.css"), "utf8")) && /done-tag/.test(fs.readFileSync(path.join(root, "css/theme.css"), "utf8")), "Done cards use a teal plate, not a faint strikethrough");
@@ -1252,7 +1268,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=115/.test(weekHtml) && /week\.js\?v=115/.test(weekHtml) && /game\.js\?v=115/.test(weekHtml) && /telemetry\.js\?v=115/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=116/.test(weekHtml) && /week\.js\?v=116/.test(weekHtml) && /game\.js\?v=116/.test(weekHtml) && /telemetry\.js\?v=116/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1299,8 +1315,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=114\b/.test(html), file + " should not still cache-bust as v=114");
-  assert(/\?v=115/.test(html), file + " should cache-bust v=115");
+  assert(!/\?v=115\b/.test(html), file + " should not still cache-bust as v=115");
+  assert(/\?v=116/.test(html), file + " should cache-bust v=116");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1342,10 +1358,10 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=115/.test(progressHtml) && /theme\.css\?v=115/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=116/.test(progressHtml) && /theme\.css\?v=116/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*113/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 113");
+assert(/build:\s*114/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 114");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2024,6 +2040,10 @@ document.documentElement = prevRoot;
       if (body.pull) {
         return { ok: true, json: async () => ({ progress: [{ assignment_id: "chem-about-me", done: 99, updated_at: "2026-08-18T22:00:00.000Z" }], notes: [], work: [], overlay: null }) };
       }
+      if (body.audio) {
+        const id = String(body.audio.id || "clip");
+        return { ok: true, json: async () => ({ ok: true, n: 1, audio: { id, path: "clips/" + id + ".wav", url: "https://example.supabase.co/storage/v1/object/public/family-library/clips/" + id + ".wav" } }) };
+      }
       return { ok: true, json: async () => ({ ok: true, n: Array.isArray(body.rows) ? body.rows.length : (Array.isArray(body.notes) ? body.notes.length : 1) }) };
     }
     throw new Error("REST should not be required for Done");
@@ -2056,7 +2076,8 @@ document.documentElement = prevRoot;
   assert.strictEqual(added.item.kind, "audio");
   assert.strictEqual(added.item.label, "TEST Beep");
   assert(added.item.device);
-  assert(Game.librarySrc(added.item), "dropped wav should play from an object URL");
+  assert(added.cloud && /^https:/.test(Game.librarySrc(added.item)), "dropped wav should play from Storage");
+  assert(syncCalls.some((row) => row.body && /"audio"/.test(String(row.body))), "drop posts the clip through family-sync");
   assert(Game.libraryFor(added.library, "fun", false).some((item) => item.id === added.item.id));
 
   const packed = await Game.exportFamilyPack(pack, family, Game.defaultCharacters(), added.library);

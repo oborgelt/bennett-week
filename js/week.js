@@ -1968,6 +1968,7 @@
     const title = helpTitle(work);
     let thread = Game.addAskMessage(Game.getAskThread(), { role: "bennett", text, title });
     family = Game.promoteHelpAskToInbox(family, work, text);
+    const board = Game.flushFamilyNotes ? Game.flushFamilyNotes(family) : Promise.resolve(family);
     if (typeof Game.track === "function") {
       Game.track("ask_ai", { classId: Game.classIdForWork(work), message: title });
     }
@@ -1987,6 +1988,7 @@
       title,
       messages: thread.messages
     });
+    try { await board; } catch (_) {}
     const wait = HELP_THINK_MS - (Date.now() - started);
     if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
     Game.addAskMessage(thread, {
@@ -2287,10 +2289,12 @@
     }
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);
+    if (Game.pushLocalLibraryToCloud) library = await Game.pushLocalLibraryToCloud(library);
     if (Game.warmupLibraryAudio) Game.warmupLibraryAudio(library, family);
     baseSeed = await Game.loadProgress();
     syncWeek();
     family = Game.promoteAskThreadToInbox(family, week);
+    if (Game.flushFamilyNotes) family = await Game.flushFamilyNotes(family);
     initSelectedClass();
     renderClassSwitcher();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {

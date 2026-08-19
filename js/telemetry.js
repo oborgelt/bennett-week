@@ -396,7 +396,7 @@
       from_role: String(n.from || ""),
       kind: String(n.kind || ""),
       reply_to: String(n.replyTo || ""),
-      text: String(n.text || "").slice(0, 280),
+      text: String(n.text || "").slice(0, 2000),
       at: n.at || new Date().toISOString(),
       class_id: String(n.classId || ""),
       term_id: String(n.termId || ""),
@@ -656,10 +656,16 @@
     const cues = src.soundCues && typeof src.soundCues === "object" ? src.soundCues : {};
     if (Object.keys(cues).length) week._jjSoundCues = cues;
     else delete week._jjSoundCues;
+    if (src.library && typeof src.library === "object") week._jjLibrary = src.library;
+    else delete week._jjLibrary;
+    if (src.ask && typeof src.ask === "object") week._jjAsk = src.ask;
+    else delete week._jjAsk;
     return {
       family_token: familyToken,
       week,
       progress: src.progress && typeof src.progress === "object" ? src.progress : {},
+      library: src.library && typeof src.library === "object" ? src.library : { items: [] },
+      ask: src.ask && typeof src.ask === "object" ? src.ask : { messages: [] },
       updated_at: src.updatedAt || src.updated_at || new Date().toISOString()
     };
   }
@@ -668,14 +674,31 @@
     const r = row && typeof row === "object" ? row : {};
     const week = r.week && typeof r.week === "object" ? Object.assign({}, r.week) : {};
     const soundCues = (week._jjSoundCues && typeof week._jjSoundCues === "object") ? week._jjSoundCues : (r.soundCues || {});
+    const library = (week._jjLibrary && typeof week._jjLibrary === "object") ? week._jjLibrary : (r.library || { items: [] });
+    const ask = (week._jjAsk && typeof week._jjAsk === "object") ? week._jjAsk : (r.ask || { messages: [] });
     delete week._jjSoundCues;
+    delete week._jjLibrary;
+    delete week._jjAsk;
     return {
       family_token: String(r.family_token || ""),
       week,
       progress: r.progress && typeof r.progress === "object" ? r.progress : {},
       soundCues,
+      library,
+      ask,
       updatedAt: r.updated_at || r.updatedAt || ""
     };
+  }
+
+  async function uploadAudio(input) {
+    const payload = {
+      id: String((input && input.id) || "").trim(),
+      filename: String((input && input.filename) || "").trim(),
+      mime: String((input && input.mime) || "application/octet-stream").trim(),
+      data: String((input && input.data) || "")
+    };
+    if (!payload.id || !payload.data) return null;
+    return familySyncRequest("POST", { audio: payload });
   }
 
   async function fetchOverlay() {
@@ -761,6 +784,7 @@
     rowToOverlay,
     fetchOverlay,
     upsertOverlay,
+    uploadAudio,
     probeFamilyTables,
     queuedCount,
     boot

@@ -2,8 +2,8 @@
 -- Target — browser (supabase.com → SQL editor)
 -- Intent — [RUN THIS]
 -- Location — paste the whole file into the new project's SQL editor
--- Done check — Admin → Connect saves; Bennett opens This Week; this laptop Admin shows a session within a minute.
--- Paste this whole file again to add missing columns plus family_progress and family_overlay (Done, notes, added work). Existing devices, events, and notes stay.
+-- Done check — SQL Editor succeeds; family-sync deploy succeeds; Bennett hears a Fun clip dropped on Dad's laptop.
+-- Paste this whole file again to add missing columns, family tables, and the family-library Storage bucket. Existing devices, events, and notes stay.
 --
 -- Do not commit the service role key. Do not put the family token in git.
 
@@ -203,3 +203,18 @@ create policy family_overlay_all on public.family_overlay
   with check (family_token = public.requesting_family_token());
 
 grant select, insert, update, delete on public.family_overlay to anon;
+
+-- Family audio/stills live in Storage, not git. Public-read objects, unguessable clip ids.
+-- Service role (family-sync) uploads. Anon can read so Bennett's phone can play without the family token in the URL.
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('family-library', 'family-library', true, 2097152)
+on conflict (id) do update
+set public = true,
+    file_size_limit = 2097152;
+
+drop policy if exists family_library_public_read on storage.objects;
+create policy family_library_public_read
+on storage.objects
+for select
+to public
+using (bucket_id = 'family-library');

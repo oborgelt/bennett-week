@@ -73,7 +73,7 @@
     const where = item.synth
       ? "Generated beep (Web Audio) — no file in the repo"
       : item.device
-        ? ("On this device" + (item.filename ? " · " + item.filename : ""))
+        ? (Game.libraryBoardLabel ? Game.libraryBoardLabel(item) : ("On this device" + (item.filename ? " · " + item.filename : "")))
         : (src || item.path || item.url || "No path or URL");
     openSheet(item.label || "Preview", `
       <p class="empty">${Game.esc(where)}</p>
@@ -99,7 +99,7 @@
     const detail = item.synth
       ? "Generated beep"
       : item.device
-        ? ("On this device" + (item.filename ? " · " + item.filename : ""))
+        ? (Game.libraryBoardLabel ? Game.libraryBoardLabel(item) : ("On this device" + (item.filename ? " · " + item.filename : "")))
         : (src || item.path || item.url || "—");
     const audio = item.kind === "audio" || !!item.synth;
     return `
@@ -786,8 +786,13 @@
   async function boot() {
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
+    try {
+      const synced = await Game.syncFamilyLive(family);
+      family = synced.family;
+    } catch (_) {}
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
+    if (Game.pushLocalLibraryToCloud) library = await Game.pushLocalLibraryToCloud(library);
     progressSeed = await Game.loadProgress();
     termsCatalog = await Game.loadTerms();
     try {
@@ -868,6 +873,7 @@
         return;
       }
       Game.saveMomLibrary(library);
+      if (Game.pushLocalLibraryToCloud) library = await Game.pushLocalLibraryToCloud(library);
       renderLibrary();
       document.getElementById("draft-flag").hidden = false;
       const bits = [];
