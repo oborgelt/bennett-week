@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-18T14:40:00",
+  "as_of": "2026-08-19T08:16:00",
   "parenting": [
     {
       "who": "Mom",
@@ -827,7 +827,7 @@
       "id": "eng-names",
       "title": "English 10: Help me learn your names!",
       "due": "2026-08-17T23:59:00",
-      "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points. Submitted 8/17 1:14pm. Ungraded.",
+      "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points. Submitted 8/17 1:14pm. Ungraded. Still ungraded as of Wed 8:16am.",
       "canvas": {
         "status": "submitted",
         "points": 5,
@@ -838,7 +838,7 @@
       "id": "eng-comics",
       "title": "English 10: Summer Narrative Comic Strip",
       "due": "2026-08-20T23:59:00",
-      "note": "In class Tuesday. Official Canvas due Thursday 11:59pm. 10 points, submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence. Due Thursday night after 4:30 handoff to Mom.",
+      "note": "In class Tuesday. Official Canvas due Thursday 11:59pm. 10 points, submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence. Due Thursday night after 4:30 handoff to Mom. Still due Thu 11:59pm.",
       "suggest_from": "2026-08-15",
       "canvas": {
         "status": "open",
@@ -868,7 +868,7 @@
       "title": "Chemistry: About Me Slides (assignment)",
       "classId": "chemistry",
       "due": "2026-08-18T23:59:00",
-      "note": "1 pt. Canvas 15683. Not submitted as of 2:40pm. Dad's night.",
+      "note": "1 pt. Still no submission as of Wed 8:16am. Not yet labeled missing.",
       "canvas": {
         "status": "open",
         "points": 1
@@ -879,10 +879,11 @@
       "title": "Chemistry: About Me Slides (discussion)",
       "classId": "chemistry",
       "due": "2026-08-18T23:59:00",
-      "note": "1 pt plus replies. Separate from the assignment. Not submitted as of 2:40pm.",
+      "note": "MISSED. Graded 0/1. Course total 0% (0/1).",
       "canvas": {
-        "status": "open",
-        "points": 1
+        "status": "missing",
+        "points": 1,
+        "score": 0
       }
     },
     {
@@ -890,7 +891,7 @@
       "title": "Web Design: 1.1 What is the Web?",
       "classId": "web-design",
       "due": "2026-08-19T09:20:00",
-      "note": "20 pts. Posted today after 7am. Not submitted. Period 3.",
+      "note": "20 pts. Not submitted as of 8:16am Wed. Period 3.",
       "canvas": {
         "status": "open",
         "points": 20
@@ -911,5 +912,11 @@
       "suggest_from": "2026-08-15"
     }
   ],
-  "notes": []
+  "notes": [
+    {
+      "date": "2026-08-19",
+      "title": "Morning check (late 7am)",
+      "text": "Name video still submitted Aug 17 1:14pm, ungraded. No new ParentVUE mail since Sun 8/16 Fillingham. No new attendance. oeband.com unchanged. Geometry/Sociology/S&C/AI still unpublished."
+    }
+  ]
 }
