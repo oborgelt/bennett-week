@@ -187,7 +187,7 @@
     const items = characterId
       ? Game.libraryForAttach(library, characterId)
       : Game.contentLibraryItems(library);
-    sel.innerHTML = [`<option value="">None</option>`].concat(
+    sel.innerHTML = [`<option value="">None · uses A streak is awarded</option>`].concat(
       items.map((item) => `<option value="${Game.esc(item.id)}">${Game.esc(item.label)} · ${Game.esc(Game.libraryKindLabel(item))}</option>`)
     ).join("");
     sel.value = selected || "";
@@ -550,13 +550,14 @@
       const thumb = gearItem
         ? `<div class="ach-gear-thumb">${Game.libraryThumbHtml(gearItem)}</div>`
         : "";
+      const media = Game.rewardMediaItem(ach, library);
       return `
         <article class="ach-card${gearItem ? " has-gear" : ""}">
           ${thumb}
           <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title || "Untitled")}</h3>
-          <p>${Game.esc(ach.description || "")}</p>
+          <p>${Game.esc(ach.description || ach.how || "Add the line Bennett sees when this unlocks.")}</p>
           <p>Incentive: ${Game.esc(ach.incentive || "—")} · ${Game.bananasOf(ach) || 0} ${cur.name}</p>
-          <p>Reward: ${unlock ? Game.esc(rewardLabel(ach)) : "None"}${ach.rewardMedia ? " · media attached" : ""}</p>
+          <p>Reward: ${unlock ? Game.esc(rewardLabel(ach)) : "None"} · sound: ${media ? Game.esc(media.label) : "A streak is awarded"}</p>
           <p>Streak: ${st.count} / ${target} ${Game.esc(unit)}${st.awarded ? " · awarded" : ""}</p>
           <div class="parent-actions">
             <button type="button" class="btn" data-count="${Game.esc(ach.id)}">Count this week</button>
@@ -591,7 +592,7 @@
       family = result.family;
       persistFamily();
       if (result.achievement) {
-        Game.celebrate(result.achievement, pack, library);
+        Game.celebrate(result.achievement, pack, library, { roster, family });
         if (result.freshCharacter) {
           const ch = findChar(result.grantedCharacter);
           Game.toast((ch ? Game.characterLabel(ch) : "Character") + " unlocked for Bennett. He sees it next time he opens Jungle Jam.");
@@ -601,9 +602,6 @@
         }
         if (result.freshContent && result.grantedUnlock) {
           Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for Bennett.");
-        }
-        if (!Game.rewardMediaItem(result.achievement, library)) {
-          Game.playSoundCue(family, library, "streak-award");
         }
       } else {
         Game.toast("Already awarded on this device.");

@@ -165,16 +165,16 @@
     hud();
     render();
     if (signin.awarded && signin.achievement) {
-      Game.celebrate(signin.achievement, pack);
+      Game.celebrate(signin.achievement, pack, library, { roster, family });
     }
-    if (!Game.maybePlayUnlockCelebration(roster)) {
+    if (!Game.maybePlayUnlockCelebration(roster, pack, family, library)) {
       Game.maybePlayContentCelebration(library);
     }
     document.addEventListener("bw-site-view", () => {
       if (!pack) return;
       const next = Game.maybeAwardSignIn(pack, family);
       family = next.family;
-      if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack);
+      if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack, library, { roster, family });
       hud();
       render();
     });

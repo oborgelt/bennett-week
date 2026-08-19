@@ -226,8 +226,8 @@
       ...(extra || {})
     });
     family = result.family;
-    result.fresh.forEach((ach) => Game.celebrate(ach, pack, library));
-    if (roster) Game.maybePlayUnlockCelebration(roster);
+    result.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
+    if (roster) Game.maybePlayUnlockCelebration(roster, pack, family, library);
     hud();
     if (document.getElementById("shelf").classList.contains("open")) renderShelf();
   }
@@ -1174,7 +1174,7 @@
         e.preventDefault();
         e.stopPropagation();
         const ch = ((roster && roster.characters) || []).find((row) => row.id === btn.dataset.watchCrew);
-        if (ch) Game.playUnlockClip(roster, ch);
+        if (ch) Game.playUnlockClip(roster, ch, { rewatch: true });
       });
     });
   }
@@ -2371,13 +2371,13 @@
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
     family = Game.ensureReflectionPool(family);
+    library = await Game.loadLibrary();
+    await Game.hydrateLibraryBlobs(library);
     const signin = Game.maybeAwardSignIn(pack, family);
     family = signin.family;
     if (signin.awarded && signin.achievement) {
-      Game.celebrate(signin.achievement, pack);
+      Game.celebrate(signin.achievement, pack, library, { roster, family });
     }
-    library = await Game.loadLibrary();
-    await Game.hydrateLibraryBlobs(library);
     if (Game.warmupLibraryAudio) Game.warmupLibraryAudio(library, family);
     baseSeed = await Game.loadProgress();
     syncWeek();
@@ -2396,7 +2396,7 @@
     hud();
     goTo(0, true);
     runUnlocks();
-    if (roster && !Game.maybePlayUnlockCelebration(roster)) {
+    if (roster && !Game.maybePlayUnlockCelebration(roster, pack, family, library)) {
       Game.maybePlayContentCelebration(library);
     } else if (!roster) {
       Game.maybePlayContentCelebration(library);
@@ -2405,7 +2405,7 @@
       if (!pack) return;
       const next = Game.maybeAwardSignIn(pack, family);
       family = next.family;
-      if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack);
+      if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack, library, { roster, family });
       hud();
       refreshCardsInPlace();
       const shelf = document.getElementById("shelf");

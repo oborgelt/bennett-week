@@ -61,7 +61,8 @@
     undo: "undo-click",
     tables: "tablesloud",
     "work-start": "tablesloud",
-    "work-done": "tablesloud"
+    "work-done": "tablesloud",
+    "streak-award": "tablesloud"
   };
   const SHIPPED_UNDO_CLICK = {
     id: "undo-click",
@@ -1136,6 +1137,9 @@
       if (live.unlock && !next.unlock) next.unlock = live.unlock;
       if (live.rewardCharacter && !next.rewardCharacter) next.rewardCharacter = live.rewardCharacter;
       if (live.rewardUnlock && !next.rewardUnlock) next.rewardUnlock = live.rewardUnlock;
+      if (live.rewardMedia && !next.rewardMedia) next.rewardMedia = live.rewardMedia;
+      if (live.description && !next.description) next.description = live.description;
+      if (live.how && !next.how) next.how = live.how;
       return next;
     });
     shippedList.forEach((ach) => {
@@ -2209,9 +2213,31 @@
   function playAwardMedia(ach, lib) {
     const item = rewardMediaItem(ach, lib);
     if (!item) return false;
-    if (item.kind === "audio" || item.synth) return playLibraryItem(item);
+    if (item.kind === "audio" || item.synth) {
+      if (playLibraryItem(item)) return true;
+      void playLibraryItemNow(item);
+      return true;
+    }
     if (item.kind === "link") return playContentReward(item);
     return false;
+  }
+
+  function playAwardSound(ach, family, lib) {
+    if (playAwardMedia(ach, lib)) return true;
+    return playSoundCue(family, lib, "streak-award");
+  }
+
+  function unlockCopy(ach) {
+    if (!ach) return "";
+    return String(ach.description || ach.how || ach.incentive || "").trim();
+  }
+
+  function achievementGrantingCharacter(pack, characterId) {
+    if (!characterId) return null;
+    return ((pack && pack.achievements) || []).find((ach) => {
+      if (!ach || rewardCharacterId(ach) !== characterId) return false;
+      return alreadyUnlocked(ach.id) && !achievementIsPreviewOnly(ach.id);
+    }) || null;
   }
 
   function rewardUnlockOf(ach) {
@@ -4171,10 +4197,13 @@
     layer.classList.remove("open");
   }
 
-  function playUnlockClip(roster, unlockedChar) {
+  function playUnlockClip(roster, unlockedChar, opts) {
     const media = characterMedia(roster, unlockedChar);
     const name = characterLabel(unlockedChar, unlockedChar && unlockedChar.id === "bennett" ? "Bennett" : "New teammate");
     const kicker = unlockedChar && unlockedChar.id === "bennett" ? "You're in" : "New teammate";
+    const ach = opts && opts.achievement;
+    const why = unlockCopy(ach);
+    const rewatch = !!(opts && opts.rewatch);
     let layer = document.getElementById("char-celebrate");
     if (!layer) {
       layer = document.createElement("div");
@@ -4186,10 +4215,21 @@
       <div class="char-celebrate-panel" role="dialog" aria-labelledby="char-celebrate-title">
         <p class="char-celebrate-kicker">${kicker}</p>
         <h2 id="char-celebrate-title">${esc(name)} unlocked!</h2>
-        <video src="${esc(media.video)}" poster="${esc(media.poster)}" playsinline ${prefersReducedMotion() ? "" : "autoplay"} controls></video>
+        ${why ? `<p class="char-celebrate-why">${esc(why)}</p>` : ""}
+        <video src="${esc(media.video)}" poster="${esc(media.poster)}" playsinline muted ${rewatch ? "controls" : ""} ${prefersReducedMotion() ? "" : "autoplay"}></video>
         <button type="button" class="btn primary" id="char-celebrate-close">Nice</button>
       </div>`;
     layer.classList.add("open");
+    const video = layer.querySelector("video");
+    if (video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.volume = 0;
+      if (!prefersReducedMotion() && video.play) {
+        const p = video.play();
+        if (p && p.catch) p.catch(function () {});
+      }
+    }
     const close = () => closeCharacterCelebrate();
     const closeBtn = document.getElementById("char-celebrate-close");
     if (closeBtn && closeBtn.addEventListener) closeBtn.addEventListener("click", close);
@@ -4199,13 +4239,22 @@
     if (unlockedChar && unlockedChar.id) markCharacterSeen(unlockedChar.id);
     if (unlockedChar && unlockedChar.id === "bennett") markSignInSeen();
     confetti();
+    if (ach && !rewatch) {
+      const family = (opts && opts.family) || getFamilyDraft();
+      const lib = opts && opts.library;
+      const play = () => playAwardSound(ach, family, lib);
+      if (typeof setTimeout === "function") setTimeout(play, 0);
+      else play();
+    }
   }
 
-  function maybePlayUnlockCelebration(roster) {
+  function maybePlayUnlockCelebration(roster, pack, family, lib) {
     const pending = pendingCharacterCelebrations(roster);
     if (!pending.length) return false;
-    playUnlockClip(roster, pending[0]);
-    pending.slice(1).forEach((ch) => markCharacterSeen(ch.id));
+    const ch = pending[0];
+    const ach = achievementGrantingCharacter(pack, ch.id);
+    playUnlockClip(roster, ch, { achievement: ach, family, library: lib });
+    pending.slice(1).forEach((row) => markCharacterSeen(row.id));
     return true;
   }
 
@@ -5249,7 +5298,9 @@
     }
   }
 
-  function celebrate(ach, pack, lib) {
+  function celebrate(ach, pack, lib, opts) {
+    const family = (opts && opts.family) || getFamilyDraft();
+    const roster = opts && opts.roster;
     const unlock = rewardUnlockOf(ach);
     const bennettWelcome = !!(ach && (
       ach.id === SIGNIN_ACHIEVEMENT
@@ -5257,12 +5308,19 @@
       || (unlock && unlock.type === "character" && unlock.id === "bennett")
     ));
     if (siteViewHidesAdult() && bennettWelcome && !hasSignInSeen()) {
-      playUnlockClip(null, {
+      playUnlockClip(roster || null, {
         id: "bennett",
         name: "Bennett",
         video: "img/characters/bennett.mp4",
         poster: "img/characters/bennett.jpg"
-      });
+      }, { achievement: ach, family, library: lib });
+      return;
+    }
+    const charId = rewardCharacterId(ach);
+    if (charId && charId !== "bennett") {
+      const ch = ((roster && roster.characters) || []).find((row) => row && row.id === charId)
+        || { id: charId, name: charId };
+      playUnlockClip(roster || null, ch, { achievement: ach, family, library: lib });
       return;
     }
     const cur = currency(pack);
@@ -5274,9 +5332,10 @@
       : "";
     const content = unlock && unlock.type === "content" ? " · sound unlocked" : "";
     const gear = unlock && unlock.type !== "character" && unlock.type !== "content" ? " · " + (unlock.label || unlock.type) + " unlocked" : "";
-    toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game + mate + content + gear);
+    const why = unlockCopy(ach);
+    toast((ach.title || "Achievement") + " unlocked!" + (why ? " · " + why : "") + prize + extra + game + mate + content + gear);
     confetti();
-    playAwardMedia(ach, lib);
+    playAwardSound(ach, family, lib);
   }
 
   function downloadJson(filename, obj) {
@@ -7260,6 +7319,9 @@
     rewardMediaId,
     rewardMediaItem,
     playAwardMedia,
+    playAwardSound,
+    unlockCopy,
+    achievementGrantingCharacter,
     rewardCharacterId,
     getGearUnlocks,
     alreadyUnlockedGear,
