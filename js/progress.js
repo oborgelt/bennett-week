@@ -57,12 +57,28 @@
       const cid = Game.classIdForWork(w);
       if (!cid || !map.has(cid)) return;
       const cls = map.get(cid);
-      if (cls.items.some((item) => item.id === w.id)) return;
-      cls.items.push({
+      const extra = {
+        feed: w,
+        due: w.due,
+        note: w.note,
+        status: w.status,
+        score: w.score,
+        points: w.points,
+        late: w.late,
+        canvas: w.canvas
+      };
+      const idx = cls.items.findIndex((item) => item.id === w.id);
+      if (idx >= 0) {
+        cls.items[idx] = Object.assign({}, cls.items[idx], extra, {
+          title: cls.items[idx].title || stripClassPrefix(w.title)
+        });
+        return;
+      }
+      cls.items.push(Object.assign({
         id: w.id,
         title: stripClassPrefix(w.title),
         kind: "assignment"
-      });
+      }, extra));
     });
 
     return [...map.values()];
@@ -101,17 +117,29 @@
     return bits.join(" · ");
   }
 
+  function feedOf(item) {
+    return (item && item.feed) || item || {};
+  }
+
+  function wantedWork() {
+    try {
+      return String(new URLSearchParams(location.search).get("work") || "");
+    } catch (_) {
+      return "";
+    }
+  }
+
   function itemStatus(item) {
     const st = Game.workState(item.id);
     if (st.done) {
       const when = st.startedAt ? " · Started " + Game.fmtStamp(st.startedAt) : "";
-      return { label: "Done" + when, kind: "done" };
+      return { label: "Done here" + when, kind: "done" };
     }
     if (st.started) {
       return { label: "Started " + (st.startedAt ? Game.fmtStamp(st.startedAt) : ""), kind: "started" };
     }
     if (item.kind === "event") return { label: "On the calendar", kind: "event" };
-    return { label: "Not started", kind: "idle" };
+    return { label: "", kind: "idle" };
   }
 
   function gradeHtml(grade, extraTest) {
@@ -320,9 +348,10 @@
   function renderClass(cls, open) {
     const stats = classStats(cls);
     const items = (cls.items || []).slice().sort((a, b) => {
-      const ad = Game.workState(a.id).done ? 1 : 0;
-      const bd = Game.workState(b.id).done ? 1 : 0;
-      return ad - bd;
+      const as = Game.workFeedStatus(feedOf(a));
+      const bs = Game.workFeedStatus(feedOf(b));
+      const rank = (s) => (s.needsYou ? 0 : s.notDone ? 1 : 2);
+      return rank(as) - rank(bs);
     });
     const khan = Game.khanStripHtmlForClass(cls);
     const summaryKhan = !items.length ? Game.khanInlineHtml(Game.khanLinksForClass(cls)) : "";
@@ -330,16 +359,21 @@
     const itemHtml = items.length
       ? items.map((item) => {
         const status = itemStatus(item);
+        const feed = feedOf(item);
+        const feedSt = Game.workFeedStatus(feed);
+        const local = status.label ? `<div class="meta">${Game.esc(kindLabel(item.kind))}${status.label ? " · " + Game.esc(status.label) : ""}</div>` : `<div class="meta">${Game.esc(kindLabel(item.kind))}${feed.due ? " · due " + Game.esc(Game.fmtStamp(feed.due)) : ""}</div>`;
         return `
-          <li class="class-item${status.kind === "done" ? " done" : (status.kind === "started" ? " started" : "")}">
+          <li class="class-item${feedSt.needsYou ? " needs" : ""}${status.kind === "done" ? " done" : (status.kind === "started" ? " started" : "")}" id="work-${Game.esc(item.id)}">
             <div class="class-item-top">
               <div>
                 <div class="title">${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.title)}</div>
-                <div class="meta">${Game.esc(kindLabel(item.kind))} · <span class="status ${status.kind}">${Game.esc(status.label)}</span></div>
+                ${local}
+                ${Game.workStatusChipsHtml(feed)}
               </div>
-              ${item.grade ? gradeHtml(item.grade, item.test) : ""}
+              ${item.grade ? gradeHtml(item.grade, item.test) : (feedSt.score ? `<span class="grade-pill">${Game.esc(feedSt.score)}</span>` : "")}
             </div>
             <div class="entry-tools">
+              ${item.kind === "event" ? "" : `<button type="button" class="tiny" data-dispute-item="${Game.esc(item.id)}">This looks wrong</button>`}
               <button type="button" class="tiny" data-note-item="${Game.esc(item.id)}">Note</button>
               ${Game.progressCanMutate() ? Game.entryButtons("pitem:" + item.id, "pitem:" + item.id) : ""}
             </div>
@@ -647,6 +681,105 @@
         openItemNote(btn.dataset.noteItem);
       });
     });
+    document.querySelectorAll("[data-dispute-item]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openLooksWrong(btn.dataset.disputeItem);
+      });
+    });
+    document.querySelectorAll("[data-copy-contact]").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const text = btn.getAttribute("data-copy-contact") || "";
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(text);
+        } catch (_) {}
+        Game.toast("Copied. Paste into a message to the teacher.");
+      });
+    });
+  }
+
+  function workFromId(id) {
+    return (week.work || []).find((w) => w.id === id) || null;
+  }
+
+  function openLooksWrong(id) {
+    const w = workFromId(id);
+    if (!w) {
+      Game.toast("That assignment is not on the week feed.");
+      return;
+    }
+    const existing = Game.workDisputeOf(w);
+    openSheet("This looks wrong", `
+      <p class="empty">Marks this for Contact school. Parenting can see it on this device.</p>
+      <textarea id="dispute-text" maxlength="280" placeholder="We think this was turned in">${existing && existing.reason ? Game.esc(existing.reason) : ""}</textarea>
+      <button type="button" class="btn primary" id="dispute-save">Save</button>
+    `);
+    document.getElementById("dispute-save").addEventListener("click", () => {
+      const reason = (document.getElementById("dispute-text").value || "").trim();
+      Game.markWorkLooksWrong(w, reason);
+      closeSheet();
+      Game.toast("Flagged. It is under Contact school.");
+      render();
+    });
+    document.getElementById("dispute-text").focus();
+  }
+
+  function renderNeedsYouPane() {
+    const host = document.getElementById("needs-you");
+    if (!host) return;
+    const list = Game.needsYouListHtml(week, new Date(), { empty: true });
+    host.innerHTML = `<h2>Needs you</h2>${list}`;
+    host.querySelectorAll("[data-needs-work]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const row = document.getElementById("work-" + btn.dataset.needsWork);
+        const card = document.querySelector(`.class-card[data-class="${CSS.escape(btn.dataset.needsClass || "")}"]`);
+        if (card) card.open = true;
+        if (row && row.scrollIntoView) row.scrollIntoView({ block: "nearest" });
+      });
+    });
+  }
+
+  function renderGradesPane(classes) {
+    const host = document.getElementById("grades-pane");
+    if (!host) return;
+    const rows = classes.map((cls) => {
+      const scored = (cls.items || []).filter((item) => {
+        if (item.kind === "event") return false;
+        const st = Game.workFeedStatus(feedOf(item));
+        return !!st.score;
+      });
+      if (!scored.length) {
+        return `<article class="grade-class"><h3>${Game.esc(cls.name)}</h3><p class="empty">No score yet</p></article>`;
+      }
+      const items = scored.map((item) => {
+        const st = Game.workFeedStatus(feedOf(item));
+        return `<li><span>${Game.esc(item.title)}</span><span class="grade-pill">${Game.esc(st.score)}</span></li>`;
+      }).join("");
+      return `<article class="grade-class"><h3>${Game.esc(cls.name)}</h3><ul class="grade-list">${items}</ul></article>`;
+    }).join("");
+    host.innerHTML = `<h2>Grades</h2>${rows}`;
+  }
+
+  function renderContactPane(classes) {
+    const host = document.getElementById("contact-school");
+    if (!host) return;
+    const flagged = (week.work || []).filter((w) => {
+      const st = Game.workFeedStatus(w);
+      return st.wantContact;
+    });
+    if (!flagged.length) {
+      host.innerHTML = `<h2>Contact school</h2><p class="empty">Tap “This looks wrong” on a row if Canvas does not match what we think happened.</p>`;
+      return;
+    }
+    host.innerHTML = `<h2>Contact school</h2><ul class="contact-list">${flagged.map((w) => {
+      const line = Game.workContactLine(w, classes);
+      return `<li>
+        <p class="contact-line">${Game.esc(line)}</p>
+        <button type="button" class="tiny" data-copy-contact="${Game.esc(line)}">Copy</button>
+      </li>`;
+    }).join("")}</ul>`;
   }
 
   function render() {
@@ -657,22 +790,34 @@
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
     Game.paintStoryChip(roster);
+    renderNeedsYouPane();
+    const want = wantedClass();
+    const workId = wantedWork();
+    const workClass = workId ? Game.classIdForWork(workFromId(workId) || { id: workId }) : "";
+    document.getElementById("class-list").innerHTML = classes.map((cls) => {
+      const hasNeed = (cls.items || []).some((item) => Game.workFeedStatus(feedOf(item)).needsYou);
+      const open = want
+        ? cls.id === want
+        : (workClass ? cls.id === workClass : hasNeed);
+      return renderClass(cls, open && (cls.items || []).length);
+    }).join("");
+    renderGradesPane(classes);
+    renderContactPane(classes);
     document.getElementById("stat-strip").innerHTML =
       renderOpens(opens) + renderActions(totals) + renderFinds(totals);
-    const want = wantedClass();
-    document.getElementById("class-list").innerHTML = classes.map((cls) => {
-      const open = want ? cls.id === want : false;
-      return renderClass(cls, open);
-    }).join("");
     if (want) {
       const card = document.querySelector(`.class-card[data-class="${CSS.escape(want)}"]`);
       if (card && card.scrollIntoView) card.scrollIntoView({ block: "nearest" });
     }
-    const note = document.getElementById("grades-note");
-    if (note) {
-      note.textContent = seed.gradesNote || "No grades until a real feed exists.";
+    if (workId) {
+      const row = document.getElementById("work-" + workId);
+      if (row && row.scrollIntoView) row.scrollIntoView({ block: "nearest" });
     }
     bindDash();
+    if (location.hash === "#needs-you") {
+      const needs = document.getElementById("needs-you");
+      if (needs && needs.scrollIntoView) needs.scrollIntoView({ block: "start" });
+    }
   }
 
   async function boot() {

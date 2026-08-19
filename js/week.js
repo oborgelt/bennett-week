@@ -306,6 +306,14 @@
     });
   }
 
+  function renderNeedsYou() {
+    const host = document.getElementById("needs-you");
+    if (!host) return;
+    const html = Game.needsYouListHtml(week, new Date(), { link: "progress.html" });
+    host.hidden = !html;
+    host.innerHTML = html ? `<h2>Needs you</h2>${html}` : "";
+  }
+
   function workButtons(w) {
     const st = Game.workState(w.id);
     const stamp = st.started && st.startedAt ? `Started ${Game.fmtStamp(st.startedAt)}` : "";
@@ -494,6 +502,7 @@
     return `
       <div class="${itemClass(w.id)}">
         ${workTitleHtml(w, !startThis)}
+        ${Game.workStatusChipsHtml(w)}
         ${workMetaHtml(w, startThis)}
         ${canvasCalloutHtml(w)}
         ${canvasFactsHtml(w)}
@@ -516,7 +525,9 @@
       lines.push("Chemistry About Me Slides assignment is due " + nightWhen(chem.due) + " (was missing here).");
     }
     if (chemDisc && Game.classIdForWork(chemDisc) === want) {
-      lines.push("Chemistry About Me Slides discussion is due " + nightWhen(chemDisc.due) + ".");
+      const st = Game.workFeedStatus(chemDisc);
+      if (st.missing) lines.push("Chemistry About Me Slides discussion is Missing" + (st.score ? " " + st.score : "") + ".");
+      else lines.push("Chemistry About Me Slides discussion is due " + nightWhen(chemDisc.due) + ".");
     }
     if (web11 && Game.classIdForWork(web11) === want) {
       lines.push("Web Design 1.1 What is the Web is open, 20 points, due Wednesday 9:20 a.m.");
@@ -879,6 +890,7 @@
   function refreshCardsInPlace() {
     const saved = captureBoardScroll();
     renderClassSwitcher();
+    renderNeedsYou();
     renderCards();
     restoreBoardScroll(saved);
   }
@@ -2294,6 +2306,7 @@
     family = Game.promoteAskThreadToInbox(family, week);
     initSelectedClass();
     renderClassSwitcher();
+    renderNeedsYou();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
       document.getElementById("draft-flag").hidden = false;
     }

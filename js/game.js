@@ -24,7 +24,8 @@
     siteView: "bw-site-view",
     session: "bw-session",
     basecampIntro: "bw-basecamp-intro",
-    selectedClass: "bw-selected-class"
+    selectedClass: "bw-selected-class",
+    workDisputes: "bw-work-disputes"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -3243,6 +3244,309 @@
     const [y, m, d] = String(ymd || "").split("-").map(Number);
     if (!y || !m || !d) return null;
     return new Date(y, m - 1, d);
+  }
+
+  const WORK_STATUSES = ["open", "submitted", "graded", "missing", "late", "excused"];
+
+  function parseWorkNoteHints(note) {
+    const text = String(note || "");
+    const scoreHit = text.match(/\b(\d+)\s*\/\s*(\d+)\b/);
+    return {
+      missed: /\bMISSED\b/i.test(text),
+      notSubmitted: /not submitted/i.test(text),
+      score: scoreHit ? scoreHit[1] + "/" + scoreHit[2] : ""
+    };
+  }
+
+  function normalizeWorkStatus(raw) {
+    const s = String(raw || "").toLowerCase().trim();
+    return WORK_STATUSES.indexOf(s) >= 0 ? s : "";
+  }
+
+  function scoreLooksZero(score) {
+    const s = String(score || "").trim();
+    if (!s) return false;
+    if (/^0+(?:\.0+)?\s*\/\s*\d+/.test(s)) return true;
+    if (/^0+(?:\.0+)?%$/.test(s)) return true;
+    return s === "0" || s === "0.0";
+  }
+
+  function dueMinutesFromIso(iso) {
+    const m = String(iso || "").match(/T(\d{2}):(\d{2})/);
+    if (!m) return 23 * 60 + 59;
+    return Number(m[1]) * 60 + Number(m[2]);
+  }
+
+  function chicagoHm(date) {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Chicago",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(date || new Date());
+    const get = (t) => (parts.find((p) => p.type === t) || {}).value || "00";
+    return Number(get("hour")) * 60 + Number(get("minute"));
+  }
+
+  function loadWorkDisputes() {
+    const raw = read(KEYS.workDisputes, {});
+    return raw && typeof raw === "object" ? raw : {};
+  }
+
+  function workDisputeOf(work) {
+    const id = work && work.id;
+    const local = id ? loadWorkDisputes()[id] : null;
+    const feed = work && work.dispute && typeof work.dispute === "object" ? work.dispute : null;
+    if (local && local.want_contact) return local;
+    if (feed && feed.want_contact) return feed;
+    return local || feed || null;
+  }
+
+  function setWorkDispute(id, dispute) {
+    const key = String(id || "");
+    if (!key) return null;
+    const all = loadWorkDisputes();
+    if (!dispute) delete all[key];
+    else all[key] = dispute;
+    write(KEYS.workDisputes, all);
+    return all[key] || null;
+  }
+
+  function markWorkLooksWrong(work, reason) {
+    const id = work && work.id;
+    if (!id) return null;
+    return setWorkDispute(id, {
+      reason: String(reason || "we think this was turned in").trim() || "we think this was turned in",
+      want_contact: true,
+      at: nowIso()
+    });
+  }
+
+  function workFeedStatus(work, now) {
+    const clock = now || new Date();
+    const w = work || {};
+    if (String(w.kind || "") === "event") {
+      return {
+        status: "event",
+        score: "",
+        points: null,
+        submittedAt: "",
+        gradedAt: "",
+        dispute: null,
+        wantContact: false,
+        dueYmd: "",
+        dueToday: false,
+        pastDue: false,
+        missing: false,
+        late: false,
+        notDone: false,
+        submitted: false,
+        graded: false,
+        excused: false,
+        unknown: false,
+        zero: false,
+        needsYou: false,
+        classId: classIdForWork(w)
+      };
+    }
+    const canvas = (w.canvas && typeof w.canvas === "object") ? w.canvas : {};
+    const hints = parseWorkNoteHints(w.note);
+    let status = normalizeWorkStatus(w.status) || normalizeWorkStatus(canvas.status);
+    if (!status && hints.missed) status = "missing";
+    if (!status && w.due) status = "open";
+    if (!status) status = "unknown";
+
+    let score = "";
+    if (w.score != null && w.score !== "") score = w.score;
+    else if (canvas.score != null && canvas.score !== "") score = canvas.score;
+    else if (canvas.grade != null && canvas.grade !== "") score = canvas.grade;
+    else if (hints.missed && hints.score) score = hints.score;
+    if (typeof score === "number") {
+      const pts = w.points != null ? w.points : canvas.points;
+      score = pts != null ? score + "/" + pts : String(score);
+    } else {
+      score = score ? String(score) : "";
+    }
+    const points = w.points != null ? w.points : canvas.points;
+    const submittedAt = w.submitted_at || canvas.submitted_at || "";
+    const gradedAt = w.graded_at || canvas.graded_at || "";
+    const dispute = workDisputeOf(w);
+    const wantContact = !!(dispute && dispute.want_contact);
+
+    const dueYmd = ymdFromLocal(w.due);
+    const todayYmd = chicagoYmd(clock);
+    const dueToday = !!(dueYmd && todayYmd && dueYmd === todayYmd);
+    let pastDue = false;
+    if (dueYmd && todayYmd) {
+      if (dueYmd < todayYmd) pastDue = true;
+      else if (dueYmd === todayYmd) pastDue = chicagoHm(clock) > dueMinutesFromIso(w.due);
+    }
+
+    const missing = status === "missing";
+    const excused = status === "excused";
+    const submitted = status === "submitted" || status === "graded" || (!!submittedAt && !missing && !excused);
+    const graded = status === "graded" || (!!gradedAt && !missing && !!score);
+    const lateFlag = w.late === true || w.late === "true" || status === "late" || (pastDue && (status === "open" || status === "missing" || status === "late"));
+    const late = lateFlag && !missing;
+    const notDone = !missing && !excused && !submitted && !graded && (status === "open" || status === "late");
+    const zero = scoreLooksZero(score);
+    const needsYou = !!(
+      wantContact
+      || missing
+      || (graded && zero)
+      || (dueToday && !submitted && !excused && status !== "graded")
+      || (pastDue && (status === "open" || status === "late" || status === "unknown"))
+    );
+
+    return {
+      status,
+      score: score ? String(score) : "",
+      points,
+      submittedAt,
+      gradedAt,
+      dispute,
+      wantContact,
+      dueYmd,
+      dueToday,
+      pastDue,
+      missing,
+      late,
+      notDone,
+      submitted,
+      graded,
+      excused,
+      unknown: status === "unknown",
+      zero,
+      needsYou,
+      classId: classIdForWork(w)
+    };
+  }
+
+  function workStatusChips(work, now) {
+    const st = workFeedStatus(work, now);
+    const chips = [];
+    if (st.wantContact) chips.push({ key: "wrong", label: "Looks wrong" });
+    if (st.missing) chips.push({ key: "missing", label: "Missing" });
+    else if (st.late) chips.push({ key: "late", label: "Late" });
+    if (st.dueToday && !st.submitted && !st.excused) chips.push({ key: "due-today", label: "Due today" });
+    if (st.notDone) chips.push({ key: "not-done", label: "Not done" });
+    if (st.submitted && !st.missing && !st.graded) chips.push({ key: "submitted", label: "Submitted" });
+    if (st.graded && !st.missing) chips.push({ key: "graded", label: st.score ? "Graded " + st.score : "Graded" });
+    if (st.excused) chips.push({ key: "excuse", label: "Excuse" });
+    if (st.unknown && !st.notDone && !st.dueToday && !st.late) chips.push({ key: "unknown", label: "Unknown" });
+    return chips;
+  }
+
+  function workStatusChipsHtml(work, now) {
+    const st = workFeedStatus(work, now);
+    const chips = workStatusChips(work, now).map((c) => {
+      return `<span class="status-chip chip-${esc(c.key)}">${esc(c.label)}</span>`;
+    }).join("");
+    const score = st.score && (st.missing || (!st.graded && st.score))
+      ? `<span class="status-score">${esc(st.score)}</span>`
+      : "";
+    if (!chips && !score) return "";
+    return `<span class="status-chips">${chips}${score}</span>`;
+  }
+
+  function needsYouWork(week, now) {
+    const clock = now || new Date();
+    return ((week && week.work) || []).filter((w) => workFeedStatus(w, clock).needsYou).slice().sort((a, b) => {
+      const as = workFeedStatus(a, clock);
+      const bs = workFeedStatus(b, clock);
+      const rank = (s) => (s.missing ? 0 : s.late ? 1 : s.dueToday ? 2 : s.wantContact ? 3 : 4);
+      return rank(as) - rank(bs) || String(a.due || "").localeCompare(String(b.due || ""));
+    });
+  }
+
+  function needsYouCounts(week, now) {
+    const clock = now || new Date();
+    const items = needsYouWork(week, clock);
+    let missing = 0;
+    let late = 0;
+    let dueToday = 0;
+    let contact = 0;
+    items.forEach((w) => {
+      const st = workFeedStatus(w, clock);
+      if (st.missing) missing += 1;
+      else if (st.late) late += 1;
+      if (st.dueToday && !st.submitted && !st.excused) dueToday += 1;
+      if (st.wantContact) contact += 1;
+    });
+    return { missing, late, dueToday, contact, items };
+  }
+
+  function parentNeedsLine(week, now) {
+    const counts = needsYouCounts(week, now);
+    if (!counts.items.length) return "";
+    return counts.missing + " missing, " + counts.late + " late, " + counts.dueToday + " due today";
+  }
+
+  function workDueLabel(work) {
+    if (!work || !work.due) return "";
+    return fmtStamp(work.due) || String(work.due);
+  }
+
+  function workContactLine(work, classes, now) {
+    const st = workFeedStatus(work, now);
+    const cid = classIdForWork(work);
+    const cls = (classes || []).find((c) => c && c.id === cid) || {};
+    const canvasSays = st.missing
+      ? ("Missing" + (st.score ? " " + st.score : ""))
+      : (st.graded && st.score
+        ? ("Graded " + st.score)
+        : (st.submitted ? "Submitted" : (st.late ? "Late / not submitted" : "Not submitted")));
+    const think = (st.dispute && st.dispute.reason) || "we think this was turned in";
+    return [
+      classNameForId(cid) || cls.name || cid,
+      cls.teacher || "",
+      wTitleStrip(work && work.title),
+      work.due ? "due " + workDueLabel(work) : "",
+      "Canvas: " + canvasSays,
+      "What we think: " + think
+    ].filter(Boolean).join(" · ");
+  }
+
+  function wTitleStrip(title) {
+    return String(title || "")
+      .replace(/^TEST:\s*/i, "")
+      .replace(/^English 10:\s*/i, "")
+      .replace(/^Marching Band:\s*/i, "")
+      .replace(/^Band:\s*/i, "")
+      .replace(/^Sociology:\s*/i, "")
+      .replace(/^Web Design I:\s*/i, "")
+      .replace(/^Web Design:\s*/i, "")
+      .replace(/^Academic Intervention:\s*/i, "")
+      .replace(/^Chemistry:\s*/i, "")
+      .replace(/^Strength & Conditioning I:\s*/i, "")
+      .replace(/^Geometry:\s*/i, "")
+      .trim();
+  }
+
+  function needsYouListHtml(week, now, opts) {
+    const clock = now || new Date();
+    const rows = needsYouWork(week, clock);
+    const empty = opts && opts.empty;
+    if (!rows.length) {
+      return empty ? `<p class="empty">Nothing needs you right now.</p>` : "";
+    }
+    const link = opts && opts.link;
+    return `<ul class="needs-you-list">${rows.map((w) => {
+      const st = workFeedStatus(w, clock);
+      const cid = st.classId;
+      const href = link ? (link + (link.indexOf("?") >= 0 ? "&" : "?") + "class=" + encodeURIComponent(cid) + "&work=" + encodeURIComponent(w.id) + "#needs-you") : "";
+      const inner = `
+        <span class="needs-you-class">${esc(classShortLabel(cid) || classNameForId(cid) || cid)}</span>
+        <span class="needs-you-copy">
+          <span class="needs-you-title">${esc(wTitleStrip(w.title))}</span>
+          <span class="needs-you-due">${esc(workDueLabel(w))}</span>
+        </span>
+        ${workStatusChipsHtml(w, clock)}`;
+      const row = href
+        ? `<a class="needs-you-row" href="${esc(href)}">${inner}</a>`
+        : `<button type="button" class="needs-you-row" data-needs-work="${esc(w.id)}" data-needs-class="${esc(cid)}">${inner}</button>`;
+      return `<li>${row}</li>`;
+    }).join("")}</ul>`;
   }
 
   function nextNChicagoDays(n) {
@@ -6542,6 +6846,18 @@
     looseEventsOnDay,
     classAttentionCount,
     classShortLabel,
+    parseWorkNoteHints,
+    workFeedStatus,
+    workStatusChips,
+    workStatusChipsHtml,
+    needsYouWork,
+    needsYouCounts,
+    parentNeedsLine,
+    workContactLine,
+    workDisputeOf,
+    setWorkDispute,
+    markWorkLooksWrong,
+    needsYouListHtml,
     pickClassId,
     rememberedClassId,
     rememberClassId,

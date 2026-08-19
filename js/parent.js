@@ -55,6 +55,15 @@
     el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas(pack, family)}`;
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    paintParentNeeds();
+  }
+
+  function paintParentNeeds() {
+    const el = document.getElementById("parent-needs");
+    if (!el) return;
+    const line = week ? Game.parentNeedsLine(week) : "";
+    el.hidden = !line;
+    el.innerHTML = line ? `<a href="progress.html#needs-you">${Game.esc(line)}</a>` : "";
   }
 
   function paintBoardSync(sync) {

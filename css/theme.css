@@ -810,6 +810,224 @@ body.site-view-kid .class-card-tools {
   margin: 10px 0 0;
 }
 
+.needs-you,
+.needs-you-pane,
+.grades-pane,
+.contact-pane {
+  margin: 4px 14px 10px;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(255, 182, 200, 0.35);
+  border-radius: 16px;
+  background: rgba(7, 22, 24, 0.72);
+}
+
+.needs-you-pane,
+.grades-pane,
+.contact-pane {
+  margin: 0;
+}
+
+.grades-pane,
+.contact-pane {
+  border-color: rgba(198, 224, 58, 0.18);
+}
+
+.needs-you[hidden] {
+  display: none;
+}
+
+.needs-you h2,
+.needs-you-pane h2,
+.grades-pane h2,
+.contact-pane h2 {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffb6c8;
+}
+
+.grades-pane h2,
+.contact-pane h2 {
+  color: var(--muted);
+}
+
+.needs-you-list,
+.grade-list,
+.contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.needs-you-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 8px 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 182, 200, 0.18);
+  background: transparent;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.needs-you-list li:first-child .needs-you-row {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.needs-you-class {
+  flex: 0 0 auto;
+  min-width: 3.2em;
+  font-weight: 800;
+  color: #ffb6c8;
+  font-size: 0.78rem;
+  padding-top: 2px;
+}
+
+.needs-you-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.needs-you-title {
+  font-weight: 700;
+}
+
+.needs-you-due {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  flex: 0 0 auto;
+  max-width: 46%;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.chip-missing {
+  background: rgba(255, 182, 200, 0.18);
+  border-color: #d01020;
+  color: #ffb6c8;
+}
+
+.chip-late {
+  background: rgba(244, 162, 97, 0.16);
+  border-color: rgba(244, 162, 97, 0.55);
+  color: #f4a261;
+}
+
+.chip-due-today {
+  background: rgba(244, 211, 94, 0.16);
+  border-color: rgba(244, 211, 94, 0.5);
+  color: var(--banana);
+}
+
+.chip-not-done {
+  background: #142e31;
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.chip-submitted,
+.chip-graded {
+  background: rgba(46, 196, 182, 0.12);
+  border-color: rgba(46, 196, 182, 0.4);
+  color: var(--teal);
+}
+
+.chip-excuse,
+.chip-unknown {
+  background: #142e31;
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.chip-wrong {
+  background: rgba(244, 211, 94, 0.14);
+  border-color: rgba(244, 211, 94, 0.45);
+  color: var(--banana);
+}
+
+.status-score {
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: var(--banana);
+}
+
+.class-item .status-chips {
+  max-width: none;
+  margin-top: 6px;
+}
+
+.item .status-chips {
+  max-width: none;
+  margin: 4px 0 2px;
+}
+
+.grade-class {
+  margin: 0 0 10px;
+}
+
+.grade-class h3 {
+  margin: 0 0 4px;
+  font-size: 0.92rem;
+}
+
+.grade-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 0;
+  font-size: 0.88rem;
+}
+
+.contact-line {
+  margin: 0 0 6px;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.parent-needs {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 182, 200, 0.12);
+  border: 1px solid rgba(255, 182, 200, 0.4);
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.parent-needs a {
+  color: #ffb6c8;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .dots {
   display: flex;
   gap: 8px;
@@ -1528,6 +1746,7 @@ body.week-page .dots,
 body.week-page .track,
 body.week-page nav.week-nav,
 body.week-page .later-board,
+body.week-page .needs-you,
 body.week-page .draft-flag,
 body.week-page .class-switcher,
 body.week-page .peek-monkey {
@@ -1539,6 +1758,7 @@ body.week-page.in-treehouse .dots,
 body.week-page.in-treehouse .track,
 body.week-page.in-treehouse nav.week-nav,
 body.week-page.in-treehouse .later-board,
+body.week-page.in-treehouse .needs-you,
 body.week-page.in-treehouse .draft-flag,
 body.week-page.in-treehouse .class-switcher,
 body.week-page.in-treehouse .peek-monkey {
@@ -2787,7 +3007,8 @@ body.progress-page .peek-monkey {
   body.week-page nav.week-nav {
     padding-bottom: 8px;
   }
-  body.week-page .later-board {
+  body.week-page .later-board,
+  body.week-page .needs-you {
     margin-bottom: max(28px, env(safe-area-inset-bottom));
     overflow: visible;
   }

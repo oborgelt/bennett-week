@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
   <title>Jungle Jam · Progress</title>
-  <link rel="stylesheet" href="css/theme.css?v=119">
+  <link rel="stylesheet" href="css/theme.css?v=120">
 </head>
 <body class="progress-page">
   <header class="week-head">
@@ -30,7 +30,7 @@
       <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
       <a class="banner-title" href="index.html">
         <h1>Progress</h1>
-        <p>Bennett’s activity · class dashboard</p>
+        <p>Late work, grades, call the school</p>
       </a>
       <div class="build-stamp" id="build-stamp">
         <span>Build 43</span>
@@ -40,14 +40,16 @@
   </header>
 
   <main class="dash">
-    <section class="stat-strip" id="stat-strip" aria-label="Site activity"></section>
+    <section class="needs-you-pane" id="needs-you" aria-label="Needs you"></section>
     <section class="class-pane">
       <div class="class-pane-head">
         <h2>By class</h2>
-        <p id="grades-note">No grades until a real feed exists.</p>
       </div>
       <div class="class-list" id="class-list"></div>
     </section>
+    <section class="grades-pane" id="grades-pane" aria-label="Grades"></section>
+    <section class="contact-pane" id="contact-school" aria-label="Contact school"></section>
+    <section class="stat-strip" id="stat-strip" aria-label="Site activity"></section>
   </main>
 
   <div class="peek-monkey" aria-hidden="true">
@@ -131,7 +133,7 @@
   <script id="progress-seed" type="application/json">
 {
   "timezone": "America/Chicago",
-  "gradesNote": "No grades until a real feed exists. English often lives in a Google sheet; Canvas is not the full due list.",
+  "gradesNote": "Scores come from Canvas on week.json. English often lives in a Google sheet; Canvas is not the full due list.",
   "term": {
     "id": "2025-26-s1",
     "label": "2025–26 S1",
@@ -239,9 +241,9 @@
   ]
 }
   </script>
-  <script src="js/build.js?v=119"></script>
-  <script src="js/game.js?v=119"></script>
-  <script src="js/telemetry.js?v=119"></script>
-  <script src="js/progress.js?v=119"></script>
+  <script src="js/build.js?v=120"></script>
+  <script src="js/game.js?v=120"></script>
+  <script src="js/telemetry.js?v=120"></script>
+  <script src="js/progress.js?v=120"></script>
 </body>
 </html>
