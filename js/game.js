@@ -55,7 +55,9 @@
   ];
   const DEFAULT_SOUND_CUES = {
     undo: "undo-click",
-    tables: "tablesloud"
+    tables: "tablesloud",
+    "work-start": "tablesloud",
+    "work-done": "tablesloud"
   };
   const SHIPPED_UNDO_CLICK = {
     id: "undo-click",
@@ -295,7 +297,8 @@
         addedClasses: [],
         addedItems: []
       },
-      updatedAt: ""
+      updatedAt: "",
+      soundCues: {}
     };
   }
 
@@ -407,6 +410,7 @@
         addedClasses: normalizeAddedClasses(progress.addedClasses),
         addedItems: normalizeAddedItems(progress.addedItems)
       },
+      soundCues: asCueMap(o.soundCues || week._jjSoundCues),
       updatedAt: o.updatedAt || o.updated_at || week.updatedAt || ""
     };
   }
@@ -2242,15 +2246,18 @@
     if (!audioAllowed()) return false;
     if (!item) return false;
     lastLibraryItemId = item.id || "";
+    getSharedAudioContext();
     if (item.synth) {
       stopLibraryAudio();
       return playSynth(item.synth);
     }
     if (item.kind !== "audio") return false;
     const src = librarySrc(item);
-    if (!src && !item.device) return false;
-    void playLibraryItemNow(item);
-    return true;
+    if (src && playHtmlAudio(src)) {
+      void decodeLibraryItem(item).catch(function () {});
+      return true;
+    }
+    return false;
   }
 
   function audioLibraryItems(lib) {
@@ -2353,7 +2360,11 @@
     const id = String(itemId || "").trim();
     if (!id) delete next.soundCues[key];
     else next.soundCues[key] = id;
+    next.overlay = normalizeOverlay(next.overlay);
+    next.overlay.soundCues = asCueMap(next.soundCues);
+    next.overlay.updatedAt = nowIso();
     saveFamily(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     return next;
   }
 
@@ -2382,7 +2393,8 @@
   function playWorkActionCue(family, lib, workId, kind) {
     const ids = workActionCueIds(workId, kind);
     if (playSoundCue(family, lib, ids.specific)) return true;
-    return playSoundCue(family, lib, ids.fallback);
+    if (playSoundCue(family, lib, ids.fallback)) return true;
+    return playSoundCue(family, lib, "tables");
   }
 
   function isUndoControl(el) {
@@ -2426,6 +2438,19 @@
       if (!isUndoControl(e.target)) return;
       playUndoSound();
     }, true);
+  }
+
+  function bindAudioUnlock() {
+    if (!global.document || !document.addEventListener) return;
+    if (document.documentElement && document.documentElement.getAttribute("data-audio-unlock") === "on") return;
+    if (document.documentElement && document.documentElement.setAttribute) {
+      document.documentElement.setAttribute("data-audio-unlock", "on");
+    }
+    const unlock = () => {
+      try { primeLibraryAudio(); } catch (_) {}
+    };
+    document.addEventListener("pointerdown", unlock, true);
+    document.addEventListener("keydown", unlock, true);
   }
 
   function audioCueOptions(lib, selected) {
@@ -2552,7 +2577,7 @@
             toast("Pick a sound first.");
             return;
           }
-          persist(setSoundCue(family, momentId, soundId), "Saved on this device. Export the family pack to share.");
+          persist(setSoundCue(family, momentId, soundId), "Saved. Bennett hears this on This Week.");
         });
       }
       const preview = host.querySelector("[data-cue-preview]");
@@ -3943,7 +3968,9 @@
             passEl.value = "";
             if (passEl.focus) passEl.focus();
           }
+          return;
         }
+        primeLibraryAudio();
       });
     }
   }
@@ -5214,6 +5241,9 @@
     const merged = {
       week: mergeWeekOverlay(local.week, remote.week),
       progress: mergeProgressOverlay(local.progress, remote.progress),
+      soundCues: String(local.updatedAt || "") >= String(remote.updatedAt || "")
+        ? Object.assign({}, remote.soundCues, local.soundCues)
+        : Object.assign({}, local.soundCues, remote.soundCues),
       updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
     };
     return merged;
@@ -5223,7 +5253,8 @@
     const o = normalizeOverlay(overlay);
     return JSON.stringify({
       week: o.week,
-      progress: o.progress
+      progress: o.progress,
+      soundCues: o.soundCues
     });
   }
 
@@ -5249,8 +5280,10 @@
     const tel = global.Telemetry;
     if (!tel || typeof tel.upsertOverlay !== "function" || !familySyncReady()) return { pushed: 0, missing: false };
     const next = normalizeFamily(family);
+    const packed = normalizeOverlay(next.overlay);
+    packed.soundCues = asCueMap(next.soundCues);
     try {
-      await tel.upsertOverlay(next.overlay);
+      await tel.upsertOverlay(packed);
       return { pushed: 1, missing: false };
     } catch (err) {
       return { pushed: 0, missing: missingSync(err) };
@@ -5275,6 +5308,7 @@
     try {
       if (remote) {
         next.overlay = mergeFamilyOverlay(next.overlay, remote);
+        next.soundCues = asCueMap(next.overlay.soundCues);
         saveFamily(next);
       }
     } finally {
@@ -6308,12 +6342,14 @@
   if (document.body) {
     paintBuild();
     bindUndoCue();
+    bindAudioUnlock();
     applySiteView();
     bindHudNavClicks();
   } else {
     document.addEventListener("DOMContentLoaded", () => {
       paintBuild();
       bindUndoCue();
+      bindAudioUnlock();
       applySiteView();
       bindHudNavClicks();
     });

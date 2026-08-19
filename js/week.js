@@ -784,6 +784,7 @@
         const before = Game.workState(id);
         const undo = btn.classList.contains("undo-mini");
         const touched = Game.touchWork(id, act);
+        if (!undo && (act === "started" || act === "done")) Game.primeLibraryAudio();
         if (!undo && act === "started" && !before.started) {
           Game.playWorkActionCue(family, library, id, "started");
         }
@@ -2283,6 +2284,7 @@
     }
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);
+    if (Game.warmupLibraryAudio) Game.warmupLibraryAudio(library, family);
     baseSeed = await Game.loadProgress();
     syncWeek();
     initSelectedClass();

@@ -652,9 +652,13 @@
 
   function overlayToRow(overlay, familyToken) {
     const src = overlay && typeof overlay === "object" ? overlay : {};
+    const week = src.week && typeof src.week === "object" ? Object.assign({}, src.week) : {};
+    const cues = src.soundCues && typeof src.soundCues === "object" ? src.soundCues : {};
+    if (Object.keys(cues).length) week._jjSoundCues = cues;
+    else delete week._jjSoundCues;
     return {
       family_token: familyToken,
-      week: src.week && typeof src.week === "object" ? src.week : {},
+      week,
       progress: src.progress && typeof src.progress === "object" ? src.progress : {},
       updated_at: src.updatedAt || src.updated_at || new Date().toISOString()
     };
@@ -662,10 +666,14 @@
 
   function rowToOverlay(row) {
     const r = row && typeof row === "object" ? row : {};
+    const week = r.week && typeof r.week === "object" ? Object.assign({}, r.week) : {};
+    const soundCues = (week._jjSoundCues && typeof week._jjSoundCues === "object") ? week._jjSoundCues : (r.soundCues || {});
+    delete week._jjSoundCues;
     return {
       family_token: String(r.family_token || ""),
-      week: r.week && typeof r.week === "object" ? r.week : {},
+      week,
       progress: r.progress && typeof r.progress === "object" ? r.progress : {},
+      soundCues,
       updatedAt: r.updated_at || r.updatedAt || ""
     };
   }

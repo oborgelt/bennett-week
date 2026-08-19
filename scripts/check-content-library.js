@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=113/.test(basecampHtml) && /basecamp\.js\?v=113/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=114/.test(basecampHtml) && /basecamp\.js\?v=114/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -297,6 +297,24 @@ const localStorage = {
   setItem(key, value) { store[key] = String(value); },
   removeItem(key) { delete store[key]; }
 };
+function FakeAudio() {
+  this.src = "";
+  this.muted = false;
+  this.paused = true;
+  this.ended = false;
+  this.currentTime = 0;
+  this.onended = null;
+  this.onerror = null;
+  this.play = function () {
+    FakeAudio.plays.push(String(this.src || ""));
+    this.paused = false;
+    return Promise.resolve();
+  };
+  this.pause = function () {
+    this.paused = true;
+  };
+}
+FakeAudio.plays = [];
 const document = {
   body: null,
   documentElement: { setAttribute() {}, getAttribute() { return ""; } },
@@ -313,6 +331,7 @@ const window = {
   document,
   location: { pathname: "/index.html" },
   matchMedia() { return { matches: true }; },
+  Audio: FakeAudio,
   AudioContext: undefined,
   webkitAudioContext: undefined,
   BW_BUILD: { build: 34, modified: "2026-08-15T13:45:00-05:00" }
@@ -326,6 +345,7 @@ const ctx = vm.createContext({
   URL,
   Blob,
   File,
+  Audio: FakeAudio,
   btoa,
   atob,
   encodeURIComponent
@@ -866,8 +886,12 @@ assert(startRows.some((row) => row.id === "work-done:a1" && /^Done · /.test(row
 const doneCue = Game.setSoundCue(Game.emptyFamily(), "work-done", "honk");
 assert(Game.playWorkActionCue(doneCue, funLib, "a1", "done"), "Done is clicked should play when marking work complete");
 const startCue = Game.setSoundCue(Game.emptyFamily(), "work:a1", "honk");
+FakeAudio.plays.length = 0;
 assert(Game.playWorkActionCue(startCue, funLib, "a1", "started"), "assignment Start clip should play on I started this");
-assert(!Game.playWorkActionCue(startCue, funLib, "a1", "done"), "a Start clip must not play on Done");
+assert(!FakeAudio.plays.some((src) => /tablesloud/.test(src)), "programmed Start honk is not the table mp3");
+FakeAudio.plays.length = 0;
+assert(Game.playWorkActionCue(startCue, funLib, "a1", "done"), "Done still plays when only Start is programmed");
+assert(FakeAudio.plays.some((src) => /tablesloud/.test(src)), "Done does not reuse the Start honk");
 assert(Game.SOUND_CUES[0].id === "undo", "Undo should be first in the Admin moment list");
 assert(Game.isUndoControl({
   classList: { contains(name) { return name === "undo-mini"; } },
@@ -919,6 +943,35 @@ assert(Game.playSoundCue(null, null, "undo"), "playSoundCue undo plays with no f
 assert(Game.playSoundCue(Game.emptyFamily(), { items: [] }, "undo"), "playSoundCue undo plays when the library blob is empty");
 assert(Game.playSoundCue({ soundCues: { undo: "gone-clip" } }, { items: [] }, "undo"), "playSoundCue undo plays when the assigned id is missing");
 assert(Game.playSoundCue(Game.emptyFamily(), funLib, "tables"), "clean-device table cue plays the shipped click");
+assert.strictEqual(Game.DEFAULT_SOUND_CUES["work-start"], "tablesloud", "unprogrammed Start uses tablesloud");
+assert.strictEqual(Game.DEFAULT_SOUND_CUES["work-done"], "tablesloud", "unprogrammed Done uses tablesloud");
+FakeAudio.plays.length = 0;
+assert(Game.playWorkActionCue(Game.emptyFamily(), { items: [] }, "a1", "started"), "Start plays with no programmed cue");
+assert(FakeAudio.plays.some((src) => /audio\/tablesloud\.mp3/.test(src)), "Start click starts HTMLAudio on the shipped mp3");
+FakeAudio.plays.length = 0;
+assert(Game.playWorkActionCue(Game.emptyFamily(), { items: [] }, "a1", "done"), "Done plays with no programmed cue");
+assert(FakeAudio.plays.some((src) => /audio\/tablesloud\.mp3/.test(src)), "Done click starts HTMLAudio on the shipped mp3");
+const missingClipLib = Game.normalizeLibrary({
+  items: [{ id: "dad-only", label: "Dad clip", kind: "audio", character: "fun", device: true, filename: "dad.mp3" }]
+});
+FakeAudio.plays.length = 0;
+assert(Game.playWorkActionCue(Game.setSoundCue(Game.emptyFamily(), "work-start", "dad-only"), missingClipLib, "a1", "started"), "a device-only clip Bennett does not have still plays");
+assert(FakeAudio.plays.some((src) => /audio\/tablesloud\.mp3/.test(src)), "missing device clip falls back to tablesloud");
+assert.strictEqual(Game.playLibraryItem({ id: "ghost", kind: "audio", device: true, filename: "ghost.mp3" }), false, "device audio without a blob must not fake success");
+const cueFam = Game.setSoundCue(Game.emptyFamily(), "work-start", "honk");
+assert.strictEqual(cueFam.overlay.soundCues["work-start"], "honk", "setSoundCue writes cues onto the overlay");
+const packedCues = Telemetry.overlayToRow(cueFam.overlay, "fam");
+assert.strictEqual(packedCues.week._jjSoundCues["work-start"], "honk", "overlay row embeds sound cues in week JSON");
+assert.strictEqual(Telemetry.rowToOverlay(packedCues).soundCues["work-start"], "honk", "overlay row round-trips sound cues");
+const playFn = fs.readFileSync(path.join(root, "js/game.js"), "utf8");
+const playItemFn = playFn.slice(playFn.indexOf("function playLibraryItem("), playFn.indexOf("function audioLibraryItems"));
+assert(playItemFn.indexOf("playHtmlAudio(src)") >= 0, "playLibraryItem starts HTMLAudio in the click turn");
+assert(playItemFn.indexOf("void playLibraryItemNow") < 0, "playLibraryItem must not defer playback until after decode");
+assert(/function bindAudioUnlock/.test(playFn) && /pointerdown/.test(playFn), "first pointerdown primes audio");
+assert(/Bennett hears this on This Week/.test(playFn), "Admin sound save no longer tells Dad to export a pack");
+assert(fs.statSync(path.join(root, "audio/tablesloud.mp3")).size > 1000, "tablesloud.mp3 is a real file");
+assert(fs.statSync(path.join(root, "audio/undo.wav")).size > 100, "undo.wav is a real file");
+assert(/writeOverlay/.test(familySyncFn) && /mapOverlay/.test(familySyncFn) && /pullOverlay/.test(familySyncFn), "family-sync reads and writes overlay");
 assert.strictEqual(Game.shippedUndoClick().id, "undo-click");
 assert.strictEqual(Game.shippedUndoClick().path, "audio/undo.wav");
 assert.strictEqual(Game.shippedUndoClick().label, "Undo");
@@ -1142,6 +1195,8 @@ assert(/Lock them back/.test(parentHtml), "parent desk should offer Lock them ba
 assert(/preview-unlock-all/.test(parentHtml) && /preview-lock-back/.test(parentHtml), "preview buttons need ids");
 const weekJs = fs.readFileSync(path.join(root, "js/week.js"), "utf8");
 assert(/playWorkActionCue/.test(weekJs) && /act === "started"/.test(weekJs) && /act === "done"/.test(weekJs), "week cards should play start and done cues");
+assert(/primeLibraryAudio/.test(weekJs), "week Start/Done primes the audio element in the same click");
+assert(/warmupLibraryAudio/.test(weekJs), "week boot warms the library so the first click is not a cold decode");
 assert(!/dataset\.act === "start"/.test(weekJs), "start sound must not listen for data-act=start (the button is started)");
 assert(/Here's the deal/.test(weekJs) && /Start here/.test(weekJs), "A little help should be deal + first move");
 assert(!/data-mode="notecards"/.test(weekJs), "A little help should not open on notecard tabs");
@@ -1186,7 +1241,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=113/.test(weekHtml) && /week\.js\?v=113/.test(weekHtml) && /game\.js\?v=113/.test(weekHtml) && /telemetry\.js\?v=113/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=114/.test(weekHtml) && /week\.js\?v=114/.test(weekHtml) && /game\.js\?v=114/.test(weekHtml) && /telemetry\.js\?v=114/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1233,8 +1288,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=112\b/.test(html), file + " should not still cache-bust as v=112");
-  assert(/\?v=113/.test(html), file + " should cache-bust v=113");
+  assert(!/\?v=113\b/.test(html), file + " should not still cache-bust as v=113");
+  assert(/\?v=114/.test(html), file + " should cache-bust v=114");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1276,10 +1331,10 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=113/.test(progressHtml) && /theme\.css\?v=113/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=114/.test(progressHtml) && /theme\.css\?v=114/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*111/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 111");
+assert(/build:\s*112/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 112");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1793,6 +1848,9 @@ assert(/trophy-chip/.test(Game.hudNavHtml("week")), "Bennett view keeps Trophy R
 assert(!Game.shouldGateAdultPage("basecamp.html", "bennett"), "Base Camp is not an adult desk");
 assert(Game.audioAllowed(), "Bennett still hears audio");
 assert(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "tables", "honk"), funLib, "tables"), "Bennett table cue still plays");
+FakeAudio.plays.length = 0;
+assert(Game.playWorkActionCue(Game.emptyFamily(), { items: [] }, "chem-about-me", "started"), "Bennett Start plays with no programmed cue");
+assert(FakeAudio.plays.some((src) => /audio\/tablesloud\.mp3/.test(src)), "Bennett Start uses the shipped mp3");
 assert(Game.playSoundCue(Game.emptyFamily(), null, "undo"), "Bennett hears the shipped undo click");
 
 localStorage.removeItem("bw-signin-seen");
