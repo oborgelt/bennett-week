@@ -375,6 +375,7 @@
             <div class="entry-tools">
               ${item.kind === "event" ? "" : `<button type="button" class="tiny" data-dispute-item="${Game.esc(item.id)}">This looks wrong</button>`}
               <button type="button" class="tiny" data-note-item="${Game.esc(item.id)}">Note</button>
+              ${item.kind === "event" ? "" : `<button type="button" class="tiny" data-edit-work="${Game.esc(item.id)}">Edit</button>`}
               ${Game.progressCanMutate() ? Game.entryButtons("pitem:" + item.id, "pitem:" + item.id) : ""}
             </div>
           </li>`;
@@ -395,10 +396,10 @@
         <ul class="class-items">${itemHtml}</ul>
         ${khan}
         <p class="ask-help-link class-ask"><a href="${Game.esc(askHref)}">Base Camp · Ask AI</a></p>
-        ${Game.progressCanMutate() ? `<div class="class-card-tools">
+        <div class="class-card-tools">
           <button type="button" class="mini" data-add-item="${Game.esc(cls.id)}">Add assignment</button>
-          ${Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id)}
-        </div>` : ""}
+          ${Game.progressCanMutate() ? Game.entryButtons("pclass:" + cls.id, "pclass:" + cls.id) : ""}
+        </div>
       </details>`;
   }
 
@@ -443,6 +444,55 @@
       if (hit) return { cls: classes[i], item: hit };
     }
     return null;
+  }
+
+  function classSelectHtml(selected) {
+    const classes = mergeClasses();
+    const opts = [`<option value="">Class</option>`].concat(classes.map((cls) => {
+      const on = cls.id === selected ? " selected" : "";
+      return `<option value="${Game.esc(cls.id)}"${on}>${Game.esc(Game.classPeriodLine(cls))}</option>`;
+    }));
+    return `<label class="edit-label">Class<select id="ef-classId">${opts.join("")}</select></label>`;
+  }
+
+  function openWorkEdit(id) {
+    const w = workFromId(id) || feedOf({ id });
+    const found = findClassItem(id);
+    if (!w && !found) return;
+    const title = stripClassPrefix((w && w.title) || (found && found.item && found.item.title) || "");
+    const due = (w && w.due) || (found && found.item && found.item.due) || "";
+    const note = (w && w.note) || (found && found.item && found.item.note) || "";
+    const classId = Game.classIdForWork(w || found.item) || (found && found.cls && found.cls.id) || "";
+    openSheet("Edit assignment", `
+      ${classSelectHtml(classId)}
+      ${editForm([
+        { name: "title", label: "Title", value: title },
+        { name: "due", label: "Due", value: Game.toLocalInput(due), type: "datetime-local" },
+        { name: "note", label: "Note (optional)", value: note, type: "textarea" }
+      ])}
+    `);
+    document.getElementById("edit-save").addEventListener("click", () => {
+      const nextTitle = fieldValue("title");
+      if (!nextTitle) {
+        Game.toast("Add a title first.");
+        return;
+      }
+      const nextDue = Game.fromLocalInput(fieldValue("due"));
+      if (!nextDue) {
+        Game.toast("Pick a due date.");
+        return;
+      }
+      family = Game.updateAssignment(family, seed || baseSeed, id, {
+        title: nextTitle,
+        classId: fieldValue("classId"),
+        due: nextDue,
+        note: fieldValue("note")
+      });
+      closeSheet();
+      Game.familySavedToast("Saved");
+      syncViews();
+      render();
+    });
   }
 
   function openEdit(token) {
@@ -571,7 +621,6 @@
   }
 
   function openAddItem(classId) {
-    if (!Game.progressCanMutate()) return;
     const cls = mergeClasses().find((c) => c.id === classId);
     if (!cls) return;
     const today = Game.chicagoYmd(new Date());
@@ -600,7 +649,7 @@
       });
       family = result.family;
       closeSheet();
-      Game.toast("Added on this device.");
+      Game.familySavedToast("Added");
       syncViews();
       render();
     });
@@ -643,6 +692,13 @@
   function bindDash() {
     document.querySelectorAll(".class-summary-khan a, .class-card .khan-strip a").forEach((a) => {
       a.addEventListener("click", (e) => e.stopPropagation());
+    });
+    document.querySelectorAll("[data-edit-work]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openWorkEdit(btn.dataset.editWork);
+      });
     });
     document.querySelectorAll("[data-edit]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
@@ -726,6 +782,12 @@
     document.getElementById("dispute-text").focus();
   }
 
+  function renderCheckinsPane() {
+    const host = document.getElementById("checkins-pane");
+    if (!host) return;
+    host.innerHTML = `<h2>Check-ins</h2>${Game.checkinsListHtml(family)}<p class="checkin-more"><a href="messages.html">All asks and check-ins</a></p>`;
+  }
+
   function renderNeedsYouPane() {
     const host = document.getElementById("needs-you");
     if (!host) return;
@@ -791,6 +853,7 @@
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
     Game.paintStoryChip(roster);
     renderNeedsYouPane();
+    renderCheckinsPane();
     const want = wantedClass();
     const workId = wantedWork();
     const workClass = workId ? Game.classIdForWork(workFromId(workId) || { id: workId }) : "";

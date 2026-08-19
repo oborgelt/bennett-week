@@ -1052,6 +1052,7 @@
       }
       family.reflections.pool.push({ id: Game.uid("r"), text, test: document.getElementById("prompt-test").checked });
       document.getElementById("new-prompt").value = "";
+      family = Game.stampReflectionsOnFamily(family);
       persistFamily();
     });
 

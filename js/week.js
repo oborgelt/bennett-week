@@ -390,7 +390,7 @@
         <button type="button" class="mini" data-ask="${targetType}:${Game.esc(targetId)}">Ask</button>
         ${help ? `<button type="button" class="mini" data-help="${Game.esc(targetId)}">A little help</button>` : ""}
         ${itemSound(targetId)}
-        ${Game.entryButtons(kind + ":" + targetId, kind + ":" + targetId)}
+        ${Game.entryButtons(kind + ":" + targetId, kind + ":" + targetId, { kidEdit: kind === "work" })}
       </div>
       ${itemNotes(targetType, targetId)}`;
   }
@@ -725,15 +725,13 @@
           Game.toast("Write a sentence or two first.");
           return;
         }
-        family.reflections.answers.push({
-          id: Game.uid("ra"),
+        family = Game.addReflectionAnswer(family, {
           promptId: prompt.id,
           prompt: prompt.text,
           text,
-          at: Game.nowIso()
+          test: !!prompt.test
         });
-        Game.saveFamily(family);
-        Game.toast("Sent to the parent desk.");
+        Game.familySavedToast("Sent. Mom and Dad can read it.");
         refreshCardsInPlace();
       });
     }
@@ -1464,16 +1462,30 @@
     if (kind === "work") {
       const w = (week.work || []).find((x) => x.id === id);
       if (!w) return;
-      openSheet("Edit work", editForm([
-        { name: "title", label: "Title", value: w.title || "" },
-        { name: "due", label: "Due", value: Game.toLocalInput(w.due), type: "datetime-local" },
-        { name: "suggest", label: "Start this from", value: w.suggest_from || "", type: "date" },
-        { name: "note", label: "Note", value: w.note || "", type: "textarea" }
-      ], "edit-save"));
+      openSheet("Edit assignment", `
+        ${classSelectHtml(workClassId(w))}
+        ${editForm([
+          { name: "title", label: "Title", value: w.title || "" },
+          { name: "due", label: "Due", value: Game.toLocalInput(w.due), type: "datetime-local" },
+          { name: "suggest", label: "Start this from", value: w.suggest_from || "", type: "date" },
+          { name: "note", label: "Note", value: w.note || "", type: "textarea" }
+        ], "edit-save")}
+      `);
       document.getElementById("edit-save").addEventListener("click", () => {
-        family = Game.editWeekOverlay(family, "work", id, {
-          title: fieldValue("title"),
-          due: Game.fromLocalInput(fieldValue("due")),
+        const title = fieldValue("title");
+        if (!title) {
+          Game.toast("Add a title first.");
+          return;
+        }
+        const due = Game.fromLocalInput(fieldValue("due"));
+        if (!due) {
+          Game.toast("Pick a due date.");
+          return;
+        }
+        family = Game.updateAssignment(family, seed || baseSeed, id, {
+          title,
+          classId: fieldValue("classId"),
+          due,
           suggest_from: Game.fromLocalInput(fieldValue("suggest"), true) || undefined,
           note: fieldValue("note")
         });
@@ -1536,7 +1548,7 @@
         }
         family = Game.updatePrompt(family, id, { text });
         closeSheet();
-        Game.toast("Saved on this device.");
+        Game.familySavedToast("Saved");
         refreshBoard();
       });
       return;
@@ -1555,7 +1567,7 @@
         }
         family = Game.updateAnswer(family, id, { text });
         closeSheet();
-        Game.toast("Saved on this device.");
+        Game.familySavedToast("Saved");
         refreshBoard();
       });
       return;

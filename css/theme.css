@@ -813,7 +813,8 @@ body.site-view-kid .class-card-tools {
 .needs-you,
 .needs-you-pane,
 .grades-pane,
-.contact-pane {
+.contact-pane,
+.checkins-pane {
   margin: 4px 14px 10px;
   padding: 12px 14px 14px;
   border: 1px solid rgba(255, 182, 200, 0.35);
@@ -823,12 +824,14 @@ body.site-view-kid .class-card-tools {
 
 .needs-you-pane,
 .grades-pane,
-.contact-pane {
+.contact-pane,
+.checkins-pane {
   margin: 0;
 }
 
 .grades-pane,
-.contact-pane {
+.contact-pane,
+.checkins-pane {
   border-color: rgba(198, 224, 58, 0.18);
 }
 
@@ -839,7 +842,8 @@ body.site-view-kid .class-card-tools {
 .needs-you h2,
 .needs-you-pane h2,
 .grades-pane h2,
-.contact-pane h2 {
+.contact-pane h2,
+.checkins-pane h2 {
   margin: 0 0 8px;
   font-size: 0.78rem;
   text-transform: uppercase;
@@ -848,27 +852,40 @@ body.site-view-kid .class-card-tools {
 }
 
 .grades-pane h2,
-.contact-pane h2 {
+.contact-pane h2,
+.checkins-pane h2 {
   color: var(--muted);
 }
 
 .needs-you-list,
 .grade-list,
-.contact-list {
+.contact-list,
+.checkin-list {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.needs-you-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 182, 200, 0.18);
+}
+
+.needs-you-list li:first-child {
+  border-top: 0;
 }
 
 .needs-you-row {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
   text-align: left;
   padding: 8px 0;
   border: 0;
-  border-top: 1px solid rgba(255, 182, 200, 0.18);
   background: transparent;
   color: inherit;
   text-decoration: none;
@@ -876,8 +893,12 @@ body.site-view-kid .class-card-tools {
   min-height: 44px;
 }
 
+.needs-you-edit {
+  flex: 0 0 auto;
+  margin-top: 8px;
+}
+
 .needs-you-list li:first-child .needs-you-row {
-  border-top: 0;
   padding-top: 2px;
 }
 
@@ -913,7 +934,7 @@ body.site-view-kid .class-card-tools {
   gap: 4px;
   align-items: center;
   flex: 0 0 auto;
-  max-width: 46%;
+  max-width: none;
 }
 
 .status-chip {
@@ -2681,6 +2702,45 @@ body.progress-page .peek-monkey {
   display: none;
 }
 
+.checkin-list li {
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+
+.checkin-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.checkin-prompt {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.checkin-text {
+  margin: 4px 0 0;
+  font-weight: 700;
+}
+
+.checkin-stamp {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.checkin-more {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+}
+
+.checkin-more a {
+  color: var(--start);
+}
+
 .dash {
   flex: 1;
   min-height: 0;
@@ -2688,10 +2748,14 @@ body.progress-page .peek-monkey {
   flex-direction: column;
   gap: 10px;
   width: 100%;
-  max-width: var(--desk);
+  max-width: none;
   margin: 0 auto;
-  padding: 6px 12px 10px;
-  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  padding: 6px 16px 12px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+body.progress-page .dash {
+  max-width: none;
 }
 
 .stat-strip {
@@ -3043,19 +3107,65 @@ body.progress-page .peek-monkey {
 }
 
 @media (min-width: 880px) {
-  .dash {
-    flex-direction: row;
+  body.progress-page .dash {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-areas:
+      "needs grades"
+      "classes checkins"
+      "contact stats";
     align-items: stretch;
     gap: 12px;
+    overflow: auto;
   }
-  .stat-strip {
-    flex: 0 0 320px;
-    width: 320px;
-    grid-template-columns: 1fr;
+  body.progress-page .needs-you-pane { grid-area: needs; }
+  body.progress-page .grades-pane { grid-area: grades; }
+  body.progress-page .checkins-pane { grid-area: checkins; }
+  body.progress-page .class-pane { grid-area: classes; min-height: 280px; }
+  body.progress-page .contact-pane { grid-area: contact; }
+  body.progress-page .stat-strip {
+    grid-area: stats;
+    width: auto;
+    flex: none;
+    overflow: visible;
+  }
+}
+
+@media (min-width: 1200px) {
+  html:has(body.progress-page),
+  body.progress-page {
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  body.progress-page {
+    display: flex;
+    flex-direction: column;
+  }
+  body.progress-page .dash {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(260px, 0.9fr);
+    grid-template-rows: minmax(200px, 0.42fr) minmax(0, 1fr);
+    grid-template-areas:
+      "needs grades checkins stats"
+      "classes classes contact stats";
+    overflow: hidden;
+    min-height: 0;
+  }
+  body.progress-page .needs-you-pane,
+  body.progress-page .grades-pane,
+  body.progress-page .checkins-pane,
+  body.progress-page .contact-pane,
+  body.progress-page .class-pane,
+  body.progress-page .stat-strip {
+    min-height: 0;
     overflow: auto;
     scrollbar-width: thin;
   }
-  .class-pane { flex: 1; }
+  body.progress-page .class-pane { min-height: 0; }
+  body.progress-page .stat-strip {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* Parent desk */
@@ -3455,7 +3565,6 @@ body:has(.sheet.open) .clarinet {
   nav.week-nav,
   .draft-flag,
   .class-switcher,
-  .dash,
   .office {
     max-width: var(--desk);
     margin-left: auto;

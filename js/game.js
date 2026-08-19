@@ -305,7 +305,8 @@
       library: { items: [] },
       ask: { messages: [] },
       achievements: { currency: null, achievements: [], updatedAt: "" },
-      awards: { streaks: {}, characterUnlocks: {}, gearUnlocks: {}, contentUnlocks: {}, unlocks: {}, updatedAt: "" }
+      awards: { streaks: {}, characterUnlocks: {}, gearUnlocks: {}, contentUnlocks: {}, unlocks: {}, updatedAt: "" },
+      reflections: { pool: [], answers: [], updatedAt: "" }
     };
   }
 
@@ -426,7 +427,64 @@
         : ((week._jjAsk && typeof week._jjAsk === "object") ? week._jjAsk : { messages: [] }),
       achievements: normalizeAchievementsPack(o.achievements || week._jjAchievements),
       awards: normalizeAwardsPack(o.awards || week._jjAwards),
+      reflections: normalizeReflections(o.reflections || week._jjReflections),
       updatedAt: o.updatedAt || o.updated_at || week.updatedAt || ""
+    };
+  }
+
+  function normalizeReflectionRow(raw, kind) {
+    if (!raw || typeof raw !== "object" || !raw.id) return null;
+    const row = {
+      id: String(raw.id),
+      text: String(raw.text || "").trim()
+    };
+    if (!row.text && kind === "answer") return null;
+    if (raw.promptId) row.promptId = String(raw.promptId);
+    if (raw.prompt) row.prompt = String(raw.prompt);
+    if (raw.at) row.at = String(raw.at);
+    if (raw.updatedAt) row.updatedAt = String(raw.updatedAt);
+    if (raw.test) row.test = true;
+    return row;
+  }
+
+  function normalizeReflections(raw) {
+    const o = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    const pool = Array.isArray(o.pool)
+      ? o.pool.map((row) => normalizeReflectionRow(row, "prompt")).filter(Boolean)
+      : [];
+    const answers = Array.isArray(o.answers)
+      ? o.answers.map((row) => normalizeReflectionRow(row, "answer")).filter(Boolean)
+      : [];
+    return {
+      pool,
+      answers,
+      updatedAt: o.updatedAt || o.updated_at || ""
+    };
+  }
+
+  function mergeReflectionList(a, b) {
+    const byId = Object.create(null);
+    (a || []).concat(b || []).forEach((row) => {
+      if (!row || !row.id) return;
+      const prev = byId[row.id];
+      if (!prev) {
+        byId[row.id] = row;
+        return;
+      }
+      const nextStamp = String(row.updatedAt || row.at || "");
+      const prevStamp = String(prev.updatedAt || prev.at || "");
+      byId[row.id] = nextStamp >= prevStamp ? Object.assign({}, prev, row) : Object.assign({}, row, prev);
+    });
+    return Object.keys(byId).map((id) => byId[id]);
+  }
+
+  function mergeReflections(localRaw, remoteRaw) {
+    const local = normalizeReflections(localRaw);
+    const remote = normalizeReflections(remoteRaw);
+    return {
+      pool: mergeReflectionList(local.pool, remote.pool),
+      answers: mergeReflectionList(local.answers, remote.answers).sort((a, b) => String(a.at || "").localeCompare(String(b.at || ""))),
+      updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
     };
   }
 
@@ -539,20 +597,17 @@
 
   function normalizeFamily(raw) {
     const f = raw && typeof raw === "object" ? raw : {};
-    const reflections = f.reflections && typeof f.reflections === "object" ? f.reflections : {};
+    const overlay = normalizeOverlay(f.overlay);
     return {
       notes: Array.isArray(f.notes) ? f.notes : [],
-      reflections: {
-        pool: Array.isArray(reflections.pool) ? reflections.pool : [],
-        answers: Array.isArray(reflections.answers) ? reflections.answers : []
-      },
+      reflections: mergeReflections(f.reflections, overlay.reflections),
       streaks: f.streaks && typeof f.streaks === "object" && !Array.isArray(f.streaks) ? f.streaks : {},
       characterUnlocks: asUnlockMap(f.characterUnlocks),
       gearUnlocks: asUnlockMap(f.gearUnlocks),
       contentUnlocks: asUnlockMap(f.contentUnlocks),
       soundCues: asCueMap(f.soundCues),
       story: normalizeStory(f.story),
-      overlay: normalizeOverlay(f.overlay),
+      overlay: overlay,
       basecamp: normalizeBasecamp(f.basecamp),
       basecampQueries: normalizeBasecampQueries(f.basecampQueries)
     };
@@ -783,6 +838,35 @@
     return { family: next, id };
   }
 
+  function updateAssignment(family, seed, id, fields) {
+    const src = fields && typeof fields === "object" ? fields : {};
+    const workId = String(id || "").trim();
+    if (!workId) return normalizeFamily(family);
+    const title = String(src.title || "").trim();
+    if (!title) return normalizeFamily(family);
+    const classId = String(src.classId || "").trim();
+    const patch = {
+      title: classId ? assignmentTitle(classId, wTitleStrip(title) || title) : title,
+      due: src.due,
+      suggest_from: src.suggest_from || undefined,
+      note: src.note ? String(src.note).trim() : undefined
+    };
+    if (classId) patch.classId = classId;
+    let next = editWeekOverlay(family, "work", workId, patch);
+    next = editProgressItem(next, workId, {
+      title: wTitleStrip(title) || title,
+      due: src.due,
+      note: patch.note,
+      classId: classId || undefined
+    });
+    if (classId) {
+      next.overlay.progress.addedItems = (next.overlay.progress.addedItems || []).map((row) => {
+        return row && row.id === workId ? Object.assign({}, row, { classId: classId }) : row;
+      });
+    }
+    return next;
+  }
+
   function editProgressClass(family, id, patch) {
     const next = normalizeFamily(family);
     next.overlay.progress.classEdits[id] = Object.assign({}, next.overlay.progress.classEdits[id] || {}, patch, { id });
@@ -829,7 +913,9 @@
   function editProgressItem(family, id, patch) {
     const next = normalizeFamily(family);
     next.overlay.progress.itemEdits[id] = Object.assign({}, next.overlay.progress.itemEdits[id] || {}, patch, { id });
+    stampOverlay(next);
     saveFamily(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     return next;
   }
 
@@ -867,40 +953,68 @@
   function updatePrompt(family, id, patch) {
     const next = normalizeFamily(family);
     next.reflections.pool = updateById(next.reflections.pool, id, patch);
-    saveFamily(next);
-    return next;
+    return stampReflectionsOnFamily(next);
   }
 
   function deletePrompt(family, id) {
     const next = normalizeFamily(family);
     next.reflections.pool = next.reflections.pool.filter((p) => p.id !== id);
-    saveFamily(next);
-    return next;
+    return stampReflectionsOnFamily(next);
   }
 
   function updateAnswer(family, id, patch) {
     const next = normalizeFamily(family);
-    next.reflections.answers = updateById(next.reflections.answers, id, patch);
-    saveFamily(next);
-    return next;
+    next.reflections.answers = updateById(next.reflections.answers, id, Object.assign({}, patch, { updatedAt: nowIso() }));
+    return stampReflectionsOnFamily(next);
   }
 
   function deleteAnswer(family, id) {
     const next = normalizeFamily(family);
     next.reflections.answers = next.reflections.answers.filter((a) => a.id !== id);
+    return stampReflectionsOnFamily(next);
+  }
+
+  function stampReflectionsOnFamily(family) {
+    const next = normalizeFamily(family);
+    const pack = normalizeReflections(next.reflections);
+    pack.updatedAt = nowIso();
+    next.reflections = pack;
+    next.overlay.reflections = pack;
+    stampOverlay(next, pack.updatedAt);
     saveFamily(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     return next;
+  }
+
+  function addReflectionAnswer(family, fields) {
+    const src = fields && typeof fields === "object" ? fields : {};
+    const text = String(src.text || "").trim();
+    if (!text) return normalizeFamily(family);
+    const next = normalizeFamily(family);
+    next.reflections.answers = next.reflections.answers.concat([{
+      id: src.id || uid("ra"),
+      promptId: String(src.promptId || ""),
+      prompt: String(src.prompt || ""),
+      text,
+      at: src.at || nowIso(),
+      test: !!src.test
+    }]);
+    return stampReflectionsOnFamily(next);
   }
 
   function confirmDelete(label) {
     return window.confirm("Delete this " + (label || "entry") + "? It disappears on this device. Export the family pack so Mom and Orin stay in sync.");
   }
 
-  function entryButtons(editToken, delToken) {
-    if (siteViewHidesAdult()) return "";
+  function entryButtons(editToken, delToken, opts) {
+    const kid = siteViewHidesAdult();
+    const kidEdit = opts && opts.kidEdit;
+    if (kid && !kidEdit) return "";
+    const edit = `<button type="button" class="tiny" data-edit="${esc(editToken)}">Edit</button>`;
+    const del = kid ? "" : `<button type="button" class="tiny danger" data-del="${esc(delToken)}">Delete</button>`;
     return `
-      <button type="button" class="tiny" data-edit="${esc(editToken)}">Edit</button>
-      <button type="button" class="tiny danger" data-del="${esc(delToken)}">Delete</button>`;
+      ${edit}
+      ${del}`;
   }
 
   function hasEggGame(pack) {
@@ -3280,6 +3394,21 @@
     return row;
   }
 
+  function checkinsListHtml(family) {
+    const answers = ((family && family.reflections && family.reflections.answers) || []).slice()
+      .filter((a) => a && String(a.text || "").trim())
+      .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    if (!answers.length) {
+      return `<p class="empty">Answers from the check-in on This Week show up here. Mom and Dad see them. Story can fold them into comics later.</p>`;
+    }
+    return `<ul class="checkin-list">${answers.map((a) => `
+      <li>
+        <p class="checkin-prompt">${esc(a.prompt || "Quick check-in")}</p>
+        <p class="checkin-text">${esc(a.text)}</p>
+        <p class="checkin-stamp">${esc(fmtStamp(a.at))}</p>
+      </li>`).join("")}</ul>`;
+  }
+
   function latestBennettQuestion(family) {
     const notes = ((family && family.notes) || []).filter((n) => n && n.from === "bennett" && String(n.text || "").trim());
     if (!notes.length) return null;
@@ -3650,10 +3779,11 @@
           <span class="needs-you-due">${esc(workDueLabel(w))}</span>
         </span>
         ${workStatusChipsHtml(w, clock)}`;
+      const edit = `<button type="button" class="tiny needs-you-edit" data-edit-work="${esc(w.id)}">Edit</button>`;
       const row = href
         ? `<a class="needs-you-row" href="${esc(href)}">${inner}</a>`
         : `<button type="button" class="needs-you-row" data-needs-work="${esc(w.id)}" data-needs-class="${esc(cid)}">${inner}</button>`;
-      return `<li>${row}</li>`;
+      return `<li class="needs-you-item">${row}${edit}</li>`;
     }).join("")}</ul>`;
   }
 
@@ -5372,6 +5502,11 @@
       }
       if (isBennettAsk(note) || (isParentReply(note) && note.from === "mom")) n += 1;
     });
+    if (v !== "bennett") {
+      (((family && family.reflections && family.reflections.answers) || [])).forEach((row) => {
+        if (row && String(row.text || "").trim() && noteIsNewer(row, seen)) n += 1;
+      });
+    }
     return n;
   }
 
@@ -5927,6 +6062,7 @@
         : Object.assign({}, local.soundCues, remote.soundCues),
       library: mergeLibrary(local.library, remote.library),
       ask: mergeAskThreads(local.ask, remote.ask),
+      reflections: mergeReflections(local.reflections, remote.reflections),
       achievements: String((local.achievements && local.achievements.updatedAt) || "") >= String((remote.achievements && remote.achievements.updatedAt) || "")
         ? local.achievements
         : remote.achievements,
@@ -5960,6 +6096,7 @@
       soundCues: o.soundCues,
       library: ((o.library && o.library.items) || []).map((item) => [item.id, item.url || "", item.path || ""]),
       ask: ((o.ask && o.ask.messages) || []).map((m) => m.id),
+      reflections: ((o.reflections && o.reflections.answers) || []).map((a) => a.id),
       achievements: ((o.achievements && o.achievements.achievements) || []).map((ach) => ach.id),
       awards: Object.keys((o.awards && o.awards.characterUnlocks) || {})
     });
@@ -5989,6 +6126,7 @@
     packed.soundCues = asCueMap(next.soundCues);
     packed.library = libraryCatalog(getMomLibrary() || packed.library || { items: [] });
     packed.ask = normalizeAskThread(getAskThread());
+    packed.reflections = mergeReflections(next.reflections, packed.reflections);
     const draft = getMomDraft();
     if (draft && Array.isArray(draft.achievements) && draft.achievements.length) {
       packed.achievements = {
@@ -6045,6 +6183,7 @@
         applyOverlayAsk(next.overlay.ask);
         applyOverlayAchievements(next.overlay.achievements);
         Object.assign(next, applyOverlayAwards(next, next.overlay.awards));
+        next.reflections = mergeReflections(next.reflections, next.overlay.reflections);
         saveFamily(next);
       }
     } finally {
@@ -6141,13 +6280,25 @@
     const asks = sortNotesNewest(bennettAsks(family));
     const open = asks.filter((ask) => !askHasParentReply(family, ask));
     const done = asks.filter((ask) => askHasParentReply(family, ask));
-    if (!asks.length) {
+    const answers = (((family && family.reflections && family.reflections.answers) || [])).slice()
+      .filter((a) => a && String(a.text || "").trim())
+      .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    const checkHtml = answers.length
+      ? `<section class="msg-section"><h2>Check-ins</h2>${answers.map((a) => `
+        <article class="inbox-card msg-card msg-card-done">
+          <p class="msg-kicker">Bennett</p>
+          <h3>${a.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(a.prompt || "Quick check-in")}</h3>
+          <p class="msg-ask">${esc(a.text)}</p>
+          <p class="msg-stamp">${esc(fmtStamp(a.at))}</p>
+        </article>`).join("")}</section>`
+      : "";
+    if (!asks.length && !answers.length) {
       const kid = view === "bennett";
       const hint = kid
-        ? "Ask on a week card. When Mom or Dad writes back, you can read who replied here."
-        : "When he taps Ask or A little help on a week card, it shows up here.";
+        ? "Ask on a week card, or answer the check-in on This Week. Mom and Dad see both."
+        : "When he taps Ask or answers the check-in on This Week, it shows up here.";
       return `<div class="messages-empty">
-        <p class="empty">${kid ? "No messages yet." : "No asks from Bennett yet."}</p>
+        <p class="empty">${kid ? "No messages yet." : "No asks or check-ins yet."}</p>
         <p class="messages-empty-hint">${esc(hint)}</p>
       </div>`;
     }
@@ -6186,7 +6337,10 @@
         </article>`;
     };
     if (!canEdit) {
-      return `<section class="msg-section">${asks.map((ask) => card(ask, false)).join("")}</section>`;
+      const askHtml = asks.length
+        ? `<section class="msg-section">${asks.map((ask) => card(ask, false)).join("")}</section>`
+        : "";
+      return checkHtml + askHtml;
     }
     const openHtml = open.length
       ? `<section class="msg-section"><h2>Needs a reply</h2>${open.map((ask) => card(ask, true)).join("")}</section>`
@@ -6194,7 +6348,7 @@
     const doneHtml = done.length
       ? `<section class="msg-section msg-section-done"><h2>Answered</h2>${done.map((ask) => card(ask, false)).join("")}</section>`
       : "";
-    return openHtml + doneHtml;
+    return checkHtml + openHtml + doneHtml;
   }
 
   function bindMessagesInbox(root, opts) {
@@ -6811,6 +6965,9 @@
     addProgressItem,
     addWeekItem,
     addAssignment,
+    updateAssignment,
+    stampReflectionsOnFamily,
+    addReflectionAnswer,
     editWeekOverlay,
     deleteWeekOverlay,
     editProgressClass,
@@ -7021,6 +7178,7 @@
     basecampChipHtml,
     mountBaseCampChip,
     latestReflection,
+    checkinsListHtml,
     latestBennettQuestion,
     classIdForTitle,
     classIdForWork,

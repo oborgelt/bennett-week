@@ -677,6 +677,8 @@
     else delete week._jjLibrary;
     if (src.ask && typeof src.ask === "object") week._jjAsk = src.ask;
     else delete week._jjAsk;
+    if (src.reflections && typeof src.reflections === "object") week._jjReflections = src.reflections;
+    else delete week._jjReflections;
     if (src.achievements && typeof src.achievements === "object") week._jjAchievements = src.achievements;
     else delete week._jjAchievements;
     if (src.awards && typeof src.awards === "object") week._jjAwards = src.awards;
@@ -687,6 +689,7 @@
       progress: src.progress && typeof src.progress === "object" ? src.progress : {},
       library: src.library && typeof src.library === "object" ? src.library : { items: [] },
       ask: src.ask && typeof src.ask === "object" ? src.ask : { messages: [] },
+      reflections: src.reflections && typeof src.reflections === "object" ? src.reflections : { pool: [], answers: [] },
       achievements: src.achievements && typeof src.achievements === "object" ? src.achievements : { achievements: [] },
       awards: src.awards && typeof src.awards === "object" ? src.awards : {},
       updated_at: src.updatedAt || src.updated_at || new Date().toISOString()
@@ -699,11 +702,13 @@
     const soundCues = (week._jjSoundCues && typeof week._jjSoundCues === "object") ? week._jjSoundCues : (r.soundCues || {});
     const library = (week._jjLibrary && typeof week._jjLibrary === "object") ? week._jjLibrary : (r.library || { items: [] });
     const ask = (week._jjAsk && typeof week._jjAsk === "object") ? week._jjAsk : (r.ask || { messages: [] });
+    const reflections = (week._jjReflections && typeof week._jjReflections === "object") ? week._jjReflections : (r.reflections || { pool: [], answers: [] });
     const achievements = (week._jjAchievements && typeof week._jjAchievements === "object") ? week._jjAchievements : (r.achievements || { achievements: [] });
     const awards = (week._jjAwards && typeof week._jjAwards === "object") ? week._jjAwards : (r.awards || {});
     delete week._jjSoundCues;
     delete week._jjLibrary;
     delete week._jjAsk;
+    delete week._jjReflections;
     delete week._jjAchievements;
     delete week._jjAwards;
     return {
@@ -713,6 +718,7 @@
       soundCues,
       library,
       ask,
+      reflections,
       achievements,
       awards,
       updatedAt: r.updated_at || r.updatedAt || ""
