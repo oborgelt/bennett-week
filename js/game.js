@@ -4771,9 +4771,16 @@
 
   let notePushTimer = null;
 
+  function familySyncReady() {
+    const tel = global.Telemetry;
+    if (!tel) return false;
+    if (typeof tel.progressSyncAvailable === "function" && tel.progressSyncAvailable()) return true;
+    return typeof tel.connected === "function" && tel.connected();
+  }
+
   function queueNotePush(family) {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.connected !== "function" || !tel.connected()) return;
+    if (!tel || typeof tel.upsertNotes !== "function" || !familySyncReady()) return;
     if (typeof setTimeout !== "function") {
       pushFamilyNotes(family);
       return;
@@ -4787,7 +4794,7 @@
 
   async function pushFamilyNotes(family) {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.upsertNotes !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    if (!tel || typeof tel.upsertNotes !== "function" || !familySyncReady()) return { pushed: 0, missing: false, failed: false };
     const notes = ((family && family.notes) || []).filter((n) => n && n.id);
     if (!notes.length) return { pushed: 0, missing: false };
     try {
@@ -4801,8 +4808,8 @@
 
   async function pullFamilyNotes() {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.fetchNotes !== "function" || !tel.connected()) {
-      return { notes: [], missing: false, offline: !tel || !tel.connected() };
+    if (!tel || typeof tel.fetchNotes !== "function" || !familySyncReady()) {
+      return { notes: [], missing: false, offline: !familySyncReady() };
     }
     try {
       const rows = await tel.fetchNotes();
@@ -4817,7 +4824,7 @@
   async function syncFamilyNotes(family) {
     const next = normalizeFamily(family);
     const tel = global.Telemetry;
-    if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
+    if (!familySyncReady()) {
       return { family: next, pulled: 0, pushed: 0, missing: false, offline: true };
     }
     const pulled = await pullFamilyNotes();
@@ -4919,8 +4926,7 @@
   function progressSyncReady() {
     const tel = global.Telemetry;
     if (!tel || typeof tel.fetchProgress !== "function" || typeof tel.upsertProgress !== "function") return false;
-    if (typeof tel.progressSyncAvailable === "function" && tel.progressSyncAvailable()) return true;
-    return typeof tel.connected === "function" && tel.connected();
+    return familySyncReady();
   }
 
   function queueProgressPush() {
@@ -5065,7 +5071,7 @@
 
   function queueWorkPush(family) {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.connected !== "function" || !tel.connected()) return;
+    if (!tel || typeof tel.upsertWork !== "function" || !familySyncReady()) return;
     if (typeof setTimeout !== "function") {
       pushFamilyWork(family);
       return;
@@ -5079,7 +5085,7 @@
 
   async function pushFamilyWork(family) {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.upsertWork !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    if (!tel || typeof tel.upsertWork !== "function" || !familySyncReady()) return { pushed: 0, missing: false };
     const rows = localWorkSyncRows(family);
     if (!rows.length) return { pushed: 0, missing: false };
     try {
@@ -5093,7 +5099,7 @@
   async function syncFamilyWork(family) {
     const next = normalizeFamily(family);
     const tel = global.Telemetry;
-    if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
+    if (!familySyncReady()) {
       return { family: next, pulled: 0, pushed: 0, missing: false, offline: true };
     }
     let remote = [];
@@ -5225,7 +5231,7 @@
 
   function queueOverlayPush(family) {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.connected !== "function" || !tel.connected()) return;
+    if (!tel || typeof tel.upsertOverlay !== "function" || !familySyncReady()) return;
     if (typeof setTimeout !== "function") {
       pushFamilyOverlay(family);
       queueWorkPush(family);
@@ -5241,7 +5247,7 @@
 
   async function pushFamilyOverlay(family) {
     const tel = global.Telemetry;
-    if (!tel || typeof tel.upsertOverlay !== "function" || !tel.connected()) return { pushed: 0, missing: false };
+    if (!tel || typeof tel.upsertOverlay !== "function" || !familySyncReady()) return { pushed: 0, missing: false };
     const next = normalizeFamily(family);
     try {
       await tel.upsertOverlay(next.overlay);
@@ -5254,7 +5260,7 @@
   async function syncFamilyOverlay(family) {
     const next = normalizeFamily(family);
     const tel = global.Telemetry;
-    if (!tel || typeof tel.connected !== "function" || !tel.connected()) {
+    if (!familySyncReady()) {
       return { family: next, pulled: 0, pushed: 0, missing: false, offline: true, changed: false };
     }
     let remote = null;
@@ -5296,12 +5302,6 @@
   }
 
   function boardSyncNotice(sync) {
-    if (sync && sync.missing) {
-      return "Connect tables for Done, notes, and new assignments are not set up yet. Paste scripts/telemetry.sql in Admin / Supabase, then refresh This Week on Bennett's phone and here.";
-    }
-    if (sync && sync.offline) {
-      return "Connect is off on this device. Bennett's Done, notes, and bananas stay on the phone that earned them until Admin → Connect uses the same family token.";
-    }
     return "";
   }
 
@@ -5366,17 +5366,9 @@
     const done = asks.filter((ask) => askHasParentReply(family, ask));
     if (!asks.length) {
       const kid = view === "bennett";
-      const hint = o.missingTable
-        ? (kid
-          ? "Asks still save on this device. The cloud table is not set up yet."
-          : "Asks still save on this device. The cloud table is not set up yet.")
-        : (o.offline
-          ? (kid
-            ? "Asks stay on this phone until a parent turns on Connect."
-            : "Asks stay on this phone until Admin → Connect. Then Mom, Dad, and this laptop share them.")
-          : (kid
-            ? "Ask on a week card. When Mom or Dad writes back, you can read who replied here."
-            : "When he taps Ask on a week card, it shows up here on every connected phone."));
+      const hint = kid
+        ? "Ask on a week card. When Mom or Dad writes back, you can read who replied here."
+        : "When he taps Ask on a week card, it shows up here on every connected phone.";
       return `<div class="messages-empty">
         <p class="empty">${kid ? "No messages yet." : "No asks from Bennett yet."}</p>
         <p class="messages-empty-hint">${esc(hint)}</p>

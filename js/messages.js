@@ -25,19 +25,9 @@
     Game.paintMessagesChip(family);
   }
 
-  function paintSync(sync) {
+  function paintSync() {
     const el = document.getElementById("messages-sync");
     if (!el) return;
-    if (sync && sync.missing) {
-      el.hidden = false;
-      el.textContent = "Cloud notes table is not set up yet. Asks still save on this device.";
-      return;
-    }
-    if (sync && sync.offline) {
-      el.hidden = false;
-      el.textContent = "Connect is off on this phone. Asks stay here until Admin → Connect, then they sync.";
-      return;
-    }
     el.hidden = true;
     el.textContent = "";
   }
@@ -47,8 +37,6 @@
     if (!box) return;
     const canEdit = viewerCanEdit();
     box.innerHTML = Game.messagesInboxHtml(family, week, {
-      missingTable: !!(sync && sync.missing),
-      offline: !!(sync && sync.offline),
       canEdit,
       view: Game.siteView()
     });

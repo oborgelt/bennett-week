@@ -72,6 +72,18 @@
     return !!FAMILY_SYNC_URL;
   }
 
+  let inflightPull = null;
+
+  async function familySyncPull() {
+    if (inflightPull) return inflightPull;
+    inflightPull = familySyncRequest("POST", { pull: true }).finally(() => {
+      const clear = () => { inflightPull = null; };
+      if (typeof setTimeout === "function") setTimeout(clear, 80);
+      else clear();
+    });
+    return inflightPull;
+  }
+
   async function familySyncRequest(method, body) {
     const init = {
       method: method || "POST",
@@ -411,25 +423,54 @@
   }
 
   async function fetchNotes() {
-    const rows = await query("/rest/v1/family_notes?select=*&order=at.asc");
-    return Array.isArray(rows) ? rows : [];
+    try {
+      const data = await familySyncPull();
+      if (data && Array.isArray(data.notes)) return data.notes;
+    } catch (err) {
+      if (!connected()) throw err;
+    }
+    if (connected()) {
+      const rows = await query("/rest/v1/family_notes?select=*&order=at.asc");
+      return Array.isArray(rows) ? rows : [];
+    }
+    return [];
+  }
+
+  function notesForFunction(notes) {
+    return (notes || []).map((n) => {
+      const row = noteToRow(n, "");
+      delete row.family_token;
+      return row;
+    }).filter((row) => row && row.id);
   }
 
   async function upsertNotes(notes) {
-    const cfg = getConfig();
-    const payload = (notes || []).map((n) => noteToRow(n, cfg.familyToken)).filter((row) => row.id);
-    if (!payload.length) return [];
-    return rest("/rest/v1/family_notes?on_conflict=id", {
-      method: "POST",
-      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify(payload)
-    });
+    const payload = notesForFunction(notes);
+    if (!payload.length) return { ok: true, n: 0 };
+    try {
+      return await familySyncRequest("POST", { notes: payload });
+    } catch (err) {
+      if (!connected()) throw err;
+      const cfg = getConfig();
+      const restPayload = (notes || []).map((n) => noteToRow(n, cfg.familyToken)).filter((row) => row.id);
+      if (!restPayload.length) return [];
+      return rest("/rest/v1/family_notes?on_conflict=id", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify(restPayload)
+      });
+    }
   }
 
   async function deleteRemoteNote(id) {
     const key = String(id || "");
     if (!key) return null;
-    return rest("/rest/v1/family_notes?id=eq." + encodeURIComponent(key), { method: "DELETE" });
+    try {
+      return await familySyncRequest("POST", { deleteNoteIds: [key] });
+    } catch (err) {
+      if (!connected()) throw err;
+      return rest("/rest/v1/family_notes?id=eq." + encodeURIComponent(key), { method: "DELETE" });
+    }
   }
 
   function isMissingTable(err) {
@@ -493,7 +534,7 @@
 
   async function fetchProgress() {
     try {
-      const data = await familySyncRequest("POST", { pull: true });
+      const data = await familySyncPull();
       return Array.isArray(data && data.progress) ? data.progress : [];
     } catch (err) {
       if (connected()) {
@@ -570,19 +611,43 @@
   }
 
   async function fetchWork() {
-    const rows = await query("/rest/v1/family_work?select=*&order=updated_at.asc");
-    return Array.isArray(rows) ? rows : [];
+    try {
+      const data = await familySyncPull();
+      if (data && Array.isArray(data.work)) return data.work;
+    } catch (err) {
+      if (!connected()) throw err;
+    }
+    if (connected()) {
+      const rows = await query("/rest/v1/family_work?select=*&order=updated_at.asc");
+      return Array.isArray(rows) ? rows : [];
+    }
+    return [];
+  }
+
+  function workForFunction(rows) {
+    return (rows || []).map((row) => {
+      const mapped = workToRow(row, "");
+      delete mapped.family_token;
+      return mapped;
+    }).filter((row) => row && row.id);
   }
 
   async function upsertWork(rows) {
-    const cfg = getConfig();
-    const payload = (rows || []).map((row) => workToRow(row, cfg.familyToken)).filter((row) => row.id);
-    if (!payload.length) return [];
-    return rest("/rest/v1/family_work?on_conflict=id", {
-      method: "POST",
-      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify(payload)
-    });
+    const payload = workForFunction(rows);
+    if (!payload.length) return { ok: true, n: 0 };
+    try {
+      return await familySyncRequest("POST", { work: payload });
+    } catch (err) {
+      if (!connected()) throw err;
+      const cfg = getConfig();
+      const restPayload = (rows || []).map((row) => workToRow(row, cfg.familyToken)).filter((row) => row.id);
+      if (!restPayload.length) return [];
+      return rest("/rest/v1/family_work?on_conflict=id", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify(restPayload)
+      });
+    }
   }
 
   function overlayToRow(overlay, familyToken) {
@@ -606,19 +671,35 @@
   }
 
   async function fetchOverlay() {
-    const rows = await query("/rest/v1/family_overlay?select=*&limit=1");
-    const list = Array.isArray(rows) ? rows : [];
-    return list.length ? list[0] : null;
+    try {
+      const data = await familySyncPull();
+      if (data && Object.prototype.hasOwnProperty.call(data, "overlay")) return data.overlay || null;
+    } catch (err) {
+      if (!connected()) throw err;
+    }
+    if (connected()) {
+      const rows = await query("/rest/v1/family_overlay?select=*&limit=1");
+      const list = Array.isArray(rows) ? rows : [];
+      return list.length ? list[0] : null;
+    }
+    return null;
   }
 
   async function upsertOverlay(overlay) {
-    const cfg = getConfig();
-    const payload = overlayToRow(overlay, cfg.familyToken);
-    return rest("/rest/v1/family_overlay?on_conflict=family_token", {
-      method: "POST",
-      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify([payload])
-    });
+    const mapped = overlayToRow(overlay, "");
+    delete mapped.family_token;
+    try {
+      return await familySyncRequest("POST", { overlay: mapped });
+    } catch (err) {
+      if (!connected()) throw err;
+      const cfg = getConfig();
+      const payload = overlayToRow(overlay, cfg.familyToken);
+      return rest("/rest/v1/family_overlay?on_conflict=family_token", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify([payload])
+      });
+    }
   }
 
   async function probeFamilyTables() {
