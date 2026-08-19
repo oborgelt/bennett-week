@@ -27,8 +27,7 @@
     selectedClass: "bw-selected-class",
     workDisputes: "bw-work-disputes",
     classVisits: "bw-class-visits",
-    needsYouCollapsed: "bw-needs-you-collapsed",
-    retractRiff: "bw-retract-riff-126"
+    needsYouCollapsed: "bw-needs-you-collapsed"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -598,24 +597,6 @@
         }
         localStorage.setItem(SEED_GEN_KEY, String(SEED_GEN));
       }
-    } catch (_) {}
-    retractRiffForRetest();
-  }
-
-  function retractRiffForRetest() {
-    try {
-      if (read(KEYS.retractRiff, false)) return;
-      write(KEYS.retractRiff, true);
-      revokeUnlock("test-riff-reps");
-      revokeCharacterUnlock("riff");
-      unmarkCharacterSeen("riff");
-      const family = getFamilyDraft() || emptyFamily();
-      if (family.streaks && family.streaks["test-riff-reps"]) {
-        family.streaks["test-riff-reps"] = Object.assign({}, family.streaks["test-riff-reps"], { awarded: false });
-      }
-      if (family.characterUnlocks) delete family.characterUnlocks.riff;
-      saveFamily(family);
-      stampAwardsOnFamily(family);
     } catch (_) {}
   }
 
@@ -4298,6 +4279,7 @@
     const lib = opts && opts.library;
     const play = () => playAwardSound(ach, family, lib);
     const started = play();
+    confetti({ burst: true });
     if (!started && layer.addEventListener) {
       layer.addEventListener("pointerdown", play, { once: true });
     }
@@ -4323,24 +4305,17 @@
       <div class="char-celebrate-panel" role="dialog" aria-labelledby="char-celebrate-title">
         <p class="char-celebrate-kicker">${kicker}</p>
         <h2 id="char-celebrate-title">${esc(name)} unlocked!</h2>
-        <video src="${esc(media.video)}" poster="${esc(media.poster)}" playsinline muted ${rewatch ? "controls" : ""} ${prefersReducedMotion() ? "" : "autoplay"}></video>
+        <video src="${esc(media.video)}" poster="${esc(media.poster)}" playsinline controls ${prefersReducedMotion() ? "" : "autoplay"}></video>
         <button type="button" class="btn primary" id="char-celebrate-close">Nice</button>
       </div>`;
     layer.classList.add("open");
+    stopLibraryAudio();
     const video = layer.querySelector("video");
-    if (video) {
-      video.muted = true;
-      video.defaultMuted = true;
-      video.volume = 0;
-      if (!prefersReducedMotion() && video.play) {
-        const p = video.play();
-        if (p && p.catch) p.catch(function () {});
-      }
-    }
+    playCharacterVideo(video);
     bindCelebrateClose(layer);
     if (unlockedChar && unlockedChar.id) markCharacterSeen(unlockedChar.id);
     if (unlockedChar && unlockedChar.id === "bennett") markSignInSeen();
-    confetti();
+    if (!rewatch) confetti({ burst: true });
     if (opts && opts.achievement && !rewatch && !opts.skipSound) {
       const family = opts.family || getFamilyDraft();
       const play = () => playAwardSound(opts.achievement, family, opts.library);
@@ -4813,7 +4788,28 @@
     else toast("Deleted on this device until Connect is on.");
   }
 
-  function confetti() {
+  function playCharacterVideo(video) {
+    if (!video) return;
+    video.muted = false;
+    video.defaultMuted = false;
+    video.removeAttribute && video.removeAttribute("muted");
+    try { video.volume = 1; } catch (_) {}
+    const kick = () => {
+      const p = video.play && video.play();
+      if (p && p.catch) {
+        p.catch(() => {
+          video.muted = false;
+          video.defaultMuted = false;
+          try { video.volume = 1; } catch (_) {}
+          const again = video.play && video.play();
+          if (again && again.catch) again.catch(function () {});
+        });
+      }
+    };
+    kick();
+  }
+
+  function confetti(opts) {
     if (prefersReducedMotion()) return;
     let layer = document.getElementById("confetti");
     if (!layer) {
@@ -4822,15 +4818,30 @@
       layer.className = "confetti";
       document.body.appendChild(layer);
     }
-    const colors = ["#c6e03a", "#f4d35e", "#f4a261", "#2a9d8f", "#8ec5ff", "#f0a8b8"];
-    for (let i = 0; i < 28; i += 1) {
+    const colors = ["#c6e03a", "#f4d35e", "#f4a261", "#2a9d8f", "#8ec5ff", "#f0a8b8", "#76c759", "#ffffff"];
+    const count = (opts && opts.burst) ? 140 : 28;
+    for (let i = 0; i < count; i += 1) {
       const bit = document.createElement("i");
-      bit.style.left = Math.random() * 100 + "%";
+      const burst = !!(opts && opts.burst) && (i % 2 === 0);
       bit.style.background = colors[i % colors.length];
-      bit.style.animationDelay = (Math.random() * 0.2) + "s";
-      bit.style.transform = "translateY(0) rotate(" + (Math.random() * 80) + "deg)";
+      bit.style.width = (6 + Math.random() * 10) + "px";
+      bit.style.height = (8 + Math.random() * 16) + "px";
+      bit.style.animationDelay = (Math.random() * 0.35) + "s";
+      bit.style.animationDuration = (1.4 + Math.random() * 1.6) + "s";
+      if (burst) {
+        bit.className = "burst";
+        bit.style.left = "50%";
+        bit.style.top = "38%";
+        bit.style.setProperty("--dx", (Math.random() * 160 - 80) + "vw");
+        bit.style.setProperty("--dy", (40 + Math.random() * 90) + "vh");
+      } else {
+        bit.style.left = Math.random() * 100 + "%";
+        bit.style.transform = "translateY(0) rotate(" + (Math.random() * 80) + "deg)";
+      }
       layer.appendChild(bit);
-      setTimeout(() => bit.remove(), 1300);
+      if (typeof setTimeout === "function") {
+        setTimeout(() => bit.remove(), 3200);
+      }
     }
   }
 
