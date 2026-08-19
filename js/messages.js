@@ -11,10 +11,10 @@
     const el = document.querySelector(".messages-lead");
     if (!el) return;
     if (Game.siteView() === "bennett") {
-      el.innerHTML = "Ask on a week card, or answer the check-in on This Week. When Mom or Dad writes back, you can read <strong>who replied</strong> here.";
+      el.innerHTML = "Ask on a week card, or answer the check-in on This Week. You see every message and every reply. Newest first.";
       return;
     }
-    el.innerHTML = "When Bennett taps <strong>Ask</strong> on a week card or answers the <strong>check-in</strong> on This Week, it shows up here. A reply is stamped <strong>Mom</strong> or <strong>Dad</strong> on that same card.";
+    el.innerHTML = "Newest first. You see every ask, check-in, and reply. Delete a test thread with <strong>Delete</strong>.";
   }
 
   function hud() {

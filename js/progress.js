@@ -768,7 +768,7 @@
     }
     const existing = Game.workDisputeOf(w);
     openSheet("This looks wrong", `
-      <p class="empty">Marks this for Contact school. Parenting can see it on this device.</p>
+      <p class="empty">Marks this assignment if Canvas does not match what happened.</p>
       <textarea id="dispute-text" maxlength="280" placeholder="We think this was turned in">${existing && existing.reason ? Game.esc(existing.reason) : ""}</textarea>
       <button type="button" class="btn primary" id="dispute-save">Save</button>
     `);
@@ -776,7 +776,7 @@
       const reason = (document.getElementById("dispute-text").value || "").trim();
       Game.markWorkLooksWrong(w, reason);
       closeSheet();
-      Game.toast("Flagged. It is under Contact school.");
+      Game.toast("Flagged on this assignment.");
       render();
     });
     document.getElementById("dispute-text").focus();
@@ -824,26 +824,6 @@
     host.innerHTML = `<h2>Grades</h2>${rows}`;
   }
 
-  function renderContactPane(classes) {
-    const host = document.getElementById("contact-school");
-    if (!host) return;
-    const flagged = (week.work || []).filter((w) => {
-      const st = Game.workFeedStatus(w);
-      return st.wantContact;
-    });
-    if (!flagged.length) {
-      host.innerHTML = `<h2>Contact school</h2><p class="empty">Tap “This looks wrong” on a row if Canvas does not match what we think happened.</p>`;
-      return;
-    }
-    host.innerHTML = `<h2>Contact school</h2><ul class="contact-list">${flagged.map((w) => {
-      const line = Game.workContactLine(w, classes);
-      return `<li>
-        <p class="contact-line">${Game.esc(line)}</p>
-        <button type="button" class="tiny" data-copy-contact="${Game.esc(line)}">Copy</button>
-      </li>`;
-    }).join("")}</ul>`;
-  }
-
   function render() {
     const classes = mergeClasses();
     const opens = openSource();
@@ -865,7 +845,6 @@
       return renderClass(cls, open && (cls.items || []).length);
     }).join("");
     renderGradesPane(classes);
-    renderContactPane(classes);
     document.getElementById("stat-strip").innerHTML =
       renderOpens(opens) + renderActions(totals) + renderFinds(totals);
     if (want) {

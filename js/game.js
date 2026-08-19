@@ -5513,19 +5513,48 @@
   function parentRepliesForAsk(family, ask) {
     const notes = (family && family.notes) || [];
     if (!ask) return [];
-    const byId = notes.filter((n) => isParentReply(n) && n.replyTo === ask.id);
-    if (byId.length) return byId;
-    return notes.filter((n) => {
-      return isParentReply(n) && noteTargetKey(n) === noteTargetKey(ask);
+    const seen = Object.create(null);
+    const out = [];
+    notes.forEach((n) => {
+      if (!isParentReply(n) || seen[n.id]) return;
+      const linked = n.replyTo === ask.id || (!n.replyTo && noteTargetKey(n) === noteTargetKey(ask));
+      if (!linked) return;
+      seen[n.id] = true;
+      out.push(n);
     });
+    return out.sort((a, b) => String(a.at || "").localeCompare(String(b.at || "")));
   }
 
   function askHasParentReply(family, ask) {
     return parentRepliesForAsk(family, ask).length > 0;
   }
 
+  function inboxAsks(family) {
+    return ((family && family.notes) || []).filter((n) => isBennettAsk(n));
+  }
+
   function bennettAsks(family) {
-    return ((family && family.notes) || []).filter((n) => isBennettAsk(n) && !n.test);
+    return inboxAsks(family).filter((n) => !n.test);
+  }
+
+  function threadStamp(family, ask) {
+    let latest = String((ask && ask.at) || "");
+    parentRepliesForAsk(family, ask).forEach((r) => {
+      const at = String((r && r.at) || "");
+      if (at > latest) latest = at;
+    });
+    return latest;
+  }
+
+  function deleteAskThread(family, askId) {
+    const next = normalizeFamily(family);
+    const ask = (next.notes || []).find((n) => n && n.id === askId);
+    const ids = [askId].concat(parentRepliesForAsk(next, ask).map((r) => r.id));
+    let out = next;
+    ids.forEach((id) => {
+      out = deleteNote(out, id);
+    });
+    return out;
   }
 
   function unansweredBennettAsks(family) {
@@ -6277,32 +6306,25 @@
     const o = opts || {};
     const view = normalizeSiteView(o.view || siteView());
     const canEdit = o.canEdit !== false && view !== "bennett";
-    const asks = sortNotesNewest(bennettAsks(family));
-    const open = asks.filter((ask) => !askHasParentReply(family, ask));
-    const done = asks.filter((ask) => askHasParentReply(family, ask));
+    const canDelete = canEdit;
+    const asks = inboxAsks(family).slice().sort((a, b) => String(threadStamp(family, b)).localeCompare(String(threadStamp(family, a))));
     const answers = (((family && family.reflections && family.reflections.answers) || [])).slice()
-      .filter((a) => a && String(a.text || "").trim())
+      .filter((a) => a && String(a.text || "").trim());
+    const feed = asks.map((ask) => ({ kind: "ask", ask, at: threadStamp(family, ask) }))
+      .concat(answers.map((a) => ({ kind: "checkin", answer: a, at: a.at || "" })))
       .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
-    const checkHtml = answers.length
-      ? `<section class="msg-section"><h2>Check-ins</h2>${answers.map((a) => `
-        <article class="inbox-card msg-card msg-card-done">
-          <p class="msg-kicker">Bennett</p>
-          <h3>${a.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(a.prompt || "Quick check-in")}</h3>
-          <p class="msg-ask">${esc(a.text)}</p>
-          <p class="msg-stamp">${esc(fmtStamp(a.at))}</p>
-        </article>`).join("")}</section>`
-      : "";
-    if (!asks.length && !answers.length) {
+    if (!feed.length) {
       const kid = view === "bennett";
       const hint = kid
-        ? "Ask on a week card, or answer the check-in on This Week. Mom and Dad see both."
-        : "When he taps Ask or answers the check-in on This Week, it shows up here.";
+        ? "Ask on a week card, or answer the check-in on This Week. Mom and Dad see both, including replies."
+        : "When he taps Ask or answers the check-in on This Week, it shows up here. Newest first.";
       return `<div class="messages-empty">
         <p class="empty">${kid ? "No messages yet." : "No asks or check-ins yet."}</p>
         <p class="messages-empty-hint">${esc(hint)}</p>
       </div>`;
     }
-    const card = (ask, unanswered) => {
+    const askCard = (ask) => {
+      const unanswered = !askHasParentReply(family, ask);
       const title = noteTargetLabel(week, ask.targetType, ask.targetId) || "This item";
       const day = noteDayLabel(week, ask);
       const replies = parentRepliesForAsk(family, ask);
@@ -6318,62 +6340,77 @@
         </label>
         <div class="parent-actions">
           <button type="button" class="btn primary" data-send-reply="${esc(ask.id)}">Send reply</button>
+          ${canDelete ? `<button type="button" class="tiny danger" data-del-msg="${esc(ask.id)}">Delete</button>` : ""}
         </div>` : "";
       const kicker = canEdit
         ? (unanswered ? "Needs a reply" : "Answered")
         : noteAuthorLabel(ask, view);
-      const askFrom = canEdit
-        ? `<p class="msg-ask-from">${esc(noteAuthorLabel(ask, view))}</p>`
-        : "";
       return `
         <article class="inbox-card msg-card${unanswered ? " msg-card-open" : " msg-card-done"}">
           <p class="msg-kicker">${esc(kicker)}</p>
           <h3>${ask.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}${day ? " · " + esc(day) : ""}</h3>
-          ${askFrom}
+          <p class="msg-ask-from">${esc(noteAuthorLabel(ask, view))}</p>
           <p class="msg-ask">${esc(ask.text)}</p>
           <p class="msg-stamp">${esc(fmtStamp(ask.at))}</p>
           ${replyHtml}
           ${composer}
         </article>`;
     };
-    if (!canEdit) {
-      const askHtml = asks.length
-        ? `<section class="msg-section">${asks.map((ask) => card(ask, false)).join("")}</section>`
-        : "";
-      return checkHtml + askHtml;
-    }
-    const openHtml = open.length
-      ? `<section class="msg-section"><h2>Needs a reply</h2>${open.map((ask) => card(ask, true)).join("")}</section>`
-      : "";
-    const doneHtml = done.length
-      ? `<section class="msg-section msg-section-done"><h2>Answered</h2>${done.map((ask) => card(ask, false)).join("")}</section>`
-      : "";
-    return checkHtml + openHtml + doneHtml;
+    const checkCard = (a) => `
+      <article class="inbox-card msg-card msg-card-done">
+        <p class="msg-kicker">Check-in</p>
+        <h3>${a.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(a.prompt || "Quick check-in")}</h3>
+        <p class="msg-ask-from">Bennett</p>
+        <p class="msg-ask">${esc(a.text)}</p>
+        <p class="msg-stamp">${esc(fmtStamp(a.at))}</p>
+        ${canDelete ? `<div class="parent-actions"><button type="button" class="tiny danger" data-del-checkin="${esc(a.id)}">Delete</button></div>` : ""}
+      </article>`;
+    return `<section class="msg-section">${feed.map((row) => {
+      return row.kind === "ask" ? askCard(row.ask) : checkCard(row.answer);
+    }).join("")}</section>`;
   }
 
   function bindMessagesInbox(root, opts) {
     const o = opts || {};
     let family = o.family;
     if (!root || !root.querySelectorAll) return family;
-    if (o.canEdit === false || siteView() === "bennett") return family;
-    root.querySelectorAll("[data-send-reply]").forEach((b) => {
-      b.addEventListener("click", () => {
-        const id = b.getAttribute("data-send-reply");
-        const ta = root.querySelector(`[data-reply="${id}"]`);
-        const text = (ta && ta.value || "").trim();
-        if (!text) {
-          toast("Write a reply first.");
-          return;
-        }
-        family = sendParentReply(family, id, text);
-        toast("Reply sent. Bennett will see it on that card.");
-        if (typeof o.onChange === "function") o.onChange(family);
-        flushFamilyNotes(family).then((next) => {
-          family = next;
+    const canEdit = o.canEdit !== false && siteView() !== "bennett";
+    if (canEdit) {
+      root.querySelectorAll("[data-send-reply]").forEach((b) => {
+        b.addEventListener("click", () => {
+          const id = b.getAttribute("data-send-reply");
+          const ta = root.querySelector(`[data-reply="${id}"]`);
+          const text = (ta && ta.value || "").trim();
+          if (!text) {
+            toast("Write a reply first.");
+            return;
+          }
+          family = sendParentReply(family, id, text);
+          toast("Reply sent. Bennett will see it on that card.");
           if (typeof o.onChange === "function") o.onChange(family);
-        }).catch(() => {});
+          flushFamilyNotes(family).then((next) => {
+            family = next;
+            if (typeof o.onChange === "function") o.onChange(family);
+          }).catch(() => {});
+        });
       });
-    });
+      root.querySelectorAll("[data-del-msg]").forEach((b) => {
+        b.addEventListener("click", () => {
+          if (!confirmDelete("message")) return;
+          family = deleteAskThread(family, b.getAttribute("data-del-msg"));
+          toast("Deleted.");
+          if (typeof o.onChange === "function") o.onChange(family);
+        });
+      });
+      root.querySelectorAll("[data-del-checkin]").forEach((b) => {
+        b.addEventListener("click", () => {
+          if (!confirmDelete("check-in")) return;
+          family = deleteAnswer(family, b.getAttribute("data-del-checkin"));
+          toast("Deleted.");
+          if (typeof o.onChange === "function") o.onChange(family);
+        });
+      });
+    }
     return family;
   }
 
@@ -7037,6 +7074,8 @@
     bennettAsks,
     unansweredBennettAsks,
     unansweredAskCount,
+    inboxAsks,
+    deleteAskThread,
     mergeNotesById,
     syncFamilyNotes,
     syncFamilyProgress,
