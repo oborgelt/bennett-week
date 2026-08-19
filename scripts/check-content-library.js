@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=114/.test(basecampHtml) && /basecamp\.js\?v=114/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=115/.test(basecampHtml) && /basecamp\.js\?v=115/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1197,6 +1197,17 @@ const weekJs = fs.readFileSync(path.join(root, "js/week.js"), "utf8");
 assert(/playWorkActionCue/.test(weekJs) && /act === "started"/.test(weekJs) && /act === "done"/.test(weekJs), "week cards should play start and done cues");
 assert(/primeLibraryAudio/.test(weekJs), "week Start/Done primes the audio element in the same click");
 assert(/warmupLibraryAudio/.test(weekJs), "week boot warms the library so the first click is not a cold decode");
+assert(/done-tag/.test(weekJs) && /function sortWorkOpenFirst/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "Done items get a badge and sort under open work");
+assert(/promoteHelpAskToInbox/.test(weekJs) && /promoteAskThreadToInbox/.test(weekJs), "A little help copies Bennett's question into Messages");
+assert(/data-parent-tab="awards"/.test(parentHtml) && /data-parent-panel="crew"/.test(parentHtml) && /id="parent-tabs"/.test(parentHtml), "Parent desk is tabbed");
+assert(/bindParentTabs/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")) && /data-parent-tab/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk tabs switch panels");
+assert(/\.item\.done/.test(fs.readFileSync(path.join(root, "css/theme.css"), "utf8")) && /done-tag/.test(fs.readFileSync(path.join(root, "css/theme.css"), "utf8")), "Done cards use a teal plate, not a faint strikethrough");
+Game.touchWork("done-sort", "done");
+assert.strictEqual(Game.sortWorkOpenFirst([{ id: "done-sort" }, { id: "open-sort" }]).map((w) => w.id).join(","), "open-sort,done-sort", "open work stays above Done");
+const helped = Game.promoteHelpAskToInbox(Game.emptyFamily(), { id: "eng-comics", title: "Comics" }, "I don't get the paragraph");
+assert(helped.notes.some((n) => n.from === "bennett" && n.kind === "question" && /paragraph/.test(n.text)), "A little help becomes a Messages ask");
+const helpedTwice = Game.promoteHelpAskToInbox(helped, { id: "eng-comics", title: "Comics" }, "I don't get the paragraph");
+assert.strictEqual(helpedTwice.notes.filter((n) => /paragraph/.test(n.text)).length, 1, "promoting the same help line does not duplicate");
 assert(!/dataset\.act === "start"/.test(weekJs), "start sound must not listen for data-act=start (the button is started)");
 assert(/Here's the deal/.test(weekJs) && /Start here/.test(weekJs), "A little help should be deal + first move");
 assert(!/data-mode="notecards"/.test(weekJs), "A little help should not open on notecard tabs");
@@ -1241,7 +1252,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=114/.test(weekHtml) && /week\.js\?v=114/.test(weekHtml) && /game\.js\?v=114/.test(weekHtml) && /telemetry\.js\?v=114/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=115/.test(weekHtml) && /week\.js\?v=115/.test(weekHtml) && /game\.js\?v=115/.test(weekHtml) && /telemetry\.js\?v=115/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1288,8 +1299,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=113\b/.test(html), file + " should not still cache-bust as v=113");
-  assert(/\?v=114/.test(html), file + " should cache-bust v=114");
+  assert(!/\?v=114\b/.test(html), file + " should not still cache-bust as v=114");
+  assert(/\?v=115/.test(html), file + " should cache-bust v=115");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1331,10 +1342,10 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=114/.test(progressHtml) && /theme\.css\?v=114/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=115/.test(progressHtml) && /theme\.css\?v=115/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*112/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 112");
+assert(/build:\s*113/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 113");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1875,6 +1886,10 @@ assert.strictEqual(Game.playSoundCue(Game.setSoundCue(Game.emptyFamily(), "table
 assert.strictEqual(Game.honk(), false, "mom honk is a no-op");
 assert.strictEqual(Game.playRandomLibraryItem(funLib), null, "mom library play is a no-op");
 assert.strictEqual(Game.playLibraryItem({ id: "honk", kind: "audio", synth: "honk" }), false, "mom library synth is a no-op");
+Game.setSessionUser("mom");
+assert(!Game.audioAllowed(), "Mom login mutes audio");
+assert(Game.shouldGateAdultPage("parent.html", Game.siteView()), "Mom cannot open Parent desk");
+Game.setSessionUser("orin");
 
 store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "bennett" });
 assert.strictEqual(typeof Game.telemetryDeviceRole, "function");

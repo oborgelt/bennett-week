@@ -319,7 +319,11 @@
 
   function renderClass(cls, open) {
     const stats = classStats(cls);
-    const items = cls.items || [];
+    const items = (cls.items || []).slice().sort((a, b) => {
+      const ad = Game.workState(a.id).done ? 1 : 0;
+      const bd = Game.workState(b.id).done ? 1 : 0;
+      return ad - bd;
+    });
     const khan = Game.khanStripHtmlForClass(cls);
     const summaryKhan = !items.length ? Game.khanInlineHtml(Game.khanLinksForClass(cls)) : "";
     const askHref = `basecamp.html?class=${encodeURIComponent(cls.id)}&title=${encodeURIComponent(cls.name)}`;
@@ -327,7 +331,7 @@
       ? items.map((item) => {
         const status = itemStatus(item);
         return `
-          <li class="class-item">
+          <li class="class-item${status.kind === "done" ? " done" : (status.kind === "started" ? " started" : "")}">
             <div class="class-item-top">
               <div>
                 <div class="title">${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.title)}</div>

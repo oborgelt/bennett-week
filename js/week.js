@@ -366,6 +366,7 @@
         : "";
     }
     if (item.kind === "audio" || item.character === "fun") {
+      if (!Game.audioAllowed()) return "";
       return `<button type="button" class="mini" data-play-lib="${Game.esc(item.id)}">Play sound</button>`;
     }
     return "";
@@ -483,7 +484,8 @@
 
   function workTitleHtml(w, dueTag) {
     const c = canvasOf(w);
-    const title = (dueTag ? `<span class="tag">Due</span> ` : "") + titleHtml(w.title) + " " + canvasBadgeHtml(w);
+    const done = Game.workState(w.id).done;
+    const title = (dueTag ? `<span class="tag">Due</span> ` : "") + (done ? `<span class="done-tag">Done</span> ` : "") + titleHtml(w.title) + " " + canvasBadgeHtml(w);
     if (!c) return `<div class="title">${title}</div>`;
     return `<button type="button" class="work-title-btn" data-work-detail="${Game.esc(w.id)}">${title}</button>`;
   }
@@ -1965,6 +1967,7 @@
     }
     const title = helpTitle(work);
     let thread = Game.addAskMessage(Game.getAskThread(), { role: "bennett", text, title });
+    family = Game.promoteHelpAskToInbox(family, work, text);
     if (typeof Game.track === "function") {
       Game.track("ask_ai", { classId: Game.classIdForWork(work), message: title });
     }
@@ -2287,6 +2290,7 @@
     if (Game.warmupLibraryAudio) Game.warmupLibraryAudio(library, family);
     baseSeed = await Game.loadProgress();
     syncWeek();
+    family = Game.promoteAskThreadToInbox(family, week);
     initSelectedClass();
     renderClassSwitcher();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {

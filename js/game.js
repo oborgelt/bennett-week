@@ -3146,10 +3146,18 @@
   function itemsForClassOnDay(week, classId, day) {
     const want = String(classId || "");
     return {
-      due: ((week && week.work) || []).filter((w) => belongsToClass(w, want) && workDueOnDay(w, day)),
-      startThis: ((week && week.work) || []).filter((w) => belongsToClass(w, want) && workStartThisOnDay(w, day)),
+      due: sortWorkOpenFirst(((week && week.work) || []).filter((w) => belongsToClass(w, want) && workDueOnDay(w, day))),
+      startThis: sortWorkOpenFirst(((week && week.work) || []).filter((w) => belongsToClass(w, want) && workStartThisOnDay(w, day))),
       events: ((week && week.events) || []).filter((e) => belongsToClass(e, want) && eventOnBoard(e, [day]))
     };
+  }
+
+  function sortWorkOpenFirst(list) {
+    return (list || []).slice().sort((a, b) => {
+      const ad = workState(a && a.id).done ? 1 : 0;
+      const bd = workState(b && b.id).done ? 1 : 0;
+      return ad - bd;
+    });
   }
 
   function looseEventsOnDay(week, day) {
@@ -4041,6 +4049,7 @@
   }
 
   function audioAllowed() {
+    if (sessionUser() === "mom") return false;
     return siteView() !== "mom";
   }
 
@@ -4300,6 +4309,11 @@
     }
     gate.innerHTML = html;
     gate.hidden = false;
+    try {
+      if (global.location && pageFile() !== "index.html" && typeof global.location.replace === "function") {
+        global.location.replace("index.html");
+      }
+    } catch (_) {}
     return true;
   }
 
@@ -4593,6 +4607,50 @@
     });
     queueNotePush(next);
     pushFamilyNotes(next);
+    return next;
+  }
+
+  function helpAskAlreadyNoted(family, workId, text) {
+    const id = String(workId || "");
+    const line = String(text || "").trim();
+    if (!id || !line) return true;
+    return ((family && family.notes) || []).some((n) => {
+      if (!(n && n.from === "bennett" && n.kind !== "note" && String(n.text || "").trim() === line)) return false;
+      if (!id) return true;
+      const target = String(n.targetId || "");
+      return target === id || target.indexOf("help-") === 0;
+    });
+  }
+
+  function promoteHelpAskToInbox(family, work, text) {
+    const line = String(text || "").trim();
+    const targetId = work && work.id ? String(work.id) : "";
+    if (!line || !targetId) return normalizeFamily(family);
+    if (helpAskAlreadyNoted(family, targetId, line)) return normalizeFamily(family);
+    return addNote(family, {
+      id: uid("q"),
+      targetType: "work",
+      targetId,
+      from: "bennett",
+      kind: "question",
+      text: line,
+      at: nowIso(),
+      classId: classIdForWork(work) || undefined,
+      termId: work.termId || undefined,
+      source: "help"
+    });
+  }
+
+  function promoteAskThreadToInbox(family, week) {
+    let next = normalizeFamily(family);
+    const work = ((week && week.work) || []);
+    ((getAskThread().messages) || []).forEach((m) => {
+      if (!m || m.role !== "bennett" || !String(m.text || "").trim()) return;
+      const title = String(m.title || "").trim();
+      const match = work.find((w) => w && w.title === title) || work.find((w) => w && w.id === title);
+      const row = match || { id: "help-" + slugId(title || "ask", "help"), title: title, termId: "" };
+      next = promoteHelpAskToInbox(next, row, m.text);
+    });
     return next;
   }
 
@@ -5402,7 +5460,7 @@
       const kid = view === "bennett";
       const hint = kid
         ? "Ask on a week card. When Mom or Dad writes back, you can read who replied here."
-        : "When he taps Ask on a week card, it shows up here on every connected phone.";
+        : "When he taps Ask or A little help on a week card, it shows up here.";
       return `<div class="messages-empty">
         <p class="empty">${kid ? "No messages yet." : "No asks from Bennett yet."}</p>
         <p class="messages-empty-hint">${esc(hint)}</p>
@@ -6105,6 +6163,8 @@
     markUnlocked,
     notesFor,
     addNote,
+    promoteHelpAskToInbox,
+    promoteAskThreadToInbox,
     isBennettAsk,
     isParentAuthor,
     isParentReply,
@@ -6260,6 +6320,7 @@
     classIdForWork,
     belongsToClass,
     itemsForClassOnDay,
+    sortWorkOpenFirst,
     looseEventsOnDay,
     classAttentionCount,
     classShortLabel,

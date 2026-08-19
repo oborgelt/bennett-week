@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Parent desk · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=114">
+  <link rel="stylesheet" href="css/theme.css?v=115">
 </head>
 <body class="parent-page">
   <header class="week-head">
@@ -39,23 +39,41 @@
   </header>
   <div class="parent-wrap">
     <p class="draft-flag" id="draft-flag" hidden>This device has a draft. Export JSON to share it or drop achievements.json into the repo.</p>
+    <nav class="admin-tabs" id="parent-tabs" role="tablist" aria-label="Parent desk">
+      <button type="button" class="admin-tab on" data-parent-tab="awards" aria-selected="true">Awards</button>
+      <button type="button" class="admin-tab" data-parent-tab="crew" aria-selected="false">Crew</button>
+      <button type="button" class="admin-tab" data-parent-tab="sounds" aria-selected="false">Sounds</button>
+      <button type="button" class="admin-tab" data-parent-tab="notes" aria-selected="false">Notes</button>
+      <button type="button" class="admin-tab" data-parent-tab="classes" aria-selected="false">Classes</button>
+      <button type="button" class="admin-tab" data-parent-tab="story" aria-selected="false">Story</button>
+      <button type="button" class="admin-tab" data-parent-tab="pack" aria-selected="false">Pack</button>
+    </nav>
+    <div data-parent-panel="notes">
     <p class="messages-pointer">
-      Inbox is now <a href="messages.html">Messages</a> — Bennett’s asks live there, including on Mom’s phone when Connect is on.
+      Inbox is now <a href="messages.html">Messages</a>. Asks and A little help from Bennett land there.
     </p>
-    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 8px">
-      Bennett never sees this catalog, only trophies you award.
-    </p>
+    </div>
+    <div data-parent-panel="crew">
+    <p class="parent-lead">Bennett never sees this catalog, only trophies you award. Pick a teammate to see that library.</p>
+    </div>
+    <div data-parent-panel="awards">
     <div class="parent-actions">
       <button type="button" class="btn primary" id="add">Add streak</button>
       <button type="button" class="btn" id="download-ach">Download achievements.json</button>
+    </div>
+    </div>
+    <div data-parent-panel="pack">
+    <div class="parent-actions">
       <button type="button" class="btn" id="export">Export family pack</button>
       <label class="btn">Import JSON
         <input id="import" type="file" accept="application/json" class="sr-only">
       </label>
       <button type="button" class="btn" id="reset">Reset to repo files</button>
     </div>
+    </div>
 
-    <h2 style="font-size:1rem;margin:18px 0 8px">Characters</h2>
+    <div data-parent-panel="crew">
+    <h2 class="parent-h">Characters</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
       Pick Ace, Riff, Scorch, Deuce, Fuzz, or <strong>Fun / Sounds</strong> to see that library. Crew art is for team story beats.
       Award a streak to unlock a teammate, tool, weapon, ability, outfit, or a library sound/link. After 3 character unlocks, Story is a real page.
@@ -93,15 +111,19 @@
         <button type="button" class="btn" id="attach-media">Attach selected file</button>
       </div>
     </section>
-    <h2 style="font-size:1rem;margin:18px 0 8px">Play a sound when…</h2>
+    </div>
+    <div data-parent-panel="sounds">
+    <h2 class="parent-h">Play a sound when…</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
       Assign a clip or <strong>Shuffle — any library clip</strong> to a moment.
       <strong>I started this</strong> and <strong>Done</strong> are different buttons. Save <strong>Done is clicked</strong> (or Done · that assignment) to hear a clip when work is marked complete.
       <strong>Undo is clicked</strong> plays on every Undo on the site.
       A clip named <strong>Random</strong> is that file, not a surprise pick.
-      Same assignments as Admin. Export the family pack so Mom gets them.
+      Same assignments as Admin. Clips you drop on this PC still need the family pack if they are not shipped files.
     </p>
     <div id="sound-cues"></div>
+    </div>
+    <div data-parent-panel="story">
     <section class="comic-soon" id="parent-comic-soon">
       <h2>Story</h2>
       <p id="parent-story-copy">Parents can always preview. Bennett’s HUD shows Story after three teammates unlock.</p>
@@ -130,6 +152,8 @@
       <button type="button" class="btn primary" id="save-story-note">Save include-in-story note</button>
     </div>
     <div id="ingredients"></div>
+    </div>
+    <div data-parent-panel="crew">
     <section id="char-editor" hidden>
       <h2 id="char-editor-title" style="margin:18px 0 10px;font-size:1.05rem">Edit character</h2>
       <div class="form-grid">
@@ -165,8 +189,10 @@
         <button type="button" class="btn" id="cancel-char">Cancel</button>
       </div>
     </section>
+    </div>
 
-    <h2 style="font-size:1rem;margin:18px 0 8px">Classes</h2>
+    <div data-parent-panel="classes">
+    <h2 class="parent-h">Classes</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
       Standing roster on the lobby and Progress. Name only — no fake assignments or grades.
       S1 ParentVUE already ships (Marching Band through Geometry). Add a later-term class here if the roster changes.
@@ -180,8 +206,10 @@
       <button type="button" class="btn" id="add-class">Add a class</button>
     </div>
     <div id="class-roster"></div>
+    </div>
 
-    <h2 style="font-size:1rem;margin:18px 0 8px">Inbox</h2>
+    <div data-parent-panel="notes">
+    <h2 class="parent-h">Inbox</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">The live home is <a href="messages.html">Messages</a>. This desk copy still lets you edit or delete on Me. Reply with a note on that item.</p>
     <div id="inbox"></div>
 
@@ -216,7 +244,9 @@
       <button type="button" class="btn" id="add-prompt">Add prompt</button>
     </div>
     <div id="pool"></div>
+    </div>
 
+    <div data-parent-panel="awards">
     <section id="editor" hidden>
       <h2 id="editor-title" style="margin:18px 0 10px;font-size:1.05rem">New streak</h2>
       <div class="form-grid">
@@ -306,6 +336,7 @@
       <div class="trophy-order-list" id="trophy-order-list"></div>
     </div>
     <div id="list"></div>
+    </div>
   </div>
   <div class="sheet" id="sheet">
     <div class="sheet-panel" role="dialog" aria-labelledby="sheet-title">
@@ -399,9 +430,9 @@
   }
 }
   </script>
-  <script src="js/build.js?v=114"></script>
-  <script src="js/game.js?v=114"></script>
-  <script src="js/telemetry.js?v=114"></script>
-  <script src="js/parent.js?v=114"></script>
+  <script src="js/build.js?v=115"></script>
+  <script src="js/game.js?v=115"></script>
+  <script src="js/telemetry.js?v=115"></script>
+  <script src="js/parent.js?v=115"></script>
 </body>
 </html>

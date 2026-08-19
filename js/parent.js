@@ -13,6 +13,41 @@
   let selectedCharId = null;
   let selectedLibId = null;
   let pickedTrophy = null;
+  const PARENT_TABS = ["awards", "crew", "sounds", "notes", "classes", "story", "pack"];
+  let parentTab = "awards";
+
+  function applyParentTab() {
+    document.querySelectorAll("[data-parent-panel]").forEach((el) => {
+      el.hidden = el.dataset.parentPanel !== parentTab;
+    });
+    document.querySelectorAll("[data-parent-tab]").forEach((tab) => {
+      const on = tab.dataset.parentTab === parentTab;
+      tab.classList.toggle("on", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+    });
+  }
+
+  function setParentTab(id) {
+    parentTab = PARENT_TABS.indexOf(id) >= 0 ? id : "awards";
+    try { localStorage.setItem("bw-parent-tab", parentTab); } catch (_) {}
+    applyParentTab();
+  }
+
+  function bindParentTabs() {
+    const nav = document.getElementById("parent-tabs");
+    if (!nav || nav.dataset.bound === "1") return;
+    nav.dataset.bound = "1";
+    try {
+      const saved = localStorage.getItem("bw-parent-tab") || "";
+      if (PARENT_TABS.indexOf(saved) >= 0) parentTab = saved;
+    } catch (_) {}
+    nav.addEventListener("click", (e) => {
+      const tab = e.target && e.target.closest ? e.target.closest("[data-parent-tab]") : null;
+      if (!tab) return;
+      setParentTab(tab.dataset.parentTab);
+    });
+    setParentTab(parentTab);
+  }
 
   function hud() {
     const el = document.getElementById("bananas");
@@ -896,6 +931,7 @@
   }
 
   async function boot() {
+    bindParentTabs();
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
     try {
@@ -936,9 +972,15 @@
       persistFamily();
       Game.toast("Preview off. Bennett is back to earned-only on this device.");
     });
-    document.getElementById("add").addEventListener("click", () => openForm(null));
+    document.getElementById("add").addEventListener("click", () => {
+      setParentTab("awards");
+      openForm(null);
+    });
     document.getElementById("cancel").addEventListener("click", closeForm);
-    document.getElementById("add-char").addEventListener("click", () => openCharForm(null));
+    document.getElementById("add-char").addEventListener("click", () => {
+      setParentTab("crew");
+      openCharForm(null);
+    });
     document.getElementById("cancel-char").addEventListener("click", closeCharForm);
     document.getElementById("save-char").addEventListener("click", () => {
       const next = collectChar();
@@ -1030,6 +1072,7 @@
     const pickFun = document.getElementById("pick-fun");
     if (pickFun) {
       pickFun.addEventListener("click", () => {
+        setParentTab("crew");
         selectedCharId = "fun";
         selectedLibId = null;
         renderCharacters();
