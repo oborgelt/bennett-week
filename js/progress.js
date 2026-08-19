@@ -456,13 +456,18 @@
   }
 
   function openWorkEdit(id) {
-    const w = workFromId(id) || feedOf({ id });
-    const found = findClassItem(id);
-    if (!w && !found) return;
-    const title = stripClassPrefix((w && w.title) || (found && found.item && found.item.title) || "");
-    const due = (w && w.due) || (found && found.item && found.item.due) || "";
-    const note = (w && w.note) || (found && found.item && found.item.note) || "";
-    const classId = Game.classIdForWork(w || found.item) || (found && found.cls && found.cls.id) || "";
+    const key = String(id || "").trim();
+    const w = workFromId(key);
+    const found = findClassItem(key);
+    if (!w && !found) {
+      Game.toast("That assignment is not on the board yet.");
+      return;
+    }
+    const src = w || (found && found.item) || {};
+    const title = stripClassPrefix(src.title || "");
+    const due = src.due || "";
+    const note = src.note || "";
+    const classId = Game.classIdForWork(src) || (found && found.cls && found.cls.id) || "";
     openSheet("Edit assignment", `
       ${classSelectHtml(classId)}
       ${editForm([
@@ -482,7 +487,7 @@
         Game.toast("Pick a due date.");
         return;
       }
-      family = Game.updateAssignment(family, seed || baseSeed, id, {
+      family = Game.updateAssignment(family, seed || baseSeed, key, {
         title: nextTitle,
         classId: fieldValue("classId"),
         due: nextDue,
@@ -693,13 +698,6 @@
     document.querySelectorAll(".class-summary-khan a, .class-card .khan-strip a").forEach((a) => {
       a.addEventListener("click", (e) => e.stopPropagation());
     });
-    document.querySelectorAll("[data-edit-work]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        openWorkEdit(btn.dataset.editWork);
-      });
-    });
     document.querySelectorAll("[data-edit]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
@@ -873,6 +871,13 @@
     document.getElementById("close-sheet").addEventListener("click", closeSheet);
     document.getElementById("sheet").addEventListener("click", (e) => {
       if (e.target.id === "sheet") closeSheet();
+    });
+    document.addEventListener("click", (e) => {
+      const edit = e.target && e.target.closest && e.target.closest("[data-edit-work]");
+      if (!edit) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openWorkEdit(edit.getAttribute("data-edit-work"));
     });
     document.addEventListener("bw-site-view", () => {
       if (!pack) return;

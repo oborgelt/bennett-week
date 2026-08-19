@@ -2299,6 +2299,13 @@
     document.getElementById("sheet").addEventListener("click", (e) => {
       if (e.target.id === "sheet") closeSheet();
     });
+    document.addEventListener("click", (e) => {
+      const edit = e.target && e.target.closest && e.target.closest("[data-edit-work]");
+      if (!edit) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openEdit("work:" + edit.getAttribute("data-edit-work"));
+    });
   }
 
   async function boot() {

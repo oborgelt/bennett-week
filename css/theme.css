@@ -871,6 +871,7 @@ body.site-view-kid .class-card-tools {
   align-items: flex-start;
   gap: 8px;
   border-top: 1px solid rgba(255, 182, 200, 0.18);
+  position: relative;
 }
 
 .needs-you-list li:first-child {
@@ -883,6 +884,7 @@ body.site-view-kid .class-card-tools {
   gap: 8px;
   flex: 1 1 auto;
   min-width: 0;
+  overflow: hidden;
   text-align: left;
   padding: 8px 0;
   border: 0;
@@ -896,6 +898,9 @@ body.site-view-kid .class-card-tools {
 .needs-you-edit {
   flex: 0 0 auto;
   margin-top: 8px;
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
 }
 
 .needs-you-list li:first-child .needs-you-row {

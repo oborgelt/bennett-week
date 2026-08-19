@@ -3782,7 +3782,7 @@
       const edit = `<button type="button" class="tiny needs-you-edit" data-edit-work="${esc(w.id)}">Edit</button>`;
       const row = href
         ? `<a class="needs-you-row" href="${esc(href)}">${inner}</a>`
-        : `<button type="button" class="needs-you-row" data-needs-work="${esc(w.id)}" data-needs-class="${esc(cid)}">${inner}</button>`;
+        : `<div class="needs-you-row" role="button" tabindex="0" data-needs-work="${esc(w.id)}" data-needs-class="${esc(cid)}">${inner}</div>`;
       return `<li class="needs-you-item">${row}${edit}</li>`;
     }).join("")}</ul>`;
   }
