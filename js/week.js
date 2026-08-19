@@ -2277,11 +2277,6 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
-    try {
-      const synced = await Game.syncFamilyLive(family);
-      family = synced.family;
-      paintBoardSync(synced);
-    } catch (_) {}
     const signin = Game.maybeAwardSignIn(pack, family);
     family = signin.family;
     if (signin.awarded && signin.achievement) {
@@ -2289,12 +2284,10 @@
     }
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);
-    if (Game.pushLocalLibraryToCloud) library = await Game.pushLocalLibraryToCloud(library);
     if (Game.warmupLibraryAudio) Game.warmupLibraryAudio(library, family);
     baseSeed = await Game.loadProgress();
     syncWeek();
     family = Game.promoteAskThreadToInbox(family, week);
-    if (Game.flushFamilyNotes) family = await Game.flushFamilyNotes(family);
     initSelectedClass();
     renderClassSwitcher();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
@@ -2330,6 +2323,8 @@
         const beforeProgress = JSON.stringify(Game.getProgress ? Game.getProgress() : {});
         const synced = await Game.syncFamilyLive(family);
         family = synced.family;
+        family = Game.promoteAskThreadToInbox(family, week);
+        if (Game.flushFamilyNotes) family = await Game.flushFamilyNotes(family);
         paintBoardSync(synced);
         const after = Game.familySnapshot ? Game.familySnapshot(family) : "";
         const afterProgress = JSON.stringify(Game.getProgress ? Game.getProgress() : {});
@@ -2351,6 +2346,7 @@
         pullFamilyLive();
       }, 25000);
     }
+    pullFamilyLive();
   }
 
   boot();

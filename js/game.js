@@ -4760,7 +4760,6 @@
       termId: row.termId || ""
     });
     queueNotePush(next);
-    next._notesFlush = flushFamilyNotes(next);
     return next;
   }
 
@@ -4797,8 +4796,10 @@
 
   function promoteAskThreadToInbox(family, week) {
     let next = normalizeFamily(family);
-    const work = ((week && week.work) || []);
-    ((getAskThread().messages) || []).forEach((m) => {
+    const work = ((week && week.work) || [])
+      .concat(((next.overlay && next.overlay.week && next.overlay.week.added && next.overlay.week.added.work) || []));
+    const thread = mergeAskThreads(getAskThread(), next.overlay && next.overlay.ask);
+    thread.messages.forEach((m) => {
       if (!m || m.role !== "bennett" || !String(m.text || "").trim()) return;
       const title = String(m.title || "").trim();
       const match = work.find((w) => w && w.title === title) || work.find((w) => w && w.id === title);
@@ -4928,7 +4929,7 @@
   }
 
   function bennettAsks(family) {
-    return ((family && family.notes) || []).filter(isBennettAsk);
+    return ((family && family.notes) || []).filter((n) => isBennettAsk(n) && !n.test);
   }
 
   function unansweredBennettAsks(family) {
@@ -5547,7 +5548,7 @@
       overlaySyncing = false;
     }
     const after = overlayFingerprint(next.overlay);
-    const localNewer = !remote || String(next.overlay.updatedAt || "") > String(remote.updatedAt || "") || after !== overlayFingerprint(remote);
+    const localNewer = !remote || String(next.overlay.updatedAt || "") > String(remote.updatedAt || "");
     let pushed = 0;
     if (localNewer && (next.overlay.updatedAt || after !== overlayFingerprint(emptyOverlay()))) {
       try {
@@ -5588,6 +5589,13 @@
     next = overlay.family;
     const work = await syncFamilyWork(next);
     next = work.family;
+    const beforeAskNotes = (next.notes || []).length;
+    next = promoteAskThreadToInbox(next, {
+      work: ((next.overlay && next.overlay.week && next.overlay.week.added && next.overlay.week.added.work) || [])
+    });
+    if ((next.notes || []).length > beforeAskNotes) {
+      await pushFamilyNotes(next);
+    }
     const missing = !!(notes.missing || progress.missing || overlay.missing || work.missing);
     const offline = !!(notes.offline && progress.offline && overlay.offline && work.offline);
     return {
@@ -5650,7 +5658,7 @@
           <p class="msg-reply-text">${esc(r.text)}</p>
           <p class="msg-stamp">${esc(fmtStamp(r.at))}</p>
         </div>`).join("");
-      const composer = (canEdit && unanswered) ? `
+      const composer = canEdit ? `
         <label class="msg-reply-label">Reply
           <textarea data-reply="${esc(ask.id)}" maxlength="280" rows="3" placeholder="A short answer he will see on that card"></textarea>
         </label>

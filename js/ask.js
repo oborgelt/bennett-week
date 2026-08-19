@@ -79,10 +79,6 @@
   async function boot() {
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
-    try {
-      const synced = await Game.syncFamilyLive(family);
-      family = synced.family;
-    } catch (_) {}
     thread = Game.getAskThread();
     const q = params();
     const classId = (q.get("class") || "").trim();

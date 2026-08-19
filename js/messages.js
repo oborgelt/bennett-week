@@ -67,13 +67,22 @@
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
     const baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
-    const sync = await Game.syncFamilyBoard(family);
-    family = sync.family;
     week = Game.applyWeekOverlay(baseWeek, family);
+    family = Game.promoteAskThreadToInbox(family, week);
     markThisViewerSeen();
     paintLead();
     hud();
-    render(sync);
+    render();
+    try {
+      const sync = await Game.syncFamilyBoard(family);
+      family = sync.family;
+      family = Game.promoteAskThreadToInbox(family, week);
+      if (Game.flushFamilyNotes) family = await Game.flushFamilyNotes(family);
+      week = Game.applyWeekOverlay(baseWeek, family);
+      markThisViewerSeen();
+      hud();
+      render(sync);
+    } catch (_) {}
   }
 
   if (typeof window !== "undefined" && window.addEventListener) {

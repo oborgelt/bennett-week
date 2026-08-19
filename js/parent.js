@@ -934,15 +934,9 @@
     bindParentTabs();
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
-    try {
-      const synced = await Game.syncFamilyBoard(family);
-      family = synced.family;
-      paintBoardSync(synced);
-    } catch (_) {}
     family = Game.maybeAutoPreviewAll(pack, family).family;
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
-    if (Game.pushLocalLibraryToCloud) library = await Game.pushLocalLibraryToCloud(library);
     baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [], notes: [] });
     baseSeed = await Game.loadProgress();
     week = Game.applyWeekOverlay(baseWeek, family);
@@ -1224,6 +1218,20 @@
     renderCues();
     renderClassRoster();
     document.getElementById("draft-flag").hidden = !(Game.usingMomDraft() || Game.usingFamilyDraft() || Game.usingMomCharacters() || Game.usingMomLibrary());
+    (async () => {
+      try {
+        const synced = await Game.syncFamilyBoard(family);
+        family = synced.family;
+        paintBoardSync(synced);
+        week = Game.applyWeekOverlay(baseWeek, family);
+        renderInbox();
+        renderAskInbox();
+        renderCues();
+      } catch (_) {}
+      if (Game.pushLocalLibraryToCloud) {
+        try { library = await Game.pushLocalLibraryToCloud(library); } catch (_) {}
+      }
+    })();
   }
 
   boot();

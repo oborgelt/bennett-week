@@ -786,13 +786,8 @@
   async function boot() {
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
-    try {
-      const synced = await Game.syncFamilyLive(family);
-      family = synced.family;
-    } catch (_) {}
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
-    if (Game.pushLocalLibraryToCloud) library = await Game.pushLocalLibraryToCloud(library);
     progressSeed = await Game.loadProgress();
     termsCatalog = await Game.loadTerms();
     try {
@@ -1048,6 +1043,16 @@
     bindLibraryCats();
     renderLibrary();
     renderIngredients();
+    (async () => {
+      try {
+        const synced = await Game.syncFamilyLive(family);
+        family = synced.family;
+      } catch (_) {}
+      if (Game.pushLocalLibraryToCloud) {
+        try { library = await Game.pushLocalLibraryToCloud(library); } catch (_) {}
+      }
+      renderLibrary();
+    })();
   }
 
   boot();

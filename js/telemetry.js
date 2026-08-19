@@ -85,20 +85,37 @@
   }
 
   async function familySyncRequest(method, body) {
-    const init = {
-      method: method || "POST",
-      headers: { "Content-Type": "application/json" },
-      cache: "no-store"
-    };
-    if (body !== undefined) init.body = JSON.stringify(body);
-    const res = await fetch(FAMILY_SYNC_URL, init);
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || (data && data.error)) {
-      const err = new Error((data && data.error) || ("family-sync " + res.status));
-      err.status = res.status;
+    const ac = typeof AbortController === "function" ? new AbortController() : null;
+    const ms = body && body.audio ? 25000 : 8000;
+    const timer = ac && typeof setTimeout === "function" ? setTimeout(() => {
+      try { ac.abort(); } catch (_) {}
+    }, ms) : null;
+    try {
+      const init = {
+        method: method || "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store"
+      };
+      if (ac) init.signal = ac.signal;
+      if (body !== undefined) init.body = JSON.stringify(body);
+      const res = await fetch(FAMILY_SYNC_URL, init);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || (data && data.error)) {
+        const err = new Error((data && data.error) || ("family-sync " + res.status));
+        err.status = res.status;
+        throw err;
+      }
+      return data;
+    } catch (err) {
+      if (err && (err.name === "AbortError" || err.status === 20)) {
+        const timeout = new Error("timeout");
+        timeout.status = 408;
+        throw timeout;
+      }
       throw err;
+    } finally {
+      if (timer) clearTimeout(timer);
     }
-    return data;
   }
 
   function deviceId() {

@@ -680,10 +680,6 @@
     pack = await Game.loadAchievements() || { currency: Game.currency({}), achievements: [] };
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
-    try {
-      const synced = await Game.syncFamilyBoard(family);
-      family = synced.family;
-    } catch (_) {}
     family = Game.maybeAutoPreviewAll(pack, family).family;
     baseSeed = await Game.loadProgress();
     syncViews();
@@ -696,6 +692,12 @@
       render();
     });
     render();
+    try {
+      const synced = await Game.syncFamilyBoard(family);
+      family = synced.family;
+      syncViews();
+      render();
+    } catch (_) {}
   }
 
   boot();
