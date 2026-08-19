@@ -22,11 +22,17 @@
     previewLocked: "bw-preview-locked",
     signinSeen: "bw-signin-seen",
     siteView: "bw-site-view",
+    session: "bw-session",
     basecampIntro: "bw-basecamp-intro",
     selectedClass: "bw-selected-class"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
+  const LOGIN_USERS = {
+    bennett: { view: "bennett", label: "Bennett", hash: "5530d3d973e15ca3003aa41cc9b2c9396b38d3ac7bf8a2653a1dd328fc01d49a" },
+    mom: { view: "mom", label: "Mom", hash: "e65ccf65df25d3febdca240545e8682bb967ee59b7b522e6cefa071918a4291a" },
+    orin: { view: "me", label: "Dad", hash: "b3bed27696166a7679d16a8308b42e0dd33ed1bd6d29ea76bb14b525058ffca0" }
+  };
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew", "fun"];
   const TEAMMATE_IDS = ["ace", "riff", "scorch", "deuce", "fuzz"];
@@ -3775,6 +3781,199 @@
     }
   }
 
+  function sha256hex(message) {
+    function rotr(n, x) { return (x >>> n) | (x << (32 - n)); }
+    const K = [
+      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+      0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+      0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+      0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+      0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+      0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+      0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+      0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+    ];
+    const bytes = [];
+    const str = String(message || "");
+    for (let i = 0; i < str.length; i++) bytes.push(str.charCodeAt(i) & 0xff);
+    const bitLen = bytes.length * 8;
+    bytes.push(0x80);
+    while ((bytes.length % 64) !== 56) bytes.push(0);
+    bytes.push(0, 0, 0, 0, (bitLen >>> 24) & 0xff, (bitLen >>> 16) & 0xff, (bitLen >>> 8) & 0xff, bitLen & 0xff);
+    let H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    for (let i = 0; i < bytes.length; i += 64) {
+      const w = [];
+      for (let t = 0; t < 16; t++) {
+        w[t] = (bytes[i + t * 4] << 24) | (bytes[i + t * 4 + 1] << 16) | (bytes[i + t * 4 + 2] << 8) | bytes[i + t * 4 + 3];
+      }
+      for (let t = 16; t < 64; t++) {
+        const s0 = rotr(7, w[t - 15]) ^ rotr(18, w[t - 15]) ^ (w[t - 15] >>> 3);
+        const s1 = rotr(17, w[t - 2]) ^ rotr(19, w[t - 2]) ^ (w[t - 2] >>> 10);
+        w[t] = (w[t - 16] + s0 + w[t - 7] + s1) | 0;
+      }
+      let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (let t = 0; t < 64; t++) {
+        const S1 = rotr(6, e) ^ rotr(11, e) ^ rotr(25, e);
+        const ch = (e & f) ^ (~e & g);
+        const temp1 = (h + S1 + ch + K[t] + w[t]) | 0;
+        const S0 = rotr(2, a) ^ rotr(13, a) ^ rotr(22, a);
+        const maj = (a & b) ^ (a & c) ^ (b & c);
+        const temp2 = (S0 + maj) | 0;
+        h = g; g = f; f = e; e = (d + temp1) | 0; d = c; c = b; b = a; a = (temp1 + temp2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    return H.map((x) => ("00000000" + (x >>> 0).toString(16)).slice(-8)).join("");
+  }
+
+  function normalizeLoginUser(value) {
+    const raw = String(value || "").trim().toLowerCase();
+    if (raw === "dad" || raw === "me") return "orin";
+    if (raw === "parent") return "mom";
+    return LOGIN_USERS[raw] ? raw : "";
+  }
+
+  function sessionUser() {
+    try {
+      const raw = localStorage.getItem(KEYS.session);
+      if (!raw) return "";
+      const obj = JSON.parse(raw);
+      return normalizeLoginUser(obj && obj.user);
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function canUsePreviewSwitch(user) {
+    return (user || sessionUser()) === "orin";
+  }
+
+  function defaultViewForUser(user) {
+    const rec = LOGIN_USERS[normalizeLoginUser(user)];
+    return rec ? rec.view : "me";
+  }
+
+  function clampSiteView(view, user) {
+    const who = user || sessionUser();
+    const v = normalizeSiteView(view);
+    if (who === "bennett") return "bennett";
+    if (who === "mom") return "mom";
+    return v;
+  }
+
+  function setSessionUser(user) {
+    const next = normalizeLoginUser(user);
+    if (!next) {
+      try { localStorage.removeItem(KEYS.session); } catch (_) {}
+      applySiteView();
+      return "";
+    }
+    try { localStorage.setItem(KEYS.session, JSON.stringify({ user: next, at: nowIso() })); } catch (_) {}
+    try { localStorage.setItem(KEYS.siteView, defaultViewForUser(next)); } catch (_) {}
+    applySiteView();
+    return next;
+  }
+
+  function logout() {
+    return setSessionUser("");
+  }
+
+  function tryLogin(who, password) {
+    const user = normalizeLoginUser(who);
+    const rec = LOGIN_USERS[user];
+    if (!rec) return null;
+    const pass = String(password || "").trim();
+    if (sha256hex(pass) !== rec.hash) return null;
+    setSessionUser(user);
+    return user;
+  }
+
+  function loginGateHtml() {
+    const whoBtn = (id, label) => `<button type="button" class="login-who-btn" data-login-who="${id}">${esc(label)}</button>`;
+    return `<form id="login-form" class="login-card" autocomplete="on">
+      <h1>Jungle Jam</h1>
+      <p class="login-lead">Who's this?</p>
+      <div class="login-who" role="group" aria-label="Who's this">
+        ${whoBtn("bennett", "Bennett")}${whoBtn("mom", "Mom")}${whoBtn("orin", "Dad")}
+      </div>
+      <label class="login-pass-label" for="login-pass">Password</label>
+      <input id="login-pass" name="password" type="password" autocomplete="current-password">
+      <p id="login-err" class="login-err" hidden></p>
+      <button type="submit" class="btn primary login-go">Enter</button>
+    </form>`;
+  }
+
+  function bindLoginGate(gate) {
+    if (!gate || gate.dataset && gate.dataset.bound === "1") return;
+    if (gate.dataset) gate.dataset.bound = "1";
+    if (!gate.addEventListener) return;
+    gate.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest("[data-login-who]") : null;
+      if (!btn) return;
+      const who = btn.getAttribute("data-login-who");
+      if (gate.dataset) gate.dataset.who = who;
+      const buttons = gate.querySelectorAll ? gate.querySelectorAll("[data-login-who]") : [];
+      Array.from(buttons || []).forEach((el) => {
+        if (!el || !el.classList) return;
+        if (el.classList.toggle) el.classList.toggle("on", el === btn);
+      });
+      const pass = gate.querySelector ? gate.querySelector("#login-pass") : null;
+      if (pass && pass.focus) pass.focus();
+    });
+    const form = gate.querySelector ? gate.querySelector("#login-form") : null;
+    if (form && form.addEventListener) {
+      form.addEventListener("submit", (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const who = (gate.dataset && gate.dataset.who) || "";
+        const passEl = gate.querySelector ? gate.querySelector("#login-pass") : null;
+        const err = gate.querySelector ? gate.querySelector("#login-err") : null;
+        const showErr = (msg) => {
+          if (!err) return;
+          err.hidden = false;
+          err.textContent = msg;
+        };
+        if (!who) {
+          showErr("Pick Bennett, Mom, or Dad first.");
+          return;
+        }
+        if (!tryLogin(who, passEl && passEl.value)) {
+          showErr("That password does not match.");
+          if (passEl) {
+            passEl.value = "";
+            if (passEl.focus) passEl.focus();
+          }
+        }
+      });
+    }
+  }
+
+  function gateLogin() {
+    const user = sessionUser();
+    if (!document.body) return !user;
+    let gate = document.getElementById ? document.getElementById("login-gate") : null;
+    if (user) {
+      if (gate) gate.hidden = true;
+      if (document.body.classList && document.body.classList.remove) {
+        document.body.classList.remove("login-gated");
+      }
+      return false;
+    }
+    if (document.body.classList && document.body.classList.add) {
+      document.body.classList.add("login-gated");
+    }
+    if (!gate) {
+      gate = document.createElement("div");
+      gate.id = "login-gate";
+      gate.className = "login-gate";
+      if (document.body.appendChild) document.body.appendChild(gate);
+      gate.innerHTML = loginGateHtml();
+      bindLoginGate(gate);
+    }
+    gate.hidden = false;
+    return true;
+  }
+
   function normalizeSiteView(value) {
     const raw = String(value || "").trim().toLowerCase();
     return SITE_VIEWS.indexOf(raw) >= 0 ? raw : "me";
@@ -3808,10 +4007,10 @@
     try {
       const stored = localStorage.getItem(KEYS.siteView);
       if (stored != null && String(stored).trim() !== "") {
-        return normalizeSiteView(stored);
+        return clampSiteView(normalizeSiteView(stored));
       }
     } catch (_) {}
-    return siteViewFromRole(telemetryDeviceRole());
+    return clampSiteView(siteViewFromRole(telemetryDeviceRole()));
   }
 
   function audioAllowed() {
@@ -3977,11 +4176,26 @@
     return `<span class="site-view-kicker">Preview</span><div class="site-view-seg">${btn("me", "Me")}${btn("bennett", "Bennett")}${btn("mom", "Mom")}</div>`;
   }
 
+  function sessionChromeHtml(view) {
+    const user = sessionUser();
+    if (!user) return "";
+    if (canUsePreviewSwitch(user)) {
+      return siteViewControlHtml(view) + `<button type="button" class="login-out" data-login-out>Log out</button>`;
+    }
+    return `<button type="button" class="login-out" data-login-out>Not you?</button>`;
+  }
+
   function onSiteViewClick(e) {
+    const out = e.target && e.target.closest ? e.target.closest("[data-login-out]") : null;
+    if (out) {
+      logout();
+      return;
+    }
     const btn = e.target && e.target.closest ? e.target.closest("[data-site-view]") : null;
     if (!btn) return;
     const next = btn.getAttribute("data-site-view");
     if (!next || next === siteView()) return;
+    if (!canUsePreviewSwitch()) return;
     setSiteView(next);
   }
 
@@ -3989,12 +4203,12 @@
     if (!document.querySelectorAll) return null;
     const navs = document.querySelectorAll(".hud-nav");
     if (!navs || !navs.length) return null;
-    // Device role, not the current preview view — Orin must keep the switch on his laptop.
-    const hideSwitch = siteViewFromRole(telemetryDeviceRole()) === "bennett";
+    const user = sessionUser();
+    const hideSwitch = !canUsePreviewSwitch(user);
     let last = null;
     Array.from(navs).forEach((nav) => {
       let box = nav.querySelector ? nav.querySelector(".site-view") : null;
-      if (hideSwitch) {
+      if (!user) {
         if (box) {
           box.innerHTML = "";
           if (nav.removeChild) {
@@ -4009,11 +4223,11 @@
         box = document.createElement("div");
         box.className = "site-view";
         box.setAttribute("role", "group");
-        box.setAttribute("aria-label", "Preview as");
         if (nav.appendChild) nav.appendChild(box);
         if (box.addEventListener) box.addEventListener("click", onSiteViewClick);
       }
-      box.innerHTML = siteViewControlHtml();
+      box.setAttribute("aria-label", hideSwitch ? "Account" : "Preview as");
+      box.innerHTML = sessionChromeHtml();
       last = box;
     });
     return last;
@@ -4063,6 +4277,7 @@
   }
 
   function applySiteView() {
+    gateLogin();
     const view = siteView();
     const hideAdult = siteViewHidesAdult(view);
     if (document.documentElement && document.documentElement.setAttribute) {
@@ -4108,7 +4323,7 @@
   }
 
   function setSiteView(next) {
-    const view = normalizeSiteView(next);
+    const view = clampSiteView(next);
     try { localStorage.setItem(KEYS.siteView, view); } catch (_) {}
     applySiteView();
     return view;
@@ -6059,6 +6274,11 @@
     siteView,
     siteViewFromRole,
     telemetryDeviceRole,
+    sessionUser,
+    setSessionUser,
+    tryLogin,
+    logout,
+    canUsePreviewSwitch,
     setSiteView,
     audioAllowed,
     applySiteView,

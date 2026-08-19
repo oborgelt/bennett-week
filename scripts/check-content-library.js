@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=111/.test(basecampHtml) && /basecamp\.js\?v=111/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=112/.test(basecampHtml) && /basecamp\.js\?v=112/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1186,7 +1186,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=111/.test(weekHtml) && /week\.js\?v=111/.test(weekHtml) && /game\.js\?v=111/.test(weekHtml) && /telemetry\.js\?v=111/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=112/.test(weekHtml) && /week\.js\?v=112/.test(weekHtml) && /game\.js\?v=112/.test(weekHtml) && /telemetry\.js\?v=112/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1233,9 +1233,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=110\b/.test(html), file + " should not still cache-bust as v=110");
-  assert(!/\?v=112\b/.test(html), file + " should not still cache-bust as v=112");
-  assert(/\?v=111/.test(html), file + " should cache-bust v=111");
+  assert(!/\?v=111\b/.test(html), file + " should not still cache-bust as v=111");
+  assert(/\?v=112/.test(html), file + " should cache-bust v=112");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1277,10 +1276,10 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=111/.test(progressHtml) && /theme\.css\?v=111/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=112/.test(progressHtml) && /theme\.css\?v=112/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
-assert(/build:\s*109/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 109");
+assert(/build:\s*110/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 110");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1467,6 +1466,7 @@ assert(parentAce.freshCharacter, "Meet Ace Award is a real unlock");
 const meFinds = Game.progressTrophyListHtml(pack.achievements);
 assert(/Undo award/.test(meFinds) && />Edit</.test(meFinds), "Me progress still has Edit / Undo award");
 localStorage.removeItem("bw-site-view");
+localStorage.removeItem("bw-session");
 
 assert.strictEqual(Game.siteView(), "me", "this laptop defaults to Me");
 assert.strictEqual(Game.siteViewFromRole("bennett"), "bennett");
@@ -1491,9 +1491,30 @@ const undoFn = gameSrc.slice(gameSrc.indexOf("async function playUndoSound"), ga
 assert(!/tablesloud/.test(undoFn) && !/tablesloud\.mp3/.test(undoFn), "playUndoSound must never fall back to tablesloud");
 assert(/undo-click|undo\.wav|SHIPPED_UNDO/.test(undoFn), "playUndoSound falls back to the shipped undo wav");
 const mountFn = gameSrc.slice(gameSrc.indexOf("function mountSiteViewControl"), gameSrc.indexOf("function hideAdultShortcuts"));
-assert(/siteViewFromRole\(\s*telemetryDeviceRole\(\)\s*\)/.test(mountFn), "preview switch hide uses the device telemetry role");
-assert(!/siteView\(\)\s*===\s*["']bennett["']/.test(mountFn), "do not hide the switch from the current preview view");
-assert(/setAttribute\("aria-label", "Preview as"\)/.test(gameSrc), "preview switch is labeled Preview as, not a login");
+assert(/canUsePreviewSwitch/.test(mountFn), "preview switch follows who logged in");
+assert(!/siteViewFromRole\(\s*telemetryDeviceRole\(\)\s*\)/.test(mountFn), "do not hide the switch from the Connect device role");
+assert(/Preview as/.test(gameSrc) && /data-login-out/.test(gameSrc), "Dad keeps Preview as; everyone can log out");
+assert(!/bennettb/.test(gameSrc) && !/"OrinB"/.test(gameSrc) && !/password:\s*"Mom"/.test(gameSrc), "do not store login passwords in plaintext");
+assert.strictEqual(Game.tryLogin("bennett", "nope"), null, "wrong password fails");
+assert.strictEqual(Game.tryLogin("bennett", "bennettb"), "bennett");
+assert.strictEqual(Game.sessionUser(), "bennett");
+assert.strictEqual(Game.siteView(), "bennett");
+assert.strictEqual(Game.setSiteView("me"), "bennett", "Bennett cannot preview Me");
+assert(!Game.canUsePreviewSwitch(), "Bennett has no Preview slider");
+assert.strictEqual(Game.tryLogin("mom", "Mom"), "mom");
+assert.strictEqual(Game.siteView(), "mom");
+assert.strictEqual(Game.setSiteView("bennett"), "mom", "Mom cannot preview Bennett");
+assert(!Game.canUsePreviewSwitch(), "Mom has no Preview slider");
+assert.strictEqual(Game.tryLogin("orin", "OrinB"), "orin");
+assert.strictEqual(Game.siteView(), "me");
+assert(Game.canUsePreviewSwitch(), "Dad keeps the Preview slider");
+assert.strictEqual(Game.setSiteView("bennett"), "bennett");
+assert.strictEqual(Game.setSiteView("mom"), "mom");
+assert.strictEqual(Game.setSiteView("me"), "me");
+Game.logout();
+assert.strictEqual(Game.sessionUser(), "");
+localStorage.removeItem("bw-session");
+localStorage.removeItem("bw-site-view");
 assert(!Game.siteViewHidesAdult("me") && Game.siteViewHidesAdult("bennett") && Game.siteViewHidesAdult("mom"), "Bennett and Mom hide adult chrome");
 assert(Game.shouldGateAdultPage("admin.html", "bennett") && Game.shouldGateAdultPage("parent.html", "mom") && Game.shouldGateAdultPage("refs.html", "bennett"), "kid views bounce adult desks");
 assert(!Game.shouldGateAdultPage("index.html", "bennett") && !Game.shouldGateAdultPage("admin.html", "me"), "Me keeps Admin; kid views keep This Week");
@@ -1755,6 +1776,7 @@ document.querySelectorAll = (sel) => {
   return [];
 };
 const telBefore = store["bw-telemetry"];
+Game.setSessionUser("orin");
 assert.strictEqual(Game.setSiteView("bennett"), "bennett");
 assert.strictEqual(Game.siteView(), "bennett");
 assert.strictEqual(localStorage.getItem("bw-site-view"), "bennett");
@@ -1797,21 +1819,26 @@ assert.strictEqual(Game.playLibraryItem({ id: "honk", kind: "audio", synth: "hon
 store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "bennett" });
 assert.strictEqual(typeof Game.telemetryDeviceRole, "function");
 assert.strictEqual(Game.siteViewFromRole(Game.telemetryDeviceRole()), "bennett");
+Game.setSessionUser("bennett");
 Game.setSiteView("bennett");
-assert.strictEqual(Game.mountSiteViewControl(), null, "mountSiteViewControl omits the switch on a bennett device");
-assert(!hud.querySelector(".site-view"), "bennett device omits site-view HTML");
+const kidSwitch = Game.mountSiteViewControl();
+assert(kidSwitch && /Not you/.test(kidSwitch.innerHTML), "Bennett can log out");
+assert(!/data-site-view="me"/.test(kidSwitch.innerHTML) && !/Preview/.test(kidSwitch.innerHTML), "Bennett has no Preview slider");
 assert(!hud.children.some((c) => /site-view-btn|Preview/.test(c.innerHTML || "")), "bennett phone has no Preview · Me · Bennett · Mom");
 
 store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "orin" });
+Game.setSessionUser("orin");
 Game.setSiteView("bennett");
 const orinSwitch = hud.querySelector(".site-view") || Game.mountSiteViewControl();
-assert(orinSwitch && /data-site-view="me"/.test(orinSwitch.innerHTML) && /data-site-view="bennett"/.test(orinSwitch.innerHTML) && /data-site-view="mom"/.test(orinSwitch.innerHTML), "orin device keeps the switch while previewing Bennett");
+assert(orinSwitch && /data-site-view="me"/.test(orinSwitch.innerHTML) && /data-site-view="bennett"/.test(orinSwitch.innerHTML) && /data-site-view="mom"/.test(orinSwitch.innerHTML), "Dad keeps the switch while previewing Bennett");
 
-store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "parent" });
+Game.setSessionUser("mom");
 const parentSwitch = Game.mountSiteViewControl();
-assert(parentSwitch && /data-site-view="mom"/.test(parentSwitch.innerHTML), "parent device still shows the preview switch");
+assert(parentSwitch && /Not you/.test(parentSwitch.innerHTML), "Mom can log out");
+assert(!/data-site-view="me"/.test(parentSwitch.innerHTML) && !/Preview/.test(parentSwitch.innerHTML), "Mom has no Preview slider");
 
 store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "orin" });
+Game.setSessionUser("orin");
 
 Game.setSiteView("me");
 assert.strictEqual(Game.siteView(), "me");
