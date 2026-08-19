@@ -677,12 +677,18 @@
     else delete week._jjLibrary;
     if (src.ask && typeof src.ask === "object") week._jjAsk = src.ask;
     else delete week._jjAsk;
+    if (src.achievements && typeof src.achievements === "object") week._jjAchievements = src.achievements;
+    else delete week._jjAchievements;
+    if (src.awards && typeof src.awards === "object") week._jjAwards = src.awards;
+    else delete week._jjAwards;
     return {
       family_token: familyToken,
       week,
       progress: src.progress && typeof src.progress === "object" ? src.progress : {},
       library: src.library && typeof src.library === "object" ? src.library : { items: [] },
       ask: src.ask && typeof src.ask === "object" ? src.ask : { messages: [] },
+      achievements: src.achievements && typeof src.achievements === "object" ? src.achievements : { achievements: [] },
+      awards: src.awards && typeof src.awards === "object" ? src.awards : {},
       updated_at: src.updatedAt || src.updated_at || new Date().toISOString()
     };
   }
@@ -693,9 +699,13 @@
     const soundCues = (week._jjSoundCues && typeof week._jjSoundCues === "object") ? week._jjSoundCues : (r.soundCues || {});
     const library = (week._jjLibrary && typeof week._jjLibrary === "object") ? week._jjLibrary : (r.library || { items: [] });
     const ask = (week._jjAsk && typeof week._jjAsk === "object") ? week._jjAsk : (r.ask || { messages: [] });
+    const achievements = (week._jjAchievements && typeof week._jjAchievements === "object") ? week._jjAchievements : (r.achievements || { achievements: [] });
+    const awards = (week._jjAwards && typeof week._jjAwards === "object") ? week._jjAwards : (r.awards || {});
     delete week._jjSoundCues;
     delete week._jjLibrary;
     delete week._jjAsk;
+    delete week._jjAchievements;
+    delete week._jjAwards;
     return {
       family_token: String(r.family_token || ""),
       week,
@@ -703,6 +713,8 @@
       soundCues,
       library,
       ask,
+      achievements,
+      awards,
       updatedAt: r.updated_at || r.updatedAt || ""
     };
   }

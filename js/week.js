@@ -272,8 +272,10 @@
     if (!next || !standingClasses().some((cls) => cls.id === next)) return;
     selectedClassId = next;
     Game.rememberClassId(next);
+    Game.markClassVisit(next);
     renderClassSwitcher();
     refreshCardsInPlace();
+    runUnlocks();
   }
 
   function renderClassSwitcher() {
@@ -2346,9 +2348,12 @@
         const after = Game.familySnapshot ? Game.familySnapshot(family) : "";
         const afterProgress = JSON.stringify(Game.getProgress ? Game.getProgress() : {});
         if (synced.changed || (before && after && before !== after) || beforeProgress !== afterProgress) {
+          const livePack = Game.getMomDraft();
+          if (livePack && Array.isArray(livePack.achievements) && livePack.achievements.length) pack = livePack;
           syncWeek();
           renderClassSwitcher();
           refreshCardsInPlace();
+          runUnlocks();
           hud();
         }
       } catch (_) {}

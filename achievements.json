@@ -129,13 +129,14 @@
     {
       "id": "test-riff-reps",
       "title": "Meet Riff",
-      "description": "Award this to unlock Riff for Bennett. Loading the site does not auto-unlock.",
-      "how": "Parents award this when they want Bennett to meet Riff.",
+      "description": "Opened every class in one day.",
+      "how": "Bennett taps all 8 class chips on This Week inside 24 hours. Save for Bennett pushes the rule. You do not log into his computer.",
       "incentive": "Unlocks Riff",
       "icon": "guitar",
       "reward": 10,
       "rewardCharacter": "riff",
       "rewardUnlock": { "type": "character", "id": "riff", "label": "Riff" },
+      "unlock": { "type": "class_tour", "hours": 24 },
       "streak": { "target": 1, "unit": "time" }
     },
     {

@@ -25,7 +25,8 @@
     session: "bw-session",
     basecampIntro: "bw-basecamp-intro",
     selectedClass: "bw-selected-class",
-    workDisputes: "bw-work-disputes"
+    workDisputes: "bw-work-disputes",
+    classVisits: "bw-class-visits"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -37,6 +38,7 @@
 
   const LIBRARY_GROUPS = ["ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew", "fun"];
   const TEAMMATE_IDS = ["ace", "riff", "scorch", "deuce", "fuzz"];
+  const CLASS_IDS = ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"];
   const WORK_ACTION_BANANAS = 1;
   const ACE_DONE_COUNT = 3;
   const ACE_DONE_ACHIEVEMENT = "ace-three-done";
@@ -301,7 +303,9 @@
       updatedAt: "",
       soundCues: {},
       library: { items: [] },
-      ask: { messages: [] }
+      ask: { messages: [] },
+      achievements: { currency: null, achievements: [], updatedAt: "" },
+      awards: { streaks: {}, characterUnlocks: {}, gearUnlocks: {}, contentUnlocks: {}, unlocks: {}, updatedAt: "" }
     };
   }
 
@@ -420,7 +424,31 @@
       ask: (o.ask && typeof o.ask === "object")
         ? o.ask
         : ((week._jjAsk && typeof week._jjAsk === "object") ? week._jjAsk : { messages: [] }),
+      achievements: normalizeAchievementsPack(o.achievements || week._jjAchievements),
+      awards: normalizeAwardsPack(o.awards || week._jjAwards),
       updatedAt: o.updatedAt || o.updated_at || week.updatedAt || ""
+    };
+  }
+
+  function normalizeAchievementsPack(raw) {
+    const o = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    const list = Array.isArray(o.achievements) ? o.achievements.filter((ach) => ach && ach.id) : [];
+    return {
+      currency: o.currency && typeof o.currency === "object" ? o.currency : null,
+      achievements: list,
+      updatedAt: o.updatedAt || o.updated_at || ""
+    };
+  }
+
+  function normalizeAwardsPack(raw) {
+    const o = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    return {
+      streaks: o.streaks && typeof o.streaks === "object" && !Array.isArray(o.streaks) ? o.streaks : {},
+      characterUnlocks: asUnlockMap(o.characterUnlocks),
+      gearUnlocks: asUnlockMap(o.gearUnlocks),
+      contentUnlocks: asUnlockMap(o.contentUnlocks),
+      unlocks: o.unlocks && typeof o.unlocks === "object" && !Array.isArray(o.unlocks) ? o.unlocks : {},
+      updatedAt: o.updatedAt || o.updated_at || ""
     };
   }
 
@@ -948,12 +976,30 @@
     return fetchJson("week.json", seed);
   }
 
+  let shippedAchievements = null;
+
+  function mergeAchievementUnlocks(pack, shipped) {
+    const base = pack && Array.isArray(pack.achievements) ? pack : { currency: currency(pack), achievements: [] };
+    const byId = {};
+    ((shipped && shipped.achievements) || []).forEach((ach) => {
+      if (ach && ach.id) byId[ach.id] = ach;
+    });
+    return Object.assign({}, base, {
+      achievements: (base.achievements || []).map((ach) => {
+        const live = byId[ach && ach.id];
+        if (live && live.unlock && !(ach && ach.unlock)) return Object.assign({}, ach, { unlock: live.unlock });
+        return ach;
+      })
+    });
+  }
+
   async function loadAchievements() {
     migrateCleanSlate();
     const seed = parseSeed("ach-seed");
     const file = await fetchJson("achievements.json", seed);
+    shippedAchievements = file;
     const draft = getMomDraft();
-    return draft || file || { currency: currency({}), achievements: [] };
+    return mergeAchievementUnlocks(draft || file || { currency: currency({}), achievements: [] }, file);
   }
 
   function defaultCharacters() {
@@ -1549,6 +1595,68 @@
     saveFamily(family);
     if (!overlaySyncing) queueOverlayPush(family);
     return family;
+  }
+
+  function stampAchievementsOnFamily(family, pack) {
+    const next = normalizeFamily(family);
+    next.overlay.achievements = {
+      currency: pack && pack.currency ? pack.currency : currency(pack),
+      achievements: (pack && pack.achievements) || [],
+      updatedAt: nowIso()
+    };
+    stampOverlay(next);
+    saveFamily(next);
+    if (pack) saveMomDraft(pack);
+    if (!overlaySyncing) queueOverlayPush(next);
+    return next;
+  }
+
+  function stampAwardsOnFamily(family) {
+    const next = normalizeFamily(family);
+    next.overlay.awards = {
+      streaks: next.streaks || {},
+      characterUnlocks: Object.assign({}, getCharacterUnlocks(), next.characterUnlocks || {}),
+      gearUnlocks: Object.assign({}, getGearUnlocks(), next.gearUnlocks || {}),
+      contentUnlocks: Object.assign({}, getContentUnlocks(), next.contentUnlocks || {}),
+      unlocks: getUnlocks(),
+      updatedAt: nowIso()
+    };
+    stampOverlay(next);
+    saveFamily(next);
+    if (!overlaySyncing) queueOverlayPush(next);
+    return next;
+  }
+
+  function applyOverlayAchievements(cloud) {
+    const pack = normalizeAchievementsPack(cloud);
+    if (!pack.achievements.length) return getMomDraft();
+    const next = {
+      currency: pack.currency || currency({}),
+      achievements: pack.achievements,
+      updatedAt: pack.updatedAt
+    };
+    saveMomDraft(mergeAchievementUnlocks(next, shippedAchievements));
+    return getMomDraft();
+  }
+
+  function applyOverlayAwards(family, cloud) {
+    const awards = normalizeAwardsPack(cloud);
+    if (!awards.updatedAt && !Object.keys(awards.streaks).length && !Object.keys(awards.characterUnlocks).length) {
+      return normalizeFamily(family);
+    }
+    const next = normalizeFamily(family);
+    next.streaks = Object.assign({}, next.streaks, awards.streaks);
+    next.characterUnlocks = Object.assign({}, next.characterUnlocks, awards.characterUnlocks);
+    next.gearUnlocks = Object.assign({}, next.gearUnlocks, awards.gearUnlocks);
+    next.contentUnlocks = Object.assign({}, next.contentUnlocks, awards.contentUnlocks);
+    saveCharacterUnlocks(Object.assign({}, getCharacterUnlocks(), awards.characterUnlocks));
+    saveGearUnlocks(Object.assign({}, getGearUnlocks(), awards.gearUnlocks));
+    saveContentUnlocks(Object.assign({}, getContentUnlocks(), awards.contentUnlocks));
+    if (awards.unlocks && typeof awards.unlocks === "object") {
+      write(KEYS.unlocks, Object.assign({}, getUnlocks(), awards.unlocks));
+    }
+    saveFamily(next);
+    return next;
   }
 
   async function addDeviceLibraryFile(lib, file, extras) {
@@ -4052,12 +4160,35 @@
     const rule = ach.unlock || {};
     if (rule.type === "easter_egg") return !!(ctx && ctx.eggs && ctx.eggs[rule.egg]);
     if (rule.type === "done_count") return doneAssignmentCount() >= (Number(rule.count) || 0);
+    if (rule.type === "class_tour") return classTourComplete(rule.hours, rule.classIds);
     return false;
   }
 
   function doneAssignmentCount() {
     const all = getProgress();
     return Object.keys(all).filter((id) => !!(all[id] && workState(id).done)).length;
+  }
+
+  function markClassVisit(classId) {
+    const id = String(classId || "").trim();
+    if (!id) return read(KEYS.classVisits, {});
+    const all = read(KEYS.classVisits, {}) || {};
+    all[id] = nowIso();
+    write(KEYS.classVisits, all);
+    return all;
+  }
+
+  function classTourComplete(hours, classIds) {
+    const ids = Array.isArray(classIds) && classIds.length
+      ? classIds.map(String)
+      : CLASS_IDS;
+    const windowMs = Math.max(1, Number(hours) || 24) * 3600 * 1000;
+    const now = Date.now();
+    const visits = read(KEYS.classVisits, {}) || {};
+    return ids.every((id) => {
+      const t = parseStamp(visits[id]);
+      return !!(t && (now - t.getTime()) <= windowMs);
+    });
   }
 
   function applyLiveUnlocks(pack, family, ctx) {
@@ -4152,8 +4283,9 @@
       Object.assign(next, grant.family);
     }
     saveFamily(next);
+    if (!overlaySyncing) stampAwardsOnFamily(next);
     return {
-      family: next,
+      family: getFamilyDraft() || next,
       achievement: ach,
       grantedCharacter: granted || "",
       grantedUnlock: unlock,
@@ -4203,7 +4335,8 @@
     if (was && ach) {
       write(KEYS.bananas, Math.max(0, storedBananas() - bananasOf(ach)));
     }
-    return { family: next, revoked: was, achievement: ach || null, revokedCharacter, revokedGear, revokedContent };
+    if (!overlaySyncing) stampAwardsOnFamily(next);
+    return { family: getFamilyDraft() || next, revoked: was, achievement: ach || null, revokedCharacter, revokedGear, revokedContent };
   }
 
   function recordEgg(egg) {
@@ -5794,9 +5927,29 @@
         : Object.assign({}, local.soundCues, remote.soundCues),
       library: mergeLibrary(local.library, remote.library),
       ask: mergeAskThreads(local.ask, remote.ask),
+      achievements: String((local.achievements && local.achievements.updatedAt) || "") >= String((remote.achievements && remote.achievements.updatedAt) || "")
+        ? local.achievements
+        : remote.achievements,
+      awards: mergeAwardsPack(local.awards, remote.awards),
       updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
     };
     return merged;
+  }
+
+  function mergeAwardsPack(localAwards, remoteAwards) {
+    const local = normalizeAwardsPack(localAwards);
+    const remote = normalizeAwardsPack(remoteAwards);
+    const newerFirst = String(local.updatedAt || "") >= String(remote.updatedAt || "");
+    const a = newerFirst ? local : remote;
+    const b = newerFirst ? remote : local;
+    return {
+      streaks: Object.assign({}, b.streaks, a.streaks),
+      characterUnlocks: Object.assign({}, b.characterUnlocks, a.characterUnlocks),
+      gearUnlocks: Object.assign({}, b.gearUnlocks, a.gearUnlocks),
+      contentUnlocks: Object.assign({}, b.contentUnlocks, a.contentUnlocks),
+      unlocks: Object.assign({}, b.unlocks, a.unlocks),
+      updatedAt: a.updatedAt || b.updatedAt
+    };
   }
 
   function overlayFingerprint(overlay) {
@@ -5806,7 +5959,9 @@
       progress: o.progress,
       soundCues: o.soundCues,
       library: ((o.library && o.library.items) || []).map((item) => [item.id, item.url || "", item.path || ""]),
-      ask: ((o.ask && o.ask.messages) || []).map((m) => m.id)
+      ask: ((o.ask && o.ask.messages) || []).map((m) => m.id),
+      achievements: ((o.achievements && o.achievements.achievements) || []).map((ach) => ach.id),
+      awards: Object.keys((o.awards && o.awards.characterUnlocks) || {})
     });
   }
 
@@ -5834,6 +5989,24 @@
     packed.soundCues = asCueMap(next.soundCues);
     packed.library = libraryCatalog(getMomLibrary() || packed.library || { items: [] });
     packed.ask = normalizeAskThread(getAskThread());
+    const draft = getMomDraft();
+    if (draft && Array.isArray(draft.achievements) && draft.achievements.length) {
+      packed.achievements = {
+        currency: draft.currency || packed.achievements.currency,
+        achievements: draft.achievements,
+        updatedAt: packed.achievements.updatedAt || draft.updatedAt || next.overlay.updatedAt || ""
+      };
+    }
+    packed.awards = packed.awards && packed.awards.updatedAt
+      ? packed.awards
+      : {
+        streaks: next.streaks || {},
+        characterUnlocks: Object.assign({}, getCharacterUnlocks(), next.characterUnlocks || {}),
+        gearUnlocks: Object.assign({}, getGearUnlocks(), next.gearUnlocks || {}),
+        contentUnlocks: Object.assign({}, getContentUnlocks(), next.contentUnlocks || {}),
+        unlocks: getUnlocks(),
+        updatedAt: packed.awards && packed.awards.updatedAt || ""
+      };
     return packed;
   }
 
@@ -5870,6 +6043,8 @@
         next.soundCues = asCueMap(next.overlay.soundCues);
         applyOverlayLibrary(next.overlay.library);
         applyOverlayAsk(next.overlay.ask);
+        applyOverlayAchievements(next.overlay.achievements);
+        Object.assign(next, applyOverlayAwards(next, next.overlay.awards));
         saveFamily(next);
       }
     } finally {
@@ -6401,7 +6576,7 @@
     { id: "signin-bennett", title: "Signed in", reward: 10, rewardCharacter: "bennett", rewardUnlock: { type: "character", id: "bennett", label: "Bennett" } },
     { id: "test-bennett-showup", title: "Meet Bennett", reward: 10, rewardCharacter: "bennett", rewardUnlock: { type: "character", id: "bennett", label: "Bennett" } },
     { id: "test-ace-closer", title: "Meet Ace", reward: 10, rewardCharacter: "ace", rewardUnlock: { type: "character", id: "ace", label: "Ace" } },
-    { id: "test-riff-reps", title: "Meet Riff", reward: 10, rewardCharacter: "riff", rewardUnlock: { type: "character", id: "riff", label: "Riff" } },
+    { id: "test-riff-reps", title: "Meet Riff", reward: 10, rewardCharacter: "riff", rewardUnlock: { type: "character", id: "riff", label: "Riff" }, unlock: { type: "class_tour", hours: 24 } },
     { id: "test-scorch-recover", title: "Meet Scorch", reward: 10, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" } },
     { id: "test-deuce-return", title: "Meet Deuce", reward: 10, rewardCharacter: "deuce", rewardUnlock: { type: "character", id: "deuce", label: "Deuce" } },
     { id: "test-fuzz-unplugged", title: "Meet Fuzz", reward: 10, rewardCharacter: "fuzz", rewardUnlock: { type: "character", id: "fuzz", label: "Fuzz" } },
@@ -6563,6 +6738,14 @@
     usingMomDraft,
     getMomDraft,
     saveMomDraft,
+    stampLibraryOnFamily,
+    stampAchievementsOnFamily,
+    stampAwardsOnFamily,
+    applyOverlayAchievements,
+    applyOverlayAwards,
+    markClassVisit,
+    classTourComplete,
+    CLASS_IDS,
     clearMomDraft,
     usingMomCharacters,
     getMomCharacters,
@@ -6702,6 +6885,7 @@
     syncFamilyProgress,
     syncFamilyWork,
     syncFamilyOverlay,
+    pushFamilyOverlay,
     syncFamilyLive,
     syncFamilyBoard,
     mergeWeekOverlay,

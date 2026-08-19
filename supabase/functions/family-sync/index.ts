@@ -107,6 +107,8 @@ function mapOverlay(input: Record<string, unknown>, family: string) {
   const progress = input.progress && typeof input.progress === "object" ? input.progress : {};
   if (input.library && typeof input.library === "object") week._jjLibrary = input.library;
   if (input.ask && typeof input.ask === "object") week._jjAsk = input.ask;
+  if (input.achievements && typeof input.achievements === "object") week._jjAchievements = input.achievements;
+  if (input.awards && typeof input.awards === "object") week._jjAwards = input.awards;
   return {
     family_token: family,
     week,

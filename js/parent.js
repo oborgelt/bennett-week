@@ -83,13 +83,20 @@
 
   function persistAch() {
     Game.saveMomDraft(pack);
+    family = Game.stampAchievementsOnFamily(family, pack);
+    family = Game.stampAwardsOnFamily(family);
     renderAchievements();
     renderTrophyOrder();
     renderCharacters();
     fillRewardSelect();
     fillRewardContent();
     hud();
-    Game.toast("Saved on this device. Export JSON to share with the other parent.");
+    Game.pushFamilyOverlay(family).then((sync) => {
+      if (sync && sync.pushed) Game.toast("Live for Bennett. He can earn this on This Week.");
+      else Game.toast("Saved here. Couldn't sync. Try again.");
+    }).catch(() => {
+      Game.toast("Saved here. Couldn't sync. Try again.");
+    });
   }
 
   function persistChars() {
@@ -587,7 +594,7 @@
         Game.celebrate(result.achievement, pack, library);
         if (result.freshCharacter) {
           const ch = findChar(result.grantedCharacter);
-          Game.toast((ch ? Game.characterLabel(ch) : "Character") + " unlocked for Bennett.");
+          Game.toast((ch ? Game.characterLabel(ch) : "Character") + " unlocked for Bennett. He sees it next time he opens Jungle Jam.");
         }
         if (result.freshGear && result.grantedUnlock) {
           Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for the story.");
@@ -605,7 +612,7 @@
     list.querySelectorAll("[data-revoke]").forEach((b) => b.addEventListener("click", () => {
       const result = Game.revokeAchievement(pack, family, b.dataset.revoke);
       family = result.family;
-      Game.toast("Award undone. Bennett’s trophy room updates on this device.");
+      Game.toast("Award undone. Bennett sees that next time he opens Jungle Jam.");
       persistFamily();
     }));
   }
@@ -1237,6 +1244,9 @@
         family = synced.family;
         paintBoardSync(synced);
         week = Game.applyWeekOverlay(baseWeek, family);
+        const livePack = Game.getMomDraft();
+        if (livePack && Array.isArray(livePack.achievements) && livePack.achievements.length) pack = livePack;
+        renderAchievements();
         renderInbox();
         renderAskInbox();
         renderCues();
