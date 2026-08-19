@@ -575,7 +575,7 @@
       family = result.family;
       persistFamily();
       if (result.achievement) {
-        Game.celebrate(result.achievement, pack);
+        Game.celebrate(result.achievement, pack, library);
         if (result.freshCharacter) {
           const ch = findChar(result.grantedCharacter);
           Game.toast((ch ? Game.characterLabel(ch) : "Character") + " unlocked for Bennett.");
@@ -584,10 +584,9 @@
           Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for the story.");
         }
         if (result.freshContent && result.grantedUnlock) {
-          const item = Game.libraryItem(library, result.grantedUnlock.id);
           Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for Bennett.");
-          if (item) Game.playContentReward(item);
-        } else {
+        }
+        if (!Game.rewardMediaItem(result.achievement, library)) {
           Game.playSoundCue(family, library, "streak-award");
         }
       } else {
@@ -910,8 +909,13 @@
     }
     if (rewardType !== "content") {
       const media = document.getElementById("reward-media").value || "";
-      if (media) next.rewardMedia = media;
-      else delete next.rewardMedia;
+      if (media) {
+        next.rewardMedia = media;
+        const item = Game.libraryItem(library, media);
+        if (!next.rewardUnlock && item && Game.isGatedLibraryItem(item)) {
+          next.rewardUnlock = { type: "content", id: item.id, label: item.label };
+        }
+      } else delete next.rewardMedia;
     }
     return next;
   }

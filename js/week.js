@@ -225,7 +225,7 @@
       ...(extra || {})
     });
     family = result.family;
-    result.fresh.forEach((ach) => Game.celebrate(ach, pack));
+    result.fresh.forEach((ach) => Game.celebrate(ach, pack, library));
     if (roster) Game.maybePlayUnlockCelebration(roster);
     hud();
     if (document.getElementById("shelf").classList.contains("open")) renderShelf();
@@ -961,10 +961,9 @@
   }
 
   function contentPlay(ach) {
-    const unlock = Game.rewardUnlockOf(ach);
-    if (!unlock || unlock.type !== "content") return "";
-    const item = Game.libraryItem(library, unlock.id);
+    const item = Game.rewardMediaItem ? Game.rewardMediaItem(ach, library) : null;
     if (!item || !Game.canPlayLibraryItem(item)) return "";
+    if (!(item.kind === "audio" || item.synth || item.kind === "link")) return "";
     return `<a class="trophy-plaque-go" href="#" data-play-content="${Game.esc(item.id)}">Play</a>`;
   }
 
@@ -982,6 +981,11 @@
   }
 
   function trophyArt(ach) {
+    const media = Game.rewardMediaItem ? Game.rewardMediaItem(ach, library) : null;
+    if (media && media.kind === "image") {
+      const src = Game.librarySrc(media) || Game.libraryThumb(media);
+      if (src) return src;
+    }
     const unlock = Game.rewardUnlockOf(ach);
     if (unlock && unlock.type && unlock.type !== "content" && unlock.type !== "character") {
       const item = Game.libraryItem(library, unlock.id) || Game.gearLibraryItem(library, unlock.id);

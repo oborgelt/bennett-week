@@ -1924,6 +1924,26 @@
     return 0;
   }
 
+  function rewardMediaId(ach) {
+    if (ach && ach.rewardMedia) return String(ach.rewardMedia);
+    const unlock = rewardUnlockOf(ach);
+    if (unlock && unlock.type === "content") return String(unlock.id || "");
+    return "";
+  }
+
+  function rewardMediaItem(ach, lib) {
+    const id = rewardMediaId(ach);
+    return id ? libraryItem(lib, id) : null;
+  }
+
+  function playAwardMedia(ach, lib) {
+    const item = rewardMediaItem(ach, lib);
+    if (!item) return false;
+    if (item.kind === "audio" || item.synth) return playLibraryItem(item);
+    if (item.kind === "link") return playContentReward(item);
+    return false;
+  }
+
   function rewardUnlockOf(ach) {
     if (!ach) return null;
     const obj = (ach.rewardUnlock && typeof ach.rewardUnlock === "object")
@@ -3795,7 +3815,10 @@
     }
     const next = normalizeFamily(family);
     const st = next.streaks[id] || { count: 0 };
-    const unlock = rewardUnlockOf(ach) || (st.grantedUnlock && typeof st.grantedUnlock === "object" ? st.grantedUnlock : null);
+    let unlock = rewardUnlockOf(ach) || (st.grantedUnlock && typeof st.grantedUnlock === "object" ? st.grantedUnlock : null);
+    if (!unlock && ach.rewardMedia) {
+      unlock = { type: "content", id: String(ach.rewardMedia), label: String(ach.rewardMedia) };
+    }
     const granted = (unlock && unlock.type === "character" && unlock.id) || st.grantedCharacter || "";
     next.streaks[id] = Object.assign({}, st, {
       awarded: true,
@@ -4546,7 +4569,7 @@
     }
   }
 
-  function celebrate(ach, pack) {
+  function celebrate(ach, pack, lib) {
     const unlock = rewardUnlockOf(ach);
     const bennettWelcome = !!(ach && (
       ach.id === SIGNIN_ACHIEVEMENT
@@ -4573,6 +4596,7 @@
     const gear = unlock && unlock.type !== "character" && unlock.type !== "content" ? " · " + (unlock.label || unlock.type) + " unlocked" : "";
     toast((ach.title || "Achievement") + " unlocked!" + prize + extra + game + mate + content + gear);
     confetti();
+    playAwardMedia(ach, lib);
   }
 
   function downloadJson(filename, obj) {
@@ -6434,6 +6458,9 @@
     maybeAutoPreviewAll,
     bananasOf,
     rewardUnlockOf,
+    rewardMediaId,
+    rewardMediaItem,
+    playAwardMedia,
     rewardCharacterId,
     getGearUnlocks,
     alreadyUnlockedGear,
