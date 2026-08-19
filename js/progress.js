@@ -789,8 +789,9 @@
   function renderNeedsYouPane() {
     const host = document.getElementById("needs-you");
     if (!host) return;
-    const list = Game.needsYouListHtml(week, new Date(), { empty: true });
-    host.innerHTML = `<h2>Needs you</h2>${list}`;
+    const list = Game.needsYouSectionHtml(week, new Date(), { empty: true });
+    host.innerHTML = list;
+    host.classList.toggle("collapsed", Game.needsYouCollapsed());
     host.querySelectorAll("[data-needs-work]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const row = document.getElementById("work-" + btn.dataset.needsWork);
@@ -865,6 +866,7 @@
     pack = await Game.loadAchievements() || { currency: Game.currency({}), achievements: [] };
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    family = Game.ensureReflectionPool(family);
     family = Game.maybeAutoPreviewAll(pack, family).family;
     baseSeed = await Game.loadProgress();
     syncViews();

@@ -841,6 +841,7 @@ body.site-view-kid .class-card-tools {
 
 .needs-you h2,
 .needs-you-pane h2,
+.needs-you-toggle-title,
 .grades-pane h2,
 .contact-pane h2,
 .checkins-pane h2 {
@@ -849,6 +850,38 @@ body.site-view-kid .class-card-tools {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #ffb6c8;
+}
+
+.needs-you-toggle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  min-height: 44px;
+  text-align: left;
+}
+
+.needs-you-toggle-title {
+  margin: 0;
+}
+
+.needs-you-toggle-hint {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.needs-you.collapsed .needs-you-body,
+.needs-you-pane.collapsed .needs-you-body {
+  display: none;
 }
 
 .grades-pane h2,
@@ -2705,6 +2738,12 @@ body.progress-page .peek-monkey {
 .hud-bar .progress-tagline,
 .progress-hud .progress-tagline {
   display: none;
+}
+
+.checkin-today {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 0.9rem;
 }
 
 .checkin-list li {

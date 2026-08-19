@@ -222,6 +222,7 @@
       week,
       eggs: Game.getEggs(),
       viewedEvents,
+      classIds: standingClasses().map((cls) => cls.id),
       ...(extra || {})
     });
     family = result.family;
@@ -264,7 +265,10 @@
   function initSelectedClass() {
     const days = daysFromToday();
     selectedClassId = Game.pickClassId(standingClasses(), week, days, Game.rememberedClassId());
-    if (selectedClassId) Game.rememberClassId(selectedClassId);
+    if (selectedClassId) {
+      Game.rememberClassId(selectedClassId);
+      Game.markClassVisit(selectedClassId);
+    }
   }
 
   function selectClass(id) {
@@ -311,9 +315,10 @@
   function renderNeedsYou() {
     const host = document.getElementById("needs-you");
     if (!host) return;
-    const html = Game.needsYouListHtml(week, new Date(), { link: "progress.html" });
+    const html = Game.needsYouSectionHtml(week, new Date(), { link: "progress.html" });
     host.hidden = !html;
-    host.innerHTML = html ? `<h2>Needs you</h2>${html}` : "";
+    host.classList.toggle("collapsed", !!(html && Game.needsYouCollapsed()));
+    host.innerHTML = html || "";
   }
 
   function workButtons(w) {
@@ -577,16 +582,15 @@
   }
 
   function todaysPrompt() {
-    const pool = (family.reflections && family.reflections.pool) || [];
-    if (!pool.length) return null;
-    const key = ymd(todayInChicago());
-    return pool[hashDay(key) % pool.length];
+    return Game.todaysReflectionPrompt(family);
   }
 
   function todaysAnswer(prompt) {
+    if (!prompt) return null;
     const key = ymd(todayInChicago());
     return ((family.reflections && family.reflections.answers) || []).find((a) => {
-      return a.promptId === prompt.id && (a.at || "").slice(0, 10) === key;
+      const samePrompt = a.promptId === prompt.id || (!a.promptId && a.prompt === prompt.text);
+      return samePrompt && Game.stampChicagoYmd(a.at) === key;
     }) || null;
   }
 
@@ -595,24 +599,34 @@
     const prompt = todaysPrompt();
     if (!prompt) return "";
     const answer = todaysAnswer(prompt);
+    const kid = Game.siteViewHidesAdult();
+    const promptLine = `${prompt.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(prompt.text)}`;
     if (answer) {
       return `
         <section class="reflect span-all">
           <h3>Quick check-in</h3>
           <div class="item">
-            <div class="title">${prompt.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(prompt.text)}</div>
+            <div class="title">${promptLine}</div>
             <div class="entry-tools">${Game.entryButtons("prompt:" + prompt.id, "prompt:" + prompt.id)}</div>
           </div>
           <div class="item">
-            <div class="meta">${answer.test ? '<span class="test-tag">TEST</span> ' : ""}You said: ${Game.esc(answer.text)}</div>
+            <div class="meta">${answer.test ? '<span class="test-tag">TEST</span> ' : ""}${kid ? "You said" : "Bennett said"}: ${Game.esc(answer.text)}</div>
             <div class="entry-tools">${Game.entryButtons("answer:" + answer.id, "answer:" + answer.id)}</div>
           </div>
+        </section>`;
+    }
+    if (!kid) {
+      return `
+        <section class="reflect span-all">
+          <h3>Quick check-in</h3>
+          <p>${promptLine}</p>
+          <p class="meta">Bennett answers this on his screen. It lands in Progress Check-ins and Messages.</p>
         </section>`;
     }
     return `
       <section class="reflect span-all">
         <h3>Quick check-in</h3>
-        <p>${prompt.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(prompt.text)}</p>
+        <p>${promptLine}</p>
         <div class="entry-tools">${Game.entryButtons("prompt:" + prompt.id, "prompt:" + prompt.id)}</div>
         <div class="reflect-row">
           <input id="reflect-text" maxlength="280" placeholder="A sentence or two" autocomplete="off">
@@ -716,25 +730,65 @@
 
     bindBoardRoot(track);
     renderLaterBoard();
+    bindReflectComposer();
+  }
+
+  function sendReflect() {
+    const prompt = todaysPrompt();
+    const box = document.getElementById("reflect-text");
+    const text = ((box && box.value) || "").trim();
+    if (!prompt || !text) {
+      Game.toast("Write a sentence or two first.");
+      return;
+    }
+    family = Game.addReflectionAnswer(family, {
+      promptId: prompt.id,
+      prompt: prompt.text,
+      text,
+      test: !!prompt.test
+    });
+    Game.familySavedToast("Sent. Mom and Dad can read it.");
+    refreshCardsInPlace();
+  }
+
+  function bindReflectComposer() {
     const send = document.getElementById("reflect-send");
-    if (send) {
-      send.addEventListener("click", () => {
-        const prompt = todaysPrompt();
-        const text = (document.getElementById("reflect-text").value || "").trim();
-        if (!prompt || !text) {
-          Game.toast("Write a sentence or two first.");
-          return;
-        }
-        family = Game.addReflectionAnswer(family, {
-          promptId: prompt.id,
-          prompt: prompt.text,
-          text,
-          test: !!prompt.test
-        });
-        Game.familySavedToast("Sent. Mom and Dad can read it.");
-        refreshCardsInPlace();
+    const box = document.getElementById("reflect-text");
+    if (send) send.addEventListener("click", sendReflect);
+    if (box) {
+      box.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        sendReflect();
       });
     }
+  }
+
+  function captureReflectDraft() {
+    const el = document.getElementById("reflect-text");
+    if (!el) return null;
+    return {
+      value: el.value,
+      focused: document.activeElement === el,
+      start: el.selectionStart,
+      end: el.selectionEnd
+    };
+  }
+
+  function restoreReflectDraft(draft) {
+    if (!draft) return;
+    const el = document.getElementById("reflect-text");
+    if (!el) return;
+    el.value = draft.value || "";
+    if (draft.focused) {
+      el.focus();
+      try { el.setSelectionRange(draft.start, draft.end); } catch (_) {}
+    }
+  }
+
+  function composingCheckin() {
+    const el = document.getElementById("reflect-text");
+    return !!(el && (document.activeElement === el || String(el.value || "").length));
   }
 
   function laterWeekStart(ymdStr) {
@@ -889,10 +943,12 @@
 
   function refreshCardsInPlace() {
     const saved = captureBoardScroll();
+    const draft = captureReflectDraft();
     renderClassSwitcher();
     renderNeedsYou();
     renderCards();
     restoreBoardScroll(saved);
+    restoreReflectDraft(draft);
   }
 
   function syncChrome() {
@@ -2314,6 +2370,7 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    family = Game.ensureReflectionPool(family);
     const signin = Game.maybeAwardSignIn(pack, family);
     family = signin.family;
     if (signin.awarded && signin.achievement) {
@@ -2357,11 +2414,13 @@
     async function pullFamilyLive() {
       if (!family) return;
       try {
+        const composing = composingCheckin();
         const before = Game.familySnapshot ? Game.familySnapshot(family) : "";
         const beforeProgress = JSON.stringify(Game.getProgress ? Game.getProgress() : {});
         const synced = await Game.syncFamilyLive(family);
         family = synced.family;
         family = Game.promoteAskThreadToInbox(family, week);
+        family = Game.ensureReflectionPool(family);
         if (Game.flushFamilyNotes) family = await Game.flushFamilyNotes(family);
         paintBoardSync(synced);
         const after = Game.familySnapshot ? Game.familySnapshot(family) : "";
@@ -2371,7 +2430,7 @@
           if (livePack && Array.isArray(livePack.achievements) && livePack.achievements.length) pack = livePack;
           syncWeek();
           renderClassSwitcher();
-          refreshCardsInPlace();
+          if (!composing) refreshCardsInPlace();
           runUnlocks();
           hud();
         }

@@ -26,7 +26,8 @@
     basecampIntro: "bw-basecamp-intro",
     selectedClass: "bw-selected-class",
     workDisputes: "bw-work-disputes",
-    classVisits: "bw-class-visits"
+    classVisits: "bw-class-visits",
+    needsYouCollapsed: "bw-needs-you-collapsed"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -310,6 +311,12 @@
     };
   }
 
+  const DEFAULT_REFLECTION_POOL = [
+    { id: "r-easiest", text: "Which class felt easiest today?" },
+    { id: "r-teacher", text: "Name one thing a teacher did that helped" },
+    { id: "r-weird", text: "Anything feel weird or too fast?" }
+  ];
+
   function asStringList(value) {
     return Array.isArray(value) ? value.filter((id) => id != null && id !== "").map(String) : [];
   }
@@ -486,6 +493,27 @@
       answers: mergeReflectionList(local.answers, remote.answers).sort((a, b) => String(a.at || "").localeCompare(String(b.at || ""))),
       updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
     };
+  }
+
+  function ensureReflectionPool(family) {
+    const next = normalizeFamily(family);
+    if (next.reflections.pool.length) return next;
+    next.reflections.pool = DEFAULT_REFLECTION_POOL.map((row) => Object.assign({}, row));
+    return stampReflectionsOnFamily(next);
+  }
+
+  function stampChicagoYmd(iso) {
+    const d = parseStamp(iso);
+    return d ? chicagoYmd(d) : String(iso || "").slice(0, 10);
+  }
+
+  function todaysReflectionPrompt(family) {
+    const pool = ((family && family.reflections && family.reflections.pool) || []).filter((row) => row && row.id && row.text);
+    if (!pool.length) return DEFAULT_REFLECTION_POOL[0];
+    const key = chicagoYmd();
+    let h = 0;
+    for (let i = 0; i < key.length; i += 1) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+    return pool[h % pool.length];
   }
 
   function normalizeAchievementsPack(raw) {
@@ -1094,17 +1122,28 @@
 
   function mergeAchievementUnlocks(pack, shipped) {
     const base = pack && Array.isArray(pack.achievements) ? pack : { currency: currency(pack), achievements: [] };
+    const shippedList = (shipped && shipped.achievements) || [];
     const byId = {};
-    ((shipped && shipped.achievements) || []).forEach((ach) => {
+    shippedList.forEach((ach) => {
       if (ach && ach.id) byId[ach.id] = ach;
     });
-    return Object.assign({}, base, {
-      achievements: (base.achievements || []).map((ach) => {
-        const live = byId[ach && ach.id];
-        if (live && live.unlock && !(ach && ach.unlock)) return Object.assign({}, ach, { unlock: live.unlock });
-        return ach;
-      })
+    const seen = {};
+    const achievements = (base.achievements || []).map((ach) => {
+      if (ach && ach.id) seen[ach.id] = true;
+      const live = byId[ach && ach.id];
+      if (!live) return ach;
+      const next = Object.assign({}, ach);
+      if (live.unlock && !next.unlock) next.unlock = live.unlock;
+      if (live.rewardCharacter && !next.rewardCharacter) next.rewardCharacter = live.rewardCharacter;
+      if (live.rewardUnlock && !next.rewardUnlock) next.rewardUnlock = live.rewardUnlock;
+      return next;
     });
+    shippedList.forEach((ach) => {
+      if (!ach || !ach.id || seen[ach.id] || !ach.unlock) return;
+      achievements.push(ach);
+      seen[ach.id] = true;
+    });
+    return Object.assign({}, base, { achievements });
   }
 
   async function loadAchievements() {
@@ -1302,6 +1341,14 @@
     if (!id) return;
     const seen = getCharacterSeen();
     seen[id] = Date.now();
+    write(KEYS.characterSeen, seen);
+  }
+
+  function unmarkCharacterSeen(id) {
+    if (!id) return;
+    const seen = getCharacterSeen();
+    if (!seen[id]) return;
+    delete seen[id];
     write(KEYS.characterSeen, seen);
   }
 
@@ -3395,13 +3442,17 @@
   }
 
   function checkinsListHtml(family) {
+    const prompt = todaysReflectionPrompt(family);
+    const today = prompt
+      ? `<p class="checkin-today">Today: ${esc(prompt.text)}</p>`
+      : "";
     const answers = ((family && family.reflections && family.reflections.answers) || []).slice()
       .filter((a) => a && String(a.text || "").trim())
       .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
     if (!answers.length) {
-      return `<p class="empty">Answers from the check-in on This Week show up here. Mom and Dad see them. Story can fold them into comics later.</p>`;
+      return `${today}<p class="empty">Bennett’s answers from This Week show up here. Mom and Dad both see this log.</p>`;
     }
-    return `<ul class="checkin-list">${answers.map((a) => `
+    return `${today}<ul class="checkin-list">${answers.map((a) => `
       <li>
         <p class="checkin-prompt">${esc(a.prompt || "Quick check-in")}</p>
         <p class="checkin-text">${esc(a.text)}</p>
@@ -3785,6 +3836,55 @@
         : `<div class="needs-you-row" role="button" tabindex="0" data-needs-work="${esc(w.id)}" data-needs-class="${esc(cid)}">${inner}</div>`;
       return `<li class="needs-you-item">${row}${edit}</li>`;
     }).join("")}</ul>`;
+  }
+
+  function needsYouCollapsed() {
+    try {
+      return read(KEYS.needsYouCollapsed, false) === true || read(KEYS.needsYouCollapsed, "") === "1";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function setNeedsYouCollapsed(on) {
+    write(KEYS.needsYouCollapsed, !!on);
+    return !!on;
+  }
+
+  function needsYouSectionHtml(week, now, opts) {
+    const clock = now || new Date();
+    const rows = needsYouWork(week, clock);
+    const list = needsYouListHtml(week, clock, opts);
+    if (!list && !(opts && opts.empty)) return "";
+    const collapsed = needsYouCollapsed();
+    const count = rows.length;
+    const hint = collapsed ? (count ? "Show " + count : "Show") : "Hide";
+    return `
+      <button type="button" class="needs-you-toggle" data-needs-you-toggle aria-expanded="${collapsed ? "false" : "true"}">
+        <span class="needs-you-toggle-title">Needs you</span>
+        <span class="needs-you-toggle-hint">${esc(hint)}</span>
+      </button>
+      <div class="needs-you-body"${collapsed ? " hidden" : ""}>${list}</div>`;
+  }
+
+  function bindNeedsYouToggle() {
+    if (typeof document === "undefined" || !document.addEventListener) return;
+    if (document.documentElement && document.documentElement.dataset.needsYouToggleBound === "1") return;
+    if (document.documentElement) document.documentElement.dataset.needsYouToggleBound = "1";
+    document.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest && e.target.closest("[data-needs-you-toggle]");
+      if (!btn) return;
+      e.preventDefault();
+      const collapsed = setNeedsYouCollapsed(!needsYouCollapsed());
+      const host = (btn.closest && (btn.closest("#needs-you") || btn.closest(".needs-you") || btn.closest(".needs-you-pane"))) || btn.parentNode;
+      if (host && host.classList) host.classList.toggle("collapsed", collapsed);
+      btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      const hint = btn.querySelector(".needs-you-toggle-hint");
+      const body = host && host.querySelector ? host.querySelector(".needs-you-body") : null;
+      const n = body ? body.querySelectorAll(".needs-you-item").length : 0;
+      if (hint) hint.textContent = collapsed ? (n ? "Show " + n : "Show") : "Hide";
+      if (body) body.hidden = collapsed;
+    });
   }
 
   function nextNChicagoDays(n) {
@@ -4290,7 +4390,12 @@
     const rule = ach.unlock || {};
     if (rule.type === "easter_egg") return !!(ctx && ctx.eggs && ctx.eggs[rule.egg]);
     if (rule.type === "done_count") return doneAssignmentCount() >= (Number(rule.count) || 0);
-    if (rule.type === "class_tour") return classTourComplete(rule.hours, rule.classIds);
+    if (rule.type === "class_tour") {
+      const ids = Array.isArray(rule.classIds) && rule.classIds.length
+        ? rule.classIds.map(String)
+        : (ctx && Array.isArray(ctx.classIds) && ctx.classIds.length ? ctx.classIds.map(String) : CLASS_IDS);
+      return classTourComplete(rule.hours, ids);
+    }
     return false;
   }
 
@@ -4325,13 +4430,21 @@
     let next = normalizeFamily(family);
     const fresh = [];
     const grantedCharacters = [];
-    ((pack && pack.achievements) || []).forEach((ach) => {
-      if (!ach || alreadyUnlocked(ach.id)) return;
+    const livePack = mergeAchievementUnlocks(pack, shippedAchievements);
+    (livePack.achievements || []).forEach((ach) => {
+      if (!ach || !ach.id) return;
+      const previewOnly = achievementIsPreviewOnly(ach.id);
+      if (alreadyUnlocked(ach.id) && !previewOnly) return;
       if (!evaluate(ach, ctx || {})) return;
-      const result = awardStreak(pack, next, ach.id);
+      const result = awardStreak(livePack, next, ach.id, {
+        force: previewOnly || !!getUnlocks()[ach.id]
+      });
       next = result.family;
       if (result.achievement) fresh.push(result.achievement);
-      if (result.freshCharacter && result.grantedCharacter) grantedCharacters.push(result.grantedCharacter);
+      if (result.grantedCharacter && (result.freshCharacter || previewOnly)) {
+        if (previewOnly) unmarkCharacterSeen(result.grantedCharacter);
+        grantedCharacters.push(result.grantedCharacter);
+      }
     });
     return { family: next, fresh, grantedCharacters };
   }
@@ -6247,6 +6360,7 @@
     const next = normalizeFamily(family);
     return JSON.stringify({
       notes: next.notes,
+      reflections: next.reflections,
       overlay: overlayFingerprint(next.overlay),
       progress: getProgress()
     });
@@ -6934,6 +7048,7 @@
     stampAwardsOnFamily,
     applyOverlayAchievements,
     applyOverlayAwards,
+    mergeAchievementUnlocks,
     markClassVisit,
     classTourComplete,
     CLASS_IDS,
@@ -7218,6 +7333,10 @@
     mountBaseCampChip,
     latestReflection,
     checkinsListHtml,
+    ensureReflectionPool,
+    todaysReflectionPrompt,
+    stampChicagoYmd,
+    DEFAULT_REFLECTION_POOL,
     latestBennettQuestion,
     classIdForTitle,
     classIdForWork,
@@ -7239,6 +7358,10 @@
     setWorkDispute,
     markWorkLooksWrong,
     needsYouListHtml,
+    needsYouSectionHtml,
+    needsYouCollapsed,
+    setNeedsYouCollapsed,
+    bindNeedsYouToggle,
     pickClassId,
     rememberedClassId,
     rememberClassId,
@@ -7319,6 +7442,7 @@
     paintBuild();
     bindUndoCue();
     bindAudioUnlock();
+    bindNeedsYouToggle();
     applySiteView();
     bindHudNavClicks();
   } else {
@@ -7326,6 +7450,7 @@
       paintBuild();
       bindUndoCue();
       bindAudioUnlock();
+      bindNeedsYouToggle();
       applySiteView();
       bindHudNavClicks();
     });

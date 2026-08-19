@@ -954,6 +954,7 @@
     bindParentTabs();
     pack = await Game.loadAchievements();
     family = await Game.loadFamily();
+    family = Game.ensureReflectionPool(family);
     family = Game.maybeAutoPreviewAll(pack, family).family;
     roster = await Game.loadCharacters();
     library = await Game.loadLibrary();
