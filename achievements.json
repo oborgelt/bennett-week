@@ -136,6 +136,7 @@
       "reward": 10,
       "rewardCharacter": "riff",
       "rewardUnlock": { "type": "character", "id": "riff", "label": "Riff" },
+      "rewardMedia": "chunky",
       "unlock": { "type": "class_tour", "hours": 24 },
       "streak": { "target": 1, "unit": "time" }
     },

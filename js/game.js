@@ -27,7 +27,8 @@
     selectedClass: "bw-selected-class",
     workDisputes: "bw-work-disputes",
     classVisits: "bw-class-visits",
-    needsYouCollapsed: "bw-needs-you-collapsed"
+    needsYouCollapsed: "bw-needs-you-collapsed",
+    retractRiff: "bw-retract-riff-126"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -567,35 +568,54 @@
 
   function migrateCleanSlate() {
     try {
-      if (Number(localStorage.getItem(SEED_GEN_KEY) || 0) >= SEED_GEN) return;
-      const family = read(KEYS.family, null);
-      const cues = family && family.soundCues && typeof family.soundCues === "object" ? family.soundCues : {};
-      [
-        KEYS.mom,
-        KEYS.family,
-        KEYS.progress,
-        KEYS.unlocks,
-        KEYS.bananas,
-        KEYS.eggs,
-        KEYS.trophyOrder,
-        KEYS.characterUnlocks,
-        KEYS.characterSeen,
-        KEYS.gear,
-        KEYS.content,
-        KEYS.contentSeen,
-        KEYS.ask,
-        KEYS.opened,
-        KEYS.opens
-        // Keep bw-telemetry, bw-device-id, bw-session-at, bw-site-view — usage history and preview are not seed data.
-      ].forEach((key) => {
-        try { localStorage.removeItem(key); } catch (_) {}
-      });
-      if (Object.keys(cues).length) {
-        const next = emptyFamily();
-        next.soundCues = asCueMap(cues);
-        write(KEYS.family, next);
+      if (Number(localStorage.getItem(SEED_GEN_KEY) || 0) < SEED_GEN) {
+        const family = read(KEYS.family, null);
+        const cues = family && family.soundCues && typeof family.soundCues === "object" ? family.soundCues : {};
+        [
+          KEYS.mom,
+          KEYS.family,
+          KEYS.progress,
+          KEYS.unlocks,
+          KEYS.bananas,
+          KEYS.eggs,
+          KEYS.trophyOrder,
+          KEYS.characterUnlocks,
+          KEYS.characterSeen,
+          KEYS.gear,
+          KEYS.content,
+          KEYS.contentSeen,
+          KEYS.ask,
+          KEYS.opened,
+          KEYS.opens
+          // Keep bw-telemetry, bw-device-id, bw-session-at, bw-site-view — usage history and preview are not seed data.
+        ].forEach((key) => {
+          try { localStorage.removeItem(key); } catch (_) {}
+        });
+        if (Object.keys(cues).length) {
+          const next = emptyFamily();
+          next.soundCues = asCueMap(cues);
+          write(KEYS.family, next);
+        }
+        localStorage.setItem(SEED_GEN_KEY, String(SEED_GEN));
       }
-      localStorage.setItem(SEED_GEN_KEY, String(SEED_GEN));
+    } catch (_) {}
+    retractRiffForRetest();
+  }
+
+  function retractRiffForRetest() {
+    try {
+      if (read(KEYS.retractRiff, false)) return;
+      write(KEYS.retractRiff, true);
+      revokeUnlock("test-riff-reps");
+      revokeCharacterUnlock("riff");
+      unmarkCharacterSeen("riff");
+      const family = getFamilyDraft() || emptyFamily();
+      if (family.streaks && family.streaks["test-riff-reps"]) {
+        family.streaks["test-riff-reps"] = Object.assign({}, family.streaks["test-riff-reps"], { awarded: false });
+      }
+      if (family.characterUnlocks) delete family.characterUnlocks.riff;
+      saveFamily(family);
+      stampAwardsOnFamily(family);
     } catch (_) {}
   }
 
@@ -1811,14 +1831,24 @@
     }
     const next = normalizeFamily(family);
     next.streaks = Object.assign({}, next.streaks, awards.streaks);
-    next.characterUnlocks = Object.assign({}, next.characterUnlocks, awards.characterUnlocks);
-    next.gearUnlocks = Object.assign({}, next.gearUnlocks, awards.gearUnlocks);
-    next.contentUnlocks = Object.assign({}, next.contentUnlocks, awards.contentUnlocks);
-    saveCharacterUnlocks(Object.assign({}, getCharacterUnlocks(), awards.characterUnlocks));
-    saveGearUnlocks(Object.assign({}, getGearUnlocks(), awards.gearUnlocks));
-    saveContentUnlocks(Object.assign({}, getContentUnlocks(), awards.contentUnlocks));
-    if (awards.unlocks && typeof awards.unlocks === "object") {
-      write(KEYS.unlocks, Object.assign({}, getUnlocks(), awards.unlocks));
+    if (awards.updatedAt) {
+      next.characterUnlocks = asUnlockMap(awards.characterUnlocks);
+      next.gearUnlocks = asUnlockMap(awards.gearUnlocks);
+      next.contentUnlocks = asUnlockMap(awards.contentUnlocks);
+      saveCharacterUnlocks(next.characterUnlocks);
+      saveGearUnlocks(next.gearUnlocks);
+      saveContentUnlocks(next.contentUnlocks);
+      if (awards.unlocks && typeof awards.unlocks === "object") write(KEYS.unlocks, awards.unlocks);
+    } else {
+      next.characterUnlocks = Object.assign({}, next.characterUnlocks, awards.characterUnlocks);
+      next.gearUnlocks = Object.assign({}, next.gearUnlocks, awards.gearUnlocks);
+      next.contentUnlocks = Object.assign({}, next.contentUnlocks, awards.contentUnlocks);
+      saveCharacterUnlocks(Object.assign({}, getCharacterUnlocks(), awards.characterUnlocks));
+      saveGearUnlocks(Object.assign({}, getGearUnlocks(), awards.gearUnlocks));
+      saveContentUnlocks(Object.assign({}, getContentUnlocks(), awards.contentUnlocks));
+      if (awards.unlocks && typeof awards.unlocks === "object") {
+        write(KEYS.unlocks, Object.assign({}, getUnlocks(), awards.unlocks));
+      }
     }
     saveFamily(next);
     return next;
@@ -2205,9 +2235,30 @@
     return "";
   }
 
+  function libraryItemNamed(lib, name) {
+    const want = String(name || "").replace(/\.[^.]+$/, "").trim().toLowerCase();
+    if (!want) return null;
+    const items = ((lib && lib.items) || []).filter((item) => item && (item.kind === "audio" || item.synth));
+    const exact = items.find((item) => {
+      const label = String(item.label || "").replace(/\.[^.]+$/, "").trim().toLowerCase();
+      const file = String(item.filename || "").replace(/\.[^.]+$/, "").trim().toLowerCase();
+      const id = String(item.id || "").toLowerCase();
+      return label === want || file === want || id === want;
+    });
+    if (exact) return exact;
+    return items.find((item) => {
+      const blob = (String(item.label || "") + " " + String(item.filename || "") + " " + String(item.id || "")).toLowerCase();
+      return blob.indexOf(want) >= 0;
+    }) || null;
+  }
+
   function rewardMediaItem(ach, lib) {
     const id = rewardMediaId(ach);
-    return id ? libraryItem(lib, id) : null;
+    if (!id) {
+      if (ach && ach.id === "test-riff-reps") return libraryItemNamed(lib, "chunky");
+      return null;
+    }
+    return libraryItem(lib, id) || libraryItemNamed(lib, id);
   }
 
   function playAwardMedia(ach, lib) {
@@ -2224,6 +2275,14 @@
 
   function playAwardSound(ach, family, lib) {
     if (playAwardMedia(ach, lib)) return true;
+    if (ach && ach.id === "test-riff-reps") {
+      const chunky = libraryItemNamed(lib, "chunky");
+      if (chunky) {
+        if (playLibraryItem(chunky)) return true;
+        void playLibraryItemNow(chunky);
+        return true;
+      }
+    }
     return playSoundCue(family, lib, "streak-award");
   }
 
@@ -4195,15 +4254,10 @@
       try { video.pause(); } catch (_) {}
     }
     layer.classList.remove("open");
+    layer.classList.remove("char-celebrate-full");
   }
 
-  function playUnlockClip(roster, unlockedChar, opts) {
-    const media = characterMedia(roster, unlockedChar);
-    const name = characterLabel(unlockedChar, unlockedChar && unlockedChar.id === "bennett" ? "Bennett" : "New teammate");
-    const kicker = unlockedChar && unlockedChar.id === "bennett" ? "You're in" : "New teammate";
-    const ach = opts && opts.achievement;
-    const why = unlockCopy(ach);
-    const rewatch = !!(opts && opts.rewatch);
+  function celebrateLayer() {
     let layer = document.getElementById("char-celebrate");
     if (!layer) {
       layer = document.createElement("div");
@@ -4211,11 +4265,64 @@
       layer.className = "char-celebrate";
       document.body.appendChild(layer);
     }
+    return layer;
+  }
+
+  function bindCelebrateClose(layer, onClose) {
+    const close = () => {
+      if (onClose) onClose();
+      closeCharacterCelebrate();
+    };
+    const closeBtn = document.getElementById("char-celebrate-close");
+    if (closeBtn && closeBtn.addEventListener) closeBtn.addEventListener("click", close);
+    layer.onclick = (e) => {
+      if (e.target === layer) close();
+    };
+  }
+
+  function showUnlockWhy(roster, unlockedChar, opts) {
+    const ach = opts && opts.achievement;
+    const why = unlockCopy(ach) || "You unlocked this.";
+    const title = (ach && ach.title) || "Achievement";
+    const layer = celebrateLayer();
+    layer.classList.add("char-celebrate-full");
+    layer.innerHTML = `
+      <div class="char-celebrate-panel char-celebrate-why-panel" role="dialog" aria-labelledby="char-celebrate-title">
+        <p class="char-celebrate-kicker">You unlocked this</p>
+        <h2 id="char-celebrate-title">${esc(title)}</h2>
+        <p class="char-celebrate-why">${esc(why)}</p>
+        <button type="button" class="btn primary" id="char-celebrate-see">See Achievement</button>
+      </div>`;
+    layer.classList.add("open");
+    const family = (opts && opts.family) || getFamilyDraft();
+    const lib = opts && opts.library;
+    const play = () => playAwardSound(ach, family, lib);
+    const started = play();
+    if (!started && layer.addEventListener) {
+      layer.addEventListener("pointerdown", play, { once: true });
+    }
+    const see = document.getElementById("char-celebrate-see");
+    if (see && see.addEventListener) {
+      see.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        stopLibraryAudio();
+        showUnlockCharacter(roster, unlockedChar, Object.assign({}, opts || {}, { skipSound: true }));
+      });
+    }
+  }
+
+  function showUnlockCharacter(roster, unlockedChar, opts) {
+    const media = characterMedia(roster, unlockedChar);
+    const name = characterLabel(unlockedChar, unlockedChar && unlockedChar.id === "bennett" ? "Bennett" : "New teammate");
+    const kicker = unlockedChar && unlockedChar.id === "bennett" ? "You're in" : "New teammate";
+    const rewatch = !!(opts && opts.rewatch);
+    const layer = celebrateLayer();
+    layer.classList.add("char-celebrate-full");
     layer.innerHTML = `
       <div class="char-celebrate-panel" role="dialog" aria-labelledby="char-celebrate-title">
         <p class="char-celebrate-kicker">${kicker}</p>
         <h2 id="char-celebrate-title">${esc(name)} unlocked!</h2>
-        ${why ? `<p class="char-celebrate-why">${esc(why)}</p>` : ""}
         <video src="${esc(media.video)}" poster="${esc(media.poster)}" playsinline muted ${rewatch ? "controls" : ""} ${prefersReducedMotion() ? "" : "autoplay"}></video>
         <button type="button" class="btn primary" id="char-celebrate-close">Nice</button>
       </div>`;
@@ -4230,25 +4337,32 @@
         if (p && p.catch) p.catch(function () {});
       }
     }
-    const close = () => closeCharacterCelebrate();
-    const closeBtn = document.getElementById("char-celebrate-close");
-    if (closeBtn && closeBtn.addEventListener) closeBtn.addEventListener("click", close);
-    layer.onclick = (e) => {
-      if (e.target === layer) close();
-    };
+    bindCelebrateClose(layer);
     if (unlockedChar && unlockedChar.id) markCharacterSeen(unlockedChar.id);
     if (unlockedChar && unlockedChar.id === "bennett") markSignInSeen();
     confetti();
-    if (ach && !rewatch) {
-      const family = (opts && opts.family) || getFamilyDraft();
-      const lib = opts && opts.library;
-      const play = () => playAwardSound(ach, family, lib);
+    if (opts && opts.achievement && !rewatch && !opts.skipSound) {
+      const family = opts.family || getFamilyDraft();
+      const play = () => playAwardSound(opts.achievement, family, opts.library);
       if (typeof setTimeout === "function") setTimeout(play, 0);
       else play();
     }
   }
 
+  function playUnlockClip(roster, unlockedChar, opts) {
+    const rewatch = !!(opts && opts.rewatch);
+    const ach = opts && opts.achievement;
+    const whyFirst = !rewatch && !!(ach && unlockedChar && unlockedChar.id !== "bennett");
+    if (whyFirst) {
+      showUnlockWhy(roster, unlockedChar, opts);
+      return;
+    }
+    showUnlockCharacter(roster, unlockedChar, opts);
+  }
+
   function maybePlayUnlockCelebration(roster, pack, family, lib) {
+    const open = document.getElementById("char-celebrate");
+    if (open && open.classList && open.classList.contains("open")) return true;
     const pending = pendingCharacterCelebrations(roster);
     if (!pending.length) return false;
     const ch = pending[0];
@@ -6281,10 +6395,10 @@
     const b = newerFirst ? remote : local;
     return {
       streaks: Object.assign({}, b.streaks, a.streaks),
-      characterUnlocks: Object.assign({}, b.characterUnlocks, a.characterUnlocks),
+      characterUnlocks: a.updatedAt ? Object.assign({}, a.characterUnlocks) : Object.assign({}, b.characterUnlocks, a.characterUnlocks),
       gearUnlocks: Object.assign({}, b.gearUnlocks, a.gearUnlocks),
       contentUnlocks: Object.assign({}, b.contentUnlocks, a.contentUnlocks),
-      unlocks: Object.assign({}, b.unlocks, a.unlocks),
+      unlocks: a.updatedAt ? Object.assign({}, a.unlocks) : Object.assign({}, b.unlocks, a.unlocks),
       updatedAt: a.updatedAt || b.updatedAt
     };
   }

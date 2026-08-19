@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=127/.test(basecampHtml) && /basecamp\.js\?v=127/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=128/.test(basecampHtml) && /basecamp\.js\?v=128/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1360,7 +1360,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=127/.test(weekHtml) && /week\.js\?v=127/.test(weekHtml) && /game\.js\?v=127/.test(weekHtml) && /telemetry\.js\?v=127/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=128/.test(weekHtml) && /week\.js\?v=128/.test(weekHtml) && /game\.js\?v=128/.test(weekHtml) && /telemetry\.js\?v=128/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1407,8 +1407,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=126\b/.test(html), file + " should not still cache-bust as v=126");
-  assert(/\?v=127/.test(html), file + " should cache-bust v=127");
+  assert(!/\?v=127\b/.test(html), file + " should not still cache-bust as v=127");
+  assert(/\?v=128/.test(html), file + " should cache-bust v=128");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1453,7 +1453,7 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=127/.test(progressHtml) && /theme\.css\?v=127/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=128/.test(progressHtml) && /theme\.css\?v=128/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs you, Grades, Check-ins");
@@ -1463,7 +1463,7 @@ assert(/renderNeedsYou/.test(weekJs) && /id="needs-you"/.test(weekHtml), "This W
 assert(/needsYouSectionHtml/.test(weekJs) && /needsYouSectionHtml/.test(progressJs) && /data-needs-you-toggle/.test(gameJs), "Needs you has a collapse toggle");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*125/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 125");
+assert(/build:\s*126/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 126");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1819,6 +1819,7 @@ assert(aceUnlock.grantedCharacters.indexOf("ace") >= 0, "live unlock grants Ace"
 assert(/applyLiveUnlocks/.test(weekJs), "This Week checks live unlocks after Done");
 const riffLive = (achievements.achievements || []).find((a) => a.id === "test-riff-reps");
 assert(riffLive && riffLive.unlock && riffLive.unlock.type === "class_tour" && riffLive.unlock.hours === 24, "Riff live unlock is an 8-class tour in 24 hours");
+assert.strictEqual(riffLive.rewardMedia, "chunky", "Meet Riff is wired to Chunky");
 localStorage.removeItem("bw-class-visits");
 localStorage.removeItem("bw-unlocks");
 localStorage.removeItem("bw-character-unlocks");
@@ -2076,15 +2077,22 @@ assert(clipLayer && /bennett\.mp4/.test(clipLayer.innerHTML) && /bennett\.jpg/.t
 assert(/You're in/.test(clipLayer.innerHTML), "Bennett welcome kicker is You're in");
 const riffClip = { id: "riff", name: "Riff", video: "img/characters/riff.mp4", poster: "img/characters/riff.jpg" };
 Game.playUnlockClip(Game.defaultCharacters(), riffClip, {
-  achievement: { title: "Meet Riff", description: "Opened every class in one day." }
+  achievement: { id: "test-riff-reps", title: "Meet Riff", description: "Opened every class in one day.", rewardMedia: "chunky" }
 });
 const riffLayer = document.body.children[document.body.children.length - 1];
 assert(riffLayer && /Opened every class in one day/.test(riffLayer.innerHTML), "Riff unlock modal says what Bennett did");
-assert(/muted/.test(riffLayer.innerHTML), "character clip stays muted so the award sound can play");
+assert(/See Achievement/.test(riffLayer.innerHTML), "why screen has See Achievement before the Riff clip");
+assert(!/riff\.mp4/.test(riffLayer.innerHTML), "Riff video waits until See Achievement");
 assert.strictEqual(Game.unlockCopy({ description: "Opened every class in one day.", how: "Tap all 8" }), "Opened every class in one day.");
 FakeAudio.plays.length = 0;
 assert(Game.playAwardSound({ rewardMedia: "honk" }, Game.emptyFamily(), funLib), "attached unlock sound plays");
 assert(Game.playAwardSound({ title: "Meet Riff" }, Game.setSoundCue(Game.emptyFamily(), "streak-award", "honk"), funLib), "streak-award cue plays when no clip is attached");
+const chunkyLib = Game.normalizeLibrary({
+  items: [{ id: "dev-chunky", label: "Chunky", kind: "audio", character: "fun", filename: "Chunky.mp3", url: "https://example.com/Chunky.mp3", device: true }]
+});
+FakeAudio.plays.length = 0;
+assert(Game.playAwardSound({ id: "test-riff-reps", rewardMedia: "chunky" }, Game.emptyFamily(), chunkyLib), "Meet Riff plays Chunky by name");
+assert(FakeAudio.plays.some((src) => /Chunky/i.test(src)), "Chunky HTMLAudio starts on the why screen");
 const mergedMedia = Game.mergeAchievementUnlocks(
   { achievements: [{ id: "test-riff-reps", title: "Meet Riff" }] },
   { achievements: [{ id: "test-riff-reps", description: "Opened every class in one day.", rewardMedia: "riff-lick", unlock: { type: "class_tour", hours: 24 } }] }
