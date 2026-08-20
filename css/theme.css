@@ -3696,9 +3696,86 @@ a.btn {
   font-size: 0.86rem;
 }
 
-.msg-section h2 {
-  margin: 18px 0 10px;
-  font-size: 1.05rem;
+.msg-section h2,
+.msg-day h2 {
+  margin: 14px 0 8px;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--banana);
+}
+
+.msg-day:first-child h2 {
+  margin-top: 0;
+}
+
+body.messages-page .inbox-card {
+  padding: 8px 10px 8px;
+  margin: 0 0 6px;
+  border-radius: 12px;
+}
+
+body.messages-page .msg-card-open {
+  padding: 8px 10px 8px;
+  box-shadow: none;
+}
+
+body.messages-page .inbox-card h3 {
+  font-size: 0.86rem;
+  margin: 0 0 2px;
+}
+
+body.messages-page .msg-kicker {
+  margin: 0 0 2px;
+  font-size: 0.62rem;
+}
+
+body.messages-page .msg-line {
+  margin: 0 0 4px;
+  padding: 0 0 4px;
+}
+
+body.messages-page .msg-line-who,
+body.messages-page .msg-ask-from {
+  font-size: 0.68rem;
+  margin: 0 0 1px;
+}
+
+body.messages-page .msg-line-text,
+body.messages-page .msg-ask {
+  font-size: 0.9rem !important;
+  font-weight: 650;
+  margin: 0 0 2px;
+}
+
+body.messages-page .msg-stamp {
+  font-size: 0.68rem;
+  margin: 0 0 2px;
+}
+
+body.messages-page .msg-reply-label {
+  margin: 6px 0 0;
+}
+
+body.messages-page .msg-reply-label textarea {
+  min-height: 52px;
+}
+
+.checkin-group {
+  margin: 0 0 12px;
+}
+
+.checkin-group h3 {
+  margin: 0 0 6px;
+  font-size: 0.86rem;
+  color: var(--banana);
+}
+
+.checkin-rotation {
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
 .msg-card-open {

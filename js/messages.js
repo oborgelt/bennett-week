@@ -22,7 +22,7 @@
       el.innerHTML = "Newest first. You see the full thread: Bennett, Dad, you, Bennett again.";
       return;
     }
-    el.innerHTML = "Newest first. The full thread is here. Delete a message with <strong>Delete</strong> and it leaves This Week too.";
+    el.innerHTML = "Newest day first. Compact threads. Delete a message or check-in with <strong>Delete</strong> and it leaves the rest of the site too.";
   }
 
   function hud() {

@@ -316,7 +316,19 @@
   const DEFAULT_REFLECTION_POOL = [
     { id: "r-easiest", text: "Which class felt easiest today?" },
     { id: "r-teacher", text: "Name one thing a teacher did that helped" },
-    { id: "r-weird", text: "Anything feel weird or too fast?" }
+    { id: "r-weird", text: "Anything feel weird or too fast?" },
+    { id: "r-fav-teacher", text: "Favorite teacher right now?" },
+    { id: "r-fav-class", text: "Favorite class right now?" },
+    { id: "r-excited", text: "Which class are you excited to get back to?" },
+    { id: "r-worried", text: "Which class are you more worried about?" },
+    { id: "r-dislike", text: "Which class do you really not enjoy right now?" },
+    { id: "r-who-helped", text: "Who made today easier?" },
+    { id: "r-tell-parent", text: "What is one thing you want Mom or Dad to know about school?" },
+    { id: "r-unfair", text: "Did anything feel unfair today?" },
+    { id: "r-win", text: "What is one win from today, even a small one?" },
+    { id: "r-hanging", text: "Which homework is hanging over you?" },
+    { id: "r-people", text: "Who did you sit with or talk to today?" },
+    { id: "r-comic", text: "If Jungle Jam put you in a comic tomorrow, what should it be about?" }
   ];
 
   function asStringList(value) {
@@ -467,6 +479,7 @@
     return {
       pool,
       answers,
+      deletedAnswerIds: Array.isArray(o.deletedAnswerIds) ? o.deletedAnswerIds.map(String).filter(Boolean) : [],
       updatedAt: o.updatedAt || o.updated_at || ""
     };
   }
@@ -490,17 +503,33 @@
   function mergeReflections(localRaw, remoteRaw) {
     const local = normalizeReflections(localRaw);
     const remote = normalizeReflections(remoteRaw);
+    const deleted = Object.create(null);
+    (local.deletedAnswerIds || []).concat(remote.deletedAnswerIds || []).forEach((id) => {
+      if (id) deleted[id] = true;
+    });
     return {
       pool: mergeReflectionList(local.pool, remote.pool),
-      answers: mergeReflectionList(local.answers, remote.answers).sort((a, b) => String(a.at || "").localeCompare(String(b.at || ""))),
+      answers: mergeReflectionList(local.answers, remote.answers)
+        .filter((a) => a && !deleted[a.id])
+        .sort((a, b) => String(a.at || "").localeCompare(String(b.at || ""))),
+      deletedAnswerIds: Object.keys(deleted),
       updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
     };
   }
 
   function ensureReflectionPool(family) {
     const next = normalizeFamily(family);
-    if (next.reflections.pool.length) return next;
-    next.reflections.pool = DEFAULT_REFLECTION_POOL.map((row) => Object.assign({}, row));
+    const have = Object.create(null);
+    (next.reflections.pool || []).forEach((p) => {
+      if (p && p.id) have[p.id] = true;
+    });
+    const missing = DEFAULT_REFLECTION_POOL.filter((row) => row && row.id && !have[row.id]);
+    if (!next.reflections.pool.length) {
+      next.reflections.pool = DEFAULT_REFLECTION_POOL.map((row) => Object.assign({}, row));
+      return stampReflectionsOnFamily(next);
+    }
+    if (!missing.length) return next;
+    next.reflections.pool = next.reflections.pool.concat(missing.map((row) => Object.assign({}, row)));
     return stampReflectionsOnFamily(next);
   }
 
@@ -1000,15 +1029,24 @@
   }
 
   function deleteAnswer(family, id) {
+    const want = String(id || "");
+    if (!want) return normalizeFamily(family);
     const next = normalizeFamily(family);
-    next.reflections.answers = next.reflections.answers.filter((a) => a.id !== id);
+    next.reflections.answers = (next.reflections.answers || []).filter((a) => a && a.id !== want);
+    const gone = Array.isArray(next.reflections.deletedAnswerIds) ? next.reflections.deletedAnswerIds.slice() : [];
+    if (gone.indexOf(want) < 0) gone.push(want);
+    next.reflections.deletedAnswerIds = gone;
+    if (next.overlay && next.overlay.reflections) {
+      next.overlay.reflections.answers = (next.overlay.reflections.answers || []).filter((a) => a && a.id !== want);
+      next.overlay.reflections.deletedAnswerIds = gone.slice();
+    }
     return stampReflectionsOnFamily(next);
   }
 
   function stampReflectionsOnFamily(family) {
-    const next = normalizeFamily(family);
-    const pack = normalizeReflections(next.reflections);
+    const pack = normalizeReflections(family && family.reflections);
     pack.updatedAt = nowIso();
+    const next = normalizeFamily(family);
     next.reflections = pack;
     next.overlay.reflections = pack;
     stampOverlay(next, pack.updatedAt);
@@ -3529,23 +3567,65 @@
     return row;
   }
 
+  function checkinGroupKey(row) {
+    if (row && row.promptId) return String(row.promptId);
+    const prompt = String((row && row.prompt) || "").trim().toLowerCase();
+    return prompt || "checkin";
+  }
+
+  function groupCheckinsByPrompt(family) {
+    const pool = ((family && family.reflections && family.reflections.pool) || []).filter((p) => p && p.id && p.text);
+    const answers = ((family && family.reflections && family.reflections.answers) || []).slice()
+      .filter((a) => a && String(a.text || "").trim())
+      .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    const groups = Object.create(null);
+    pool.forEach((p) => {
+      groups[p.id] = { id: p.id, prompt: p.text, answers: [], latest: "" };
+    });
+    answers.forEach((a) => {
+      const key = checkinGroupKey(a);
+      if (!groups[key]) groups[key] = { id: key, prompt: a.prompt || "Quick check-in", answers: [], latest: "" };
+      if (a.prompt) groups[key].prompt = a.prompt;
+      groups[key].answers.push(a);
+      const at = String(a.at || "");
+      if (at > groups[key].latest) groups[key].latest = at;
+    });
+    const filled = [];
+    const idle = [];
+    Object.keys(groups).forEach((key) => {
+      const g = groups[key];
+      if (g.answers.length) filled.push(g);
+      else idle.push(g);
+    });
+    filled.sort((a, b) => String(b.latest || "").localeCompare(String(a.latest || "")));
+    return { filled, idle };
+  }
+
   function checkinsListHtml(family) {
     const prompt = todaysReflectionPrompt(family);
     const today = prompt
       ? `<p class="checkin-today">Today: ${esc(prompt.text)}</p>`
       : "";
-    const answers = ((family && family.reflections && family.reflections.answers) || []).slice()
-      .filter((a) => a && String(a.text || "").trim())
-      .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
-    if (!answers.length) {
-      return `${today}<p class="empty">Bennett’s answers from This Week show up here. Mom and Dad both see this log.</p>`;
+    const grouped = groupCheckinsByPrompt(family);
+    if (!grouped.filled.length) {
+      const idle = grouped.idle.length
+        ? `<p class="checkin-rotation">Rotating ${grouped.idle.length} questions. Answers group here by question.</p>`
+        : "";
+      return `${today}${idle}<p class="empty">Bennett’s answers from This Week show up here. Mom and Dad both see this log.</p>`;
     }
-    return `${today}<ul class="checkin-list">${answers.map((a) => `
-      <li>
-        <p class="checkin-prompt">${esc(a.prompt || "Quick check-in")}</p>
-        <p class="checkin-text">${esc(a.text)}</p>
-        <p class="checkin-stamp">${esc(fmtStamp(a.at))}</p>
-      </li>`).join("")}</ul>`;
+    const groups = grouped.filled.map((g) => `
+      <article class="checkin-group">
+        <h3>${esc(g.prompt)}</h3>
+        <ul class="checkin-list">${g.answers.map((a) => `
+          <li>
+            <p class="checkin-text">${esc(a.text)}</p>
+            <p class="checkin-stamp">${esc(fmtStamp(a.at))}</p>
+          </li>`).join("")}</ul>
+      </article>`).join("");
+    const rest = grouped.idle.length
+      ? `<p class="checkin-rotation">Also rotating: ${esc(grouped.idle.map((g) => g.prompt).join(" · "))}</p>`
+      : "";
+    return `${today}${groups}${rest}`;
   }
 
   function latestBennettQuestion(family) {
@@ -7164,6 +7244,27 @@
     });
   }
 
+  function inboxDayHeading(ymd) {
+    const key = String(ymd || "");
+    if (!key || key === "undated") return "Undated";
+    const today = chicagoYmd();
+    if (key === today) return "Today";
+    const [y, m, d] = today.split("-").map(Number);
+    const yest = new Date(y, m - 1, d);
+    yest.setDate(yest.getDate() - 1);
+    if (key === chicagoYmd(yest)) return "Yesterday";
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "numeric",
+        day: "numeric",
+        timeZone: "America/Chicago"
+      }).format(parseStamp(key + "T12:00:00") || new Date(key + "T12:00:00"));
+    } catch (_) {
+      return key;
+    }
+  }
+
   function messagesInboxHtml(family, week, opts) {
     const o = opts || {};
     const view = normalizeSiteView(o.view || siteView());
@@ -7179,7 +7280,7 @@
       const kid = view === "bennett";
       const hint = kid
         ? "Ask on a week card, write a Needs you plan, or answer the check-in on This Week. Mom and Dad see all of it."
-        : "When he taps Ask, writes a plan, or answers the check-in on This Week, it shows up here. Newest first.";
+        : "When he taps Ask, writes a plan, or answers the check-in on This Week, it shows up here. Newest day first.";
       return `<div class="messages-empty">
         <p class="empty">${kid ? "No messages yet." : "No asks or check-ins yet."}</p>
         <p class="messages-empty-hint">${esc(hint)}</p>
@@ -7198,7 +7299,6 @@
       const latestAsk = latestAskInThread(notes);
       const unanswered = threadNeedsReply(notes);
       const title = noteTargetLabel(week, head.targetType, head.targetId) || "This item";
-      const day = noteDayLabel(week, head);
       const composer = canEdit && latestAsk ? `
         <label class="msg-reply-label">Reply
           <textarea data-reply="${esc(latestAsk.id)}" maxlength="280" rows="3" placeholder="A short answer he will see on that card"></textarea>
@@ -7213,7 +7313,7 @@
       return `
         <article class="inbox-card msg-card${unanswered ? " msg-card-open" : " msg-card-done"}">
           <p class="msg-kicker">${esc(kicker)}</p>
-          <h3>${head.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}${day ? " · " + esc(day) : ""}</h3>
+          <h3>${head.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}</h3>
           ${notes.map(lineHtml).join("")}
           ${composer}
         </article>`;
@@ -7227,10 +7327,26 @@
         <p class="msg-stamp">${esc(fmtStamp(a.at))}</p>
         ${canDelete ? `<div class="parent-actions"><button type="button" class="tiny danger" data-del-checkin="${esc(a.id)}">Delete</button></div>` : ""}
       </article>`;
-    return `<section class="msg-section">${feed.map((row) => {
-      if (row.kind === "thread") return threadCard(row.thread);
-      return checkCard(row.answer);
-    }).join("")}</section>`;
+    return `<div class="msg-board">${(() => {
+      const days = Object.create(null);
+      const order = [];
+      feed.forEach((row) => {
+        const key = stampChicagoYmd(row.at) || "undated";
+        if (!days[key]) {
+          days[key] = [];
+          order.push(key);
+        }
+        days[key].push(row);
+      });
+      order.sort((a, b) => String(b).localeCompare(String(a)));
+      return order.map((key) => {
+        const cards = days[key].map((row) => {
+          if (row.kind === "thread") return threadCard(row.thread);
+          return checkCard(row.answer);
+        }).join("");
+        return `<section class="msg-day"><h2>${esc(inboxDayHeading(key))}</h2>${cards}</section>`;
+      }).join("");
+    })()}</div>`;
   }
 
   function bindMessagesInbox(root, opts) {
@@ -8092,6 +8208,7 @@
     mountBaseCampChip,
     latestReflection,
     checkinsListHtml,
+    groupCheckinsByPrompt,
     ensureReflectionPool,
     todaysReflectionPrompt,
     stampChicagoYmd,
