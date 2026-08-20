@@ -177,6 +177,7 @@
       if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack, library, { roster, family });
       hud();
       render();
+      if (roster) Game.maybePlayUnlockCelebration(roster, pack, family, library);
     });
   }
 

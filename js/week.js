@@ -2410,6 +2410,7 @@
       refreshCardsInPlace();
       const shelf = document.getElementById("shelf");
       if (shelf && shelf.classList.contains("open")) renderShelf();
+      runUnlocks();
     });
     async function pullFamilyLive() {
       if (!family) return;

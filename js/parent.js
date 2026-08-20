@@ -592,10 +592,10 @@
       family = result.family;
       persistFamily();
       if (result.achievement) {
-        Game.celebrate(result.achievement, pack, library, { roster, family });
+        if (result.grantedCharacter) Game.unmarkCharacterSeen(result.grantedCharacter);
         if (result.freshCharacter) {
           const ch = findChar(result.grantedCharacter);
-          Game.toast((ch ? Game.characterLabel(ch) : "Character") + " unlocked for Bennett. He sees it next time he opens Jungle Jam.");
+          Game.toast((ch ? Game.characterLabel(ch) : "Character") + " unlocked. Switch to Bennett to see the celebration.");
         }
         if (result.freshGear && result.grantedUnlock) {
           Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for the story.");
@@ -603,6 +603,10 @@
         if (result.freshContent && result.grantedUnlock) {
           Game.toast((result.grantedUnlock.label || result.grantedUnlock.id) + " unlocked for Bennett.");
         }
+        if (!result.freshCharacter && !result.freshGear && !result.freshContent) {
+          Game.toast("Awarded. Switch to Bennett to confirm.");
+        }
+        Game.pushFamilyOverlay(family).catch(() => {});
       } else {
         Game.toast("Already awarded on this device.");
       }
@@ -610,8 +614,9 @@
     list.querySelectorAll("[data-revoke]").forEach((b) => b.addEventListener("click", () => {
       const result = Game.revokeAchievement(pack, family, b.dataset.revoke);
       family = result.family;
-      Game.toast("Award undone. Bennett sees that next time he opens Jungle Jam.");
       persistFamily();
+      Game.toast("Award undone. Switch to Bennett to confirm it's gone, then Award to test again.");
+      Game.pushFamilyOverlay(family).catch(() => {});
     }));
   }
 

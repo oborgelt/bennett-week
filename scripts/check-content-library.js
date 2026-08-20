@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=129/.test(basecampHtml) && /basecamp\.js\?v=129/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=130/.test(basecampHtml) && /basecamp\.js\?v=130/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1360,7 +1360,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=129/.test(weekHtml) && /week\.js\?v=129/.test(weekHtml) && /game\.js\?v=129/.test(weekHtml) && /telemetry\.js\?v=129/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=130/.test(weekHtml) && /week\.js\?v=130/.test(weekHtml) && /game\.js\?v=130/.test(weekHtml) && /telemetry\.js\?v=130/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1407,8 +1407,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=128\b/.test(html), file + " should not still cache-bust as v=128");
-  assert(/\?v=129/.test(html), file + " should cache-bust v=129");
+  assert(!/\?v=129\b/.test(html), file + " should not still cache-bust as v=129");
+  assert(/\?v=130/.test(html), file + " should cache-bust v=130");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1453,7 +1453,7 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=129/.test(progressHtml) && /theme\.css\?v=129/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=130/.test(progressHtml) && /theme\.css\?v=130/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs you, Grades, Check-ins");
@@ -1463,7 +1463,7 @@ assert(/renderNeedsYou/.test(weekJs) && /id="needs-you"/.test(weekHtml), "This W
 assert(/needsYouSectionHtml/.test(weekJs) && /needsYouSectionHtml/.test(progressJs) && /data-needs-you-toggle/.test(gameJs), "Needs you has a collapse toggle");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*127/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 127");
+assert(/build:\s*128/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 128");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1543,7 +1543,7 @@ const afterAce = Game.revokeAchievement(pack, auto.family, "test-ace-closer");
 assert(!Game.alreadyUnlockedCharacter("ace"), "undoing Meet Ace should lock Ace");
 const gap = Game.maybeAutoPreviewAll(pack, afterAce.family);
 assert(!gap.ran, "later boots should gap-fill quietly");
-assert(Game.alreadyUnlockedCharacter("ace"), "gap-fill should restore missing preview crew");
+assert(!Game.alreadyUnlockedCharacter("ace"), "parent undo stays undone until Award or Unlock all");
 const locked = Game.revokeAllPreview(pack, gap.family);
 assert(!Game.alreadyUnlockedCharacter("ace") && !Game.alreadyUnlockedGear("angle-finder"), "Lock them back should revoke preview awards");
 assert(!Game.alreadyUnlockedContent("ace-frog") && !Game.alreadyUnlockedContent("riff-bird") && !Game.alreadyUnlockedContent("scorch-spider"), "Lock them back should revoke fight clips");
@@ -1832,6 +1832,17 @@ assert(Game.alreadyUnlocked("test-riff-reps"), "class tour earns Meet Riff");
 assert(Game.alreadyUnlockedCharacter("riff"), "Riff is unlocked for the trophy room");
 assert(riffUnlock.grantedCharacters.indexOf("riff") >= 0, "live unlock grants Riff");
 assert(/markClassVisit/.test(weekJs) && /Save for Bennett/.test(parentHtml), "class chips record visits and Save pushes for Bennett");
+const riffUndone = Game.revokeAchievement({ achievements: achievements.achievements }, riffUnlock.family, "test-riff-reps");
+assert(!Game.alreadyUnlocked("test-riff-reps") && !Game.alreadyUnlockedCharacter("riff"), "parent undo locks Riff");
+assert.strictEqual(Game.classTourComplete(24, Game.CLASS_IDS, riffUndone.family, "test-riff-reps"), false, "old class taps do not re-complete the tour after undo");
+const riffStay = Game.applyLiveUnlocks({ achievements: achievements.achievements }, riffUndone.family, {});
+assert(!Game.alreadyUnlockedCharacter("riff") && riffStay.grantedCharacters.indexOf("riff") < 0, "This Week does not instantly re-award Riff after undo");
+Game.maybeAutoPreviewAll({ achievements: achievements.achievements }, riffUndone.family);
+assert(!Game.alreadyUnlockedCharacter("riff"), "preview gap-fill does not restore an undone Meet Riff");
+const riffAgain = Game.awardStreak({ achievements: achievements.achievements }, riffUndone.family, "test-riff-reps");
+assert(riffAgain.freshCharacter && Game.alreadyUnlockedCharacter("riff"), "Parent Award can re-give Riff after undo");
+assert(/Switch to Bennett to see the celebration/.test(parentJs), "parent Award leaves the celebration for Bennett");
+assert(/Switch to Bennett to confirm it's gone/.test(parentJs), "parent undo tells Dad to verify on Bennett");
 const missingUnlock = Game.mergeAchievementUnlocks({ achievements: [{ id: "test-riff-reps", title: "Meet Riff" }] }, achievements);
 assert(missingUnlock.achievements[0].unlock && missingUnlock.achievements[0].unlock.type === "class_tour", "shipped class_tour rule fills a catalog row that lost it");
 ["bw-unlocks", "bw-character-unlocks", "bw-character-seen", "bw-preview-all", "bw-preview-ids", "bw-family", "bw-class-visits"].forEach((key) => localStorage.removeItem(key));

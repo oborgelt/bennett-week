@@ -1781,9 +1781,9 @@
     const next = normalizeFamily(family);
     next.overlay.awards = {
       streaks: next.streaks || {},
-      characterUnlocks: Object.assign({}, getCharacterUnlocks(), next.characterUnlocks || {}),
-      gearUnlocks: Object.assign({}, getGearUnlocks(), next.gearUnlocks || {}),
-      contentUnlocks: Object.assign({}, getContentUnlocks(), next.contentUnlocks || {}),
+      characterUnlocks: asUnlockMap(next.characterUnlocks),
+      gearUnlocks: asUnlockMap(next.gearUnlocks),
+      contentUnlocks: asUnlockMap(next.contentUnlocks),
       unlocks: getUnlocks(),
       updatedAt: nowIso()
     };
@@ -4374,7 +4374,7 @@
       const grant = (family.streaks[ach.id] && family.streaks[ach.id].grantedCharacter)
         || rewardCharacterId(ach);
       if (grant !== characterId) return false;
-      return !!(family.streaks[ach.id] && family.streaks[ach.id].awarded) || alreadyUnlocked(ach.id);
+      return !!(family.streaks[ach.id] && family.streaks[ach.id].awarded);
     });
   }
 
@@ -4532,7 +4532,7 @@
       const ids = Array.isArray(rule.classIds) && rule.classIds.length
         ? rule.classIds.map(String)
         : (ctx && Array.isArray(ctx.classIds) && ctx.classIds.length ? ctx.classIds.map(String) : CLASS_IDS);
-      return classTourComplete(rule.hours, ids);
+      return classTourComplete(rule.hours, ids, ctx && ctx.family, ach.id);
     }
     return false;
   }
@@ -4551,16 +4551,22 @@
     return all;
   }
 
-  function classTourComplete(hours, classIds) {
+  function classTourComplete(hours, classIds, family, achievementId) {
     const ids = Array.isArray(classIds) && classIds.length
       ? classIds.map(String)
       : CLASS_IDS;
     const windowMs = Math.max(1, Number(hours) || 24) * 3600 * 1000;
     const now = Date.now();
     const visits = read(KEYS.classVisits, {}) || {};
+    let resetMs = 0;
+    const st = family && achievementId && family.streaks && family.streaks[achievementId];
+    if (st && st.tourResetAt) {
+      const resetAt = parseStamp(st.tourResetAt);
+      if (resetAt) resetMs = resetAt.getTime();
+    }
     return ids.every((id) => {
       const t = parseStamp(visits[id]);
-      return !!(t && (now - t.getTime()) <= windowMs);
+      return !!(t && t.getTime() > resetMs && (now - t.getTime()) <= windowMs);
     });
   }
 
@@ -4573,7 +4579,7 @@
       if (!ach || !ach.id) return;
       const previewOnly = achievementIsPreviewOnly(ach.id);
       if (alreadyUnlocked(ach.id) && !previewOnly) return;
-      if (!evaluate(ach, ctx || {})) return;
+      if (!evaluate(ach, Object.assign({}, ctx || {}, { family: next }))) return;
       const result = awardStreak(livePack, next, ach.id, {
         force: previewOnly || !!getUnlocks()[ach.id]
       });
@@ -4638,12 +4644,16 @@
     const granted = (unlock && unlock.type === "character" && unlock.id) || st.grantedCharacter || "";
     next.streaks[id] = Object.assign({}, st, {
       awarded: true,
-      awardedAt: st.awardedAt || nowIso(),
+      awardedAt: nowIso(),
       grantedCharacter: granted || undefined,
       grantedUnlock: unlock || undefined,
       rewardMedia: (ach && ach.rewardMedia) || st.rewardMedia || undefined,
-      preview: !!preview
+      preview: !!preview,
+      revokedAt: undefined,
+      tourResetAt: undefined
     });
+    delete next.streaks[id].revokedAt;
+    delete next.streaks[id].tourResetAt;
     if (preview) addPreviewIds([id]);
     else removePreviewIds([id]);
     let freshCharacter = false;
@@ -4653,6 +4663,7 @@
       const grant = grantCharacter(next, granted);
       freshCharacter = grant.fresh;
       Object.assign(next, grant.family);
+      if (freshCharacter || force) unmarkCharacterSeen(granted);
     }
     if (unlock && unlock.type === "content") {
       const grant = grantContent(next, unlock);
@@ -4690,16 +4701,25 @@
     const next = normalizeFamily(family);
     const st = next.streaks[id] || { count: 0 };
     const unlock = st.grantedUnlock || rewardUnlockOf(ach);
-    const granted = st.grantedCharacter || (unlock && unlock.type === "character" && unlock.id) || "";
-    next.streaks[id] = Object.assign({}, st, { awarded: false });
+    const granted = st.grantedCharacter || (unlock && unlock.type === "character" && unlock.id) || rewardCharacterId(ach) || "";
+    const resetAt = nowIso();
+    const tourReset = !!(ach && ach.unlock && ach.unlock.type === "class_tour");
+    next.streaks[id] = Object.assign({}, st, {
+      awarded: false,
+      revokedAt: resetAt,
+      preview: false
+    });
+    if (tourReset) next.streaks[id].tourResetAt = resetAt;
+    removePreviewIds([id]);
     let revokedCharacter = false;
     let revokedGear = false;
     let revokedContent = false;
     if (granted && !otherAwardGrantsCharacter(pack, next, granted, id)) {
-      revokedCharacter = revokeCharacterUnlock(granted);
+      revokedCharacter = revokeCharacterUnlock(granted) || !!next.characterUnlocks[granted];
       if (next.characterUnlocks[granted]) {
         delete next.characterUnlocks[granted];
       }
+      unmarkCharacterSeen(granted);
     }
     if (unlock && unlock.type === "content" && unlock.id && !otherAwardGrantsContent(pack, next, unlock.id, id)) {
       revokedContent = revokeContentUnlock(unlock.id);
@@ -7150,12 +7170,14 @@
     return ids;
   }
 
-  function awardAllPreview(pack, family) {
+  function awardAllPreview(pack, family, opts) {
     const working = previewAwardPack(pack);
     let next = normalizeFamily(family);
     let awarded = 0;
     previewAwardIds(working).forEach((id) => {
       if (alreadyUnlocked(id)) return;
+      const st = next.streaks[id];
+      if (opts && opts.skipRevoked && st && st.revokedAt && !st.awarded) return;
       const result = awardStreak(working, next, id, { preview: true });
       next = result.family;
       if (result.achievement) awarded += 1;
@@ -7184,7 +7206,7 @@
     if (siteViewHidesAdult()) return { family: next, ran: false, awarded: 0 };
     if (hasPreviewLockedFlag()) return { family: next, ran: false, awarded: 0 };
     const firstOffer = !hasPreviewAllFlag();
-    const result = awardAllPreview(pack, next);
+    const result = awardAllPreview(pack, next, { skipRevoked: true });
     return { family: result.family, ran: firstOffer, awarded: result.awarded };
   }
 
@@ -7429,6 +7451,7 @@
     comicUnlocked,
     pendingCharacterCelebrations,
     markCharacterSeen,
+    unmarkCharacterSeen,
     aceMedia,
     playUnlockClip,
     maybePlayUnlockCelebration,
