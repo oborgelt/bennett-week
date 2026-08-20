@@ -1087,7 +1087,29 @@ body.site-view-kid .class-card-tools {
 .grades-pane,
 .contact-pane,
 .checkins-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   border-color: rgba(198, 224, 58, 0.18);
+}
+
+.grades-pane {
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.checkins-scroll {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  max-height: 13.5rem;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.checkins-pane .checkin-more {
+  flex: 0 0 auto;
+  margin-top: 8px;
 }
 
 .needs-you[hidden] {
@@ -2222,12 +2244,17 @@ body.week-page.in-treehouse .hud-bar {
 .trophy-chip,
 .basecamp-chip,
 .messages-chip,
-.site-view-btn,
+.site-view-btn:not(.on),
 .trophy-lantern,
 .trophy-back,
 .trophy-leave,
 .trophy-portrait.is-ready {
   cursor: pointer !important;
+}
+
+.site-view-btn.on,
+.trophy-portrait:not(.is-ready) {
+  cursor: default !important;
 }
 
 .trophy-view {
@@ -3492,6 +3519,7 @@ body.progress-page .dash {
       "followup followup followup"
       "needs grades stats"
       "classes checkins stats";
+    grid-template-rows: auto minmax(280px, auto) auto;
     align-items: stretch;
     gap: 14px;
     overflow: auto;
@@ -3524,7 +3552,7 @@ body.progress-page .dash {
   }
   body.progress-page .dash {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.35fr) minmax(0, 1fr) minmax(300px, 0.9fr);
-    grid-template-rows: auto minmax(180px, 0.42fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(360px, 2fr) minmax(200px, 1fr);
     grid-template-areas:
       "followup followup followup followup"
       "needs classes grades stats"
@@ -3638,7 +3666,7 @@ body.messages-page .parent-wrap {
 }
 
 button,
-a,
+a[href],
 summary,
 [role="button"],
 label.bc-attach,
@@ -3652,6 +3680,20 @@ label.bc-attach,
 input[type="submit"],
 input[type="button"] {
   cursor: pointer;
+}
+
+button:disabled { cursor: default; }
+
+button:disabled,
+[disabled],
+[aria-disabled="true"],
+a:not([href]),
+.site-view-btn.on,
+.usage-who-btn.on,
+.usage-range-btn.on,
+.class-chip.on,
+.dot.on {
+  cursor: default;
 }
 
 .btn.primary {
@@ -5421,18 +5463,20 @@ body.admin-page .usage-panel h2 {
   word-break: break-word;
 }
 
-.usage-who {
+.usage-who,
+.usage-range {
   display: inline-flex;
   align-items: stretch;
   min-height: 36px;
-  margin: 0 0 12px;
+  margin: 0 10px 12px 0;
   padding: 2px;
   border-radius: 999px;
   border: 1px solid rgba(244, 211, 94, 0.45);
   background: rgba(7, 22, 24, 0.55);
 }
 
-.usage-who-btn {
+.usage-who-btn,
+.usage-range-btn {
   appearance: none;
   -webkit-appearance: none;
   min-height: 32px;
@@ -5449,10 +5493,95 @@ body.admin-page .usage-panel h2 {
 }
 
 .usage-who-btn.on,
-.usage-who-btn[aria-pressed="true"] {
+.usage-who-btn[aria-pressed="true"],
+.usage-range-btn.on,
+.usage-range-btn[aria-pressed="true"] {
+  cursor: default;
   background: linear-gradient(180deg, #ffe08a, #f3c34a);
   color: #2a1d08;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
+.usage-showing {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.usage-health-line {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.usage-warn-line { color: var(--due); }
+
+.usage-table-title {
+  margin: 14px 0 8px;
+  font-size: 0.95rem;
+}
+
+.usage-table-meta {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.usage-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 14px;
+  border: 1px solid rgba(244, 211, 94, 0.22);
+  border-radius: 12px;
+  background: rgba(7, 22, 24, 0.35);
+}
+
+.usage-recent-wrap {
+  max-height: 420px;
+  overflow: auto;
+}
+
+.usage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.usage-table th,
+.usage-table td {
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.usage-table th {
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(18, 42, 46, 0.9);
+  position: sticky;
+  top: 0;
+}
+
+.usage-table td.num,
+.usage-table th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.usage-table tbody tr {
+  border-top: 1px solid rgba(246, 241, 228, 0.08);
+}
+
+.usage-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.usage-action {
+  color: #7fd4c8;
+  font-weight: 750;
 }
 
 .usage-health,

@@ -821,7 +821,7 @@
   function renderCheckinsPane() {
     const host = document.getElementById("checkins-pane");
     if (!host) return;
-    host.innerHTML = `<h2>Check-ins</h2>${Game.checkinsListHtml(family)}<p class="checkin-more"><a href="messages.html?tab=daily">Daily questions</a> · <a href="messages.html?tab=class">Class messages</a></p>`;
+    host.innerHTML = `<h2>Check-ins</h2><div class="checkins-scroll">${Game.checkinsListHtml(family)}</div><p class="checkin-more"><a href="messages.html?tab=daily">Daily questions</a> · <a href="messages.html?tab=class">Class messages</a></p>`;
   }
 
   function renderFollowupPane(classes) {

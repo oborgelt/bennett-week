@@ -35,6 +35,10 @@
   let drillAssignment = "";
   let usageWho = "all";
   const USAGE_WHO = ["all", "bennett", "orin", "parent"];
+  let usageRange = "7d";
+  const USAGE_RANGE = ["24h", "7d", "30d", "all"];
+  const USAGE_RANGE_LABEL = { "24h": "24 h", "7d": "7 days", "30d": "30 days", all: "All" };
+  const USAGE_RECENT_CAP = 80;
   let adminTab = "connect";
   let libCat = "all";
   let funCountLabel = "";
@@ -468,8 +472,9 @@
   }
 
   function filterUsageEvents(events) {
-    if (usageWho === "all") return events || [];
-    return (events || []).filter((e) => e.role === usageWho);
+    let rows = events || [];
+    if (usageWho !== "all") rows = rows.filter((e) => e.role === usageWho);
+    return filterUsageRange(rows, (e) => e.ts);
   }
 
   function filterUsageDevices(devices) {
@@ -477,13 +482,55 @@
     return (devices || []).filter((d) => d.role === usageWho);
   }
 
+  function rangeCutoffIso(range) {
+    const key = range || usageRange;
+    const now = Date.now();
+    if (key === "24h") return new Date(now - 24 * 3600 * 1000).toISOString();
+    if (key === "7d") return new Date(now - 7 * 24 * 3600 * 1000).toISOString();
+    if (key === "30d") return new Date(now - 30 * 24 * 3600 * 1000).toISOString();
+    return "";
+  }
+
+  function filterUsageRange(rows, stamp) {
+    const cut = rangeCutoffIso(usageRange);
+    if (!cut) return rows || [];
+    const get = stamp || ((row) => row && (row.ts || row.at));
+    return (rows || []).filter((row) => String(get(row) || "") >= cut);
+  }
+
+  function roleLabel(role) {
+    if (role === "bennett") return "Bennett";
+    if (role === "parent") return "Mom";
+    if (role === "orin") return "Orin";
+    return role || "Unknown";
+  }
+
+  function eventDetail(e) {
+    const bits = [];
+    if (e && e.assignment_id) bits.push(workTitle(e.assignment_id));
+    else if (e && e.class_id) bits.push(classLabel(e.class_id));
+    if (e && e.message) bits.push(e.message);
+    if (e && e.href) bits.push(e.href);
+    return bits.join(" · ");
+  }
+
   function paintUsage() {
     const events = filterUsageEvents(usageEvents);
     const devices = filterUsageDevices(usageDevices);
+    renderShowing(events);
     renderHealth(events, devices);
     renderStats(events);
+    renderRecent(events);
     renderQueries();
     renderClasses(events);
+  }
+
+  function renderShowing(events) {
+    const el = document.getElementById("usage-showing");
+    if (!el) return;
+    const n = (events || []).length;
+    const label = USAGE_RANGE_LABEL[usageRange] || usageRange;
+    el.textContent = "Showing: " + label + " · " + n.toLocaleString("en-US") + " action" + (n === 1 ? "" : "s") + " in range";
   }
 
   function queryRole(row) {
@@ -502,7 +549,7 @@
     const host = document.getElementById("usage-queries");
     if (!host) return;
     const fam = (typeof Game.getFamilyDraft === "function" && Game.getFamilyDraft()) || family || Game.emptyFamily();
-    const rows = filterUsageQueries(fam.basecampQueries || [])
+    const rows = filterUsageRange(filterUsageQueries(fam.basecampQueries || []), (q) => q.at)
       .slice()
       .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
     host.innerHTML = `
@@ -532,6 +579,16 @@
     paintUsage();
   }
 
+  function setUsageRange(range) {
+    usageRange = USAGE_RANGE.indexOf(range) >= 0 ? range : "7d";
+    document.querySelectorAll("[data-usage-range]").forEach((btn) => {
+      const on = btn.dataset.usageRange === usageRange;
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    paintUsage();
+  }
+
   function hoursAgoIso(h) {
     return new Date(Date.now() - h * 3600 * 1000).toISOString();
   }
@@ -555,42 +612,104 @@
   }
 
   function renderHealth(events, devices) {
-    const T = tel();
-    const day = hoursAgoIso(24);
+    const host = document.getElementById("usage-health");
+    if (!host) return;
     const weekAgo = hoursAgoIso(24 * 7);
-    const recent = events.filter((e) => e.ts >= day);
-    const errors = recent.filter((e) => e.type === "error").length;
-    const slow = recent.filter((e) => e.type === "slow_page").length;
-    const bennett = events.filter((e) => e.role === "bennett");
-    const lastBennett = bennett[0];
+    const errors = (events || []).filter((e) => e.type === "error").length;
+    const slow = (events || []).filter((e) => e.type === "slow_page").length;
     const stale = (devices || []).filter((d) => !d.last_seen || d.last_seen < weekAgo);
-    const queued = T && T._queued;
-    document.getElementById("usage-health").innerHTML = `
-      <div class="usage-health">
-        <div class="usage-tile"><div class="stat-num">${lastBennett ? Game.esc(Game.fmtStamp(lastBennett.ts)) : "—"}</div><div class="stat-label">last Bennett event</div></div>
-        <div class="usage-tile${errors ? " usage-warn" : ""}"><div class="stat-num">${errors}</div><div class="stat-label">errors (24h)</div></div>
-        <div class="usage-tile${slow ? " usage-warn" : ""}"><div class="stat-num">${slow}</div><div class="stat-label">slow pages (24h)</div></div>
-        <div class="usage-tile${stale.length ? " usage-warn" : ""}"><div class="stat-num">${stale.length}</div><div class="stat-label">devices quiet 7d</div></div>
-      </div>`;
+    const bits = [];
+    if (errors) bits.push(errors + " error" + (errors === 1 ? "" : "s"));
+    if (slow) bits.push(slow + " slow page" + (slow === 1 ? "" : "s"));
+    if (stale.length) bits.push(stale.length + " device" + (stale.length === 1 ? "" : "s") + " quiet 7d");
+    host.innerHTML = bits.length
+      ? `<p class="usage-health-line usage-warn-line">${Game.esc(bits.join(" · "))}</p>`
+      : "";
   }
 
   function renderStats(events) {
-    const day = hoursAgoIso(24);
-    const recent = events.filter((e) => e.ts >= day);
-    const sessions = {};
-    events.filter((e) => e.type === "session_start").forEach((e) => {
-      sessions[e.role || "unknown"] = (sessions[e.role || "unknown"] || 0) + 1;
+    const host = document.getElementById("usage-stats");
+    if (!host) return;
+    const roles = ["bennett", "orin", "parent"];
+    (events || []).forEach((e) => {
+      const role = e.role || "unknown";
+      if (roles.indexOf(role) < 0) roles.push(role);
     });
-    document.getElementById("usage-stats").innerHTML = `
-      <div class="usage-stats">
-        <div class="usage-tile"><div class="stat-num">${sessions.bennett || 0}</div><div class="stat-label">Bennett sessions</div></div>
-        <div class="usage-tile"><div class="stat-num">${(sessions.parent || 0) + (sessions.orin || 0)}</div><div class="stat-label">parent / Orin sessions</div></div>
-        <div class="usage-tile"><div class="stat-num">${countBy(recent, "click")}</div><div class="stat-label">clicks (24h)</div></div>
-        <div class="usage-tile"><div class="stat-num">${countBy(recent, "page_view")}</div><div class="stat-label">page views (24h)</div></div>
-        <div class="usage-tile"><div class="stat-num">${countBy(events, "work_add")}</div><div class="stat-label">assignments added</div></div>
-        <div class="usage-tile"><div class="stat-num">${countBy(events, "work_note")}</div><div class="stat-label">notes</div></div>
-        <div class="usage-tile"><div class="stat-num">${countBy(events, "ask_ai")}</div><div class="stat-label">Ask AI</div></div>
-        <div class="usage-tile"><div class="stat-num">${countBy(events, "help_open")}</div><div class="stat-label">a little help</div></div>
+    const rows = roles.map((role) => {
+      const mine = (events || []).filter((e) => (e.role || "unknown") === role);
+      const last = mine.slice().sort((a, b) => String(b.ts || "").localeCompare(String(a.ts || "")))[0];
+      return {
+        role,
+        logins: countBy(mine, "session_start"),
+        views: countBy(mine, "page_view"),
+        clicks: countBy(mine, "click"),
+        done: countBy(mine, "work_done"),
+        asks: countBy(mine, "ask_ai") + countBy(mine, "help_open"),
+        total: mine.length,
+        lastAt: last ? last.ts : "",
+        lastType: last ? last.type : ""
+      };
+    }).sort((a, b) => b.total - a.total || roleLabel(a.role).localeCompare(roleLabel(b.role)));
+    host.innerHTML = `
+      <h3 class="usage-table-title">Per user</h3>
+      <div class="usage-table-wrap">
+        <table class="usage-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th class="num">Logins</th>
+              <th class="num">Page views</th>
+              <th class="num">Clicks</th>
+              <th class="num">Done</th>
+              <th class="num">Asks</th>
+              <th class="num">Total actions</th>
+              <th>Last action</th>
+              <th>Last action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => `<tr>
+              <td>${Game.esc(roleLabel(row.role))}</td>
+              <td class="num">${row.logins}</td>
+              <td class="num">${row.views}</td>
+              <td class="num">${row.clicks}</td>
+              <td class="num">${row.done}</td>
+              <td class="num">${row.asks}</td>
+              <td class="num">${row.total}</td>
+              <td>${row.lastAt ? Game.esc(Game.fmtStamp(row.lastAt)) : "—"}</td>
+              <td>${row.lastType ? `<span class="usage-action">${Game.esc(row.lastType)}</span>` : "—"}</td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  function renderRecent(events) {
+    const host = document.getElementById("usage-recent");
+    if (!host) return;
+    const rows = (events || []).slice().sort((a, b) => String(b.ts || "").localeCompare(String(a.ts || "")));
+    const shown = rows.slice(0, USAGE_RECENT_CAP);
+    host.innerHTML = `
+      <h3 class="usage-table-title">Recent actions <span class="usage-table-meta">(listed ${shown.length} of ${rows.length})</span></h3>
+      <div class="usage-table-wrap usage-recent-wrap">
+        <table class="usage-table">
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${shown.map((e) => `<tr>
+              <td>${Game.esc(Game.fmtStamp(e.ts))}</td>
+              <td>${Game.esc(roleLabel(e.role))}</td>
+              <td><span class="usage-action">${Game.esc(e.type || "")}</span></td>
+              <td>${Game.esc(eventDetail(e))}</td>
+            </tr>`).join("") || `<tr><td colspan="4" class="empty">No actions in this range.</td></tr>`}
+          </tbody>
+        </table>
       </div>`;
   }
 
@@ -779,6 +898,15 @@
         const btn = e.target.closest("[data-usage-who]");
         if (!btn) return;
         setUsageWho(btn.dataset.usageWho);
+      });
+    }
+    const range = document.getElementById("usage-range");
+    if (range && range.dataset.bound !== "1") {
+      range.dataset.bound = "1";
+      range.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-usage-range]");
+        if (!btn) return;
+        setUsageRange(btn.dataset.usageRange);
       });
     }
   }
