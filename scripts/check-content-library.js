@@ -776,7 +776,7 @@ assert(/0 missing, 3 late, 2 due today/.test(Game.parentNeedsLine(week, proofNow
 const noteOnlyMiss = Game.workFeedStatus({ id: "x", title: "X", note: "MISSED 0/1" }, proofNow);
 assert.strictEqual(noteOnlyMiss.missing, true);
 assert.strictEqual(noteOnlyMiss.score, "0/1");
-const noteOnlyOpen = Game.workFeedStatus({ id: "y", title: "Y", due: "2026-08-19T09:20:00", note: "Not submitted" }, proofNow);
+const noteOnlyOpen = Game.workFeedStatus({ id: "y", title: "Y", due: "2026-08-20T09:20:00", note: "Not submitted" }, proofNow);
 assert.strictEqual(noteOnlyOpen.missing, false, "do not invent Missing from Not submitted");
 assert.strictEqual(noteOnlyOpen.notDone, true);
 assert.strictEqual(noteOnlyOpen.dueToday, true);
