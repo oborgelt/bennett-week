@@ -831,8 +831,8 @@ assert.notStrictEqual(weekById["chem-about-me"].status, "missing");
 assert.strictEqual(weekById["web-11"].status, "late");
 assert.strictEqual(weekById["web-11"].late, true);
 assert.strictEqual(weekById["web-11"].due, "2026-08-19T09:20:00");
-assert(/CodeHS 1\.1\.1/.test(weekById["web-11"].note || ""), "web 1.1 note may mention CodeHS 1.1.1–1.1.4");
-assert(/already on Outlook/.test(weekById["web-12"].note || ""), "web 1.2 is already on Outlook");
+assert(/CodeHS:? 1\.1\.1/.test(weekById["web-11"].note || ""), "web 1.1 note may mention CodeHS 1.1.1–1.1.4");
+assert(/already on Outlook/i.test(weekById["web-12"].note || ""), "web 1.2 is already on Outlook");
 assert(/ungraded \(\/5\) as of Thu 2:35pm/.test(weekById["eng-names"].note || ""), "name video still ungraded as of Thu 2:35pm");
 assert(/Not submitted \(.\s*\/10\) as of Thu 2:35pm/.test(weekById["eng-comics"].note || "") && /TONIGHT Thursday 11:59pm/.test(weekById["eng-comics"].note || ""), "comic note is due tonight after Mom handoff");
 const proofNow = new Date("2026-08-20T07:10:00-05:00");
@@ -1006,7 +1006,7 @@ assert(Game.khanStripHtml("Chemistry", { classId: "chemistry" }).indexOf("/ela")
 assert.strictEqual(Game.classDueLabel(3), "3 due");
 assert.strictEqual(Game.classDueLabel(0), "Nothing due yet");
 assert.strictEqual(Game.classDueCount(english, week), 4, "English has 4 due from week.json");
-assert.strictEqual(Game.classDueCount(byId.chemistry, week), 2, "Chemistry has About Me Slides assignment + discussion due");
+assert.strictEqual(Game.classDueCount(byId.chemistry, week), 3, "Chemistry has About Me assignment + discussion + penny demo due");
 assert.strictEqual(Game.classDueCount(byId["web-design"], week), 2, "Web Design has 1.1 and 1.2 due");
 assert.strictEqual(Game.classPeriodLine(band), "P1 Marching Band");
 
