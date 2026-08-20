@@ -3889,18 +3889,21 @@
       const st = workFeedStatus(w, clock);
       const cid = st.classId;
       const href = link ? (link + (link.indexOf("?") >= 0 ? "&" : "?") + "class=" + encodeURIComponent(cid) + "&work=" + encodeURIComponent(w.id) + "#needs-you") : "";
+      const plan = workPlanFor(opts && opts.family, w.id);
+      const planLine = plan ? `<span class="needs-you-plan-text">${esc(plan.text)}</span>` : "";
+      const tools = `<span class="needs-you-tools"><button type="button" class="tiny needs-you-plan" data-plan-work="${esc(w.id)}">Plan</button><button type="button" class="tiny needs-you-edit" data-edit-work="${esc(w.id)}">Edit</button></span>`;
       const inner = `
         <span class="needs-you-class">${esc(classShortLabel(cid) || classNameForId(cid) || cid)}</span>
         <span class="needs-you-copy">
           <span class="needs-you-title">${esc(wTitleStrip(w.title))}</span>
           <span class="needs-you-due">${esc(workDueLabel(w))}</span>
+          ${planLine}
         </span>
         ${workStatusChipsHtml(w, clock)}`;
-      const edit = `<button type="button" class="tiny needs-you-edit" data-edit-work="${esc(w.id)}">Edit</button>`;
       const row = href
         ? `<a class="needs-you-row" href="${esc(href)}">${inner}</a>`
         : `<div class="needs-you-row" role="button" tabindex="0" data-needs-work="${esc(w.id)}" data-needs-class="${esc(cid)}">${inner}</div>`;
-      return `<li class="needs-you-item">${row}${edit}</li>`;
+      return `<li class="needs-you-item">${row}${tools}</li>`;
     }).join("")}</ul>`;
   }
 
@@ -5659,7 +5662,7 @@
     if (!row.at) row.at = nowIso();
     next.notes = next.notes.concat([row]);
     saveFamily(next);
-    if (row.from === "bennett" && String(row.text || "").trim()) {
+    if (row.from === "bennett" && row.kind !== "plan" && String(row.text || "").trim()) {
       addBananas(WORK_ACTION_BANANAS);
     }
     track(row.kind === "question" ? "ask_parent" : "work_note", {
@@ -5722,7 +5725,43 @@
   }
 
   function isBennettAsk(n) {
-    return !!(n && n.from === "bennett" && n.kind !== "note" && String(n.text || "").trim());
+    return !!(n && n.from === "bennett" && n.kind !== "note" && n.kind !== "plan" && String(n.text || "").trim());
+  }
+
+  function isBennettPlan(n) {
+    return !!(n && n.from === "bennett" && n.kind === "plan" && String(n.text || "").trim());
+  }
+
+  function workPlanFor(family, workId) {
+    const id = String(workId || "");
+    if (!id) return null;
+    const rows = ((family && family.notes) || []).filter((n) => isBennettPlan(n) && String(n.targetId || "") === id);
+    rows.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    return rows[0] || null;
+  }
+
+  function saveWorkPlan(family, work, text) {
+    const line = String(text || "").trim().slice(0, 2000);
+    const next = normalizeFamily(family);
+    const targetId = work && work.id ? String(work.id) : "";
+    if (!targetId) return next;
+    const existing = workPlanFor(next, targetId);
+    if (!line) {
+      if (existing) return deleteNote(next, existing.id);
+      return next;
+    }
+    if (existing) return updateNote(next, existing.id, { text: line, at: nowIso() });
+    return addNote(next, {
+      id: uid("plan"),
+      targetType: "work",
+      targetId,
+      from: "bennett",
+      kind: "plan",
+      text: line,
+      at: nowIso(),
+      classId: classIdForWork(work) || undefined,
+      termId: work.termId || undefined
+    });
   }
 
   function isParentAuthor(n) {
@@ -5753,9 +5792,13 @@
     if (own) {
       if (reply) return "You replied";
       if (noted) return "You noted";
+      if (note && note.kind === "plan") return "You planned";
       return "You asked";
     }
-    if (from === "bennett") return noted ? "Bennett noted" : "Bennett asked";
+    if (from === "bennett") {
+      if (note && note.kind === "plan") return "Bennett planned";
+      return noted ? "Bennett noted" : "Bennett asked";
+    }
     if (from === "mom") return reply ? "Mom replied" : "Mom noted";
     if (from === "orin") return reply ? "Dad replied" : "Dad noted";
     if (from === "parent") return reply ? "Mom/Dad replied" : "Parent note";
@@ -5814,10 +5857,10 @@
         return;
       }
       if (v === "mom") {
-        if (isBennettAsk(note) || (isParentReply(note) && note.from === "orin")) n += 1;
+        if (isBennettAsk(note) || isBennettPlan(note) || (isParentReply(note) && note.from === "orin")) n += 1;
         return;
       }
-      if (isBennettAsk(note) || (isParentReply(note) && note.from === "mom")) n += 1;
+      if (isBennettAsk(note) || isBennettPlan(note) || (isParentReply(note) && note.from === "mom")) n += 1;
     });
     if (v !== "bennett") {
       (((family && family.reflections && family.reflections.answers) || [])).forEach((row) => {
@@ -6628,14 +6671,16 @@
     const asks = inboxAsks(family).slice().sort((a, b) => String(threadStamp(family, b)).localeCompare(String(threadStamp(family, a))));
     const answers = (((family && family.reflections && family.reflections.answers) || [])).slice()
       .filter((a) => a && String(a.text || "").trim());
+    const plans = ((family && family.notes) || []).filter(isBennettPlan);
     const feed = asks.map((ask) => ({ kind: "ask", ask, at: threadStamp(family, ask) }))
       .concat(answers.map((a) => ({ kind: "checkin", answer: a, at: a.at || "" })))
+      .concat(plans.map((p) => ({ kind: "plan", plan: p, at: p.at || "" })))
       .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
     if (!feed.length) {
       const kid = view === "bennett";
       const hint = kid
-        ? "Ask on a week card, or answer the check-in on This Week. Mom and Dad see both, including replies."
-        : "When he taps Ask or answers the check-in on This Week, it shows up here. Newest first.";
+        ? "Ask on a week card, write a Needs you plan, or answer the check-in on This Week. Mom and Dad see all of it."
+        : "When he taps Ask, writes a plan, or answers the check-in on This Week, it shows up here. Newest first.";
       return `<div class="messages-empty">
         <p class="empty">${kid ? "No messages yet." : "No asks or check-ins yet."}</p>
         <p class="messages-empty-hint">${esc(hint)}</p>
@@ -6683,8 +6728,21 @@
         <p class="msg-stamp">${esc(fmtStamp(a.at))}</p>
         ${canDelete ? `<div class="parent-actions"><button type="button" class="tiny danger" data-del-checkin="${esc(a.id)}">Delete</button></div>` : ""}
       </article>`;
+    const planCard = (p) => {
+      const title = noteTargetLabel(week, p.targetType, p.targetId) || "This item";
+      return `
+      <article class="inbox-card msg-card msg-card-done">
+        <p class="msg-kicker">Plan</p>
+        <h3>${p.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}</h3>
+        <p class="msg-ask-from">${esc(noteAuthorLabel(p, view))}</p>
+        <p class="msg-ask">${esc(p.text)}</p>
+        <p class="msg-stamp">${esc(fmtStamp(p.at))}</p>
+      </article>`;
+    };
     return `<section class="msg-section">${feed.map((row) => {
-      return row.kind === "ask" ? askCard(row.ask) : checkCard(row.answer);
+      if (row.kind === "ask") return askCard(row.ask);
+      if (row.kind === "plan") return planCard(row.plan);
+      return checkCard(row.answer);
     }).join("")}</section>`;
   }
 
@@ -7570,6 +7628,9 @@
     needsYouListHtml,
     needsYouSectionHtml,
     needsYouCollapsed,
+    workPlanFor,
+    saveWorkPlan,
+    isBennettPlan,
     setNeedsYouCollapsed,
     bindNeedsYouToggle,
     pickClassId,

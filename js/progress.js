@@ -455,6 +455,37 @@
     return `<label class="edit-label">Class<select id="ef-classId">${opts.join("")}</select></label>`;
   }
 
+  function openWorkPlan(id) {
+    const key = String(id || "").trim();
+    const w = workFromId(key) || ((findClassItem(key) || {}).item);
+    if (!w) {
+      Game.toast("That assignment is not on the board yet.");
+      return;
+    }
+    const cur = Game.workPlanFor(family, w.id || key);
+    openSheet("Plan", `
+      <p class="plan-kicker">${Game.esc(w.title || "This item")}</p>
+      <p class="plan-hint">What's your plan? Mom and Dad will see this.</p>
+      ${editForm([
+        { name: "plan", label: "Plan", value: (cur && cur.text) || "", type: "textarea", max: 2000 }
+      ])}
+    `);
+    const save = document.getElementById("edit-save");
+    if (save) save.textContent = "Save plan";
+    save.addEventListener("click", () => {
+      const text = fieldValue("plan");
+      if (!String(text || "").trim()) {
+        Game.toast("Write the plan first.");
+        return;
+      }
+      family = Game.saveWorkPlan(family, w, text);
+      closeSheet();
+      Game.familySavedToast("Plan saved");
+      renderNeedsYouPane();
+      Game.flushFamilyNotes(family).catch(() => {});
+    });
+  }
+
   function openWorkEdit(id) {
     const key = String(id || "").trim();
     const w = workFromId(key);
@@ -789,7 +820,7 @@
   function renderNeedsYouPane() {
     const host = document.getElementById("needs-you");
     if (!host) return;
-    const list = Game.needsYouSectionHtml(week, new Date(), { empty: true });
+    const list = Game.needsYouSectionHtml(week, new Date(), { empty: true, family });
     host.innerHTML = list;
     host.classList.toggle("collapsed", Game.needsYouCollapsed());
     host.querySelectorAll("[data-needs-work]").forEach((btn) => {
@@ -875,6 +906,13 @@
       if (e.target.id === "sheet") closeSheet();
     });
     document.addEventListener("click", (e) => {
+      const plan = e.target && e.target.closest && e.target.closest("[data-plan-work]");
+      if (plan) {
+        e.preventDefault();
+        e.stopPropagation();
+        openWorkPlan(plan.getAttribute("data-plan-work"));
+        return;
+      }
       const edit = e.target && e.target.closest && e.target.closest("[data-edit-work]");
       if (!edit) return;
       e.preventDefault();

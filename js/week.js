@@ -315,7 +315,7 @@
   function renderNeedsYou() {
     const host = document.getElementById("needs-you");
     if (!host) return;
-    const html = Game.needsYouSectionHtml(week, new Date(), { link: "progress.html" });
+    const html = Game.needsYouSectionHtml(week, new Date(), { link: "progress.html", family });
     host.hidden = !html;
     host.classList.toggle("collapsed", !!(html && Game.needsYouCollapsed()));
     host.innerHTML = html || "";
@@ -1463,6 +1463,32 @@
     hud();
   }
 
+  function openPlan(workId) {
+    const w = findWork(workId);
+    if (!w) return;
+    const cur = Game.workPlanFor(family, w.id);
+    openSheet("Plan", `
+      <p class="plan-kicker">${Game.esc(w.title || "This item")}</p>
+      <p class="plan-hint">What's your plan? Mom and Dad will see this.</p>
+      ${editForm([
+        { name: "plan", label: "Plan", value: (cur && cur.text) || "", type: "textarea", max: 2000 }
+      ], "plan-save")}
+    `);
+    document.getElementById("plan-save").addEventListener("click", () => {
+      const text = fieldValue("plan");
+      if (!String(text || "").trim()) {
+        Game.toast("Write the plan first.");
+        return;
+      }
+      family = Game.saveWorkPlan(family, w, text);
+      closeSheet();
+      Game.familySavedToast("Plan saved");
+      renderNeedsYou();
+      refreshCardsInPlace();
+      Game.flushFamilyNotes(family).catch(() => {});
+    });
+  }
+
   function editForm(fields, saveId) {
     const rows = fields.map((f) => {
       if (f.type === "textarea") {
@@ -2152,18 +2178,8 @@
   }
 
   function driftNotes() {
-    if (Game.prefersReducedMotion()) return;
     const field = document.getElementById("notes");
-    const glyphs = ["♪", "♫", "♩"];
-    for (let i = 0; i < 5; i += 1) {
-      const n = document.createElement("span");
-      n.className = "note";
-      n.textContent = glyphs[i % glyphs.length];
-      n.style.left = (8 + i * 18) + "%";
-      n.style.animationDuration = (12 + i * 1.4) + "s";
-      n.style.animationDelay = (i * 1.6) + "s";
-      field.appendChild(n);
-    }
+    if (field) field.innerHTML = "";
   }
 
   function bindEggs() {
@@ -2356,6 +2372,13 @@
       if (e.target.id === "sheet") closeSheet();
     });
     document.addEventListener("click", (e) => {
+      const plan = e.target && e.target.closest && e.target.closest("[data-plan-work]");
+      if (plan) {
+        e.preventDefault();
+        e.stopPropagation();
+        openPlan(plan.getAttribute("data-plan-work"));
+        return;
+      }
       const edit = e.target && e.target.closest && e.target.closest("[data-edit-work]");
       if (!edit) return;
       e.preventDefault();

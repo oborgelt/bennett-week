@@ -37,6 +37,8 @@ body.week-page {
   min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior-y: none;
+  scroll-behavior: auto;
 }
 
 html:has(body.week-page.in-treehouse),
@@ -928,12 +930,40 @@ body.site-view-kid .class-card-tools {
   min-height: 44px;
 }
 
-.needs-you-edit {
+.needs-you-edit,
+.needs-you-plan {
   flex: 0 0 auto;
-  margin-top: 8px;
+  margin-top: 0;
   position: relative;
   z-index: 3;
   pointer-events: auto;
+}
+
+.needs-you-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  flex: 0 0 auto;
+  margin-top: 8px;
+}
+
+.needs-you-plan-text {
+  color: var(--ace);
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.plan-kicker {
+  margin: 0 0 6px;
+  font-weight: 750;
+}
+
+.plan-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
 }
 
 .needs-you-list li:first-child .needs-you-row {
@@ -1750,18 +1780,16 @@ nav.week-nav button:disabled { opacity: 0.35; }
 }
 
 .note-field {
-  position: fixed;
+  display: none;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: 1;
+  z-index: 0;
 }
 
 .note {
-  position: absolute;
-  color: rgba(198, 224, 58, 0.28);
-  font-size: 1.1rem;
-  animation: note-drift 14s linear infinite;
+  display: none;
 }
 
 /* treehouse walk-in + sheets */
