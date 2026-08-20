@@ -837,6 +837,14 @@
         "status": "submitted",
         "points": 5,
         "submitted_at": "2026-08-17T13:14:00"
+      },
+      "school_status": "submitted",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
       }
     },
     {
@@ -866,6 +874,15 @@
             "ratings": "5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence"
           }
         ]
+      },
+      "school_status": "open",
+      "student_status": null,
+      "submitted_at": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
       }
     },
     {
@@ -882,6 +899,14 @@
       "canvas": {
         "status": "open",
         "points": 1
+      },
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
       }
     },
     {
@@ -903,6 +928,19 @@
         "points": 1,
         "score": 0,
         "submitted_at": "2026-08-19T15:33:00"
+      },
+      "school_status": "late",
+      "student_status": {
+        "said": "Already emailed the teacher about About Me.",
+        "source": "Plaud with Orin 2026-08-20 ~7:30am",
+        "as_of": "2026-08-20T07:30:00"
+      },
+      "discrepancy": true,
+      "discrepancy_reason": "Bennett says he emailed Pfeiff; Canvas still late 0/1. Teacher-email send not verified — do not mark follow-up sent.",
+      "followup": {
+        "due_by": "2026-08-21T14:40:00",
+        "email_draft": null,
+        "email_sent": false
       }
     },
     {
@@ -919,6 +957,14 @@
       "canvas": {
         "status": "late",
         "points": 20
+      },
+      "school_status": "late",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
       }
     },
     {
@@ -935,6 +981,14 @@
       "canvas": {
         "status": "open",
         "points": 40
+      },
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
       }
     },
     {
@@ -942,14 +996,32 @@
       "title": "English 10: Letter to the teacher",
       "due": "2026-08-20T13:50:00",
       "note": "Today Thu is last in-class day for letter + personalize notebooks.",
-      "suggest_from": "2026-08-18"
+      "suggest_from": "2026-08-18",
+      "school_status": null,
+      "student_status": null,
+      "submitted_at": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      }
     },
     {
       "id": "eng-notebook",
       "title": "English 10: Bring spiral notebook",
       "due": "2026-08-21T13:05:00",
       "note": "Spiral or composition notebook. Also highlighter and 100 index cards. Still open Fri 8/21.",
-      "suggest_from": "2026-08-15"
+      "suggest_from": "2026-08-15",
+      "school_status": "open",
+      "student_status": null,
+      "submitted_at": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      }
     }
   ],
   "notes": [
@@ -967,6 +1039,11 @@
       "date": "2026-08-20",
       "title": "Morning check (~7:10am)",
       "text": "No new Canvas items overnight. Dashboard: \u201cNothing new needs attention.\u201d Chem discussion now submitted Aug 19 3:33pm, flagged LATE, still 0/1 (was Missing). Chem assignment still blank \u2013/1, due Tue 8/18 11:59, not labeled Missing. Web 1.1 still blank \u2013/20, past due (CodeHS 1.1.1 Websites in Your Life, 1.1.2 What is Web Design?, 1.1.3 Your Interests, 1.1.4 Meet a Web Developer video). Web 1.2 still open \u2013/40, already on Outlook, due Mon 8/24 9:20. English comic \u2013/10 due TODAY Thu 11:59pm after 4:30 handoff to Mom. Letter to teacher / personalize notebooks: last in-class day today. Spiral notebook still open Fri 8/21. Name video still submitted 8/17 1:14pm, ungraded /5. ParentVUE: no new mail (newest still Fillingham Sun 8/16 7:40pm photo link). Alerts only July items. Sociology A- 91% last update 8/19, 0 missing. All other classes N/A 0 missing. Attendance 8/19 clean, 8/20 no mark. Do not flag 8/14 Chem absence. Published Canvas still 4: Band, English 10, Web Design I, Chemistry. Geometry/Sociology/S&C/AI unpublished. oeband.com unchanged (fall marching dates, calendar under construction, $350 marching contribution). Forms & Fees Night tonight 5:30. Picture day Wed 8/26. 10.1 Case Launch 8/25. Today: Dad until 4:30, then Mom overnight."
+    },
+    {
+      "date": "2026-08-20",
+      "title": "Discrepancy layer (Plaud 7:30am)",
+      "text": "Cadence: 2:30pm primary, 9:00pm bedtime pull added, 7:00am kept. Chem About Me discussion: school late 0/1 submitted 8/19 3:33pm; Bennett told Orin he emailed Pfeiff; follow-up send not verified. Do not invent email sent. No new live school pull in this write — as_of stays 7:10am."
     },
     {
       "date": "2026-08-25",
