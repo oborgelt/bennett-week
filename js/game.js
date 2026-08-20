@@ -5906,7 +5906,9 @@
   }
 
   function shouldGateAdultPage(file, view) {
-    return siteViewHidesAdult(view) && isAdultDeskPage(file);
+    const v = normalizeSiteView(view || siteView());
+    if (v === "me") return false;
+    return siteViewHidesAdult(v) && isAdultDeskPage(file);
   }
 
   function siteViewControlHtml(view) {
@@ -5977,11 +5979,14 @@
 
   function hideAdultShortcuts(hide) {
     if (!document.querySelectorAll) return;
+    const me = normalizeSiteView(siteView()) === "me";
+    const on = !!hide && !me;
     const nodes = document.querySelectorAll(".admin-chip, .parent-chip, .refs-chip, a[href='admin.html'], a[href='parent.html'], a[href='refs.html'], a[href='mom.html']");
     Array.from(nodes || []).forEach((el) => {
       if (!el) return;
       if (el.closest && el.closest(".site-view-gate")) return;
-      el.hidden = !!hide;
+      el.hidden = on;
+      if (!on && el.removeAttribute) el.removeAttribute("hidden");
     });
   }
 

@@ -176,7 +176,7 @@ header.week-head {
   top: 0;
   z-index: 50;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: max-content minmax(0, 1fr);
   gap: 6px;
   align-items: center;
   width: 100%;
@@ -185,6 +185,7 @@ header.week-head {
   padding: max(6px, env(safe-area-inset-top)) 12px 6px;
   background: #071618;
   border-bottom: 1px solid rgba(246, 241, 228, 0.12);
+  overflow: visible;
 }
 
 .hud-bar .bananas,
@@ -200,6 +201,7 @@ header.week-head {
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
+  min-width: 0;
 }
 
 .site-view {
@@ -419,6 +421,17 @@ body.site-view-kid [data-del],
 body.site-view-kid [data-undo-trophy],
 body.site-view-kid [data-add-item],
 body.site-view-kid .class-card-tools {
+  display: none !important;
+}
+
+html[data-site-view="me"] .parent-chip,
+html[data-site-view="me"] .admin-chip {
+  display: inline-flex !important;
+}
+
+.parent-chip[hidden],
+.admin-chip[hidden],
+.story-chip[hidden] {
   display: none !important;
 }
 
@@ -3495,8 +3508,8 @@ body.progress-page .dash {
   .class-pane { overflow: visible; }
   .class-list { overflow: visible; }
   .progress-tagline { display: none; }
-  .progress-hud { grid-template-columns: auto auto; }
-  .progress-hud .hud-nav { grid-column: auto; }
+  body.progress-page .progress-hud { grid-template-columns: auto auto; }
+  body.progress-page .progress-hud .hud-nav { grid-column: auto; }
   .stat-card { padding: 8px 10px 6px; }
   .stat-lead { font-size: 0.95rem; }
   .stat-sub { margin-bottom: 4px; }
