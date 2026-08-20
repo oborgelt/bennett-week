@@ -235,9 +235,35 @@ Anything labeled **TEST** is look-and-feel filler, not a real family rule or a r
 - `progress.html?class=chemistry` expands that class.
 - Help-opened timestamps are stored on the existing `bw-progress` object (`helpOpened`), not a new store.
 
+**Needs follow-up (school vs Bennett)**
+- Canvas / ParentVUE is what the teacher logged. Jungle Jam is what Bennett marked done. Those two disagree when work is finished but still missing, unlogged, or 0.
+- Progress opens with a yellow **Needs follow-up** strip — after-school and bedtime check-ins that answer “do I need to send any emails?” This Week shows the same count and links here. Do not bury this under Trophy Room.
+- Each discrepancy shows school vs Bennett, the follow-up deadline, and a copy-ready teacher email (`Copy email` or `mailto:`). The app does not send mail.
+- `progress.html?checkin=after-school` and `?checkin=bedtime` are the two parent check-ins they asked for. Do not change Grok Bot cron in this repo.
+- `followup.email_sent` is only true when Parenting wrote it. A student claim that they emailed is not a send. If `email_draft` is null, Progress generates a copy-ready note from title, teacher in the note, `submitted_at`, and `school_status`.
+
 Bennett can see his activity and class progress. Parents can open the same page. Nobody sees the parent achievement catalog or locked trophies here.
 
 Grades stay seed/TEST until a real feed exists.
+
+## week.json (Parenting agent)
+
+Parenting writes `week.json`. The lobby only reads it. Keep old work rows working if the new fields are missing.
+
+On each `work[]` item, in addition to `id`, `title`, `due`, `status`, `score`, `points`, `late`, `submitted_at`, `source`, `canvas`, and `note`:
+
+| Field | Who | Values |
+| --- | --- | --- |
+| `school_status` | Canvas / ParentVUE | string: `open` · `missing` · `late` · `submitted` · `graded` (or null) |
+| `student_status` | Bennett / Parenting | `null` **or** `{ "said", "source", "as_of" }` — not always a `"done"` string |
+| `submitted_at` | Student or Canvas | Chicago-local ISO, or `null` |
+| `discrepancy` | Compare the two | boolean. `true` only when Parenting marked a school-vs-Bennett gap |
+| `discrepancy_reason` | Parenting | string or `null` |
+| `followup` | Plan for that gap | `{ "due_by", "email_draft", "email_sent" }` |
+
+`email_draft` is often `null` even when `discrepancy` is true. The lobby generates a copy-ready teacher email from `title`, the teacher name in `note`, `submitted_at`, and `school_status`. `email_sent: false` means do not show it as sent. Do not invent grades, due dates, or that an email went out.
+
+Parenting owns `week.json`. This PR does not rewrite the live feed. Proof row `chem-aboutme-disc` on as_of 2026-08-20T07:10:00: school `late` 0/1, `student_status` `{ said, source: Plaud with Orin 2026-08-20 ~7:30am, as_of }`, `discrepancy: true` with a `discrepancy_reason`, `followup.due_by` 2026-08-21T14:40:00, `email_draft` null, `email_sent` false. The other 7 rows keep a `followup` object. `eng-notebook` is `school_status: open`. Dated note: **Discrepancy layer (Plaud 7:30am)**.
 
 ## Easter eggs
 
@@ -258,7 +284,7 @@ Wholesome only. Try tapping the banner band, the little clarinet, and a shy tenn
 - `progress.html` — activity + class dashboard
 - `parent.html` — parent desk
 - `mom.html` — redirect to `parent.html`
-- `week.json` — calendar, work, parenting time
+- `week.json` — calendar, work, parenting time, school-vs-Bennett status, follow-up drafts
 - `progress.json` — class list + TEST grade seed + sample opens
 - `achievements.json` — streak catalog + incentives + `reward` / `rewardUnlock`
 - `characters.json` — Ace / Riff / Scorch / Deuce / Fuzz roster + `comicStartsAfter: 3`
@@ -281,7 +307,7 @@ Parents assign a teammate (or a tool / ability) on a streak, then award that str
 4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / outfits / abilities with the gear PNG. Locked gear stays **???**. **Sounds** shows earned audio / links; locked names stay **???**.
 5. After 3 character unlocks, **Story** is available — a choose-your-own-adventure, not a toast. An attached unlocked sound can play on a story or week beat.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **53**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **132**.
 
 ## Locker refs (Orin)
 
