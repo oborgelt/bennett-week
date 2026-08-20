@@ -834,6 +834,7 @@
       mode,
       page: "progress.html"
     });
+    host.classList.toggle("collapsed", Game.followupCollapsed());
   }
 
   function renderNeedsYouPane() {

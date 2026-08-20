@@ -295,10 +295,10 @@
       selectedClassId = Game.pickClassId(classes, week, days, selectedClassId);
     }
     host.innerHTML = classes.map((cls) => {
-      const count = Game.classAttentionCount(cls, week, days);
+      const count = Game.classAttentionCount(cls, week, days, new Date());
       const on = cls.id === selectedClassId;
       const badge = count > 0
-        ? `<span class="class-chip-badge" aria-label="${count} need attention">${count}</span>`
+        ? `<span class="class-chip-badge" aria-label="${count} due">${count}</span>`
         : "";
       return `
         <button type="button" class="class-chip${on ? " on" : ""}" data-class-id="${Game.esc(cls.id)}" aria-pressed="${on ? "true" : "false"}">
@@ -315,8 +315,9 @@
   function renderFollowup() {
     const host = document.getElementById("followup-strip");
     if (!host) return;
-    const html = Game.followupStripHtml(week, new Date(), { link: "progress.html" });
+    const html = Game.followupStripHtml(week, new Date(), { link: "progress.html", classes: standingClasses() });
     host.hidden = !html;
+    host.classList.toggle("collapsed", !!(html && Game.followupCollapsed()));
     host.innerHTML = html || "";
   }
 

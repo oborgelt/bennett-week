@@ -27,7 +27,8 @@
     selectedClass: "bw-selected-class",
     workDisputes: "bw-work-disputes",
     classVisits: "bw-class-visits",
-    needsYouCollapsed: "bw-needs-you-collapsed"
+    needsYouCollapsed: "bw-needs-you-collapsed",
+    followupCollapsed: "bw-followup-collapsed"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -2172,12 +2173,12 @@
     const src = librarySrc(item);
     if (item.kind === "video") {
       return src
-        ? `<video class="lib-play" src="${esc(src)}" poster="${esc(item.poster || "")}" controls playsinline></video>`
+        ? `<div class="lib-preview"><video class="lib-play" src="${esc(src)}" poster="${esc(item.poster || "")}" controls playsinline></video><button type="button" class="btn primary" data-play-preview>Play</button></div>`
         : `<p class="empty">${item.device ? "On this device — file is still loading." : "No video path."}</p>`;
     }
     if (item.kind === "image") {
       return src
-        ? `<img class="lib-play" src="${esc(src)}" alt="">`
+        ? `<div class="lib-preview"><img class="lib-play" src="${esc(src)}" alt=""></div>`
         : `<p class="empty">${item.device ? "On this device — file is still loading." : "No image path."}</p>`;
     }
     if (item.kind === "audio") {
@@ -2200,6 +2201,27 @@
       ? `<iframe class="lib-embed" src="${esc(embed)}" title="${esc(item.label || "YouTube")}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
       : "";
     return `${open}${frame}`;
+  }
+
+  function bindLibraryPreviewPlay() {
+    if (typeof document === "undefined" || !document.addEventListener) return;
+    if (document.documentElement && document.documentElement.dataset.libPreviewPlayBound === "1") return;
+    if (document.documentElement) document.documentElement.dataset.libPreviewPlayBound = "1";
+    document.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest && e.target.closest("[data-play-preview]");
+      if (!btn) return;
+      e.preventDefault();
+      const wrap = (btn.closest && btn.closest(".lib-preview")) || btn.parentNode;
+      const media = wrap && wrap.querySelector ? wrap.querySelector("video, audio") : null;
+      if (!media) return;
+      if (media.paused) {
+        Promise.resolve(media.play()).catch(function () {});
+        btn.textContent = "Pause";
+      } else {
+        media.pause();
+        btn.textContent = "Play";
+      }
+    });
   }
 
   function bananasOf(ach) {
@@ -3974,17 +3996,25 @@
     const cards = rows.length
       ? rows.map((w) => followupCardHtml(w, classes, clock)).join("")
       : `<p class="empty">No school-vs-Bennett discrepancies in week.json.</p>`;
+    const collapsed = followupCollapsed();
+    const count = pending.length || rows.length;
+    const hint = collapsed ? (count ? "Show " + count : "Show") : "Hide";
     return `
-      <div class="followup-switch" role="tablist" aria-label="Check-in">
-        <a class="followup-tab${mode === "after-school" ? " on" : ""}" href="${esc(afterHref + sep + "checkin=after-school")}#followup-pane" role="tab" aria-selected="${mode === "after-school" ? "true" : "false"}">After school</a>
-        <a class="followup-tab${mode === "bedtime" ? " on" : ""}" href="${esc(afterHref + sep + "checkin=bedtime")}#followup-pane" role="tab" aria-selected="${mode === "bedtime" ? "true" : "false"}">Bedtime</a>
-      </div>
-      <div class="followup-answer${pending.length ? " yes" : " no"}">
-        <p class="followup-kicker">${esc(checkinModeLabel(mode))} · ${esc(checkinAsk)}</p>
-        <h2>Needs follow-up</h2>
-        <p class="followup-lead">${esc(answer)}</p>
-      </div>
-      <div class="followup-body">${cards}</div>`;
+      <button type="button" class="needs-you-toggle followup-toggle" data-followup-toggle aria-expanded="${collapsed ? "false" : "true"}">
+        <span class="followup-toggle-title">Needs follow-up</span>
+        <span class="needs-you-toggle-hint followup-toggle-hint">${esc(hint)}</span>
+      </button>
+      <div class="followup-fold"${collapsed ? " hidden" : ""}>
+        <div class="followup-switch" role="tablist" aria-label="Check-in">
+          <a class="followup-tab${mode === "after-school" ? " on" : ""}" href="${esc(afterHref + sep + "checkin=after-school")}#followup-pane" role="tab" aria-selected="${mode === "after-school" ? "true" : "false"}">After school</a>
+          <a class="followup-tab${mode === "bedtime" ? " on" : ""}" href="${esc(afterHref + sep + "checkin=bedtime")}#followup-pane" role="tab" aria-selected="${mode === "bedtime" ? "true" : "false"}">Bedtime</a>
+        </div>
+        <div class="followup-answer${pending.length ? " yes" : " no"}">
+          <p class="followup-kicker">${esc(checkinModeLabel(mode))} · ${esc(checkinAsk)}</p>
+          <p class="followup-lead">${esc(answer)}</p>
+        </div>
+        <div class="followup-body">${cards}</div>
+      </div>`;
   }
 
   function followupStripHtml(week, now, opts) {
@@ -3993,12 +4023,52 @@
     if (!pending.length) return "";
     const first = pending[0];
     const more = pending.length > 1 ? " + " + (pending.length - 1) + " more" : "";
-    const href = ((opts && opts.link) || "progress.html") + "?checkin=after-school#followup-pane";
+    const collapsed = followupCollapsed();
+    const hint = collapsed ? "Show " + pending.length : "Hide";
+    const classes = (opts && opts.classes) || [];
+    const cards = pending.map((w) => followupCardHtml(w, classes, clock)).join("");
     return `
-      <a class="followup-strip-link" href="${esc(href)}">
-        <span class="followup-strip-kicker">Needs follow-up</span>
-        <span class="followup-strip-copy">${esc(pending.length + " teacher email" + (pending.length === 1 ? "" : "s") + " · " + wTitleStrip(first.title) + more)}</span>
-      </a>`;
+      <button type="button" class="needs-you-toggle followup-toggle" data-followup-toggle aria-expanded="${collapsed ? "false" : "true"}">
+        <span class="followup-toggle-title">Needs follow-up</span>
+        <span class="needs-you-toggle-hint followup-toggle-hint">${esc(hint)}</span>
+      </button>
+      <div class="followup-fold"${collapsed ? " hidden" : ""}>
+        <p class="followup-strip-copy">${esc(pending.length + " teacher email" + (pending.length === 1 ? "" : "s") + " · " + wTitleStrip(first.title) + more)}</p>
+        ${cards}
+      </div>`;
+  }
+
+  function followupCollapsed() {
+    try {
+      return read(KEYS.followupCollapsed, false) === true || read(KEYS.followupCollapsed, "") === "1";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function setFollowupCollapsed(on) {
+    write(KEYS.followupCollapsed, !!on);
+    return !!on;
+  }
+
+  function bindFollowupToggle() {
+    if (typeof document === "undefined" || !document.addEventListener) return;
+    if (document.documentElement && document.documentElement.dataset.followupToggleBound === "1") return;
+    if (document.documentElement) document.documentElement.dataset.followupToggleBound = "1";
+    document.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest && e.target.closest("[data-followup-toggle]");
+      if (!btn) return;
+      e.preventDefault();
+      const collapsed = setFollowupCollapsed(!followupCollapsed());
+      const host = (btn.closest && (btn.closest("#followup-pane") || btn.closest("#followup-strip") || btn.closest(".followup-pane") || btn.closest(".followup-strip"))) || btn.parentNode;
+      if (host && host.classList) host.classList.toggle("collapsed", collapsed);
+      btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      const hint = btn.querySelector(".followup-toggle-hint");
+      const fold = host && host.querySelector ? host.querySelector(".followup-fold") : null;
+      const n = fold ? fold.querySelectorAll(".followup-card").length : 0;
+      if (hint) hint.textContent = collapsed ? (n ? "Show " + n : "Show") : "Hide";
+      if (fold) fold.hidden = collapsed;
+    });
   }
 
   function bindFollowupCopy() {
@@ -4422,19 +4492,15 @@
     });
   }
 
-  function classAttentionCount(cls, week, days) {
+  function classAttentionCount(cls, week, days, now) {
     const classId = cls && cls.id;
     if (!classId) return 0;
-    const board = days && days.length ? days : nextNChicagoDays(7);
+    const clock = now || new Date();
     let n = 0;
     ((week && week.work) || []).forEach((w) => {
       if (!belongsToClass(w, classId)) return;
       if (workState(w.id).done) return;
-      if (workOnBoard(w, board) || workIsLater(w, board)) n += 1;
-    });
-    ((week && week.events) || []).forEach((e) => {
-      if (!belongsToClass(e, classId)) return;
-      if (eventOnBoard(e, board)) n += 1;
+      if (workFeedStatus(w, clock).needsYou) n += 1;
     });
     return n;
   }
@@ -4455,11 +4521,11 @@
     return next;
   }
 
-  function pickClassId(classes, week, days, stored) {
+  function pickClassId(classes, week, days, stored, now) {
     const list = (classes || []).filter((c) => c && c.id);
     const keep = String(stored || "");
     if (keep && list.some((c) => c.id === keep)) return keep;
-    const badged = list.find((c) => classAttentionCount(c, week, days) > 0);
+    const badged = list.find((c) => classAttentionCount(c, week, days, now) > 0);
     if (badged) return badged.id;
     if (list.some((c) => c.id === "english-10")) return "english-10";
     if (list.some((c) => c.id === "geometry")) return "geometry";
@@ -8009,6 +8075,9 @@
     followupCardHtml,
     followupSectionHtml,
     followupStripHtml,
+    followupCollapsed,
+    setFollowupCollapsed,
+    bindFollowupToggle,
     bindFollowupCopy,
     mailtoHref,
     needsYouWork,
@@ -8107,7 +8176,9 @@
     bindUndoCue();
     bindAudioUnlock();
     bindNeedsYouToggle();
+    bindFollowupToggle();
     bindFollowupCopy();
+    bindLibraryPreviewPlay();
     applySiteView();
     bindHudNavClicks();
   } else {
@@ -8116,7 +8187,9 @@
       bindUndoCue();
       bindAudioUnlock();
       bindNeedsYouToggle();
+      bindFollowupToggle();
       bindFollowupCopy();
+      bindLibraryPreviewPlay();
       applySiteView();
       bindHudNavClicks();
     });
