@@ -263,7 +263,7 @@ On each `work[]` item, in addition to `id`, `title`, `due`, `status`, `score`, `
 
 `email_draft` is often `null` even when `discrepancy` is true. The lobby generates a copy-ready teacher email from `title`, the teacher name in `note`, `submitted_at`, and `school_status`. `email_sent: false` means do not show it as sent. Do not invent grades, due dates, or that an email went out.
 
-Proof row `chem-aboutme-disc` (as_of 2026-08-20T07:10:00): school `late` 0/1, submitted Aug 19 3:33pm, `student_status.said` “Already emailed the teacher about About Me.”, `discrepancy: true`, `followup.due_by` 2026-08-21T14:40:00, `email_draft` null, `email_sent` false, note names Pfeiff. Only that row is `discrepancy: true`. `chem-about-me` stays school open / student null / false. Web 1.1 is late with no student claim.
+Parenting owns `week.json`. This PR does not rewrite the live feed. Proof row `chem-aboutme-disc` on as_of 2026-08-20T07:10:00: school `late` 0/1, `student_status` `{ said, source: Plaud with Orin 2026-08-20 ~7:30am, as_of }`, `discrepancy: true` with a `discrepancy_reason`, `followup.due_by` 2026-08-21T14:40:00, `email_draft` null, `email_sent` false. The other 7 rows keep a `followup` object. `eng-notebook` is `school_status: open`. Dated note: **Discrepancy layer (Plaud 7:30am)**.
 
 ## Easter eggs
 
