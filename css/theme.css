@@ -31,8 +31,7 @@ html, body {
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
-html:has(body.week-page),
-body.week-page {
+html:has(body.week-page:not(.in-treehouse)) {
   height: auto;
   min-height: 100dvh;
   overflow-x: hidden;
@@ -48,12 +47,24 @@ body.week-page.in-treehouse {
 }
 
 body.week-page {
-  display: flex;
-  flex-direction: column;
   position: relative;
   background:
     linear-gradient(180deg, rgba(7, 22, 24, 0.72), rgba(7, 22, 24, 0.88)),
     url("../img/monkey-bg.png") center / cover no-repeat;
+}
+
+body.week-page:not(.in-treehouse) {
+  display: block;
+  height: auto;
+  max-height: none;
+  min-height: 100dvh;
+  overflow: visible;
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
+}
+
+body.week-page.in-treehouse {
+  display: flex;
+  flex-direction: column;
 }
 
 .build-stamp {
@@ -1456,11 +1467,12 @@ body.site-view-kid .class-card-tools {
 }
 
 body.week-page .track {
-  flex: 0 0 auto;
+  display: flex;
+  flex: none;
   height: auto;
   min-height: 0;
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: hidden;
 }
 
 body.week-page .day,
@@ -1473,9 +1485,8 @@ body.week-page .card-scroll {
 }
 
 body.week-page .card-scroll {
-  flex: 0 0 auto;
-  overflow-x: hidden;
-  overflow-y: visible;
+  flex: none;
+  overflow: visible;
   overscroll-behavior: auto;
 }
 
@@ -3372,8 +3383,7 @@ body.progress-page .dash {
 .class-item .status.idle { color: var(--muted); }
 
 @media (max-width: 719px) {
-  html:has(body.week-page),
-  body.week-page {
+  html:has(body.week-page:not(.in-treehouse)) {
     height: auto;
     min-height: 100dvh;
     overflow-x: hidden;
@@ -3393,11 +3403,11 @@ body.progress-page .dash {
     padding: 8px 12px;
   }
   body.week-page .track {
-    flex: 0 0 auto;
+    flex: none;
     height: auto;
     min-height: 0;
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: hidden;
   }
   body.week-page .day,
   body.week-page .card,
@@ -3408,9 +3418,8 @@ body.progress-page .dash {
     overflow: visible;
   }
   body.week-page .card-scroll {
-    flex: 0 0 auto;
-    overflow-x: hidden;
-    overflow-y: visible;
+    flex: none;
+    overflow: visible;
     overscroll-behavior: auto;
     padding-bottom: max(36px, env(safe-area-inset-bottom));
   }
