@@ -3997,6 +3997,57 @@ body.messages-page .msg-tabs {
   resize: vertical;
 }
 
+.badge-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.badge-pick {
+  appearance: none;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #0d2426;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--ink);
+  text-align: center;
+}
+
+.badge-pick img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+.badge-pick span {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.badge-pick.on {
+  border-color: #f3c34a;
+  box-shadow: 0 0 0 2px rgba(243, 195, 74, 0.35);
+}
+
+.award-fine-print {
+  margin: 8px 0 12px;
+}
+
+.award-fine-print summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
 .form-grid label {
   display: block;
   margin: 0 0 10px;

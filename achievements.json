@@ -38,12 +38,13 @@
     {
       "id": "started-week-5",
       "title": "Five-day start",
-      "description": "Started the week 5 school days in a row.",
-      "how": "Parents count a school day he opened the lobby and started something.",
+      "description": "Logged in 5 days in a row.",
+      "how": "Auto. Bennett logs into Jungle Jam five Chicago days in a row.",
       "incentive": "Skip one chore",
       "icon": "clarinet",
       "reward": 15,
-      "streak": { "target": 5, "unit": "school day" }
+      "streak": { "target": 5, "unit": "day" },
+      "unlock": { "type": "login_days", "count": 5 }
     },
     {
       "id": "asked-before-due",

@@ -1071,7 +1071,7 @@
       const src = item ? (Game.librarySrc(item) || Game.libraryThumb(item)) : "";
       if (src) return src;
     }
-    return Game.iconFor(ach.icon);
+    return Game.badgeSrc ? Game.badgeSrc(ach, library) : Game.iconFor(ach.icon);
   }
 
   function crewPortraitSrc(id) {
@@ -2407,6 +2407,7 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    family = Game.recordLoginDay(family) || family;
     family = Game.ensureReflectionPool(family);
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);

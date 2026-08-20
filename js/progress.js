@@ -921,14 +921,19 @@
   }
 
   async function boot() {
+    Game.markOpened();
     baseWeek = Game.ensureWeekIds(await Game.loadWeek() || { work: [], events: [] });
     pack = await Game.loadAchievements() || { currency: Game.currency({}), achievements: [] };
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
+    family = Game.recordLoginDay(family) || family;
     family = Game.ensureReflectionPool(family);
     family = Game.maybeAutoPreviewAll(pack, family).family;
     baseSeed = await Game.loadProgress();
     syncViews();
+    const live = Game.applyLiveUnlocks(pack, family, {});
+    family = live.family;
+    live.fresh.forEach((ach) => Game.celebrate(ach, pack, null, { roster, family }));
     document.getElementById("close-sheet").addEventListener("click", closeSheet);
     document.getElementById("sheet").addEventListener("click", (e) => {
       if (e.target.id === "sheet") closeSheet();

@@ -239,6 +239,123 @@
     const charId = type === "character" ? (charSel && charSel.value) : "";
     fillRewardMedia(charId, mediaSel ? mediaSel.value : "");
     fillRewardContent(document.getElementById("reward-content") ? document.getElementById("reward-content").value : "");
+    renderRewardPicks();
+  }
+
+  function paintAwardReadout(intent) {
+    const el = document.getElementById("award-do-readout");
+    if (!el) return;
+    el.textContent = (intent && intent.readout) || "The site will count it when it can. Otherwise you Award it from the desk.";
+  }
+
+  function applyAwardIntent(opts) {
+    const fillEmpty = !!(opts && opts.fillEmpty);
+    const doEl = document.getElementById("award-do");
+    const titleEl = document.getElementById("title");
+    const descEl = document.getElementById("description");
+    const howEl = document.getElementById("how");
+    if (!doEl) return;
+    const intent = Game.parseAwardIntent(doEl.value);
+    paintAwardReadout(intent);
+    document.getElementById("unlock-type").value = intent.type || "parent_award";
+    document.getElementById("unlock-count").value = intent.count || 1;
+    document.getElementById("unlock-hours").value = intent.hours || 24;
+    document.getElementById("target").value = intent.target || 1;
+    document.getElementById("unit").value = intent.unit || "time";
+    if (howEl) howEl.value = intent.how || "";
+    if (titleEl && (!fillEmpty || !titleEl.value)) titleEl.value = intent.title || titleEl.value;
+    if (descEl && (!fillEmpty || !descEl.value)) descEl.value = intent.description || descEl.value;
+  }
+
+  function currentBadgeId() {
+    const badge = (document.getElementById("badge") || {}).value || "";
+    if (badge) return "lib:" + badge;
+    return (document.getElementById("icon") || {}).value || "badge";
+  }
+
+  function applyBadgeChoice(id) {
+    const key = String(id || "badge");
+    if (key.indexOf("lib:") === 0) {
+      document.getElementById("icon").value = "badge";
+      document.getElementById("badge").value = key.slice(4);
+    } else {
+      document.getElementById("icon").value = key;
+      document.getElementById("badge").value = "";
+    }
+    renderBadgePicker();
+  }
+
+  function renderBadgePicker() {
+    const host = document.getElementById("badge-picker");
+    if (!host || !Game.badgeChoices) return;
+    const current = currentBadgeId();
+    host.innerHTML = Game.badgeChoices(library).map((row) => `
+      <button type="button" class="badge-pick${row.id === current ? " on" : ""}" data-badge="${Game.esc(row.id)}" aria-pressed="${row.id === current ? "true" : "false"}">
+        <img src="${Game.esc(row.src)}" alt="">
+        <span>${Game.esc(row.label)}</span>
+      </button>`).join("");
+  }
+
+  function posterChoices() {
+    const shipped = ["bennett", "ace", "riff", "scorch", "deuce", "fuzz"].map((id) => ({
+      id,
+      src: "img/characters/" + id + ".jpg",
+      label: id.charAt(0).toUpperCase() + id.slice(1)
+    }));
+    const extra = Game.badgeChoices(library).filter((row) => row.kind === "library").map((row) => ({
+      id: row.src,
+      src: row.src,
+      label: row.label
+    }));
+    return shipped.concat(extra);
+  }
+
+  function renderPosterPicker() {
+    const host = document.getElementById("char-poster-picker");
+    if (!host) return;
+    const current = (document.getElementById("char-poster") || {}).value || "";
+    host.innerHTML = posterChoices().map((row) => `
+      <button type="button" class="badge-pick${row.src === current ? " on" : ""}" data-poster="${Game.esc(row.src)}">
+        <img src="${Game.esc(row.src)}" alt="">
+        <span>${Game.esc(row.label)}</span>
+      </button>`).join("");
+  }
+
+  function renderRewardPicks() {
+    const type = (document.getElementById("reward-type") || {}).value || "";
+    const lead = document.getElementById("reward-pick-lead");
+    const charHost = document.getElementById("reward-char-pick");
+    const gearHost = document.getElementById("reward-gear-pick");
+    if (lead) lead.hidden = type === "" || type === "content";
+    if (charHost) {
+      charHost.hidden = type !== "character";
+      if (type === "character") {
+        const selected = (document.getElementById("reward-character") || {}).value || "";
+        charHost.innerHTML = ((roster && roster.characters) || []).map((ch) => {
+          const src = ch.poster || ("img/characters/" + ch.id + ".jpg");
+          return `<button type="button" class="badge-pick${ch.id === selected ? " on" : ""}" data-reward-char="${Game.esc(ch.id)}">
+            <img src="${Game.esc(src)}" alt="">
+            <span>${Game.esc(ch.name || ch.id)}</span>
+          </button>`;
+        }).join("");
+      }
+    }
+    if (gearHost) {
+      const gear = type && type !== "character" && type !== "content";
+      gearHost.hidden = !gear;
+      if (gear) {
+        const selected = (document.getElementById("reward-unlock-id") || {}).value || "";
+        const items = ((library && library.items) || []).filter((item) => item && item.kind === "image");
+        gearHost.innerHTML = items.map((item) => {
+          const src = Game.librarySrc(item) || Game.libraryThumb(item);
+          if (!src) return "";
+          return `<button type="button" class="badge-pick${item.id === selected ? " on" : ""}" data-reward-gear="${Game.esc(item.id)}" data-reward-label="${Game.esc(item.label || item.id)}">
+            <img src="${Game.esc(src)}" alt="">
+            <span>${Game.esc(item.label || item.id)}</span>
+          </button>`;
+        }).join("");
+      }
+    }
   }
 
   function fillTargets() {
@@ -502,7 +619,7 @@
       const src = item ? (Game.librarySrc(item) || Game.libraryThumb(item)) : "";
       if (src) return src;
     }
-    return Game.iconFor(ach.icon);
+    return Game.badgeSrc(ach, library);
   }
 
   function orderedTrophies() {
@@ -850,6 +967,7 @@
     document.getElementById("char-video").value = ch.video || "";
     document.getElementById("char-poster").value = ch.poster || "";
     document.getElementById("char-test").checked = !!ch.test;
+    renderPosterPicker();
   }
 
   function collectChar() {
@@ -888,7 +1006,7 @@
       how: "",
       incentive: "",
       icon: "badge",
-      test: true,
+      test: false,
       reward: 10,
       rewardCharacter: "",
       rewardUnlock: null,
@@ -903,10 +1021,17 @@
     document.getElementById("how").value = ach.how || "";
     document.getElementById("incentive").value = ach.incentive || "";
     document.getElementById("icon").value = ach.icon || "badge";
+    document.getElementById("badge").value = ach.badge || "";
     document.getElementById("reward").value = Game.bananasOf(ach) || 10;
     document.getElementById("test").checked = !!ach.test;
     document.getElementById("target").value = (ach.streak && ach.streak.target) || 1;
     document.getElementById("unit").value = (ach.streak && ach.streak.unit) || "week";
+    const rule = ach.unlock || {};
+    document.getElementById("unlock-type").value = rule.type || "parent_award";
+    document.getElementById("unlock-count").value = rule.count || (ach.streak && ach.streak.target) || 1;
+    document.getElementById("unlock-hours").value = rule.hours || 24;
+    document.getElementById("award-do").value = ach.intent || ach.how || ach.description || "";
+    paintAwardReadout(Game.parseAwardIntent(document.getElementById("award-do").value));
     const unlock = Game.rewardUnlockOf(ach);
     document.getElementById("reward-type").value = unlock ? unlock.type : "";
     fillRewardSelect(unlock && unlock.type === "character" ? unlock.id : (ach.rewardCharacter || ""));
@@ -915,6 +1040,8 @@
     fillRewardContent(unlock && unlock.type === "content" ? unlock.id : "");
     fillRewardMedia(document.getElementById("reward-character").value, ach.rewardMedia || "");
     syncRewardTypeUi();
+    renderBadgePicker();
+    renderPosterPicker();
   }
 
   function slug(title) {
@@ -930,6 +1057,7 @@
     const rewardType = document.getElementById("reward-type").value || "";
     const rewardCharacter = document.getElementById("reward-character").value || "";
     const bananas = Number(document.getElementById("reward").value) || 0;
+    const badge = (document.getElementById("badge") || {}).value || "";
     const next = Object.assign({}, prev, {
       id: editingId || slug(document.getElementById("title").value) + "-" + Date.now().toString(36),
       title: document.getElementById("title").value.trim(),
@@ -937,6 +1065,7 @@
       how: document.getElementById("how").value.trim(),
       incentive: document.getElementById("incentive").value.trim(),
       icon: document.getElementById("icon").value,
+      intent: (document.getElementById("award-do") || {}).value.trim(),
       test: document.getElementById("test").checked,
       reward: bananas,
       streak: {
@@ -944,6 +1073,20 @@
         unit: document.getElementById("unit").value.trim() || "week"
       }
     });
+    if (badge) next.badge = badge;
+    else delete next.badge;
+    const unlockType = (document.getElementById("unlock-type") || {}).value || "parent_award";
+    const unlockCount = Number((document.getElementById("unlock-count") || {}).value) || 1;
+    const unlockHours = Number((document.getElementById("unlock-hours") || {}).value) || 24;
+    if (unlockType === "login_days" || unlockType === "login_total" || unlockType === "done_count") {
+      next.unlock = { type: unlockType, count: unlockCount };
+    } else if (unlockType === "class_tour") {
+      next.unlock = { type: "class_tour", hours: unlockHours };
+    } else if (unlockType === "easter_egg" && prev.unlock && prev.unlock.type === "easter_egg") {
+      next.unlock = prev.unlock;
+    } else {
+      delete next.unlock;
+    }
     delete next.rewardUnlock;
     delete next.rewardCharacter;
     delete next.bananas;
@@ -980,7 +1123,9 @@
     fillForm(ach || blank());
     document.getElementById("editor").hidden = false;
     document.getElementById("editor-title").textContent = id ? "Edit streak" : "New streak";
-    document.getElementById("title").focus();
+    const focusId = id ? "title" : "award-do";
+    const focusEl = document.getElementById(focusId) || document.getElementById("title");
+    if (focusEl) focusEl.focus();
   }
 
   function closeForm() {
@@ -1012,6 +1157,46 @@
     document.getElementById("sheet").addEventListener("click", (e) => {
       if (e.target.id === "sheet") closeSheet();
     });
+    const awardDo = document.getElementById("award-do");
+    if (awardDo) {
+      awardDo.addEventListener("input", () => applyAwardIntent({ fillEmpty: true }));
+    }
+    const badgePicker = document.getElementById("badge-picker");
+    if (badgePicker) {
+      badgePicker.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("[data-badge]") : null;
+        if (!btn) return;
+        applyBadgeChoice(btn.getAttribute("data-badge"));
+      });
+    }
+    const posterPicker = document.getElementById("char-poster-picker");
+    if (posterPicker) {
+      posterPicker.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("[data-poster]") : null;
+        if (!btn) return;
+        document.getElementById("char-poster").value = btn.getAttribute("data-poster") || "";
+        renderPosterPicker();
+      });
+    }
+    const charPick = document.getElementById("reward-char-pick");
+    if (charPick) {
+      charPick.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("[data-reward-char]") : null;
+        if (!btn) return;
+        document.getElementById("reward-character").value = btn.getAttribute("data-reward-char") || "";
+        syncRewardTypeUi();
+      });
+    }
+    const gearPick = document.getElementById("reward-gear-pick");
+    if (gearPick) {
+      gearPick.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("[data-reward-gear]") : null;
+        if (!btn) return;
+        document.getElementById("reward-unlock-id").value = btn.getAttribute("data-reward-gear") || "";
+        document.getElementById("reward-unlock-label").value = btn.getAttribute("data-reward-label") || "";
+        renderRewardPicks();
+      });
+    }
 
     document.getElementById("preview-unlock-all").addEventListener("click", () => {
       if (Game.siteViewHidesAdult()) return;

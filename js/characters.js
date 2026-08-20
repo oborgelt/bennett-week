@@ -161,6 +161,7 @@
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     let family = await Game.loadFamily();
+    family = Game.recordLoginDay(family) || family;
     const signin = Game.maybeAwardSignIn(pack, family);
     family = signin.family;
     library = await Game.loadLibrary();
@@ -169,6 +170,9 @@
     if (signin.awarded && signin.achievement) {
       Game.celebrate(signin.achievement, pack, library, { roster, family });
     }
+    const live = Game.applyLiveUnlocks(pack, family, {});
+    family = live.family;
+    live.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
     if (!Game.maybePlayUnlockCelebration(roster, pack, family, library)) {
       Game.maybePlayContentCelebration(library);
     }

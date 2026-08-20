@@ -17,6 +17,7 @@
     ask: "bw-ask-thread",
     opened: "bw-opened",
     opens: "bw-opens",
+    loginDays: "bw-login-days",
     previewAll: "bw-preview-all",
     previewIds: "bw-preview-ids",
     previewLocked: "bw-preview-locked",
@@ -114,6 +115,8 @@
     band: "img/monkey-band-banner.png"
   };
 
+  const BADGE_ICON_KEYS = ["tennis", "guitar", "clarinet", "badge", "banana", "band"];
+
   function esc(s) {
     return String(s ?? "").replace(/[&<>"']/g, (c) => ({
       "&": "&amp;",
@@ -147,6 +150,110 @@
 
   function iconFor(name) {
     return ICONS[name] || ICONS.badge;
+  }
+
+  function isRoomPlateSrc(src) {
+    return /trophy-(room|pedestal|cubbies|pegboard|lockers|window)|basecamp-bg/i.test(String(src || ""));
+  }
+
+  function badgeSrc(ach, lib) {
+    if (!ach) return ICONS.badge;
+    if (ach.badge) {
+      const item = libraryItem(lib, ach.badge);
+      const src = item ? (librarySrc(item) || libraryThumb(item)) : "";
+      if (src) return src;
+    }
+    const custom = String(ach.badgeSrc || "").trim();
+    if (custom && isLocalLibraryPath(custom)) return custom;
+    return iconFor(ach.icon);
+  }
+
+  function badgeChoices(lib) {
+    const shipped = BADGE_ICON_KEYS.map((key) => ({
+      id: key,
+      key,
+      src: ICONS[key],
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+      kind: "icon"
+    }));
+    const seen = {};
+    const extra = [];
+    ((lib && lib.items) || []).forEach((item) => {
+      if (!item || item.kind !== "image") return;
+      const src = librarySrc(item) || libraryThumb(item);
+      if (!src || seen[src] || isRoomPlateSrc(src)) return;
+      seen[src] = true;
+      extra.push({
+        id: "lib:" + item.id,
+        key: item.id,
+        src,
+        label: item.label || item.id,
+        kind: "library"
+      });
+    });
+    return shipped.concat(extra);
+  }
+
+  function parseAwardIntent(text) {
+    const raw = String(text || "").trim();
+    const t = raw.toLowerCase().replace(/[’]/g, "'");
+    const nMatch = t.match(/\b(\d+)\b/);
+    const n = nMatch ? Math.max(1, Number(nMatch[1])) : 0;
+    const loginish = /\b(log\s*ins?|logged in|sign\s*ins?|signed in|opens? (the )?(site|app|lobby|jungle)|show up|shows up)\b/.test(t)
+      || /\blogs in\b/.test(t);
+    const dayish = /\bday/.test(t);
+    const rowish = /\bin a row\b|\bstraight\b|\bconsecutive\b|\bstreak\b/.test(t);
+    if (loginish && (dayish || rowish || n >= 2)) {
+      const count = n || 5;
+      return {
+        type: "login_days",
+        count,
+        title: count + "-day login",
+        description: "Logged in " + count + " days in a row.",
+        how: "Auto. Bennett logs into Jungle Jam " + count + " Chicago days in a row.",
+        target: count,
+        unit: "day",
+        readout: "The site counts Bennett logins. Award at " + count + " days in a row."
+      };
+    }
+    if (/\b(done|finish|complete|mark)\b/.test(t) && /\b(assignment|homework|work|task)/.test(t)) {
+      const count = n || 3;
+      return {
+        type: "done_count",
+        count,
+        title: count + " assignments done",
+        description: "Marked " + count + " assignments done.",
+        how: "Auto. Bennett taps Done " + count + " times.",
+        target: count,
+        unit: "time",
+        readout: "The site counts Done taps. Award at " + count + "."
+      };
+    }
+    if (/every class|all (8 )?class|class tour|open every class/.test(t)) {
+      const hours = n && n <= 72 ? n : 24;
+      return {
+        type: "class_tour",
+        hours,
+        count: 1,
+        title: "Class tour",
+        description: "Opened every class in one day.",
+        how: "Auto. Open every class within " + hours + " hours.",
+        target: 1,
+        unit: "time",
+        readout: "The site counts class visits. Award when every class is opened within " + hours + " hours."
+      };
+    }
+    const count = n || 1;
+    return {
+      type: "parent_award",
+      count,
+      title: raw ? raw.slice(0, 40) : "New streak",
+      description: raw,
+      how: "Parents award this from the desk. Count, then Award.",
+      target: count,
+      unit: "time",
+      readout: "You award this from the desk. Count, then Award. The site will not auto-unlock it."
+    };
   }
 
   function uid(prefix) {
@@ -205,6 +312,45 @@
     }).formatToParts(date || new Date());
     const get = (t) => (parts.find((p) => p.type === t) || {}).value || "";
     return `${get("year")}-${get("month")}-${get("day")}`;
+  }
+
+  function asYmdList(value) {
+    if (!Array.isArray(value)) return [];
+    const out = [];
+    const seen = {};
+    value.forEach((row) => {
+      const ymd = String(row || "").slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(ymd) || seen[ymd]) return;
+      seen[ymd] = true;
+      out.push(ymd);
+    });
+    out.sort();
+    return out;
+  }
+
+  function shiftChicagoYmd(ymd, days) {
+    const raw = String(ymd || chicagoYmd());
+    const parts = raw.split("-").map(Number);
+    if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n))) return chicagoYmd();
+    const dt = new Date(parts[0], parts[1] - 1, parts[2]);
+    dt.setDate(dt.getDate() + (Number(days) || 0));
+    const yy = dt.getFullYear();
+    const mm = String(dt.getMonth() + 1).padStart(2, "0");
+    const dd = String(dt.getDate()).padStart(2, "0");
+    return yy + "-" + mm + "-" + dd;
+  }
+
+  function consecutiveLoginStreak(days, asOf) {
+    const set = {};
+    asYmdList(days).forEach((d) => { set[d] = true; });
+    let ymd = asOf || chicagoYmd();
+    let n = 0;
+    while (set[ymd]) {
+      n += 1;
+      ymd = shiftChicagoYmd(ymd, -1);
+      if (n > 4000) break;
+    }
+    return n;
   }
 
   function lastNChicagoDays(n) {
@@ -309,7 +455,7 @@
       library: { items: [] },
       ask: { messages: [] },
       achievements: { currency: null, achievements: [], updatedAt: "" },
-      awards: { streaks: {}, characterUnlocks: {}, gearUnlocks: {}, contentUnlocks: {}, unlocks: {}, updatedAt: "" },
+      awards: { streaks: {}, characterUnlocks: {}, gearUnlocks: {}, contentUnlocks: {}, unlocks: {}, loginDays: [], updatedAt: "" },
       reflections: { pool: [], answers: [], updatedAt: "" },
       deletedNotes: { ids: [], texts: [] }
     };
@@ -637,6 +783,7 @@
       gearUnlocks: asUnlockMap(o.gearUnlocks),
       contentUnlocks: asUnlockMap(o.contentUnlocks),
       unlocks: o.unlocks && typeof o.unlocks === "object" && !Array.isArray(o.unlocks) ? o.unlocks : {},
+      loginDays: asYmdList(o.loginDays),
       updatedAt: o.updatedAt || o.updated_at || ""
     };
   }
@@ -715,7 +862,8 @@
       story: emptyStory(),
       overlay: emptyOverlay(),
       basecamp: emptyBasecamp(),
-      basecampQueries: []
+      basecampQueries: [],
+      loginDays: []
     };
   }
 
@@ -747,7 +895,8 @@
       story: normalizeStory(f.story),
       overlay: overlay,
       basecamp: normalizeBasecamp(f.basecamp),
-      basecampQueries: normalizeBasecampQueries(f.basecampQueries)
+      basecampQueries: normalizeBasecampQueries(f.basecampQueries),
+      loginDays: asYmdList([].concat(f.loginDays || [], (overlay.awards && overlay.awards.loginDays) || []))
     };
   }
 
@@ -1932,6 +2081,7 @@
       gearUnlocks: asUnlockMap(next.gearUnlocks),
       contentUnlocks: asUnlockMap(next.contentUnlocks),
       unlocks: getUnlocks(),
+      loginDays: asYmdList(next.loginDays),
       updatedAt: nowIso()
     };
     stampOverlay(next);
@@ -1954,7 +2104,7 @@
 
   function applyOverlayAwards(family, cloud) {
     const awards = normalizeAwardsPack(cloud);
-    if (!awards.updatedAt && !Object.keys(awards.streaks).length && !Object.keys(awards.characterUnlocks).length) {
+    if (!awards.updatedAt && !Object.keys(awards.streaks).length && !Object.keys(awards.characterUnlocks).length && !(awards.loginDays && awards.loginDays.length)) {
       return normalizeFamily(family);
     }
     const next = normalizeFamily(family);
@@ -1978,6 +2128,9 @@
         write(KEYS.unlocks, Object.assign({}, getUnlocks(), awards.unlocks));
       }
     }
+    next.loginDays = asYmdList([].concat(next.loginDays || [], awards.loginDays || []));
+    write(KEYS.loginDays, asYmdList([].concat(read(KEYS.loginDays, []) || [], next.loginDays)));
+    next.overlay.awards.loginDays = next.loginDays;
     saveFamily(next);
     return next;
   }
@@ -5173,6 +5326,14 @@
     const rule = ach.unlock || {};
     if (rule.type === "easter_egg") return !!(ctx && ctx.eggs && ctx.eggs[rule.egg]);
     if (rule.type === "done_count") return doneAssignmentCount() >= (Number(rule.count) || 0);
+    if (rule.type === "login_days") {
+      const days = getLoginDays(ctx && ctx.family);
+      const asOf = (ctx && ctx.ymd) || chicagoYmd();
+      return consecutiveLoginStreak(days, asOf) >= (Number(rule.count) || 0);
+    }
+    if (rule.type === "login_total") {
+      return getLoginDays(ctx && ctx.family).length >= (Number(rule.count) || 0);
+    }
     if (rule.type === "class_tour") {
       const ids = Array.isArray(rule.classIds) && rule.classIds.length
         ? rule.classIds.map(String)
@@ -5615,6 +5776,7 @@
     const pass = String(password || "").trim();
     if (sha256hex(pass) !== rec.hash) return null;
     setSessionUser(user);
+    if (user === "bennett") recordLoginDay();
     return user;
   }
 
@@ -6196,7 +6358,41 @@
       opens.push(nowIso);
       write(KEYS.opens, opens);
     }
+    recordLoginDay();
     return opens;
+  }
+
+  function getLoginDays(family) {
+    const fam = family && typeof family === "object" ? family : getFamilyDraft();
+    return asYmdList([].concat(
+      read(KEYS.loginDays, []) || [],
+      (fam && fam.loginDays) || [],
+      (fam && fam.overlay && fam.overlay.awards && fam.overlay.awards.loginDays) || []
+    ));
+  }
+
+  function shouldRecordBennettLogin() {
+    if (sessionUser() === "bennett") return true;
+    return telemetryDeviceRole() === "bennett" && siteView() === "bennett";
+  }
+
+  function recordLoginDay(family) {
+    if (!shouldRecordBennettLogin()) return family;
+    const ymd = chicagoYmd();
+    const days = asYmdList(getLoginDays(family).concat([ymd]));
+    write(KEYS.loginDays, days);
+    const src = family != null ? family : getFamilyDraft();
+    if (!src) return family;
+    const next = normalizeFamily(src);
+    const same = asYmdList(next.loginDays).join(",") === days.join(",")
+      && asYmdList(next.overlay.awards.loginDays).join(",") === days.join(",");
+    next.loginDays = days;
+    next.overlay.awards.loginDays = days;
+    if (same) return next;
+    next.overlay.updatedAt = nowIso();
+    saveFamily(next);
+    if (!overlaySyncing) queueOverlayPush(next);
+    return next;
   }
 
   function signInAchievement(pack) {
@@ -7220,6 +7416,7 @@
       gearUnlocks: Object.assign({}, b.gearUnlocks, a.gearUnlocks),
       contentUnlocks: Object.assign({}, b.contentUnlocks, a.contentUnlocks),
       unlocks: a.updatedAt ? Object.assign({}, a.unlocks) : Object.assign({}, b.unlocks, a.unlocks),
+      loginDays: asYmdList([].concat(a.loginDays || [], b.loginDays || [])),
       updatedAt: a.updatedAt || b.updatedAt
     };
   }
@@ -7235,7 +7432,10 @@
       reflections: ((o.reflections && o.reflections.answers) || []).map((a) => a.id),
       deletedNotes: o.deletedNotes,
       achievements: ((o.achievements && o.achievements.achievements) || []).map((ach) => ach.id),
-      awards: Object.keys((o.awards && o.awards.characterUnlocks) || {})
+      awards: {
+        characters: Object.keys((o.awards && o.awards.characterUnlocks) || {}),
+        loginDays: (o.awards && o.awards.loginDays) || []
+      }
     });
   }
 
@@ -8122,6 +8322,15 @@
     fmtStamp,
     currency,
     iconFor,
+    badgeSrc,
+    badgeChoices,
+    parseAwardIntent,
+    consecutiveLoginStreak,
+    shiftChicagoYmd,
+    getLoginDays,
+    recordLoginDay,
+    ICONS,
+    BADGE_ICON_KEYS,
     prefersReducedMotion,
     loadWeek,
     loadAchievements,
@@ -8244,6 +8453,7 @@
     helpOpens,
     checkUnlocks,
     applyLiveUnlocks,
+    evaluate,
     doneAssignmentCount,
     WORK_ACTION_BANANAS,
     ACE_DONE_COUNT,
