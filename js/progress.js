@@ -65,6 +65,7 @@
         school_status: w.school_status,
         student_status: w.student_status,
         discrepancy: w.discrepancy,
+        discrepancy_reason: w.discrepancy_reason,
         followup: w.followup,
         submitted_at: w.submitted_at,
         score: w.score,

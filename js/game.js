@@ -3683,10 +3683,41 @@
     return "";
   }
 
+  function studentStatusRecord(raw) {
+    if (raw == null || raw === "") return null;
+    if (typeof raw === "object") {
+      const said = raw.said != null ? String(raw.said).trim() : "";
+      const status = normalizeStudentStatus(raw.status || raw.said);
+      return {
+        said,
+        source: raw.source != null ? String(raw.source) : "",
+        as_of: raw.as_of || "",
+        done: status === "done",
+        notDone: status === "not_done"
+      };
+    }
+    const status = normalizeStudentStatus(raw);
+    return {
+      said: String(raw).trim(),
+      source: "",
+      as_of: "",
+      done: status === "done",
+      notDone: status === "not_done"
+    };
+  }
+
+  function studentHasClaim(work) {
+    const rec = studentStatusRecord(work && work.student_status);
+    if (!rec) return false;
+    if (rec.said) return true;
+    return !!(rec.done || rec.notDone);
+  }
+
   function studentSaysDone(work) {
-    const fromFeed = normalizeStudentStatus(work && work.student_status);
-    if (fromFeed === "done") return true;
-    if (fromFeed === "not_done") return false;
+    const rec = studentStatusRecord(work && work.student_status);
+    if (rec && rec.notDone) return false;
+    if (rec && rec.done) return true;
+    if (rec && rec.said) return true;
     try {
       const st = work && work.id ? workState(work.id) : null;
       if (st && st.done) return true;
@@ -3764,7 +3795,20 @@
     return "Canvas/ParentVUE";
   }
 
+  function teacherFromNote(note) {
+    const text = String(note || "").trim();
+    const two = text.match(/^([A-Z][A-Za-z'`-]+)\s+([A-Z][A-Za-z'`-]+)(?=[.,])/);
+    if (two) return (two[1] + " " + two[2]).trim();
+    const one = text.match(/^([A-Z][A-Za-z'`-]+)(?=\.\s|[.])/);
+    if (one && !/^(Dad|Mom|Today|Still|Official|In)$/i.test(one[1])) return one[1];
+    const named = text.match(/\b(?:Mr\.?\/Ms\.?|Mr\.?|Ms\.?|Mrs\.?)\s+([A-Z][A-Za-z'`-]+)/);
+    if (named) return named[1];
+    return "";
+  }
+
   function teacherForWork(work, classes) {
+    const fromNote = teacherFromNote(work && work.note);
+    if (fromNote) return fromNote;
     const cid = classIdForWork(work);
     const cls = (classes || []).find((c) => c && c.id === cid);
     if (cls && cls.teacher) return String(cls.teacher).trim();
@@ -3784,18 +3828,28 @@
     const assignment = wTitleStrip(work && work.title) || "this";
     const when = fmtChicagoLongDay(st.submittedAt || (work && work.submitted_at));
     const source = schoolSourceLabel(work);
+    const school = st.schoolStatus || st.status || "";
     const turned = when ? ("I turned " + assignment + " in on " + when) : ("I turned " + assignment + " in");
-    return "Hey " + teacher + ", " + turned + ". Please let me know if there is an issue. I notice it's not updated in " + source + ".";
+    const notice = school && school !== "submitted" && school !== "graded"
+      ? ("I notice it's still " + school + " in " + source + ".")
+      : ("I notice it's not updated in " + source + ".");
+    return "Hey " + teacher + ", " + turned + ". Please let me know if there is an issue. " + notice;
+  }
+
+  function followupEmailSent(raw) {
+    if (!raw || typeof raw !== "object") return false;
+    if (raw.email_sent === true || raw.email_sent === "true") return true;
+    if (raw.email_sent === false || raw.email_sent === "false") return false;
+    return !!(raw.sent_at);
   }
 
   function workFollowup(work, classes, now) {
     const raw = (work && work.followup && typeof work.followup === "object") ? work.followup : {};
-    const st = workFeedStatus(work, now);
-    const dueBy = raw.due_by || defaultFollowupDueBy(st.submittedAt || (work && work.submitted_at));
     const email = String(raw.email_draft || "").trim() || defaultTeacherEmailDraft(work, classes, now);
     return {
-      due_by: dueBy || "",
+      due_by: raw.due_by || "",
       email_draft: email,
+      email_sent: followupEmailSent(raw),
       sent_at: raw.sent_at || ""
     };
   }
@@ -3836,15 +3890,18 @@
 
   function schoolVsStudentLine(work, now) {
     const st = workFeedStatus(work, now);
+    const rec = studentStatusRecord(work && work.student_status);
     const schoolBits = [];
     if (st.schoolStatus) schoolBits.push(st.schoolStatus.charAt(0).toUpperCase() + st.schoolStatus.slice(1));
     if (st.score) schoolBits.push(st.score);
+    if (st.submittedAt) schoolBits.push("submitted " + fmtStamp(st.submittedAt));
     schoolBits.push(schoolSourceLabel(work));
     const studentBits = [];
-    if (studentSaysDone(work)) studentBits.push("Marked done");
-    else if (st.studentStatus === "not_done") studentBits.push("Not done here");
-    else studentBits.push("Not marked done");
-    if (st.submittedAt) studentBits.push("turned in " + fmtStamp(st.submittedAt));
+    if (rec && rec.said && !rec.done && !rec.notDone) studentBits.push(rec.said);
+    else if (rec && rec.done) studentBits.push(rec.said && rec.said.toLowerCase() !== "done" ? rec.said : "Marked done");
+    else if (rec && rec.notDone) studentBits.push("Not done here");
+    else if (studentSaysDone(work)) studentBits.push("Marked done");
+    else studentBits.push("No student claim");
     return {
       school: schoolBits.filter(Boolean).join(" · "),
       student: studentBits.filter(Boolean).join(" · ")
@@ -3856,7 +3913,7 @@
   }
 
   function emailsToSend(week, now) {
-    return discrepancyWork(week, now).filter((w) => !workFollowup(w, null, now).sent_at);
+    return discrepancyWork(week, now).filter((w) => !workFollowup(w, null, now).email_sent);
   }
 
   function followupCardHtml(work, classes, now) {
@@ -3866,11 +3923,14 @@
     const vs = schoolVsStudentLine(work, clock);
     const cid = st.classId;
     const deadline = follow.due_by
-      ? (follow.sent_at ? "Already sent " + (fmtStamp(follow.sent_at) || follow.sent_at) : "Send by " + (fmtStamp(follow.due_by) || follow.due_by) + " if still unlogged")
-      : (follow.sent_at ? "Already sent" : "Ready to send if school still has not logged it");
+      ? (follow.email_sent ? "Already sent" : "Send by " + (fmtStamp(follow.due_by) || follow.due_by) + " if still unlogged")
+      : (follow.email_sent ? "Already sent" : "Ready to send if school still has not logged it");
     const subject = wTitleStrip(work && work.title) || "Assignment update";
-    const sent = follow.sent_at
-      ? `<p class="followup-sent">Parenting recorded a send${fmtStamp(follow.sent_at) ? " · " + esc(fmtStamp(follow.sent_at)) : ""}.</p>`
+    const reason = work && work.discrepancy_reason
+      ? `<p class="followup-reason">${esc(work.discrepancy_reason)}</p>`
+      : "";
+    const sent = follow.email_sent
+      ? `<p class="followup-sent">Parenting recorded email_sent.</p>`
       : "";
     return `
       <article class="followup-card" id="followup-${esc(work.id)}" data-followup-work="${esc(work.id)}">
@@ -3886,6 +3946,7 @@
           <div class="followup-vs-row"><span>Bennett</span> ${esc(vs.student)}</div>
         </div>
         <p class="followup-deadline">${esc(deadline)}</p>
+        ${reason}
         ${sent}
         <label class="followup-email-label">Teacher email
           <textarea class="followup-email" readonly rows="4">${esc(follow.email_draft)}</textarea>
@@ -4035,7 +4096,10 @@
     const late = lateFlag && !missing;
     const notDone = !missing && !excused && !submitted && !graded && (status === "open" || status === "late");
     const zero = scoreLooksZero(score);
-    const studentStatus = normalizeStudentStatus(w.student_status);
+    const studentRec = studentStatusRecord(w.student_status);
+    const studentStatus = studentRec
+      ? (studentRec.done ? "done" : (studentRec.notDone ? "not_done" : (studentRec.said ? "claimed" : "")))
+      : "";
     const studentDone = studentSaysDone(w);
     const schoolStatus = normalizeWorkStatus(w.school_status) || status;
     const discrepancy = discrepancyFromBits(w, {
@@ -4057,6 +4121,7 @@
       status,
       schoolStatus,
       studentStatus,
+      studentSaid: studentRec && studentRec.said ? studentRec.said : "",
       studentDone,
       score: score ? String(score) : "",
       points,
@@ -7925,7 +7990,11 @@
     workStatusChips,
     workStatusChipsHtml,
     normalizeStudentStatus,
+    studentStatusRecord,
+    studentHasClaim,
     studentSaysDone,
+    teacherFromNote,
+    followupEmailSent,
     workIsDiscrepancy,
     workFollowup,
     discrepancyWork,
