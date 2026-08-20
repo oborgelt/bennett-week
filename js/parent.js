@@ -103,6 +103,56 @@
     });
   }
 
+  function upsertAch(next) {
+    const idx = pack.achievements.findIndex((a) => a.id === next.id);
+    if (idx >= 0) pack.achievements[idx] = next;
+    else pack.achievements.push(next);
+    editingId = next.id;
+  }
+
+  function persistCatalog() {
+    Game.saveMomDraft(pack);
+    family = Game.stampAchievementsOnFamily(family, pack);
+  }
+
+  function testAchievement(id) {
+    const ach = (pack.achievements || []).find((row) => row && row.id === id);
+    if (!ach) {
+      Game.toast("Save the streak first, then Test.");
+      return;
+    }
+    const result = Game.previewTestAward(pack, family, ach.id);
+    family = result.family;
+    Game.celebrate(ach, pack, library, { roster, family });
+    renderAchievements();
+    renderTrophyOrder();
+    hud();
+  }
+
+  function syncIntentIntoForm() {
+    const doEl = document.getElementById("award-do");
+    const text = doEl ? doEl.value.trim() : "";
+    if (!text) return;
+    const intent = Game.parseAwardIntent(text);
+    const prev = editingId ? pack.achievements.find((a) => a.id === editingId) : null;
+    if (prev && prev.unlock && prev.unlock.type === "easter_egg" && intent.type === "parent_award") return;
+    applyAwardIntent({ fillEmpty: true });
+  }
+
+  function testFromForm() {
+    syncIntentIntoForm();
+    const next = collect();
+    if (!next.title) {
+      Game.toast("Add a title first.");
+      return;
+    }
+    upsertAch(next);
+    persistCatalog();
+    testAchievement(next.id);
+    const titleEl = document.getElementById("editor-title");
+    if (titleEl) titleEl.textContent = "Edit streak";
+  }
+
   function persistChars() {
     Game.saveMomCharacters(roster);
     renderCharacters();
@@ -716,6 +766,7 @@
             ${st.awarded
               ? `<button type="button" class="tiny" data-revoke="${Game.esc(ach.id)}">Undo award</button>`
               : `<button type="button" class="btn primary" data-award="${Game.esc(ach.id)}">Award</button>`}
+            <button type="button" class="btn" data-test="${Game.esc(ach.id)}">Test</button>
             <button type="button" class="tiny" data-edit="${Game.esc(ach.id)}">Edit</button>
             <button type="button" class="tiny danger" data-del="${Game.esc(ach.id)}">Delete</button>
           </div>
@@ -723,6 +774,7 @@
     }).join("");
 
     list.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => openForm(b.dataset.edit)));
+    list.querySelectorAll("[data-test]").forEach((b) => b.addEventListener("click", () => testAchievement(b.dataset.test)));
     list.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => {
       if (!confirm("Delete this achievement?")) return;
       pack.achievements = pack.achievements.filter((a) => a.id !== b.dataset.del);
@@ -1040,6 +1092,8 @@
     fillRewardContent(unlock && unlock.type === "content" ? unlock.id : "");
     fillRewardMedia(document.getElementById("reward-character").value, ach.rewardMedia || "");
     syncRewardTypeUi();
+    const extra = document.getElementById("award-extra-unlock");
+    if (extra) extra.open = !!(unlock && unlock.type);
     renderBadgePicker();
     renderPosterPicker();
   }
@@ -1238,17 +1292,18 @@
       Game.toast("Downloaded the character roster.");
     });
     document.getElementById("save").addEventListener("click", () => {
+      syncIntentIntoForm();
       const next = collect();
       if (!next.title) {
         Game.toast("Add a title first.");
         return;
       }
-      const idx = pack.achievements.findIndex((a) => a.id === next.id);
-      if (idx >= 0) pack.achievements[idx] = next;
-      else pack.achievements.push(next);
+      upsertAch(next);
       persistAch();
       closeForm();
     });
+    const testBtn = document.getElementById("award-test");
+    if (testBtn) testBtn.addEventListener("click", testFromForm);
 
     document.getElementById("add-class").addEventListener("click", () => {
       const input = document.getElementById("new-class-name");

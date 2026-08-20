@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Parent desk · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=146">
+  <link rel="stylesheet" href="css/theme.css?v=147">
 </head>
 <body class="parent-page">
   <header class="week-head">
@@ -63,7 +63,7 @@
       <button type="button" class="btn primary" id="add">Add streak</button>
       <button type="button" class="btn" id="download-ach">Download achievements.json</button>
     </div>
-    <p class="parent-lead">Type what Bennett has to do. Pick a badge from the pictures. Save. Drop new badge or gear art in Admin Library first if you want more pictures here. Crew still holds characters; attach an upgrade, then pick it as the reward.</p>
+    <p class="parent-lead">Type what Bennett has to do. Pick a badge. Hit Test. The pop-up and sound play here, then the trophy lands in the Trophy room on this device. Save for Bennett when it looks right.</p>
     </div>
     <div data-parent-panel="pack">
     <div class="parent-actions">
@@ -286,46 +286,47 @@
             <input id="reward" type="number" min="0" max="99" value="10">
           </label>
         </div>
-        <label>Reward unlock
-          <select id="reward-type">
-            <option value="">None · bananas only</option>
-            <option value="character">Character</option>
-            <option value="tool">Tool</option>
-            <option value="weapon">Weapon</option>
-            <option value="ability">Ability</option>
-            <option value="outfit">Outfit</option>
-            <option value="content">Content (sound / link)</option>
-          </select>
-        </label>
-        <p class="parent-lead" id="reward-pick-lead" hidden>Tap the teammate or gear picture. Load new art in Admin Library first.</p>
-        <div id="reward-char-pick" class="badge-picker" hidden></div>
-        <div id="reward-gear-pick" class="badge-picker" hidden></div>
-        <label>Reward character
-          <select id="reward-character">
-            <option value="">None</option>
-          </select>
-        </label>
-        <div class="form-row" id="reward-gear-row">
-          <label>Unlock id
-            <input id="reward-unlock-id" maxlength="40" placeholder="notebook-holding">
-          </label>
-          <label>Unlock label
-            <input id="reward-unlock-label" maxlength="60" placeholder="Notebook of Holding">
-          </label>
-        </div>
-        <label id="reward-content-row" hidden>Unlock library item
-          <select id="reward-content">
-            <option value="">None</option>
-          </select>
-        </label>
         <label>Sound that plays when it unlocks
           <select id="reward-media">
             <option value="">None · uses A streak is awarded</option>
           </select>
         </label>
-        <label class="check">
-          <input id="test" type="checkbox"> Mark as TEST
-        </label>
+        <details class="award-fine-print" id="award-extra-unlock">
+          <summary>Also unlock a teammate or gear</summary>
+          <p class="parent-lead">Leave this closed for a badge-only trophy. Open it only when this streak should also unlock Ace, a tool, or a library clip.</p>
+          <label>Reward unlock
+            <select id="reward-type">
+              <option value="">None · badge and bananas only</option>
+              <option value="character">Character</option>
+              <option value="tool">Tool</option>
+              <option value="weapon">Weapon</option>
+              <option value="ability">Ability</option>
+              <option value="outfit">Outfit</option>
+              <option value="content">Content (sound / link)</option>
+            </select>
+          </label>
+          <p class="parent-lead" id="reward-pick-lead" hidden>Tap the teammate or gear picture. Load new art in Admin Library first.</p>
+          <div id="reward-char-pick" class="badge-picker" hidden></div>
+          <div id="reward-gear-pick" class="badge-picker" hidden></div>
+          <label>Reward character
+            <select id="reward-character">
+              <option value="">None</option>
+            </select>
+          </label>
+          <div class="form-row" id="reward-gear-row" hidden>
+            <label>Unlock id
+              <input id="reward-unlock-id" maxlength="40" placeholder="notebook-holding">
+            </label>
+            <label>Unlock label
+              <input id="reward-unlock-label" maxlength="60" placeholder="Notebook of Holding">
+            </label>
+          </div>
+          <label id="reward-content-row" hidden>Unlock library item
+            <select id="reward-content">
+              <option value="">None</option>
+            </select>
+          </label>
+        </details>
         <details class="award-fine-print">
           <summary>Fine print</summary>
           <label>How you count it
@@ -339,16 +340,20 @@
               <input id="unit" maxlength="24" value="week">
             </label>
           </div>
+          <label class="check">
+            <input id="test" type="checkbox"> Catalog TEST tag
+          </label>
         </details>
       </div>
       <div class="parent-actions">
+        <button type="button" class="btn primary" id="award-test">Test</button>
         <button type="button" class="btn primary" id="save">Save for Bennett</button>
         <button type="button" class="btn" id="cancel">Cancel</button>
       </div>
     </section>
 
     <h2 style="font-size:1rem;margin:18px 0 8px">Streaks</h2>
-    <p class="parent-lead" id="streak-live-hint">Title, the badge, the teammate or object, and the unlock sound. Save for Bennett. He earns auto rules on This Week. Award still works when the site cannot count it.</p>
+    <p class="parent-lead" id="streak-live-hint">The badge is the trophy. Test plays the pop-up and sound on this screen, then puts it in the Trophy room on this device. Save for Bennett when the rule is right.</p>
     <div class="preview-all" id="preview-all">
       <p>Parent preview — unlock every reward on this device so you can walk the trophy room. Bennett’s real model stays earned-only. Turn this off when you are done looking.</p>
       <div class="parent-actions">
@@ -468,9 +473,9 @@
   }
 }
   </script>
-  <script src="js/build.js?v=146"></script>
-  <script src="js/game.js?v=146"></script>
-  <script src="js/telemetry.js?v=146"></script>
-  <script src="js/parent.js?v=146"></script>
+  <script src="js/build.js?v=147"></script>
+  <script src="js/game.js?v=147"></script>
+  <script src="js/telemetry.js?v=147"></script>
+  <script src="js/parent.js?v=147"></script>
 </body>
 </html>

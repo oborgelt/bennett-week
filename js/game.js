@@ -199,8 +199,7 @@
     const t = raw.toLowerCase().replace(/[’]/g, "'");
     const nMatch = t.match(/\b(\d+)\b/);
     const n = nMatch ? Math.max(1, Number(nMatch[1])) : 0;
-    const loginish = /\b(log\s*ins?|logged in|sign\s*ins?|signed in|opens? (the )?(site|app|lobby|jungle)|show up|shows up)\b/.test(t)
-      || /\blogs in\b/.test(t);
+    const loginish = /log(?:s|ged|ging)?\s*-?\s*in|logins?\b|sign(?:s|ed|ing)?\s+in|opens? the (site|app|lobby)|show(?:s)? up/.test(t);
     const dayish = /\bday/.test(t);
     const rowish = /\bin a row\b|\bstraight\b|\bconsecutive\b|\bstreak\b/.test(t);
     if (loginish && (dayish || rowish || n >= 2)) {
@@ -5493,6 +5492,24 @@
     };
   }
 
+  function previewTestAward(pack, family, id) {
+    const ach = ((pack && pack.achievements) || []).find((row) => row && row.id === id) || null;
+    if (!ach) {
+      return { family: normalizeFamily(family), achievement: null };
+    }
+    markUnlocked(id);
+    addPreviewIds([id]);
+    const next = normalizeFamily(family);
+    const st = next.streaks[id] || { count: 0 };
+    next.streaks[id] = Object.assign({}, st, {
+      awarded: true,
+      awardedAt: nowIso(),
+      preview: true
+    });
+    saveFamily(next);
+    return { family: next, achievement: ach };
+  }
+
   function revokeUnlock(id) {
     const all = getUnlocks();
     if (!all[id]) return false;
@@ -8460,6 +8477,7 @@
     ACE_DONE_ACHIEVEMENT,
     awardAchievement,
     awardStreak,
+    previewTestAward,
     revokeUnlock,
     revokeAchievement,
     recordEgg,
