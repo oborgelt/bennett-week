@@ -3676,6 +3676,297 @@
     });
   }
 
+  function normalizeStudentStatus(raw) {
+    const s = String(raw || "").toLowerCase().trim().replace(/[\s-]+/g, "_");
+    if (s === "done" || s === "complete" || s === "completed" || s === "yes" || s === "true" || s === "submitted") return "done";
+    if (s === "not_done" || s === "open" || s === "no" || s === "false" || s === "todo" || s === "notdone") return "not_done";
+    return "";
+  }
+
+  function studentSaysDone(work) {
+    const fromFeed = normalizeStudentStatus(work && work.student_status);
+    if (fromFeed === "done") return true;
+    if (fromFeed === "not_done") return false;
+    try {
+      const st = work && work.id ? workState(work.id) : null;
+      if (st && st.done) return true;
+    } catch (_) {}
+    return false;
+  }
+
+  function schoolLooksUnloggedFromBits(bits) {
+    const school = (bits && (bits.schoolStatus || bits.status)) || "";
+    if (school === "missing" || school === "open") return true;
+    if (bits && bits.zero) return true;
+    if (school === "late" && bits && !bits.submitted) return true;
+    return false;
+  }
+
+  function discrepancyFromBits(work, bits) {
+    if (!work || String(work.kind || "") === "event") return false;
+    if (work.discrepancy === false || work.discrepancy === "false") return false;
+    if (work.discrepancy === true || work.discrepancy === "true") return true;
+    if (!studentSaysDone(work)) return false;
+    return schoolLooksUnloggedFromBits(bits);
+  }
+
+  function workIsDiscrepancy(work, now) {
+    if (!work || String(work.kind || "") === "event") return false;
+    if (work.discrepancy === false || work.discrepancy === "false") return false;
+    if (work.discrepancy === true || work.discrepancy === "true") return true;
+    return !!(workFeedStatus(work, now) || {}).discrepancy;
+  }
+
+  function addChicagoDaysYmd(ymd, days) {
+    const [y, m, d] = String(ymd || "").split("-").map(Number);
+    if (!y || !m || !d) return "";
+    const x = new Date(y, m - 1, d);
+    x.setDate(x.getDate() + Number(days || 0));
+    const yy = x.getFullYear();
+    const mm = String(x.getMonth() + 1).padStart(2, "0");
+    const dd = String(x.getDate()).padStart(2, "0");
+    return yy + "-" + mm + "-" + dd;
+  }
+
+  function defaultFollowupDueBy(submittedAt) {
+    if (!submittedAt) return "";
+    const ymd = ymdFromLocal(submittedAt) || chicagoYmd(new Date(submittedAt));
+    if (!ymd || ymd.indexOf("NaN") >= 0) return "";
+    const next = addChicagoDaysYmd(ymd, 2);
+    return next ? next + "T17:00:00" : "";
+  }
+
+  function fmtChicagoLongDay(iso) {
+    if (!iso) return "";
+    const d = typeof iso === "number" ? new Date(iso) : new Date(iso);
+    if (!Number.isNaN(d.getTime())) {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Chicago",
+        month: "long",
+        day: "numeric"
+      }).formatToParts(d);
+      const get = (t) => (parts.find((p) => p.type === t) || {}).value || "";
+      const month = get("month");
+      const day = get("day");
+      return month && day ? month + " " + day : "";
+    }
+    const ymd = ymdFromLocal(iso);
+    if (!ymd) return "";
+    const [y, m, day] = ymd.split("-").map(Number);
+    if (!y || !m || !day) return "";
+    return new Date(y, m - 1, day).toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  }
+
+  function schoolSourceLabel(work) {
+    const s = String((work && work.source) || "").toLowerCase();
+    if (s === "canvas") return "Canvas";
+    if (s === "parentvue" || s === "parent vue" || s === "parent_vue") return "ParentVUE";
+    return "Canvas/ParentVUE";
+  }
+
+  function teacherForWork(work, classes) {
+    const cid = classIdForWork(work);
+    const cls = (classes || []).find((c) => c && c.id === cid);
+    if (cls && cls.teacher) return String(cls.teacher).trim();
+    return "";
+  }
+
+  function teacherHonorific(name) {
+    const raw = String(name || "").trim();
+    if (!raw) return "Mr./Ms. Teacher";
+    if (/^mr\.?\/ms\.?/i.test(raw) || /^mr\.?\s/i.test(raw) || /^ms\.?\s/i.test(raw) || /^mrs\.?\s/i.test(raw)) return raw;
+    return "Mr./Ms. " + raw;
+  }
+
+  function defaultTeacherEmailDraft(work, classes, now) {
+    const st = workFeedStatus(work, now);
+    const teacher = teacherHonorific(teacherForWork(work, classes));
+    const assignment = wTitleStrip(work && work.title) || "this";
+    const when = fmtChicagoLongDay(st.submittedAt || (work && work.submitted_at));
+    const source = schoolSourceLabel(work);
+    const turned = when ? ("I turned " + assignment + " in on " + when) : ("I turned " + assignment + " in");
+    return "Hey " + teacher + ", " + turned + ". Please let me know if there is an issue. I notice it's not updated in " + source + ".";
+  }
+
+  function workFollowup(work, classes, now) {
+    const raw = (work && work.followup && typeof work.followup === "object") ? work.followup : {};
+    const st = workFeedStatus(work, now);
+    const dueBy = raw.due_by || defaultFollowupDueBy(st.submittedAt || (work && work.submitted_at));
+    const email = String(raw.email_draft || "").trim() || defaultTeacherEmailDraft(work, classes, now);
+    return {
+      due_by: dueBy || "",
+      email_draft: email,
+      sent_at: raw.sent_at || ""
+    };
+  }
+
+  function discrepancyWork(week, now) {
+    const clock = now || new Date();
+    return ((week && week.work) || []).filter((w) => workIsDiscrepancy(w, clock)).slice().sort((a, b) => {
+      const af = workFollowup(a, null, clock);
+      const bf = workFollowup(b, null, clock);
+      return String(af.due_by || a.due || "").localeCompare(String(bf.due_by || b.due || ""));
+    });
+  }
+
+  function checkinModeFromSearch(search) {
+    try {
+      const q = new URLSearchParams(search || (typeof location !== "undefined" ? location.search : ""));
+      const raw = String(q.get("checkin") || "").toLowerCase();
+      if (raw === "after-school" || raw === "afterschool" || raw === "after_school" || raw === "home") return "after-school";
+      if (raw === "bedtime" || raw === "bed" || raw === "night") return "bedtime";
+    } catch (_) {}
+    return "";
+  }
+
+  function defaultCheckinMode(now) {
+    const mins = chicagoHm(now || new Date());
+    if (mins >= 20 * 60) return "bedtime";
+    return "after-school";
+  }
+
+  function resolvedCheckinMode(search, now) {
+    return checkinModeFromSearch(search) || defaultCheckinMode(now);
+  }
+
+  function checkinModeLabel(mode) {
+    if (mode === "bedtime") return "Bedtime check";
+    return "After-school check";
+  }
+
+  function schoolVsStudentLine(work, now) {
+    const st = workFeedStatus(work, now);
+    const schoolBits = [];
+    if (st.schoolStatus) schoolBits.push(st.schoolStatus.charAt(0).toUpperCase() + st.schoolStatus.slice(1));
+    if (st.score) schoolBits.push(st.score);
+    schoolBits.push(schoolSourceLabel(work));
+    const studentBits = [];
+    if (studentSaysDone(work)) studentBits.push("Marked done");
+    else if (st.studentStatus === "not_done") studentBits.push("Not done here");
+    else studentBits.push("Not marked done");
+    if (st.submittedAt) studentBits.push("turned in " + fmtStamp(st.submittedAt));
+    return {
+      school: schoolBits.filter(Boolean).join(" · "),
+      student: studentBits.filter(Boolean).join(" · ")
+    };
+  }
+
+  function mailtoHref(subject, body) {
+    return "mailto:?subject=" + encodeURIComponent(subject || "") + "&body=" + encodeURIComponent(body || "");
+  }
+
+  function emailsToSend(week, now) {
+    return discrepancyWork(week, now).filter((w) => !workFollowup(w, null, now).sent_at);
+  }
+
+  function followupCardHtml(work, classes, now) {
+    const clock = now || new Date();
+    const st = workFeedStatus(work, clock);
+    const follow = workFollowup(work, classes, clock);
+    const vs = schoolVsStudentLine(work, clock);
+    const cid = st.classId;
+    const deadline = follow.due_by
+      ? (follow.sent_at ? "Already sent " + (fmtStamp(follow.sent_at) || follow.sent_at) : "Send by " + (fmtStamp(follow.due_by) || follow.due_by) + " if still unlogged")
+      : (follow.sent_at ? "Already sent" : "Ready to send if school still has not logged it");
+    const subject = wTitleStrip(work && work.title) || "Assignment update";
+    const sent = follow.sent_at
+      ? `<p class="followup-sent">Parenting recorded a send${fmtStamp(follow.sent_at) ? " · " + esc(fmtStamp(follow.sent_at)) : ""}.</p>`
+      : "";
+    return `
+      <article class="followup-card" id="followup-${esc(work.id)}" data-followup-work="${esc(work.id)}">
+        <div class="followup-head">
+          <span class="followup-class">${esc(classShortLabel(cid) || classNameForId(cid) || cid)}</span>
+          <span class="followup-copy">
+            <span class="followup-title">${esc(wTitleStrip(work.title))}</span>
+            ${workStatusChipsHtml(work, clock)}
+          </span>
+        </div>
+        <div class="followup-vs">
+          <div class="followup-vs-row"><span>School</span> ${esc(vs.school)}</div>
+          <div class="followup-vs-row"><span>Bennett</span> ${esc(vs.student)}</div>
+        </div>
+        <p class="followup-deadline">${esc(deadline)}</p>
+        ${sent}
+        <label class="followup-email-label">Teacher email
+          <textarea class="followup-email" readonly rows="4">${esc(follow.email_draft)}</textarea>
+        </label>
+        <div class="followup-tools">
+          <button type="button" class="btn primary" data-copy-email>Copy email</button>
+          <a class="btn ghost" href="${esc(mailtoHref(subject, follow.email_draft))}">Open mail</a>
+        </div>
+      </article>`;
+  }
+
+  function followupSectionHtml(week, classes, now, opts) {
+    const clock = now || new Date();
+    const mode = (opts && opts.mode) || resolvedCheckinMode((opts && opts.search) || "", clock);
+    const rows = discrepancyWork(week, clock);
+    const pending = emailsToSend(week, clock);
+    const checkinAsk = mode === "bedtime"
+      ? "Before bed — do I need to send any emails?"
+      : "Home from school — do I need to send any emails?";
+    const answer = pending.length
+      ? ("Yes — send " + pending.length + " teacher email" + (pending.length === 1 ? "" : "s"))
+      : "No teacher emails to send";
+    const afterHref = (opts && opts.page) || "progress.html";
+    const sep = afterHref.indexOf("?") >= 0 ? "&" : "?";
+    const cards = rows.length
+      ? rows.map((w) => followupCardHtml(w, classes, clock)).join("")
+      : `<p class="empty">No school-vs-Bennett discrepancies in week.json.</p>`;
+    return `
+      <div class="followup-switch" role="tablist" aria-label="Check-in">
+        <a class="followup-tab${mode === "after-school" ? " on" : ""}" href="${esc(afterHref + sep + "checkin=after-school")}#followup-pane" role="tab" aria-selected="${mode === "after-school" ? "true" : "false"}">After school</a>
+        <a class="followup-tab${mode === "bedtime" ? " on" : ""}" href="${esc(afterHref + sep + "checkin=bedtime")}#followup-pane" role="tab" aria-selected="${mode === "bedtime" ? "true" : "false"}">Bedtime</a>
+      </div>
+      <div class="followup-answer${pending.length ? " yes" : " no"}">
+        <p class="followup-kicker">${esc(checkinModeLabel(mode))} · ${esc(checkinAsk)}</p>
+        <h2>Needs follow-up</h2>
+        <p class="followup-lead">${esc(answer)}</p>
+      </div>
+      <div class="followup-body">${cards}</div>`;
+  }
+
+  function followupStripHtml(week, now, opts) {
+    const clock = now || new Date();
+    const pending = emailsToSend(week, clock);
+    if (!pending.length) return "";
+    const first = pending[0];
+    const more = pending.length > 1 ? " + " + (pending.length - 1) + " more" : "";
+    const href = ((opts && opts.link) || "progress.html") + "?checkin=after-school#followup-pane";
+    return `
+      <a class="followup-strip-link" href="${esc(href)}">
+        <span class="followup-strip-kicker">Needs follow-up</span>
+        <span class="followup-strip-copy">${esc(pending.length + " teacher email" + (pending.length === 1 ? "" : "s") + " · " + wTitleStrip(first.title) + more)}</span>
+      </a>`;
+  }
+
+  function bindFollowupCopy() {
+    if (typeof document === "undefined" || !document.addEventListener) return;
+    if (document.documentElement && document.documentElement.dataset.followupCopyBound === "1") return;
+    if (document.documentElement) document.documentElement.dataset.followupCopyBound = "1";
+    document.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest && e.target.closest("[data-copy-email]");
+      if (!btn) return;
+      e.preventDefault();
+      const card = btn.closest ? btn.closest(".followup-card") : null;
+      const ta = card && card.querySelector ? card.querySelector(".followup-email") : null;
+      const text = ta ? String(ta.value || "") : "";
+      const done = () => toast("Copied. Paste into a message to the teacher.");
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(done);
+          return;
+        }
+      } catch (_) {}
+      if (ta) {
+        ta.focus();
+        ta.select();
+        try { document.execCommand("copy"); } catch (_) {}
+      }
+      done();
+    });
+  }
+
   function workFeedStatus(work, now) {
     const clock = now || new Date();
     const w = work || {};
@@ -3705,7 +3996,7 @@
     }
     const canvas = (w.canvas && typeof w.canvas === "object") ? w.canvas : {};
     const hints = parseWorkNoteHints(w.note);
-    let status = normalizeWorkStatus(w.status) || normalizeWorkStatus(canvas.status);
+    let status = normalizeWorkStatus(w.school_status) || normalizeWorkStatus(w.status) || normalizeWorkStatus(canvas.status);
     if (!status && hints.missed) status = "missing";
     if (!status && w.due) status = "open";
     if (!status) status = "unknown";
@@ -3744,9 +4035,19 @@
     const late = lateFlag && !missing;
     const notDone = !missing && !excused && !submitted && !graded && (status === "open" || status === "late");
     const zero = scoreLooksZero(score);
+    const studentStatus = normalizeStudentStatus(w.student_status);
+    const studentDone = studentSaysDone(w);
+    const schoolStatus = normalizeWorkStatus(w.school_status) || status;
+    const discrepancy = discrepancyFromBits(w, {
+      status,
+      schoolStatus,
+      submitted,
+      zero
+    });
     const needsYou = !!(
       wantContact
       || missing
+      || discrepancy
       || (graded && zero)
       || (dueToday && !submitted && !excused && status !== "graded")
       || (pastDue && (status === "open" || status === "late" || status === "unknown"))
@@ -3754,6 +4055,9 @@
 
     return {
       status,
+      schoolStatus,
+      studentStatus,
+      studentDone,
       score: score ? String(score) : "",
       points,
       submittedAt,
@@ -3771,6 +4075,7 @@
       excused,
       unknown: status === "unknown",
       zero,
+      discrepancy,
       needsYou,
       classId: classIdForWork(w)
     };
@@ -3779,6 +4084,7 @@
   function workStatusChips(work, now) {
     const st = workFeedStatus(work, now);
     const chips = [];
+    if (st.discrepancy) chips.push({ key: "discrepancy", label: "Follow-up" });
     if (st.wantContact) chips.push({ key: "wrong", label: "Looks wrong" });
     if (st.missing) chips.push({ key: "missing", label: "Missing" });
     else if (st.late) chips.push({ key: "late", label: "Late" });
@@ -7618,6 +7924,24 @@
     workFeedStatus,
     workStatusChips,
     workStatusChipsHtml,
+    normalizeStudentStatus,
+    studentSaysDone,
+    workIsDiscrepancy,
+    workFollowup,
+    discrepancyWork,
+    emailsToSend,
+    schoolVsStudentLine,
+    defaultFollowupDueBy,
+    defaultTeacherEmailDraft,
+    checkinModeFromSearch,
+    defaultCheckinMode,
+    resolvedCheckinMode,
+    checkinModeLabel,
+    followupCardHtml,
+    followupSectionHtml,
+    followupStripHtml,
+    bindFollowupCopy,
+    mailtoHref,
     needsYouWork,
     needsYouCounts,
     parentNeedsLine,
@@ -7714,6 +8038,7 @@
     bindUndoCue();
     bindAudioUnlock();
     bindNeedsYouToggle();
+    bindFollowupCopy();
     applySiteView();
     bindHudNavClicks();
   } else {
@@ -7722,6 +8047,7 @@
       bindUndoCue();
       bindAudioUnlock();
       bindNeedsYouToggle();
+      bindFollowupCopy();
       applySiteView();
       bindHudNavClicks();
     });

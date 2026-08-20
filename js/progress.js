@@ -62,6 +62,11 @@
         due: w.due,
         note: w.note,
         status: w.status,
+        school_status: w.school_status,
+        student_status: w.student_status,
+        discrepancy: w.discrepancy,
+        followup: w.followup,
+        submitted_at: w.submitted_at,
         score: w.score,
         points: w.points,
         late: w.late,
@@ -363,7 +368,7 @@
         const feedSt = Game.workFeedStatus(feed);
         const local = status.label ? `<div class="meta">${Game.esc(kindLabel(item.kind))}${status.label ? " · " + Game.esc(status.label) : ""}</div>` : `<div class="meta">${Game.esc(kindLabel(item.kind))}${feed.due ? " · due " + Game.esc(Game.fmtStamp(feed.due)) : ""}</div>`;
         return `
-          <li class="class-item${feedSt.needsYou ? " needs" : ""}${status.kind === "done" ? " done" : (status.kind === "started" ? " started" : "")}" id="work-${Game.esc(item.id)}">
+          <li class="class-item${feedSt.needsYou ? " needs" : ""}${feedSt.discrepancy ? " discrepancy" : ""}${status.kind === "done" ? " done" : (status.kind === "started" ? " started" : "")}" id="work-${Game.esc(item.id)}">
             <div class="class-item-top">
               <div>
                 <div class="title">${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.title)}</div>
@@ -481,6 +486,7 @@
       family = Game.saveWorkPlan(family, w, text);
       closeSheet();
       Game.familySavedToast("Plan saved");
+      renderFollowupPane();
       renderNeedsYouPane();
       Game.flushFamilyNotes(family).catch(() => {});
     });
@@ -817,6 +823,18 @@
     host.innerHTML = `<h2>Check-ins</h2>${Game.checkinsListHtml(family)}<p class="checkin-more"><a href="messages.html">All asks and check-ins</a></p>`;
   }
 
+  function renderFollowupPane(classes) {
+    const host = document.getElementById("followup-pane");
+    if (!host) return;
+    const mode = Game.resolvedCheckinMode(location.search, new Date());
+    document.body.classList.toggle("checkin-after-school", mode === "after-school");
+    document.body.classList.toggle("checkin-bedtime", mode === "bedtime");
+    host.innerHTML = Game.followupSectionHtml(week, classes || mergeClasses(), new Date(), {
+      mode,
+      page: "progress.html"
+    });
+  }
+
   function renderNeedsYouPane() {
     const host = document.getElementById("needs-you");
     if (!host) return;
@@ -862,6 +880,7 @@
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
     Game.paintStoryChip(roster);
+    renderFollowupPane(classes);
     renderNeedsYouPane();
     renderCheckinsPane();
     const want = wantedClass();
@@ -889,6 +908,10 @@
     if (location.hash === "#needs-you") {
       const needs = document.getElementById("needs-you");
       if (needs && needs.scrollIntoView) needs.scrollIntoView({ block: "start" });
+    }
+    if (location.hash === "#followup-pane") {
+      const follow = document.getElementById("followup-pane");
+      if (follow && follow.scrollIntoView) follow.scrollIntoView({ block: "start" });
     }
   }
 

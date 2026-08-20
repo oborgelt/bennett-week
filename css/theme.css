@@ -812,6 +812,207 @@ body.site-view-kid .class-card-tools {
   margin: 10px 0 0;
 }
 
+.followup-strip,
+.followup-pane {
+  margin: 4px 14px 10px;
+  padding: 14px 16px 16px;
+  border: 3px solid #f4d35e;
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(244, 211, 94, 0.18), rgba(7, 22, 24, 0.88));
+  box-shadow: 0 0 0 3px rgba(244, 211, 94, 0.18), var(--shadow);
+}
+
+.followup-pane {
+  margin: 0;
+}
+
+.followup-strip[hidden] {
+  display: none;
+}
+
+.followup-strip-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+.followup-strip-kicker,
+.followup-kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--banana);
+}
+
+.followup-strip-copy {
+  font-weight: 800;
+  font-size: 1.02rem;
+}
+
+.followup-switch {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.followup-tab {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 211, 94, 0.4);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 800;
+  background: rgba(7, 22, 24, 0.45);
+}
+
+.followup-tab.on {
+  background: var(--banana);
+  color: #071618;
+  border-color: var(--banana);
+}
+
+.followup-answer h2 {
+  margin: 2px 0 4px;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--banana);
+}
+
+.followup-answer.yes .followup-lead {
+  color: #ffd36a;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.followup-answer.no .followup-lead {
+  color: var(--ace);
+  font-weight: 750;
+}
+
+.followup-lead {
+  margin: 0 0 10px;
+}
+
+.followup-card {
+  padding: 10px 0 12px;
+  border-top: 1px solid rgba(244, 211, 94, 0.28);
+}
+
+.followup-card:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.followup-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.followup-class {
+  flex: 0 0 auto;
+  font-weight: 800;
+  color: var(--banana);
+  padding-top: 2px;
+}
+
+.followup-copy {
+  min-width: 0;
+}
+
+.followup-title {
+  display: block;
+  font-weight: 800;
+  font-size: 1.02rem;
+}
+
+.followup-vs {
+  margin: 8px 0;
+  display: grid;
+  gap: 4px;
+}
+
+.followup-vs-row {
+  font-size: 0.92rem;
+}
+
+.followup-vs-row span {
+  display: inline-block;
+  min-width: 4.6em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.followup-deadline,
+.followup-sent {
+  margin: 0 0 8px;
+  font-weight: 750;
+  color: var(--due);
+}
+
+.followup-email-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.followup-email {
+  display: block;
+  width: 100%;
+  margin: 6px 0 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(244, 211, 94, 0.4);
+  background: rgba(7, 22, 24, 0.7);
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+
+.followup-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.followup-tools .btn {
+  min-height: 44px;
+}
+
+.followup-tools .ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(198, 224, 58, 0.35);
+  color: var(--start);
+  text-decoration: none;
+  font-weight: 750;
+}
+
+.class-item.discrepancy {
+  box-shadow: inset 3px 0 0 #f4d35e;
+}
+
 .needs-you,
 .needs-you-pane,
 .grades-pane,
@@ -1028,6 +1229,12 @@ body.site-view-kid .class-card-tools {
   background: rgba(244, 162, 97, 0.16);
   border-color: rgba(244, 162, 97, 0.55);
   color: #f4a261;
+}
+
+.chip-discrepancy {
+  background: rgba(244, 211, 94, 0.22);
+  border-color: #f4d35e;
+  color: #fff4c2;
 }
 
 .chip-due-today {
@@ -1834,6 +2041,7 @@ body.week-page .track,
 body.week-page nav.week-nav,
 body.week-page .later-board,
 body.week-page .needs-you,
+body.week-page .followup-strip,
 body.week-page .draft-flag,
 body.week-page .class-switcher,
 body.week-page .peek-monkey {
@@ -1846,6 +2054,7 @@ body.week-page.in-treehouse .track,
 body.week-page.in-treehouse nav.week-nav,
 body.week-page.in-treehouse .later-board,
 body.week-page.in-treehouse .needs-you,
+body.week-page.in-treehouse .followup-strip,
 body.week-page.in-treehouse .draft-flag,
 body.week-page.in-treehouse .class-switcher,
 body.week-page.in-treehouse .peek-monkey {
@@ -3150,7 +3359,8 @@ body.progress-page .dash {
     padding-bottom: 8px;
   }
   body.week-page .later-board,
-  body.week-page .needs-you {
+  body.week-page .needs-you,
+  body.week-page .followup-strip {
     margin-bottom: max(28px, env(safe-area-inset-bottom));
     overflow: visible;
   }
@@ -3189,6 +3399,7 @@ body.progress-page .dash {
     display: grid;
     grid-template-columns: minmax(0, 1.45fr) minmax(0, 1.15fr) minmax(280px, 0.95fr);
     grid-template-areas:
+      "followup followup followup"
       "needs grades stats"
       "classes checkins stats";
     align-items: stretch;
@@ -3197,6 +3408,7 @@ body.progress-page .dash {
     max-width: none;
     width: 100%;
   }
+  body.progress-page .followup-pane { grid-area: followup; }
   body.progress-page .needs-you-pane { grid-area: needs; }
   body.progress-page .grades-pane { grid-area: grades; }
   body.progress-page .checkins-pane { grid-area: checkins; }
@@ -3222,14 +3434,16 @@ body.progress-page .dash {
   }
   body.progress-page .dash {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.35fr) minmax(0, 1fr) minmax(300px, 0.9fr);
-    grid-template-rows: minmax(220px, 0.42fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(180px, 0.42fr) minmax(0, 1fr);
     grid-template-areas:
+      "followup followup followup followup"
       "needs classes grades stats"
       "needs classes checkins stats";
     overflow: hidden;
     min-height: 0;
     padding: 8px 20px 16px;
   }
+  body.progress-page .followup-pane,
   body.progress-page .needs-you-pane,
   body.progress-page .grades-pane,
   body.progress-page .checkins-pane,

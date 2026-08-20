@@ -235,9 +235,34 @@ Anything labeled **TEST** is look-and-feel filler, not a real family rule or a r
 - `progress.html?class=chemistry` expands that class.
 - Help-opened timestamps are stored on the existing `bw-progress` object (`helpOpened`), not a new store.
 
+**Needs follow-up (school vs Bennett)**
+- Canvas / ParentVUE is what the teacher logged. Jungle Jam is what Bennett marked done. Those two disagree when work is finished but still missing, unlogged, or 0.
+- Progress opens with a yellow **Needs follow-up** strip — after-school and bedtime check-ins that answer “do I need to send any emails?” This Week shows the same count and links here. Do not bury this under Trophy Room.
+- Each discrepancy shows school vs Bennett, the follow-up deadline, and a copy-ready teacher email (`Copy email` or `mailto:`). The app does not send mail.
+- `progress.html?checkin=after-school` and `?checkin=bedtime` are the two parent check-ins they asked for. Do not change Grok Bot cron in this repo.
+- `sent_at` is only shown when Parenting wrote it on the work row. Do not invent that Bennett already emailed.
+
 Bennett can see his activity and class progress. Parents can open the same page. Nobody sees the parent achievement catalog or locked trophies here.
 
 Grades stay seed/TEST until a real feed exists.
+
+## week.json (Parenting agent)
+
+Parenting writes `week.json`. The lobby only reads it. Keep old work rows working if the new fields are missing.
+
+On each `work[]` item, in addition to `id`, `title`, `due`, `status`, `score`, `points`, `late`, `submitted_at`, `source`, `canvas`, and `note`:
+
+| Field | Who | Values |
+| --- | --- | --- |
+| `school_status` | Canvas / ParentVUE | `open` · `missing` · `late` · `submitted` · `graded` |
+| `student_status` | Bennett in Jungle Jam | `done` · `not_done` |
+| `submitted_at` | Student or Canvas | Chicago-local ISO, or `null` |
+| `discrepancy` | Compare the two | `true` when Bennett says done and school is still missing, unlogged, or 0 |
+| `followup` | Plan for that gap | `{ "due_by": "YYYY-MM-DDTHH:MM:SS", "email_draft": "…", "sent_at": "…" }` |
+
+`followup.due_by` is the send-if-still-unlogged deadline (spoken cadence: turned in day 0, still blank next day 5pm, send the day after at 5pm). `email_draft` is the ready text: assignment name, turned-in date, ask the teacher to update Canvas/ParentVUE. Omit `sent_at` until a real send is recorded. Do not invent grades, due dates, or that an email went out.
+
+Proof seed (2026-08-20): Chemistry **About Me Slides (discussion)** — school `late` 0/1 after a Canvas submit Aug 19 3:33pm, Bennett `done`, `discrepancy: true`, follow-up due Fri 8/21 5:00pm, draft ready, no `sent_at`.
 
 ## Easter eggs
 
@@ -258,7 +283,7 @@ Wholesome only. Try tapping the banner band, the little clarinet, and a shy tenn
 - `progress.html` — activity + class dashboard
 - `parent.html` — parent desk
 - `mom.html` — redirect to `parent.html`
-- `week.json` — calendar, work, parenting time
+- `week.json` — calendar, work, parenting time, school-vs-Bennett status, follow-up drafts
 - `progress.json` — class list + TEST grade seed + sample opens
 - `achievements.json` — streak catalog + incentives + `reward` / `rewardUnlock`
 - `characters.json` — Ace / Riff / Scorch / Deuce / Fuzz roster + `comicStartsAfter: 3`
@@ -281,7 +306,7 @@ Parents assign a teammate (or a tool / ability) on a streak, then award that str
 4. Bennett opens **Characters**. Locked slots are silhouettes. After the award he can play the clip and see the talent / tag line. A new unlock plays that teammate’s clip once as the celebration. Loadout shows earned tools / outfits / abilities with the gear PNG. Locked gear stays **???**. **Sounds** shows earned audio / links; locked names stay **???**.
 5. After 3 character unlocks, **Story** is available — a choose-your-own-adventure, not a toast. An attached unlocked sound can play on a story or week beat.
 
-Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **53**.
+Every page shows **Build N** and the last-modified time (America/Chicago) on the banner, top right. Bump `build` by 1 and update `modified` in `js/build.js` (and the HTML stamp) on each ship. This ship is **131**.
 
 ## Locker refs (Orin)
 

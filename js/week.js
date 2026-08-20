@@ -312,7 +312,16 @@
     });
   }
 
+  function renderFollowup() {
+    const host = document.getElementById("followup-strip");
+    if (!host) return;
+    const html = Game.followupStripHtml(week, new Date(), { link: "progress.html" });
+    host.hidden = !html;
+    host.innerHTML = html || "";
+  }
+
   function renderNeedsYou() {
+    renderFollowup();
     const host = document.getElementById("needs-you");
     if (!host) return;
     const html = Game.needsYouSectionHtml(week, new Date(), { link: "progress.html", family });
