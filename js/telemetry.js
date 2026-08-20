@@ -683,6 +683,8 @@
     else delete week._jjAchievements;
     if (src.awards && typeof src.awards === "object") week._jjAwards = src.awards;
     else delete week._jjAwards;
+    if (src.deletedNotes && typeof src.deletedNotes === "object") week._jjDeletedNotes = src.deletedNotes;
+    else delete week._jjDeletedNotes;
     return {
       family_token: familyToken,
       week,
@@ -705,12 +707,14 @@
     const reflections = (week._jjReflections && typeof week._jjReflections === "object") ? week._jjReflections : (r.reflections || { pool: [], answers: [] });
     const achievements = (week._jjAchievements && typeof week._jjAchievements === "object") ? week._jjAchievements : (r.achievements || { achievements: [] });
     const awards = (week._jjAwards && typeof week._jjAwards === "object") ? week._jjAwards : (r.awards || {});
+    const deletedNotes = (week._jjDeletedNotes && typeof week._jjDeletedNotes === "object") ? week._jjDeletedNotes : (r.deletedNotes || { ids: [], texts: [] });
     delete week._jjSoundCues;
     delete week._jjLibrary;
     delete week._jjAsk;
     delete week._jjReflections;
     delete week._jjAchievements;
     delete week._jjAwards;
+    delete week._jjDeletedNotes;
     return {
       family_token: String(r.family_token || ""),
       week,
@@ -721,6 +725,7 @@
       reflections,
       achievements,
       awards,
+      deletedNotes,
       updatedAt: r.updated_at || r.updatedAt || ""
     };
   }

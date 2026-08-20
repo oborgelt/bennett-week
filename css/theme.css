@@ -1334,6 +1334,10 @@ body.site-view-kid .class-card-tools {
   font-size: 0.92rem;
 }
 
+.grade-course {
+  margin: 0 0 6px;
+}
+
 .grade-list li {
   display: flex;
   justify-content: space-between;
@@ -3776,6 +3780,20 @@ body.messages-page .msg-reply-label textarea {
   font-size: 0.78rem;
   color: var(--muted);
   line-height: 1.4;
+}
+
+.prompt-hold {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.ach-card.is-hold {
+  opacity: 0.82;
+}
+
+body.messages-page .msg-tabs {
+  margin: 0 0 14px;
 }
 
 .msg-card-open {

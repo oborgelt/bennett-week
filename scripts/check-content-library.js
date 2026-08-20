@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=137/.test(basecampHtml) && /basecamp\.js\?v=137/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=138/.test(basecampHtml) && /basecamp\.js\?v=138/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -611,10 +611,12 @@ assert.deepStrictEqual(classIds, [
 ], "S1 ParentVUE roster only — no guessed PE / Algebra list");
 assert(!classIds.includes("pe"), "PE is not on the ParentVUE S1 roster");
 const byId = Object.fromEntries(progress.classes.map((cls) => [cls.id, cls]));
-["sociology", "academic-intervention", "strength", "geometry"].forEach((id) => {
+["academic-intervention", "strength", "geometry"].forEach((id) => {
   assert(Array.isArray(byId[id].items) && byId[id].items.length === 0, id + " has no assignments");
   assert(!byId[id].grade, id + " must not invent a grade");
 });
+assert(Array.isArray(byId.sociology.items) && byId.sociology.items.length === 0, "sociology has no assignments");
+assert(byId.sociology.grade && /A-\s*91%/.test(byId.sociology.grade.display), "sociology keeps the ParentVUE A- 91% on Grades");
 assert(!byId["web-design"].grade, "web-design must not invent a grade");
 assert.strictEqual((byId["web-design"].items || []).length, 1, "Web Design has 1.1 What is the Web");
 assert.strictEqual(byId["web-design"].items[0].id, "web-11");
@@ -1483,7 +1485,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=137/.test(weekHtml) && /week\.js\?v=137/.test(weekHtml) && /game\.js\?v=137/.test(weekHtml) && /telemetry\.js\?v=137/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=138/.test(weekHtml) && /week\.js\?v=138/.test(weekHtml) && /game\.js\?v=138/.test(weekHtml) && /telemetry\.js\?v=138/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1530,8 +1532,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=136\b/.test(html), file + " should not still cache-bust as v=136");
-  assert(/\?v=137/.test(html), file + " should cache-bust v=137");
+  assert(!/\?v=137\b/.test(html), file + " should not still cache-bust as v=137");
+  assert(/\?v=138/.test(html), file + " should cache-bust v=138");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1576,7 +1578,7 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=137/.test(progressHtml) && /theme\.css\?v=137/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=138/.test(progressHtml) && /theme\.css\?v=138/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1607,7 +1609,7 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*135/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 135");
+assert(/build:\s*136/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 136");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2038,7 +2040,7 @@ thinPool.reflections.pool = [
 assert.strictEqual(Game.ensureReflectionPool(thinPool).reflections.pool.length, 15, "existing 3-prompt families pick up the new rotation");
 assert(Game.todaysReflectionPrompt(Game.emptyFamily()).id, "today's prompt exists even if the overlay pool is empty");
 localStorage.removeItem("bw-family");
-assert(/Check-in/.test(Game.messagesInboxHtml(checkFam, { work: [], events: [] }, { canEdit: true, view: "me" })), "Mom and Dad see check-ins on Messages");
+assert(/Daily question/.test(Game.messagesInboxHtml(checkFam, { work: [], events: [] }, { canEdit: true, view: "me" })), "Mom and Dad see daily questions on Messages");
 const goneCheck = Game.deleteAnswer(checkFam, checkFam.reflections.answers[0].id);
 assert.strictEqual((goneCheck.reflections.answers || []).length, 0, "deleted check-in leaves the answers list");
 assert(!((goneCheck.overlay.reflections && goneCheck.overlay.reflections.answers) || []).some((a) => a && a.text === "Chem lab"), "overlay does not resurrect a deleted check-in");
@@ -2053,6 +2055,66 @@ const dayHtml = Game.messagesInboxHtml(dayFam, { work: [], events: [] }, { canEd
 assert(/msg-day/.test(dayHtml), "Messages groups by day");
 assert(dayHtml.indexOf("today ask") < dayHtml.indexOf("older ask"), "newest day is on top");
 assert(/body\.messages-page \.inbox-card/.test(themeCss), "Messages cards tighten on the messages page");
+assert(!/Also rotating/.test(Game.checkinsListHtml(checkFam)), "Progress does not dump the idle question rotation");
+assert(/messages\.html\?tab=daily/.test(progressJs) && /messages\.html\?tab=class/.test(progressJs), "Progress Check-ins links to Daily questions and Class messages");
+assert(/data-parent-tab="daily"/.test(parentHtml) && /id="daily-answers"/.test(parentHtml), "Parent desk has a Daily questions tab");
+assert(/data-hold-prompt/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent Daily Qs can hold a prompt off rotation");
+assert(/data-msg-filter="daily"/.test(messagesHtml) && /data-msg-filter="class"/.test(messagesHtml), "Messages has Daily questions and Class messages tabs");
+assert(/No assignment scores posted/.test(progressJs), "Grades pane says no assignment scores posted when empty");
+const sociology = progress.classes.find((cls) => cls.id === "sociology");
+assert(sociology && sociology.grade && /91%/.test(sociology.grade.display), "Sociology course grade from ParentVUE is structured on Progress");
+const chemDisc = week.work.find((w) => w.id === "chem-aboutme-disc");
+assert(chemDisc && chemDisc.score === "0/1", "Chem discussion score stays on the week feed for Grades");
+localStorage.removeItem("bw-ask-thread");
+localStorage.removeItem("bw-family");
+Game.saveAskThread({
+  messages: [{
+    id: "ask-comic-1",
+    role: "bennett",
+    title: "English 10: Finish summer comic strips",
+    text: "my idea is to show me on a cruise with my mom",
+    at: "2026-08-20T10:21:00-05:00"
+  }]
+});
+const comicWeek = { work: [{ id: "eng-comics", title: "English 10: Summer Narrative Comic Strip", classId: "english-10" }] };
+let comicFam = Game.promoteAskThreadToInbox(Game.emptyFamily(), comicWeek);
+assert.strictEqual((comicFam.notes || []).length, 1, "comic Ask promotes once");
+assert.strictEqual(comicFam.notes[0].targetId, "eng-comics", "comic Ask binds to the week assignment, not a help- slug");
+assert(!/^help-/.test(String(comicFam.notes[0].id || "")), "comic Ask does not invent a help- id");
+const comicId = comicFam.notes[0].id;
+comicFam = Game.deleteNote(comicFam, comicId);
+assert.strictEqual((comicFam.notes || []).length, 0, "deleted comic Ask leaves notes");
+comicFam = Game.promoteAskThreadToInbox(comicFam, comicWeek);
+assert.strictEqual((comicFam.notes || []).length, 0, "promote does not remint a deleted Ask");
+comicFam.notes = Game.mergeNotesById(comicFam.notes, [{
+  id: comicId,
+  from: "bennett",
+  kind: "question",
+  text: "my idea is to show me on a cruise with my mom",
+  targetType: "work",
+  targetId: "eng-comics",
+  at: "2026-08-20T10:21:00-05:00"
+}]);
+comicFam = Game.normalizeFamily(comicFam);
+assert.strictEqual((comicFam.notes || []).length, 0, "note merge does not resurrect a deleted Ask");
+assert(!/cruise with my mom/.test(Game.messagesInboxHtml(comicFam, comicWeek, { view: "me" })), "deleted Ask text is gone from Messages");
+const packedGone = Telemetry.overlayToRow(comicFam.overlay, "fam");
+assert(packedGone.week._jjDeletedNotes && packedGone.week._jjDeletedNotes.texts && packedGone.week._jjDeletedNotes.texts.length, "deleted Ask tombstones ride the family board");
+assert.strictEqual(Telemetry.rowToOverlay(packedGone).deletedNotes.texts[0], "my idea is to show me on a cruise with my mom", "deleted Ask tombstones round-trip");
+const mixFam = Game.emptyFamily();
+mixFam.notes = [{ id: "q-slides", from: "bennett", kind: "question", text: "how many slides", at: "2026-08-20T10:21:00-05:00", targetType: "work", targetId: "eng-comics" }];
+mixFam.reflections.answers = [{ id: "a-chem", prompt: "Which class felt easiest today?", text: "Chem lab", at: "2026-08-20T10:00:00-05:00" }];
+assert(/how many slides/.test(Game.messagesInboxHtml(mixFam, comicWeek, { filter: "class", view: "me" })), "Class messages tab shows assignment threads");
+assert(!/Chem lab/.test(Game.messagesInboxHtml(mixFam, comicWeek, { filter: "class", view: "me" })), "Class messages tab hides daily answers");
+assert(/Chem lab/.test(Game.messagesInboxHtml(mixFam, comicWeek, { filter: "daily", view: "me" })), "Daily questions tab shows answers");
+assert(!/how many slides/.test(Game.messagesInboxHtml(mixFam, comicWeek, { filter: "daily", view: "me" })), "Daily questions tab hides class threads");
+let holdFam = Game.ensureReflectionPool(Game.emptyFamily());
+holdFam.reflections.pool.forEach((p) => {
+  holdFam = Game.setPromptPaused(holdFam, p.id, true);
+});
+assert.strictEqual(Game.todaysReflectionPrompt(holdFam), null, "held prompts leave the daily rotation");
+localStorage.removeItem("bw-ask-thread");
+localStorage.removeItem("bw-family");
 assert(/addReflectionAnswer/.test(weekJs), "This Week send pushes the check-in live");
 assert(/body\.progress-page \.dash/.test(themeCss) && /max-width:\s*none/.test(themeCss), "Progress desk uses the full width");
 assert(/grid-template-areas:/.test(themeCss) && /checkins/.test(themeCss) && !/"contact"/.test(themeCss), "Progress grid is widescreen without Contact school");

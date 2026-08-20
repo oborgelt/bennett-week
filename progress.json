@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "gradesNote": "Scores come from Canvas on week.json. English often lives in a Google sheet; Canvas is not the full due list.",
+  "gradesNote": "Course grades from ParentVUE. Assignment scores from Canvas on week.json. English often lives in a Google sheet; Canvas is not the full due list.",
   "term": {
     "id": "2025-26-s1",
     "label": "2025–26 S1",
@@ -43,6 +43,10 @@
       "room": "Rm 315",
       "teacher": "Keach",
       "khan": ["sociology"],
+      "grade": {
+        "display": "A- 91%",
+        "detail": "In-Class Activity 20/22 · ParentVUE 8/19"
+      },
       "items": []
     },
     {

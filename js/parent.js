@@ -13,7 +13,7 @@
   let selectedCharId = null;
   let selectedLibId = null;
   let pickedTrophy = null;
-  const PARENT_TABS = ["awards", "crew", "sounds", "notes", "classes", "story", "pack"];
+  const PARENT_TABS = ["awards", "crew", "sounds", "notes", "daily", "classes", "story", "pack"];
   let parentTab = "awards";
 
   function applyParentTab() {
@@ -38,8 +38,12 @@
     if (!nav || nav.dataset.bound === "1") return;
     nav.dataset.bound = "1";
     try {
-      const saved = localStorage.getItem("bw-parent-tab") || "";
-      if (PARENT_TABS.indexOf(saved) >= 0) parentTab = saved;
+      const q = new URLSearchParams(location.search).get("tab") || "";
+      if (PARENT_TABS.indexOf(q) >= 0) parentTab = q;
+      else {
+        const saved = localStorage.getItem("bw-parent-tab") || "";
+        if (PARENT_TABS.indexOf(saved) >= 0) parentTab = saved;
+      }
     } catch (_) {}
     nav.addEventListener("click", (e) => {
       const tab = e.target && e.target.closest ? e.target.closest("[data-parent-tab]") : null;
@@ -113,6 +117,7 @@
     renderInbox();
     renderAskInbox();
     renderPool();
+    renderDailyAnswers();
     renderIngredients();
     renderCues();
     renderAchievements();
@@ -401,16 +406,19 @@
 
   function renderPool() {
     const list = document.getElementById("pool");
+    if (!list) return;
     const pool = (family.reflections && family.reflections.pool) || [];
     if (!pool.length) {
-      list.innerHTML = `<p class="empty">No reflection prompts yet.</p>`;
+      list.innerHTML = `<p class="empty">No daily questions yet.</p>`;
       return;
     }
     list.innerHTML = pool.map((p) => `
-      <article class="ach-card">
+      <article class="ach-card${p.paused ? " is-hold" : ""}">
         <h3>${p.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(p.text)}</h3>
+        ${p.paused ? `<p class="prompt-hold">On hold — not in today's rotation</p>` : ""}
         <div class="parent-actions">
           <button type="button" class="tiny" data-edit-prompt="${Game.esc(p.id)}">Edit</button>
+          <button type="button" class="tiny" data-hold-prompt="${Game.esc(p.id)}">${p.paused ? "Resume" : "Hold"}</button>
           <button type="button" class="tiny danger" data-del-prompt="${Game.esc(p.id)}">Delete</button>
         </div>
       </article>
@@ -434,13 +442,40 @@
         });
       });
     });
+    list.querySelectorAll("[data-hold-prompt]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const p = family.reflections.pool.find((x) => x.id === b.dataset.holdPrompt);
+        if (!p) return;
+        family = Game.setPromptPaused(family, p.id, !p.paused);
+        persistFamily();
+      });
+    });
     list.querySelectorAll("[data-del-prompt]").forEach((b) => {
       b.addEventListener("click", () => {
-        if (!Game.confirmDelete("check-in prompt")) return;
+        if (!Game.confirmDelete("daily question")) return;
         family = Game.deletePrompt(family, b.dataset.delPrompt);
         persistFamily();
       });
     });
+  }
+
+  function renderDailyAnswers() {
+    const host = document.getElementById("daily-answers");
+    if (!host) return;
+    const grouped = Game.groupCheckinsByPrompt(family);
+    if (!grouped.filled.length) {
+      host.innerHTML = `<p class="empty">Answers from This Week group here by question.</p>`;
+      return;
+    }
+    host.innerHTML = grouped.filled.map((g) => `
+      <article class="checkin-group">
+        <h3>${Game.esc(g.prompt)}</h3>
+        <ul class="checkin-list">${g.answers.map((a) => `
+          <li>
+            <p class="checkin-text">${Game.esc(a.text)}</p>
+            <p class="checkin-stamp">${Game.esc(Game.fmtStamp(a.at))}</p>
+          </li>`).join("")}</ul>
+      </article>`).join("");
   }
 
   function streakOf(ach) {
@@ -1182,6 +1217,7 @@
           renderInbox();
           renderAskInbox();
           renderPool();
+          renderDailyAnswers();
           renderIngredients();
           renderCues();
           renderClassRoster();
@@ -1222,6 +1258,7 @@
       renderInbox();
       renderAskInbox();
       renderPool();
+      renderDailyAnswers();
       renderIngredients();
       renderCues();
       renderClassRoster();
@@ -1239,6 +1276,7 @@
     renderInbox();
     renderAskInbox();
     renderPool();
+    renderDailyAnswers();
     renderIngredients();
     renderCues();
     renderClassRoster();
@@ -1254,6 +1292,8 @@
         renderAchievements();
         renderInbox();
         renderAskInbox();
+        renderPool();
+        renderDailyAnswers();
         renderCues();
       } catch (_) {}
       if (Game.pushLocalLibraryToCloud) {

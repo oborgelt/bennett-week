@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Parent desk · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=137">
+  <link rel="stylesheet" href="css/theme.css?v=138">
 </head>
 <body class="parent-page">
   <header class="week-head">
@@ -45,13 +45,14 @@
       <button type="button" class="admin-tab" data-parent-tab="crew" aria-selected="false">Crew</button>
       <button type="button" class="admin-tab" data-parent-tab="sounds" aria-selected="false">Sounds</button>
       <button type="button" class="admin-tab" data-parent-tab="notes" aria-selected="false">Notes</button>
+      <button type="button" class="admin-tab" data-parent-tab="daily" aria-selected="false">Daily Qs</button>
       <button type="button" class="admin-tab" data-parent-tab="classes" aria-selected="false">Classes</button>
       <button type="button" class="admin-tab" data-parent-tab="story" aria-selected="false">Story</button>
       <button type="button" class="admin-tab" data-parent-tab="pack" aria-selected="false">Pack</button>
     </nav>
     <div data-parent-panel="notes">
     <p class="messages-pointer">
-      Inbox is now <a href="messages.html">Messages</a>. Asks and A little help from Bennett land there.
+      Inbox is now <a href="messages.html">Messages</a>. Asks and A little help from Bennett land there. Daily questions live on the Daily Qs tab.
     </p>
     </div>
     <div data-parent-panel="crew">
@@ -230,9 +231,11 @@
     <div class="parent-actions">
       <button type="button" class="btn primary" id="add-note">Save note</button>
     </div>
+    </div>
 
-    <h2 style="font-size:1rem;margin:18px 0 8px">Reflection pool</h2>
-    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">Bennett sees one prompt at a time on the week page. Fun and useful — not a psych eval.</p>
+    <div data-parent-panel="daily">
+    <h2 class="parent-h">Daily questions</h2>
+    <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">Bennett sees one prompt at a time on This Week. Hold takes a question out of rotation without deleting it. Answers group below by question.</p>
     <div class="form-grid">
       <label>New prompt
         <input id="new-prompt" maxlength="140" placeholder="Which class felt easiest today?">
@@ -245,6 +248,8 @@
       <button type="button" class="btn" id="add-prompt">Add prompt</button>
     </div>
     <div id="pool"></div>
+    <h2 style="font-size:1rem;margin:18px 0 8px">Answers by question</h2>
+    <div id="daily-answers"></div>
     </div>
 
     <div data-parent-panel="awards">
@@ -444,9 +449,9 @@
   }
 }
   </script>
-  <script src="js/build.js?v=137"></script>
-  <script src="js/game.js?v=137"></script>
-  <script src="js/telemetry.js?v=137"></script>
-  <script src="js/parent.js?v=137"></script>
+  <script src="js/build.js?v=138"></script>
+  <script src="js/game.js?v=138"></script>
+  <script src="js/telemetry.js?v=138"></script>
+  <script src="js/parent.js?v=138"></script>
 </body>
 </html>

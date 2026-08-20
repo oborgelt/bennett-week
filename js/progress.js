@@ -821,7 +821,7 @@
   function renderCheckinsPane() {
     const host = document.getElementById("checkins-pane");
     if (!host) return;
-    host.innerHTML = `<h2>Check-ins</h2>${Game.checkinsListHtml(family)}<p class="checkin-more"><a href="messages.html">All asks and check-ins by day</a></p>`;
+    host.innerHTML = `<h2>Check-ins</h2>${Game.checkinsListHtml(family)}<p class="checkin-more"><a href="messages.html?tab=daily">Daily questions</a> · <a href="messages.html?tab=class">Class messages</a></p>`;
   }
 
   function renderFollowupPane(classes) {
@@ -860,16 +860,19 @@
       const scored = (cls.items || []).filter((item) => {
         if (item.kind === "event") return false;
         const st = Game.workFeedStatus(feedOf(item));
-        return !!st.score;
+        return !!st.score && !/^[-–—]\s*\//.test(String(st.score));
       });
-      if (!scored.length) {
-        return `<article class="grade-class"><h3>${Game.esc(cls.name)}</h3><p class="empty">No score yet</p></article>`;
+      const course = gradeHtml(cls.grade, cls.test);
+      if (!course && !scored.length) {
+        return `<article class="grade-class"><h3>${Game.esc(cls.name)}</h3><p class="empty">No assignment scores posted</p></article>`;
       }
-      const items = scored.map((item) => {
-        const st = Game.workFeedStatus(feedOf(item));
-        return `<li><span>${Game.esc(item.title)}</span><span class="grade-pill">${Game.esc(st.score)}</span></li>`;
-      }).join("");
-      return `<article class="grade-class"><h3>${Game.esc(cls.name)}</h3><ul class="grade-list">${items}</ul></article>`;
+      const items = scored.length
+        ? `<ul class="grade-list">${scored.map((item) => {
+          const st = Game.workFeedStatus(feedOf(item));
+          return `<li><span>${Game.esc(item.title)}</span><span class="grade-pill">${Game.esc(st.score)}</span></li>`;
+        }).join("")}</ul>`
+        : "";
+      return `<article class="grade-class"><h3>${Game.esc(cls.name)}</h3>${course ? `<p class="grade-course">${course}</p>` : ""}${items}</article>`;
     }).join("");
     host.innerHTML = `<h2>Grades</h2>${rows}`;
   }

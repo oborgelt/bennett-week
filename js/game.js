@@ -309,7 +309,8 @@
       ask: { messages: [] },
       achievements: { currency: null, achievements: [], updatedAt: "" },
       awards: { streaks: {}, characterUnlocks: {}, gearUnlocks: {}, contentUnlocks: {}, unlocks: {}, updatedAt: "" },
-      reflections: { pool: [], answers: [], updatedAt: "" }
+      reflections: { pool: [], answers: [], updatedAt: "" },
+      deletedNotes: { ids: [], texts: [] }
     };
   }
 
@@ -342,6 +343,66 @@
       if (value[id] != null && value[id] !== "") out[id] = String(value[id]);
     });
     return out;
+  }
+
+  function noteTextKey(text) {
+    return String(text || "").replace(/\s+/g, " ").trim().toLowerCase();
+  }
+
+  function normalizeDeletedNotes(raw) {
+    const o = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    const ids = asStringList(o.ids);
+    const texts = asStringList(o.texts).map(noteTextKey).filter(Boolean);
+    const idMap = Object.create(null);
+    const textMap = Object.create(null);
+    ids.forEach((id) => { if (id) idMap[id] = true; });
+    texts.forEach((t) => { if (t) textMap[t] = true; });
+    return { ids: Object.keys(idMap), texts: Object.keys(textMap) };
+  }
+
+  function mergeDeletedNotes(a, b) {
+    const A = normalizeDeletedNotes(a);
+    const B = normalizeDeletedNotes(b);
+    return normalizeDeletedNotes({
+      ids: A.ids.concat(B.ids),
+      texts: A.texts.concat(B.texts)
+    });
+  }
+
+  function noteIsDeleted(note, deleted) {
+    if (!note) return true;
+    const d = normalizeDeletedNotes(deleted);
+    if (note.id && d.ids.indexOf(String(note.id)) >= 0) return true;
+    const fp = noteTextKey(note.text);
+    return !!(fp && d.texts.indexOf(fp) >= 0);
+  }
+
+  function noteTextIsDeleted(family, text) {
+    const fp = noteTextKey(text);
+    if (!fp) return false;
+    const d = normalizeDeletedNotes(family && family.deletedNotes);
+    return d.texts.indexOf(fp) >= 0;
+  }
+
+  function applyDeletedNotes(notes, deleted) {
+    return (notes || []).filter((n) => n && n.id && !noteIsDeleted(n, deleted));
+  }
+
+  function pruneAskMessages(messages, deleted) {
+    const d = normalizeDeletedNotes(deleted);
+    if (!d.texts.length) return (messages || []).slice();
+    return (messages || []).filter((m) => {
+      const fp = noteTextKey(m && m.text);
+      return !(fp && d.texts.indexOf(fp) >= 0);
+    });
+  }
+
+  function pruneStoredAskThread(deleted) {
+    const d = normalizeDeletedNotes(deleted);
+    if (!d.texts.length) return;
+    const thread = getAskThread();
+    const messages = pruneAskMessages(thread.messages, d);
+    if (messages.length !== ((thread && thread.messages) || []).length) saveAskThread({ messages });
   }
 
   function asIdMap(value) {
@@ -449,6 +510,7 @@
       achievements: normalizeAchievementsPack(o.achievements || week._jjAchievements),
       awards: normalizeAwardsPack(o.awards || week._jjAwards),
       reflections: normalizeReflections(o.reflections || week._jjReflections),
+      deletedNotes: normalizeDeletedNotes(o.deletedNotes || week._jjDeletedNotes),
       updatedAt: o.updatedAt || o.updated_at || week.updatedAt || ""
     };
   }
@@ -465,6 +527,8 @@
     if (raw.at) row.at = String(raw.at);
     if (raw.updatedAt) row.updatedAt = String(raw.updatedAt);
     if (raw.test) row.test = true;
+    if (raw.paused === true) row.paused = true;
+    if (raw.paused === false) row.paused = false;
     return row;
   }
 
@@ -539,12 +603,19 @@
   }
 
   function todaysReflectionPrompt(family) {
-    const pool = ((family && family.reflections && family.reflections.pool) || []).filter((row) => row && row.id && row.text);
-    if (!pool.length) return DEFAULT_REFLECTION_POOL[0];
+    const raw = ((family && family.reflections && family.reflections.pool) || []);
+    const pool = raw.filter((row) => row && row.id && row.text && !row.paused);
+    const source = pool.length
+      ? pool
+      : DEFAULT_REFLECTION_POOL.filter((row) => {
+        const held = raw.find((p) => p && p.id === row.id);
+        return !(held && held.paused);
+      });
+    if (!source.length) return null;
     const key = chicagoYmd();
     let h = 0;
     for (let i = 0; i < key.length; i += 1) h = (h * 31 + key.charCodeAt(i)) >>> 0;
-    return pool[h % pool.length];
+    return source[h % source.length];
   }
 
   function normalizeAchievementsPack(raw) {
@@ -633,6 +704,7 @@
   function emptyFamily() {
     return {
       notes: [],
+      deletedNotes: { ids: [], texts: [] },
       reflections: { pool: [], answers: [] },
       streaks: {},
       characterUnlocks: {},
@@ -658,8 +730,13 @@
   function normalizeFamily(raw) {
     const f = raw && typeof raw === "object" ? raw : {};
     const overlay = normalizeOverlay(f.overlay);
+    const deletedNotes = mergeDeletedNotes(f.deletedNotes, overlay.deletedNotes);
+    overlay.deletedNotes = deletedNotes;
+    overlay.ask = normalizeAskThread(overlay.ask);
+    overlay.ask.messages = pruneAskMessages(overlay.ask.messages, deletedNotes);
     return {
-      notes: Array.isArray(f.notes) ? f.notes : [],
+      notes: applyDeletedNotes(Array.isArray(f.notes) ? f.notes : [], deletedNotes),
+      deletedNotes,
       reflections: mergeReflections(f.reflections, overlay.reflections),
       streaks: f.streaks && typeof f.streaks === "object" && !Array.isArray(f.streaks) ? f.streaks : {},
       characterUnlocks: asUnlockMap(f.characterUnlocks),
@@ -998,16 +1075,40 @@
     return next;
   }
 
-  function deleteNote(family, id) {
+  function markNotesDeleted(family, notes) {
     const next = normalizeFamily(family);
-    next.notes = next.notes.filter((n) => n.id !== id);
+    const gone = (notes || []).filter((n) => n && (n.id || n.text));
+    if (!gone.length) return next;
+    const ids = gone.map((n) => String(n.id || "")).filter(Boolean);
+    const texts = gone.map((n) => noteTextKey(n.text)).filter(Boolean);
+    next.deletedNotes = mergeDeletedNotes(next.deletedNotes, { ids, texts });
+    next.overlay.deletedNotes = next.deletedNotes;
+    next.notes = applyDeletedNotes(next.notes.concat(gone), next.deletedNotes);
+    next.overlay.ask = normalizeAskThread(next.overlay.ask);
+    next.overlay.ask.messages = pruneAskMessages(next.overlay.ask.messages, next.deletedNotes);
+    stampOverlay(next);
     saveFamily(next);
     queueNotePush(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     const tel = global.Telemetry;
     if (tel && typeof tel.deleteNote === "function" && tel.connected && tel.connected()) {
-      tel.deleteNote(id).catch(() => {});
+      ids.forEach((noteId) => tel.deleteNote(noteId).catch(() => {}));
     }
     return next;
+  }
+
+  function deleteNote(family, id) {
+    const want = String(id || "");
+    if (!want) return normalizeFamily(family);
+    const next = normalizeFamily(family);
+    const hit = (next.notes || []).find((n) => n && n.id === want);
+    const fp = noteTextKey(hit && hit.text);
+    const same = (next.notes || []).filter((n) => {
+      if (!n) return false;
+      if (n.id === want) return true;
+      return !!(fp && n.from === (hit && hit.from) && noteTextKey(n.text) === fp);
+    });
+    return markNotesDeleted(next, same.length ? same : [{ id: want, text: hit && hit.text, from: hit && hit.from }]);
   }
 
   function updatePrompt(family, id, patch) {
@@ -1020,6 +1121,10 @@
     const next = normalizeFamily(family);
     next.reflections.pool = next.reflections.pool.filter((p) => p.id !== id);
     return stampReflectionsOnFamily(next);
+  }
+
+  function setPromptPaused(family, id, paused) {
+    return updatePrompt(family, id, { paused: !!paused, updatedAt: nowIso() });
   }
 
   function updateAnswer(family, id, patch) {
@@ -1115,7 +1220,9 @@
   }
 
   function saveFamily(family) {
-    write(KEYS.family, normalizeFamily(family));
+    const next = normalizeFamily(family);
+    pruneStoredAskThread(next.deletedNotes);
+    write(KEYS.family, next);
   }
 
   function clearFamilyDraft() {
@@ -3297,6 +3404,8 @@
     const remote = normalizeAskThread(cloud);
     if (!remote.messages.length) return getAskThread();
     const next = mergeAskThreads(getAskThread(), remote);
+    const family = getFamilyDraft();
+    next.messages = pruneAskMessages(next.messages, family && family.deletedNotes);
     saveAskThread(next);
     return next;
   }
@@ -3608,10 +3717,7 @@
       : "";
     const grouped = groupCheckinsByPrompt(family);
     if (!grouped.filled.length) {
-      const idle = grouped.idle.length
-        ? `<p class="checkin-rotation">Rotating ${grouped.idle.length} questions. Answers group here by question.</p>`
-        : "";
-      return `${today}${idle}<p class="empty">Bennett’s answers from This Week show up here. Mom and Dad both see this log.</p>`;
+      return `${today}<p class="empty">Bennett’s answers from This Week show up here. Mom and Dad both see this log.</p>`;
     }
     const groups = grouped.filled.map((g) => `
       <article class="checkin-group">
@@ -3622,10 +3728,7 @@
             <p class="checkin-stamp">${esc(fmtStamp(a.at))}</p>
           </li>`).join("")}</ul>
       </article>`).join("");
-    const rest = grouped.idle.length
-      ? `<p class="checkin-rotation">Also rotating: ${esc(grouped.idle.map((g) => g.prompt).join(" · "))}</p>`
-      : "";
-    return `${today}${groups}${rest}`;
+    return `${today}${groups}`;
   }
 
   function latestBennettQuestion(family) {
@@ -6203,6 +6306,9 @@
     const row = Object.assign({}, note);
     if (!row.id) row.id = uid("n");
     if (!row.at) row.at = nowIso();
+    if (noteTextIsDeleted(next, row.text) || (row.id && (next.deletedNotes.ids || []).indexOf(String(row.id)) >= 0)) {
+      return next;
+    }
     next.notes = next.notes.concat([row]);
     saveFamily(next);
     if (row.from === "bennett" && row.kind !== "plan" && String(row.text || "").trim()) {
@@ -6218,14 +6324,11 @@
   }
 
   function helpAskAlreadyNoted(family, workId, text) {
-    const id = String(workId || "");
     const line = String(text || "").trim();
-    if (!id || !line) return true;
+    if (!line) return true;
+    if (noteTextIsDeleted(family, line)) return true;
     return ((family && family.notes) || []).some((n) => {
-      if (!(n && n.from === "bennett" && n.kind !== "note" && String(n.text || "").trim() === line)) return false;
-      if (!id) return true;
-      const target = String(n.targetId || "");
-      return target === id || target.indexOf("help-") === 0;
+      return !!(n && n.from === "bennett" && String(n.text || "").trim() === line);
     });
   }
 
@@ -6233,6 +6336,7 @@
     const line = String(text || "").trim();
     const targetId = work && work.id ? String(work.id) : "";
     if (!line || !targetId) return normalizeFamily(family);
+    if (noteTextIsDeleted(family, line)) return normalizeFamily(family);
     if (helpAskAlreadyNoted(family, targetId, line)) return normalizeFamily(family);
     return addNote(family, {
       id: uid("q"),
@@ -6248,17 +6352,61 @@
     });
   }
 
+  function looseAskTitle(s) {
+    return String(s || "")
+      .toLowerCase()
+      .replace(/^test:\s*/i, "")
+      .replace(/^english 10:\s*/i, "")
+      .replace(/^marching band:\s*/i, "")
+      .replace(/^band:\s*/i, "")
+      .replace(/^sociology:\s*/i, "")
+      .replace(/^web design i:\s*/i, "")
+      .replace(/^academic intervention:\s*/i, "")
+      .replace(/^chemistry:\s*/i, "")
+      .replace(/^strength & conditioning i:\s*/i, "")
+      .replace(/^geometry:\s*/i, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  }
+
+  function workForAskTitle(workList, title) {
+    const want = String(title || "").trim();
+    if (!want) return null;
+    const list = (workList || []).filter((w) => w && (w.id || w.title));
+    const exact = list.find((w) => w.title === want || w.id === want);
+    if (exact) return exact;
+    const a = looseAskTitle(want);
+    if (!a) return null;
+    let best = null;
+    let bestN = 0;
+    list.forEach((w) => {
+      const b = looseAskTitle(w.title);
+      let n = 0;
+      if (a === b) n = 100;
+      else if (b && (a.indexOf(b) >= 0 || b.indexOf(a) >= 0)) n = 80;
+      else if (/\bcomic\b/.test(a) && /\bcomic\b/.test(b)) n = 75;
+      if (n > bestN) {
+        bestN = n;
+        best = w;
+      }
+    });
+    return bestN >= 75 ? best : null;
+  }
+
   function promoteAskThreadToInbox(family, week) {
     let next = normalizeFamily(family);
+    pruneStoredAskThread(next.deletedNotes);
     const work = ((week && week.work) || [])
       .concat(((next.overlay && next.overlay.week && next.overlay.week.added && next.overlay.week.added.work) || []));
     const thread = mergeAskThreads(getAskThread(), next.overlay && next.overlay.ask);
+    thread.messages = pruneAskMessages(thread.messages, next.deletedNotes);
     thread.messages.forEach((m) => {
       if (!m || m.role !== "bennett" || !String(m.text || "").trim()) return;
+      if (noteTextIsDeleted(next, m.text)) return;
       const title = String(m.title || "").trim();
-      const match = work.find((w) => w && w.title === title) || work.find((w) => w && w.id === title);
-      const row = match || { id: "help-" + slugId(title || "ask", "help"), title: title, termId: "" };
-      next = promoteHelpAskToInbox(next, row, m.text);
+      const match = workForAskTitle(work, title);
+      if (!match || !match.id) return;
+      next = promoteHelpAskToInbox(next, match, m.text);
     });
     return next;
   }
@@ -6645,7 +6793,12 @@
       return { family: next, pulled: 0, pushed: 0, missing: true, offline: false };
     }
     const merged = mergeNotesById(next.notes, pulled.notes);
-    const toPush = notesNewerThan(merged, pulled.notes);
+    const kept = applyDeletedNotes(merged, next.deletedNotes);
+    const swept = merged.filter((n) => n && n.id && noteIsDeleted(n, next.deletedNotes));
+    if (swept.length && tel && typeof tel.deleteNote === "function") {
+      swept.forEach((n) => tel.deleteNote(n.id).catch(() => {}));
+    }
+    const toPush = notesNewerThan(kept, pulled.notes);
     let pushed = 0;
     if (toPush.length && typeof tel.upsertNotes === "function") {
       try {
@@ -6653,13 +6806,13 @@
         pushed = toPush.length;
       } catch (err) {
         if (err && (err.status === 404 || err.status === 406)) {
-          next.notes = merged;
+          next.notes = kept;
           saveFamily(next);
           return { family: next, pulled: pulled.notes.length, pushed: 0, missing: true, offline: false };
         }
       }
     }
-    next.notes = merged;
+    next.notes = kept;
     saveFamily(next);
     return { family: next, pulled: pulled.notes.length, pushed, missing: false, offline: false };
   }
@@ -7033,12 +7186,14 @@
       library: mergeLibrary(local.library, remote.library),
       ask: mergeAskThreads(local.ask, remote.ask),
       reflections: mergeReflections(local.reflections, remote.reflections),
+      deletedNotes: mergeDeletedNotes(local.deletedNotes, remote.deletedNotes),
       achievements: String((local.achievements && local.achievements.updatedAt) || "") >= String((remote.achievements && remote.achievements.updatedAt) || "")
         ? local.achievements
         : remote.achievements,
       awards: mergeAwardsPack(local.awards, remote.awards),
       updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
     };
+    merged.ask.messages = pruneAskMessages(merged.ask.messages, merged.deletedNotes);
     return merged;
   }
 
@@ -7067,6 +7222,7 @@
       library: ((o.library && o.library.items) || []).map((item) => [item.id, item.url || "", item.path || ""]),
       ask: ((o.ask && o.ask.messages) || []).map((m) => m.id),
       reflections: ((o.reflections && o.reflections.answers) || []).map((a) => a.id),
+      deletedNotes: o.deletedNotes,
       achievements: ((o.achievements && o.achievements.achievements) || []).map((ach) => ach.id),
       awards: Object.keys((o.awards && o.awards.characterUnlocks) || {})
     });
@@ -7096,6 +7252,8 @@
     packed.soundCues = asCueMap(next.soundCues);
     packed.library = libraryCatalog(getMomLibrary() || packed.library || { items: [] });
     packed.ask = normalizeAskThread(getAskThread());
+    packed.ask.messages = pruneAskMessages(packed.ask.messages, next.deletedNotes);
+    packed.deletedNotes = next.deletedNotes;
     packed.reflections = mergeReflections(next.reflections, packed.reflections);
     const draft = getMomDraft();
     if (draft && Array.isArray(draft.achievements) && draft.achievements.length) {
@@ -7265,27 +7423,59 @@
     }
   }
 
+  function uniqueThreadNotes(notes) {
+    const seen = Object.create(null);
+    return (notes || []).filter((n) => {
+      if (!n || !String(n.text || "").trim()) return false;
+      const k = String(n.from || "") + "|" + noteTextKey(n.text);
+      if (seen[k]) return false;
+      seen[k] = true;
+      return true;
+    });
+  }
+
   function messagesInboxHtml(family, week, opts) {
     const o = opts || {};
     const view = normalizeSiteView(o.view || siteView());
     const canEdit = o.canEdit !== false && view !== "bennett";
     const canDelete = o.canDelete !== false && view === "me";
-    const threads = inboxConversations(family);
-    const answers = (((family && family.reflections && family.reflections.answers) || [])).slice()
-      .filter((a) => a && String(a.text || "").trim());
-    const feed = threads.map((thread) => ({ kind: "thread", thread, at: thread.at }))
-      .concat(answers.map((a) => ({ kind: "checkin", answer: a, at: a.at || "" })))
-      .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
-    if (!feed.length) {
-      const kid = view === "bennett";
-      const hint = kid
-        ? "Ask on a week card, write a Needs you plan, or answer the check-in on This Week. Mom and Dad see all of it."
-        : "When he taps Ask, writes a plan, or answers the check-in on This Week, it shows up here. Newest day first.";
-      return `<div class="messages-empty">
-        <p class="empty">${kid ? "No messages yet." : "No asks or check-ins yet."}</p>
-        <p class="messages-empty-hint">${esc(hint)}</p>
-      </div>`;
-    }
+    const filter = o.filter === "daily" || o.filter === "class" ? o.filter : "both";
+    const threads = filter === "daily"
+      ? []
+      : inboxConversations(family).map((thread) => {
+        const notes = uniqueThreadNotes(thread.notes);
+        const at = notes.length ? String(notes[notes.length - 1].at || thread.at || "") : String(thread.at || "");
+        return Object.assign({}, thread, { notes, at });
+      }).filter((thread) => thread.notes && thread.notes.length);
+    const answers = filter === "class"
+      ? []
+      : (((family && family.reflections && family.reflections.answers) || [])).slice()
+        .filter((a) => a && String(a.text || "").trim());
+    const kid = view === "bennett";
+    const emptyCopy = () => {
+      if (filter === "daily") {
+        return {
+          title: kid ? "No daily questions answered yet." : "No daily questions yet.",
+          hint: kid
+            ? "Answer the check-in on This Week. Mom and Dad see it here."
+            : "When Bennett answers the check-in on This Week, it shows up here."
+        };
+      }
+      if (filter === "class") {
+        return {
+          title: kid ? "No class messages yet." : "No class messages yet.",
+          hint: kid
+            ? "Ask on a week card or write a Needs you plan. Mom and Dad reply here."
+            : "When he taps Ask or writes a plan, the thread shows up here with your replies."
+        };
+      }
+      return {
+        title: kid ? "No messages yet." : "No asks or check-ins yet.",
+        hint: kid
+          ? "Ask on a week card, write a Needs you plan, or answer the check-in on This Week. Mom and Dad see all of it."
+          : "When he taps Ask, writes a plan, or answers the check-in on This Week, it shows up here. Newest day first."
+      };
+    };
     const lineHtml = (n) => `
       <div class="msg-line${isParentReply(n) ? " msg-line-reply" : ""}">
         <p class="msg-line-who">${esc(noteAuthorLabel(n, view))}</p>
@@ -7320,13 +7510,38 @@
     };
     const checkCard = (a) => `
       <article class="inbox-card msg-card msg-card-done">
-        <p class="msg-kicker">Check-in</p>
+        <p class="msg-kicker">Daily question</p>
         <h3>${a.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(a.prompt || "Quick check-in")}</h3>
         <p class="msg-ask-from">Bennett</p>
         <p class="msg-ask">${esc(a.text)}</p>
         <p class="msg-stamp">${esc(fmtStamp(a.at))}</p>
         ${canDelete ? `<div class="parent-actions"><button type="button" class="tiny danger" data-del-checkin="${esc(a.id)}">Delete</button></div>` : ""}
       </article>`;
+    if (filter === "daily") {
+      const grouped = groupCheckinsByPrompt(family);
+      if (!grouped.filled.length) {
+        const empty = emptyCopy();
+        return `<div class="messages-empty">
+          <p class="empty">${esc(empty.title)}</p>
+          <p class="messages-empty-hint">${esc(empty.hint)}</p>
+        </div>`;
+      }
+      return `<div class="msg-board">${grouped.filled.map((g) => `
+        <section class="msg-day">
+          <h2>${esc(g.prompt)}</h2>
+          ${g.answers.map(checkCard).join("")}
+        </section>`).join("")}</div>`;
+    }
+    const feed = threads.map((thread) => ({ kind: "thread", thread, at: thread.at }))
+      .concat(answers.map((a) => ({ kind: "checkin", answer: a, at: a.at || "" })))
+      .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    if (!feed.length) {
+      const empty = emptyCopy();
+      return `<div class="messages-empty">
+        <p class="empty">${esc(empty.title)}</p>
+        <p class="messages-empty-hint">${esc(empty.hint)}</p>
+      </div>`;
+    }
     return `<div class="msg-board">${(() => {
       const days = Object.create(null);
       const order = [];
@@ -8001,6 +8216,7 @@
     deleteNote,
     updatePrompt,
     deletePrompt,
+    setPromptPaused,
     updateAnswer,
     deleteAnswer,
     confirmDelete,
@@ -8047,6 +8263,7 @@
     flushFamilyNotes,
     promoteHelpAskToInbox,
     promoteAskThreadToInbox,
+    workForAskTitle,
     isBennettAsk,
     isParentAuthor,
     isParentReply,
