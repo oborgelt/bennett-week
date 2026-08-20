@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=141/.test(basecampHtml) && /basecamp\.js\?v=141/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=142/.test(basecampHtml) && /basecamp\.js\?v=142/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1488,7 +1488,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=141/.test(weekHtml) && /week\.js\?v=141/.test(weekHtml) && /game\.js\?v=141/.test(weekHtml) && /telemetry\.js\?v=141/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=142/.test(weekHtml) && /week\.js\?v=142/.test(weekHtml) && /game\.js\?v=142/.test(weekHtml) && /telemetry\.js\?v=142/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1536,11 +1536,11 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=140\b/.test(html), file + " should not still cache-bust as v=140");
-  assert(/\?v=141/.test(html), file + " should cache-bust v=141");
+  assert(!/\?v=141\b/.test(html), file + " should not still cache-bust as v=141");
+  assert(/\?v=142/.test(html), file + " should cache-bust v=142");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
-  assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
-  assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
+  assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
+  assert(/week-chip/.test(hud) && /trophy-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
   assert(!/class="refs-chip"/.test(hud), file + " family bar does not include Locker refs");
 });
 assert(/function hudNavHtml/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")) && /function mountHudNav/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "one HUD helper paints every page");
@@ -1548,6 +1548,10 @@ assert(/hudNavHtml/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8"))
 assert(/room=1/.test(weekJs) && /openShelf/.test(weekJs) && /wantsTrophyRoom/.test(weekJs), "week.js boots the treehouse from ?room=1");
 assert(/bw-open-trophy-room/.test(weekJs) && /syncTrophyHud/.test(weekJs), "Trophy Room chip lights while the treehouse is open");
 assert(/\.hud-bar[\s\S]{0,180}position:\s*sticky/.test(themeCss) && /\.hud-bar[\s\S]{0,220}top:\s*0/.test(themeCss), "HUD bar sticks at the top");
+assert(/\.hud-bar[\s\S]{0,220}grid-template-columns:\s*auto 1fr/.test(themeCss), "HUD is bananas plus nav on every page");
+assert(/hud-bar progress-hud/.test(weekHtml), "This Week uses the same HUD as Base Camp");
+assert(!/<button[^>]*id="trophies"/.test(weekHtml), "This Week HUD does not keep a separate trophies button");
+assert(/class="week-rally"/.test(weekHtml) && /id="rally-fill"/.test(weekHtml), "week rally sits under the class chips, not in the HUD");
 assert(/body\.basecamp-page \.hud-bar[\s\S]{0,160}flex:\s*0 0 auto/.test(themeCss), "Base Camp HUD does not flex with the camp shell");
 assert(/body\.basecamp-page \.week-head[\s\S]{0,80}flex:\s*0 0 auto/.test(themeCss), "Base Camp header stays out of the scrolling shell");
 assert(/body\.basecamp-page \.bc-shell[\s\S]{0,120}overflow-y:\s*auto/.test(themeCss), "only the Base Camp shell scrolls");
@@ -1582,7 +1586,7 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=141/.test(progressHtml) && /theme\.css\?v=141/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=142/.test(progressHtml) && /theme\.css\?v=142/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1621,7 +1625,7 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*139/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 139");
+assert(/build:\s*140/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 140");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");

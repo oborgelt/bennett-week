@@ -6,23 +6,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
   <title>Jungle Jam · This week</title>
-  <link rel="stylesheet" href="css/theme.css?v=141">
+  <link rel="stylesheet" href="css/theme.css?v=142">
 </head>
 <body class="week-page">
   <div class="note-field" id="notes" aria-hidden="true"></div>
   <button type="button" class="clarinet" id="clarinet" aria-label="Honk the clarinet">🎶</button>
 
   <header class="week-head">
-    <div class="hud-bar">
+    <div class="hud-bar progress-hud">
       <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
-    <div class="rally">
-        <div class="rally-label">Week rally</div>
-        <div class="rally-row">
-          <div class="rally-bar"><div class="rally-fill" id="rally-fill"></div></div>
-          <div class="rally-count" id="rally-count">0/0</div>
-        </div>
-      </div>
-      <button type="button" class="trophies" id="trophies">🏆 <span id="trophy-count">0</span></button>
       <div class="hud-nav">
         <a class="week-chip on" href="index.html" aria-current="page"><span class="week-chip-full">This week</span><span class="week-chip-short">Week</span></a>
         <a class="trophy-chip" href="index.html?room=1" aria-label="Trophy Room"><span class="trophy-chip-full">Trophy Room</span><span class="trophy-chip-short">Trophies</span></a>
@@ -52,6 +44,13 @@
     <nav class="class-switcher" id="class-switcher" aria-label="Classes">
       <div class="class-switcher-list" id="class-switcher-list"></div>
     </nav>
+    <div class="week-rally" id="week-rally">
+      <div class="rally-label">Week rally</div>
+      <div class="rally-row">
+        <div class="rally-bar"><div class="rally-fill" id="rally-fill"></div></div>
+        <div class="rally-count" id="rally-count">0/0</div>
+      </div>
+    </div>
   </header>
 
   <section class="followup-strip" id="followup-strip" hidden aria-label="Needs follow-up"></section>
@@ -310,10 +309,10 @@
   "streaks": {}
 }
   </script>
-  <script src="js/build.js?v=141"></script>
-  <script src="js/game.js?v=141"></script>
-  <script src="js/telemetry.js?v=141"></script>
-  <script src="js/tutor.js?v=141"></script>
-  <script src="js/week.js?v=141"></script>
+  <script src="js/build.js?v=142"></script>
+  <script src="js/game.js?v=142"></script>
+  <script src="js/telemetry.js?v=142"></script>
+  <script src="js/tutor.js?v=142"></script>
+  <script src="js/week.js?v=142"></script>
 </body>
 </html>

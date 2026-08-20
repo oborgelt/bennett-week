@@ -176,11 +176,23 @@ header.week-head {
   top: 0;
   z-index: 50;
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr;
   gap: 6px;
   align-items: center;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   padding: max(6px, env(safe-area-inset-top)) 12px 6px;
-  background: var(--bg);
+  background: #071618;
+  border-bottom: 1px solid rgba(246, 241, 228, 0.12);
+}
+
+.hud-bar .bananas,
+.hud-bar .hud-nav a,
+.hud-bar .hud-nav .site-view-seg {
+  background: rgba(7, 18, 20, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .hud-nav {
@@ -426,6 +438,14 @@ body.site-view-kid .class-card-tools {
 
 .rally { min-width: 0; }
 
+.week-rally {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 12px 4px;
+  padding: 0 2px;
+}
+
 .rally-label {
   font-size: 0.62rem;
   text-transform: uppercase;
@@ -625,7 +645,7 @@ body.site-view-kid .class-card-tools {
   .basecamp-chip-short,
   .messages-chip-short { display: inline; }
   .hud-bar {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
   }
   .hud-nav {
     grid-column: 1 / -1;
@@ -2116,6 +2136,7 @@ body.week-page.in-treehouse .needs-you,
 body.week-page.in-treehouse .followup-strip,
 body.week-page.in-treehouse .draft-flag,
 body.week-page.in-treehouse .class-switcher,
+body.week-page.in-treehouse .week-rally,
 body.week-page.in-treehouse .peek-monkey {
   opacity: 0;
   pointer-events: none;
@@ -4056,12 +4077,12 @@ body:has(.sheet.open) .clarinet {
 
 @media (min-width: 720px) {
   .banner-wrap,
-  .hud-bar,
   .dots,
   .track,
   nav.week-nav,
   .draft-flag,
   .class-switcher,
+  .week-rally,
   .office {
     max-width: var(--desk);
     margin-left: auto;

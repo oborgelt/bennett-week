@@ -208,9 +208,10 @@
     const ids = weekWorkIds(days);
     const progress = Game.getProgress();
     const touched = ids.filter((id) => progress[id] && (progress[id].started || progress[id].startedAt || progress[id].done)).length;
-    document.getElementById("rally-fill").style.width = (ids.length ? (touched / ids.length) * 100 : 0) + "%";
-    document.getElementById("rally-count").textContent = `${touched}/${ids.length}`;
-    document.getElementById("trophy-count").textContent = Object.keys(Game.getUnlocks()).filter((id) => Game.alreadyUnlocked(id)).length;
+    const fill = document.getElementById("rally-fill");
+    if (fill) fill.style.width = (ids.length ? (touched / ids.length) * 100 : 0) + "%";
+    const rallyCount = document.getElementById("rally-count");
+    if (rallyCount) rallyCount.textContent = `${touched}/${ids.length}`;
     const eggChip = document.getElementById("egg-chip");
     if (eggChip) Game.paintEggChip(pack);
     Game.paintStoryChip(roster);
@@ -2283,7 +2284,7 @@
         }, 2600);
       }, Game.prefersReducedMotion() ? 0 : 1200);
     }
-    door.addEventListener("click", openShelf);
+    if (door) door.addEventListener("click", openShelf);
     document.addEventListener("bw-open-trophy-room", openShelf);
     document.addEventListener("bw-close-trophy-room", closeShelf);
     if ((Game.wantsTrophyRoom && Game.wantsTrophyRoom()) || location.hash === "#trophies" || /(?:^|[?&])room=1(?:&|$)/.test(location.search || "")) {
