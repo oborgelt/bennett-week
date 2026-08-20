@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-20T07:10:00",
+  "as_of": "2026-08-20T14:35:00",
   "parenting": [
     {
       "who": "Mom",
@@ -162,7 +162,7 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East",
-      "note": "Official OE Band times (oeband.com): Mon 7:00–8:40 a.m. and 6:30–8:30 p.m.; Tue/Fri 7:00–8:40; Wed 7:00–9:15; Thu none. Rehearsals are graded. Drumline may differ."
+      "note": "Official OE Band times (oeband.com): Mon 7:00\u20138:40 a.m. and 6:30\u20138:30 p.m.; Tue/Fri 7:00\u20138:40; Wed 7:00\u20139:15; Thu none. Rehearsals are graded. Drumline may differ."
     },
     {
       "id": "band-pm-0817",
@@ -820,6 +820,13 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East High School"
+    },
+    {
+      "id": "picture-0827",
+      "title": "Picture day (day 2)",
+      "start": "2026-08-27",
+      "kind": "calendar",
+      "note": "Wolgast Gmail 8/19: Picture Day Wed Aug 26 and Thu Aug 27 during English class."
     }
   ],
   "work": [
@@ -832,7 +839,7 @@
       "late": false,
       "submitted_at": "2026-08-17T13:14:00",
       "source": "canvas",
-      "note": "Dad's night. Canvas video: full name twice + something you are awesome at. 5 points. Submitted 8/17 1:14pm. Ungraded. Still ungraded as of Thu 7:10am.",
+      "note": "Goodson/Carl. Canvas video: full name twice + something you are awesome at. 5 points. Submitted Aug 17 1:14pm. Still ungraded (/5) as of Thu 2:35pm.",
       "canvas": {
         "status": "submitted",
         "points": 5,
@@ -851,7 +858,7 @@
       "id": "eng-comics",
       "title": "English 10: Summer Narrative Comic Strip",
       "due": "2026-08-20T23:59:00",
-      "note": "In class Tuesday. Official Canvas due Thursday 11:59pm. 10 points, submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence. Not submitted as of Thu 7:10am. Due TODAY Thursday 11:59pm after 4:30 handoff to Mom.",
+      "note": "Goodson/Carl. 10 pts. Not submitted (\u2013/10) as of Thu 2:35pm. Official Canvas due TONIGHT Thursday 11:59pm (after 4:30 handoff to Mom). In class Tuesday; submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence.",
       "suggest_from": "2026-08-15",
       "canvas": {
         "status": "open",
@@ -883,7 +890,11 @@
         "due_by": null,
         "email_draft": null,
         "email_sent": false
-      }
+      },
+      "status": "open",
+      "points": 10,
+      "late": false,
+      "source": "canvas"
     },
     {
       "id": "chem-about-me",
@@ -895,7 +906,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. 1 pt. Still blank (\u2013/1), not submitted as of Thu 7:10am. Not labeled Missing.",
+      "note": "Pfeiff. 1 pt. Still blank (\u2013/1), not submitted as of Thu 2:35pm. Due Tue 8/18 11:59. Not yet labeled Missing.",
       "canvas": {
         "status": "open",
         "points": 1
@@ -903,6 +914,7 @@
       "school_status": "open",
       "student_status": null,
       "discrepancy": false,
+      "discrepancy_reason": null,
       "followup": {
         "due_by": null,
         "email_draft": null,
@@ -922,7 +934,7 @@
       "graded_at": "2026-08-19",
       "source": "canvas",
       "dispute": null,
-      "note": "Pfeiff. Canvas discussion post. NOW submitted Aug 19 3:33pm (change from Missing). Flagged LATE, still scored 0/1.",
+      "note": "Pfeiff. Canvas discussion post. Last confirmed: submitted Aug 19 3:33pm, flagged LATE, scored 0/1 (change from Missing). This afternoon (2:35pm) the discussion row is NOT visible to observers (Access Denied on Discussions) \u2014 kept last confirmed school_status late 0/1 + submitted_at, not treated as gone. Course assignment group 0% last confirmed. Student (Plaud 8/20 7:30am): told Orin he already emailed Pfeiff. Email send not verified in ParentVUE/Canvas; followup.email_sent stays false. Do not invent that the email was sent.",
       "canvas": {
         "status": "late",
         "points": 1,
@@ -936,12 +948,12 @@
         "as_of": "2026-08-20T07:30:00"
       },
       "discrepancy": true,
-      "discrepancy_reason": "Bennett says he emailed Pfeiff; Canvas still late 0/1. Teacher-email send not verified — do not mark follow-up sent.",
       "followup": {
         "due_by": "2026-08-21T14:40:00",
         "email_draft": null,
         "email_sent": false
-      }
+      },
+      "discrepancy_reason": "Bennett says he emailed Pfeiff; last confirmed Canvas late 0/1 submitted 8/19 3:33pm. Observer Access Denied on Discussions this afternoon \u2014 do not drop last confirmed status. Teacher-email send not verified \u2014 do not mark follow-up sent."
     },
     {
       "id": "web-11",
@@ -953,7 +965,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn, P3 9:20. 20 pts. PAST DUE. Still not submitted (\u2013/20) as of Thu 7:10am. CodeHS 1.1.1\u20131.1.4.",
+      "note": "Derek Linn, P3 9:20. 20 pts. PAST DUE. Still not submitted (Submitted blank, \u2013/20) as of Thu 2:35pm. Due Wed Aug 19 9:20 AM. Work is in CodeHS: 1.1.1 Websites in Your Life, 1.1.2 What is Web Design?, 1.1.3 Your Interests, 1.1.4 Meet a Web Developer video.",
       "canvas": {
         "status": "late",
         "points": 20
@@ -977,7 +989,7 @@
       "late": false,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn, P3 9:20. 40 pts. Still open (\u2013/40) as of Thu 7:10am, already on Outlook. Due Mon Aug 24 9:20 AM.",
+      "note": "Derek Linn, P3 9:20. 40 pts. Still open (\u2013/40) as of Thu 2:35pm. Due Mon Aug 24 9:20 AM. Already on Outlook.",
       "canvas": {
         "status": "open",
         "points": 40
@@ -995,7 +1007,7 @@
       "id": "eng-letter",
       "title": "English 10: Letter to the teacher",
       "due": "2026-08-20T13:50:00",
-      "note": "Today Thu is last in-class day for letter + personalize notebooks.",
+      "note": "Goodson/Carl. In class Wed\u2013Thu 8/19\u20138/20: personalize writing notebooks + letter to teacher by end of hour. Thu 8/20 was the last in-class day for that (class ended ~1:50pm). Completion not confirmed on Canvas. Fri 8/21 unit is now AAB (was Narrative Writing on the morning sheet); class work still check out books + read AAB ch.1. Homework cell blank.",
       "suggest_from": "2026-08-18",
       "school_status": null,
       "student_status": null,
@@ -1011,11 +1023,37 @@
       "id": "eng-notebook",
       "title": "English 10: Bring spiral notebook",
       "due": "2026-08-21T13:05:00",
-      "note": "Spiral or composition notebook. Also highlighter and 100 index cards. Still open Fri 8/21.",
+      "note": "Goodson/Carl. Still open. Bring spiral or composition notebook to class Fri Aug 21. Also highlighter and 100 index cards.",
       "suggest_from": "2026-08-15",
       "school_status": "open",
       "student_status": null,
       "submitted_at": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "status": "open",
+      "late": false
+    },
+    {
+      "id": "chem-penny",
+      "title": "Chemistry: Penny for Your Thoughts Demo",
+      "classId": "chemistry",
+      "due": "2026-08-21T23:59:00",
+      "status": "open",
+      "points": 1,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "note": "Pfeiff. 1 pt. NEW since 7:10am pull. Open (\u2013/1) as of Thu 2:35pm. Due Fri 8/21 11:59 PM. Modules Unit 1 Alchemy. Orin asked to add the Outlook reminder (in progress); homework card included regardless.",
+      "canvas": {
+        "status": "open",
+        "points": 1
+      },
+      "school_status": "open",
+      "student_status": null,
       "discrepancy": false,
       "followup": {
         "due_by": null,
@@ -1043,7 +1081,7 @@
     {
       "date": "2026-08-20",
       "title": "Discrepancy layer (Plaud 7:30am)",
-      "text": "Cadence: 2:30pm primary, 9:00pm bedtime pull added, 7:00am kept. Chem About Me discussion: school late 0/1 submitted 8/19 3:33pm; Bennett told Orin he emailed Pfeiff; follow-up send not verified. Do not invent email sent. No new live school pull in this write — as_of stays 7:10am."
+      "text": "Cadence: 2:30pm primary, 9:00pm bedtime pull added, 7:00am kept. Chem About Me discussion: school late 0/1 submitted 8/19 3:33pm; Bennett told Orin he emailed Pfeiff; follow-up send not verified. Do not invent email sent. No new live school pull in this write \u2014 as_of stays 7:10am."
     },
     {
       "date": "2026-08-25",
@@ -1054,6 +1092,21 @@
       "date": "2026-08-26",
       "title": "Picture day",
       "text": "School picture day."
+    },
+    {
+      "date": "2026-08-20",
+      "title": "After-school check (~2:35pm)",
+      "text": "Live Canvas pull. NEW: Chemistry Penny for Your Thoughts Demo, 1 pt, due Fri 8/21 11:59 PM, open \u2013/1 (Modules Unit 1 Alchemy). Outlook reminder: Orin asked to add it (in progress). Web 1.1 still late blank \u2013/20 due Wed 8/19 9:20 (CodeHS 1.1.1\u20131.1.4). Web 1.2 still open \u2013/40 due Mon 8/24 9:20. Chem About Me assignment still blank \u2013/1 due Tue 8/18. Chem discussion: last confirmed late submitted 8/19 3:33pm, 0/1; this afternoon the discussion row is not visible to observers (Access Denied on Discussions) \u2014 kept last confirmed school_status. Bennett told Orin 8/20 7:30 Plaud he emailed Pfeiff; followup.email_sent stays false (send not verified). English comic still open \u2013/10 due TONIGHT 8/20 11:59pm, not submitted as of 2:35pm; after 4:30 handoff to Mom. Letter to teacher: last in-class day was today. Spiral notebook still open Fri 8/21 in class. Name video still submitted 8/17 1:14pm, ungraded /5. English 8/21 unit now AAB (was Narrative Writing this morning); class work still check out books + AAB ch.1; homework cell blank. Picture day 8/26. ParentVUE grades/attendance not confirmed this pull (pending; not invented). Inbox from live screenshot: no mail newer than Sun Aug 16 Fillingham. Published Canvas still 4: Band, English 10, Web Design I, Chemistry. oeband.com unchanged. Today: Dad until 4:30, then Mom overnight. Forms & Fees Night 5:30pm."
+    },
+    {
+      "date": "2026-08-20",
+      "title": "English agenda / AAB pages",
+      "text": "Fri 8/21 unit column now AAB (was Narrative Writing on the morning sheet). Class work still: Warm-up; check out books + read first chapter of AAB as a class. Homework cell blank. Picture day 8/26. Later columns show AAB page dues (sheet dates only \u2014 no clock times invented): 8/26\u20138/27 Pg. 5-40 due; 8/31 Pg. 41-82 due; 9/4 Pg. 83-120 due; 9/9\u20139/10 Pg. 121-163 due; 9/14 Pg. 164-203 due; 9/16\u20139/17 Pg. 204-246 due; 9/21 Pg. 247-282 due; 9/23\u20139/24 Pg. 283-313 due."
+    },
+    {
+      "date": "2026-08-20",
+      "title": "After-school check (~2:40pm)",
+      "text": "Canvas: new Chem Penny for Your Thoughts Demo 1pt due Fri 8/21 11:59, not submitted. Comic still \u2013/10 due tonight. Web 1.1 still late \u2013/20. Chem About Me assignment still blank; discussion last confirmed late 0/1 (observer Access Denied this afternoon). ParentVUE: no new mail/alerts; Sociology A- 91% last update 8/19; attendance 8/19 and 8/20 clean. Gmail (orinborg): Bennett 9:39am 'Parking pass' (got it in advisory); Wolgast picture days Wed 8/26 AND Thu 8/27 during English; Wolgast MTSS snack wish list 8:30am. oeband unchanged. Forms & Fees 5:30 after 4:30 Mom handoff. 7am check retired; cadence is 2:30 and 9pm with Gmail."
     }
   ]
 }
