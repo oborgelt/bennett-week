@@ -184,7 +184,7 @@
     const bananas = document.getElementById("bananas");
     if (bananas) bananas.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
     const eggChip = document.getElementById("egg-chip");
-    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    if (eggChip) Game.paintEggChip(pack);
     document.getElementById("preview-flag").hidden = !preview;
     document.getElementById("story-resources").innerHTML = Game.khanStripHtml("English 10 comic strips notebook names");
     if (!preview && !Game.comicUnlocked(roster)) {

@@ -54,7 +54,7 @@
     if (!el) return;
     el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas(pack, family)}`;
     const eggChip = document.getElementById("egg-chip");
-    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    if (eggChip) Game.paintEggChip(pack);
     paintParentNeeds();
   }
 

@@ -880,7 +880,7 @@
     const totals = activityTotals(classes);
     document.getElementById("bananas").textContent = `${Game.currency(pack).emoji} ${totals.bananas}`;
     const eggChip = document.getElementById("egg-chip");
-    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    if (eggChip) Game.paintEggChip(pack);
     Game.paintStoryChip(roster);
     renderFollowupPane(classes);
     renderNeedsYouPane();

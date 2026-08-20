@@ -379,6 +379,7 @@ html[data-site-view="bennett"] .refs-chip,
 html[data-site-view="mom"] .admin-chip,
 html[data-site-view="mom"] .parent-chip,
 html[data-site-view="mom"] .refs-chip,
+html[data-site-view="mom"] .egg-chip,
 html[data-site-view="bennett"] a[href="admin.html"],
 html[data-site-view="bennett"] a[href="parent.html"],
 html[data-site-view="bennett"] a[href="refs.html"],
@@ -387,6 +388,7 @@ html[data-site-view="mom"] a[href="admin.html"],
 html[data-site-view="mom"] a[href="parent.html"],
 html[data-site-view="mom"] a[href="refs.html"],
 html[data-site-view="mom"] a[href="mom.html"],
+html[data-site-view="mom"] a[href="egg.html"],
 html[data-site-view="bennett"] .crew-page .parent-actions,
 html[data-site-view="mom"] .crew-page .parent-actions,
 body.site-view-kid [data-edit],
@@ -1130,6 +1132,10 @@ body.site-view-kid .class-card-tools {
   padding: 0;
 }
 
+.needs-you-item.is-done .needs-you-title {
+  color: #b7e4de;
+}
+
 .needs-you-item {
   display: flex;
   align-items: flex-start;
@@ -1275,6 +1281,12 @@ body.site-view-kid .class-card-tools {
   background: #142e31;
   border-color: var(--line);
   color: var(--muted);
+}
+
+.chip-done-here {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #071618;
 }
 
 .chip-submitted,
@@ -3721,6 +3733,36 @@ a.btn {
   margin: 0 0 6px;
   color: var(--ink) !important;
   font-size: 1.05rem !important;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.msg-line {
+  margin: 0 0 10px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid rgba(244, 211, 94, 0.18);
+}
+
+.msg-line:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.msg-line-who {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--banana);
+}
+
+.msg-line-reply .msg-line-who {
+  color: var(--dad);
+}
+
+.msg-line-text {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 1.05rem;
   font-weight: 700;
   line-height: 1.4;
 }

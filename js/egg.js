@@ -521,7 +521,7 @@
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);
     hud();
-    if (!Game.hasEggGame(pack)) {
+    if (!Game.hasEggGame(pack) || !Game.funPlayAllowed()) {
       renderLocked();
       return;
     }

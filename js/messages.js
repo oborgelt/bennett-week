@@ -7,6 +7,10 @@
     return Game.siteView() !== "bennett";
   }
 
+  function viewerCanDelete() {
+    return Game.siteView() === "me";
+  }
+
   function paintLead() {
     const el = document.querySelector(".messages-lead");
     if (!el) return;
@@ -14,14 +18,18 @@
       el.innerHTML = "Ask on a week card, or answer the check-in on This Week. You see every message and every reply. Newest first.";
       return;
     }
-    el.innerHTML = "Newest first. You see every ask, check-in, and reply. Delete a test thread with <strong>Delete</strong>.";
+    if (Game.siteView() === "mom") {
+      el.innerHTML = "Newest first. You see the full thread: Bennett, Dad, you, Bennett again.";
+      return;
+    }
+    el.innerHTML = "Newest first. The full thread is here. Delete a message with <strong>Delete</strong> and it leaves This Week too.";
   }
 
   function hud() {
     const el = document.getElementById("bananas");
     if (el && pack) el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas(pack, family)}`;
     const eggChip = document.getElementById("egg-chip");
-    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    if (eggChip) Game.paintEggChip(pack);
     Game.paintMessagesChip(family);
   }
 
@@ -36,14 +44,17 @@
     const box = document.getElementById("messages-inbox");
     if (!box) return;
     const canEdit = viewerCanEdit();
+    const canDelete = viewerCanDelete();
     box.innerHTML = Game.messagesInboxHtml(family, week, {
       canEdit,
+      canDelete,
       view: Game.siteView()
     });
     Game.bindMessagesInbox(box, {
       family,
       week,
       canEdit,
+      canDelete,
       onChange(next) {
         family = next;
         hud();

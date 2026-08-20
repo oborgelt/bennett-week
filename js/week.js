@@ -212,7 +212,7 @@
     document.getElementById("rally-count").textContent = `${touched}/${ids.length}`;
     document.getElementById("trophy-count").textContent = Object.keys(Game.getUnlocks()).filter((id) => Game.alreadyUnlocked(id)).length;
     const eggChip = document.getElementById("egg-chip");
-    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    if (eggChip) Game.paintEggChip(pack);
     Game.paintStoryChip(roster);
     Game.paintMessagesChip(family);
   }
@@ -1160,9 +1160,12 @@
     const watch = ch && ch.video
       ? `<button type="button" class="trophy-plaque-go" data-watch-crew="${Game.esc(ch.id)}">Watch</button>`
       : "";
-    const play = watch || (Game.gameHref(ach)
-      ? `<a class="trophy-plaque-go" href="${Game.esc(Game.gameHref(ach))}">Play</a>`
-      : contentPlay(ach));
+    let play = watch;
+    if (!play && Game.funPlayAllowed()) {
+      play = Game.gameHref(ach)
+        ? `<a class="trophy-plaque-go" href="${Game.esc(Game.gameHref(ach))}">Play</a>`
+        : contentPlay(ach);
+    }
     return `<aside class="trophy-plaque">
       <strong>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</strong>
       ${plaqueLine(ach) ? `<span>${Game.esc(plaqueLine(ach))}</span>` : ""}

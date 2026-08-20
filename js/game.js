@@ -4122,6 +4122,7 @@
         unknown: false,
         zero: false,
         needsYou: false,
+        doneHere: false,
         classId: classIdForWork(w)
       };
     }
@@ -4171,6 +4172,11 @@
       ? (studentRec.done ? "done" : (studentRec.notDone ? "not_done" : (studentRec.said ? "claimed" : "")))
       : "";
     const studentDone = studentSaysDone(w);
+    let doneHere = false;
+    try {
+      const local = w && w.id ? workState(w.id) : null;
+      doneHere = !!(local && local.done);
+    } catch (_) {}
     const schoolStatus = normalizeWorkStatus(w.school_status) || status;
     const discrepancy = discrepancyFromBits(w, {
       status,
@@ -4193,6 +4199,7 @@
       studentStatus,
       studentSaid: studentRec && studentRec.said ? studentRec.said : "",
       studentDone,
+      doneHere,
       score: score ? String(score) : "",
       points,
       submittedAt,
@@ -4219,12 +4226,13 @@
   function workStatusChips(work, now) {
     const st = workFeedStatus(work, now);
     const chips = [];
+    if (st.doneHere) chips.push({ key: "done-here", label: "Done" });
     if (st.discrepancy) chips.push({ key: "discrepancy", label: "Follow-up" });
     if (st.wantContact) chips.push({ key: "wrong", label: "Looks wrong" });
     if (st.missing) chips.push({ key: "missing", label: "Missing" });
     else if (st.late) chips.push({ key: "late", label: "Late" });
     if (st.dueToday && !st.submitted && !st.excused) chips.push({ key: "due-today", label: "Due today" });
-    if (st.notDone) chips.push({ key: "not-done", label: "Not done" });
+    if (st.notDone && !st.doneHere) chips.push({ key: "not-done", label: "Not done" });
     if (st.submitted && !st.missing && !st.graded) chips.push({ key: "submitted", label: "Submitted" });
     if (st.graded && !st.missing) chips.push({ key: "graded", label: st.score ? "Graded " + st.score : "Graded" });
     if (st.excused) chips.push({ key: "excuse", label: "Excuse" });
@@ -4249,7 +4257,15 @@
     return ((week && week.work) || []).filter((w) => workFeedStatus(w, clock).needsYou).slice().sort((a, b) => {
       const as = workFeedStatus(a, clock);
       const bs = workFeedStatus(b, clock);
-      const rank = (s) => (s.missing ? 0 : s.late ? 1 : s.dueToday ? 2 : s.wantContact ? 3 : 4);
+      const rank = (s) => {
+        if (s.missing && !s.doneHere) return 0;
+        if (s.late && !s.doneHere) return 1;
+        if (s.dueToday && !s.doneHere) return 2;
+        if (s.wantContact && !s.doneHere) return 3;
+        if (s.doneHere && (s.late || s.missing || s.discrepancy)) return 4;
+        if (s.doneHere) return 5;
+        return 6;
+      };
       return rank(as) - rank(bs) || String(a.due || "").localeCompare(String(b.due || ""));
     });
   }
@@ -4344,7 +4360,7 @@
       const row = href
         ? `<a class="needs-you-row" href="${esc(href)}">${inner}</a>`
         : `<div class="needs-you-row" role="button" tabindex="0" data-needs-work="${esc(w.id)}" data-needs-class="${esc(cid)}">${inner}</div>`;
-      return `<li class="needs-you-item">${row}${tools}</li>`;
+      return `<li class="needs-you-item${st.doneHere ? " is-done" : ""}${st.late && !st.doneHere ? " is-late" : ""}${st.notDone && !st.doneHere ? " is-open" : ""}">${row}${tools}</li>`;
     }).join("")}</ul>`;
   }
 
@@ -5544,6 +5560,16 @@
     return siteView() !== "mom";
   }
 
+  function funPlayAllowed() {
+    return audioAllowed();
+  }
+
+  function paintEggChip(pack) {
+    const egg = document.getElementById("egg-chip");
+    if (!egg) return;
+    egg.hidden = !(hasEggGame(pack) && funPlayAllowed());
+  }
+
   function siteViewHidesAdult(view) {
     const v = normalizeSiteView(view || siteView());
     return v === "bennett" || v === "mom";
@@ -5622,7 +5648,7 @@
     const story = document.getElementById ? document.getElementById("story-chip") : null;
     const egg = document.getElementById ? document.getElementById("egg-chip") : null;
     if (story) story.hidden = !storyOpen;
-    if (egg) egg.hidden = !eggOpen;
+    if (egg) egg.hidden = !funPlayAllowed() || !eggOpen;
     return navs[0];
   }
 
@@ -6328,6 +6354,44 @@
 
   function inboxAsks(family) {
     return ((family && family.notes) || []).filter((n) => isBennettAsk(n));
+  }
+
+  function isInboxThreadNote(n) {
+    if (!n || !String(n.text || "").trim()) return false;
+    if (isBennettAsk(n) || isBennettPlan(n) || isParentReply(n)) return true;
+    return n.kind === "note";
+  }
+
+  function inboxConversations(family) {
+    const groups = Object.create(null);
+    ((family && family.notes) || []).forEach((n) => {
+      if (!isInboxThreadNote(n)) return;
+      const key = noteTargetKey(n) || ("lone:" + n.id);
+      if (!groups[key]) groups[key] = { key, notes: [], at: String(n.at || "") };
+      groups[key].notes.push(n);
+      const at = String(n.at || "");
+      if (at > groups[key].at) groups[key].at = at;
+    });
+    return Object.keys(groups).map((k) => {
+      const g = groups[k];
+      g.notes.sort((a, b) => String(a.at || "").localeCompare(String(b.at || "")));
+      return g;
+    }).sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+  }
+
+  function threadNeedsReply(notes) {
+    let lastAsk = "";
+    let lastReply = "";
+    (notes || []).forEach((n) => {
+      if (isBennettAsk(n)) lastAsk = String(n.at || "");
+      if (isParentReply(n)) lastReply = String(n.at || "");
+    });
+    return !!(lastAsk && lastAsk > lastReply);
+  }
+
+  function latestAskInThread(notes) {
+    const asks = (notes || []).filter(isBennettAsk);
+    return asks.length ? asks[asks.length - 1] : null;
   }
 
   function bennettAsks(family) {
@@ -7104,14 +7168,12 @@
     const o = opts || {};
     const view = normalizeSiteView(o.view || siteView());
     const canEdit = o.canEdit !== false && view !== "bennett";
-    const canDelete = canEdit;
-    const asks = inboxAsks(family).slice().sort((a, b) => String(threadStamp(family, b)).localeCompare(String(threadStamp(family, a))));
+    const canDelete = o.canDelete !== false && view === "me";
+    const threads = inboxConversations(family);
     const answers = (((family && family.reflections && family.reflections.answers) || [])).slice()
       .filter((a) => a && String(a.text || "").trim());
-    const plans = ((family && family.notes) || []).filter(isBennettPlan);
-    const feed = asks.map((ask) => ({ kind: "ask", ask, at: threadStamp(family, ask) }))
+    const feed = threads.map((thread) => ({ kind: "thread", thread, at: thread.at }))
       .concat(answers.map((a) => ({ kind: "checkin", answer: a, at: a.at || "" })))
-      .concat(plans.map((p) => ({ kind: "plan", plan: p, at: p.at || "" })))
       .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
     if (!feed.length) {
       const kid = view === "bennett";
@@ -7123,36 +7185,36 @@
         <p class="messages-empty-hint">${esc(hint)}</p>
       </div>`;
     }
-    const askCard = (ask) => {
-      const unanswered = !askHasParentReply(family, ask);
-      const title = noteTargetLabel(week, ask.targetType, ask.targetId) || "This item";
-      const day = noteDayLabel(week, ask);
-      const replies = parentRepliesForAsk(family, ask);
-      const replyHtml = replies.map((r) => `
-        <div class="msg-reply">
-          <p class="msg-reply-kicker">${esc(noteAuthorLabel(r, view))}</p>
-          <p class="msg-reply-text">${esc(r.text)}</p>
-          <p class="msg-stamp">${esc(fmtStamp(r.at))}</p>
-        </div>`).join("");
-      const composer = canEdit ? `
+    const lineHtml = (n) => `
+      <div class="msg-line${isParentReply(n) ? " msg-line-reply" : ""}">
+        <p class="msg-line-who">${esc(noteAuthorLabel(n, view))}</p>
+        <p class="msg-line-text">${esc(n.text)}</p>
+        <p class="msg-stamp">${esc(fmtStamp(n.at))}</p>
+        ${canDelete ? `<button type="button" class="tiny danger" data-del-msg="${esc(n.id)}">Delete</button>` : ""}
+      </div>`;
+    const threadCard = (thread) => {
+      const notes = thread.notes || [];
+      const head = notes[0] || {};
+      const latestAsk = latestAskInThread(notes);
+      const unanswered = threadNeedsReply(notes);
+      const title = noteTargetLabel(week, head.targetType, head.targetId) || "This item";
+      const day = noteDayLabel(week, head);
+      const composer = canEdit && latestAsk ? `
         <label class="msg-reply-label">Reply
-          <textarea data-reply="${esc(ask.id)}" maxlength="280" rows="3" placeholder="A short answer he will see on that card"></textarea>
+          <textarea data-reply="${esc(latestAsk.id)}" maxlength="280" rows="3" placeholder="A short answer he will see on that card"></textarea>
         </label>
         <div class="parent-actions">
-          <button type="button" class="btn primary" data-send-reply="${esc(ask.id)}">Send reply</button>
-          ${canDelete ? `<button type="button" class="tiny danger" data-del-msg="${esc(ask.id)}">Delete</button>` : ""}
+          <button type="button" class="btn primary" data-send-reply="${esc(latestAsk.id)}">Send reply</button>
         </div>` : "";
-      const kicker = canEdit
-        ? (unanswered ? "Needs a reply" : "Answered")
-        : noteAuthorLabel(ask, view);
+      const onlyPlan = notes.length && notes.every(isBennettPlan);
+      const kicker = onlyPlan
+        ? "Plan"
+        : (canEdit ? (unanswered ? "Needs a reply" : "Answered") : "Thread");
       return `
         <article class="inbox-card msg-card${unanswered ? " msg-card-open" : " msg-card-done"}">
           <p class="msg-kicker">${esc(kicker)}</p>
-          <h3>${ask.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}${day ? " · " + esc(day) : ""}</h3>
-          <p class="msg-ask-from">${esc(noteAuthorLabel(ask, view))}</p>
-          <p class="msg-ask">${esc(ask.text)}</p>
-          <p class="msg-stamp">${esc(fmtStamp(ask.at))}</p>
-          ${replyHtml}
+          <h3>${head.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}${day ? " · " + esc(day) : ""}</h3>
+          ${notes.map(lineHtml).join("")}
           ${composer}
         </article>`;
     };
@@ -7165,20 +7227,8 @@
         <p class="msg-stamp">${esc(fmtStamp(a.at))}</p>
         ${canDelete ? `<div class="parent-actions"><button type="button" class="tiny danger" data-del-checkin="${esc(a.id)}">Delete</button></div>` : ""}
       </article>`;
-    const planCard = (p) => {
-      const title = noteTargetLabel(week, p.targetType, p.targetId) || "This item";
-      return `
-      <article class="inbox-card msg-card msg-card-done">
-        <p class="msg-kicker">Plan</p>
-        <h3>${p.test ? '<span class="test-tag">TEST</span> ' : ""}${esc(title)}</h3>
-        <p class="msg-ask-from">${esc(noteAuthorLabel(p, view))}</p>
-        <p class="msg-ask">${esc(p.text)}</p>
-        <p class="msg-stamp">${esc(fmtStamp(p.at))}</p>
-      </article>`;
-    };
     return `<section class="msg-section">${feed.map((row) => {
-      if (row.kind === "ask") return askCard(row.ask);
-      if (row.kind === "plan") return planCard(row.plan);
+      if (row.kind === "thread") return threadCard(row.thread);
       return checkCard(row.answer);
     }).join("")}</section>`;
   }
@@ -7187,7 +7237,9 @@
     const o = opts || {};
     let family = o.family;
     if (!root || !root.querySelectorAll) return family;
-    const canEdit = o.canEdit !== false && siteView() !== "bennett";
+    const view = siteView();
+    const canEdit = o.canEdit !== false && view !== "bennett";
+    const canDelete = o.canDelete !== false && view === "me";
     if (canEdit) {
       root.querySelectorAll("[data-send-reply]").forEach((b) => {
         b.addEventListener("click", () => {
@@ -7207,11 +7259,13 @@
           }).catch(() => {});
         });
       });
+    }
+    if (canDelete) {
       root.querySelectorAll("[data-del-msg]").forEach((b) => {
         b.addEventListener("click", () => {
           if (!confirmDelete("message")) return;
-          family = deleteAskThread(family, b.getAttribute("data-del-msg"));
-          toast("Deleted.");
+          family = deleteNote(family, b.getAttribute("data-del-msg"));
+          toast("Deleted everywhere.");
           if (typeof o.onChange === "function") o.onChange(family);
         });
       });
@@ -7219,7 +7273,7 @@
         b.addEventListener("click", () => {
           if (!confirmDelete("check-in")) return;
           family = deleteAnswer(family, b.getAttribute("data-del-checkin"));
-          toast("Deleted.");
+          toast("Deleted everywhere.");
           if (typeof o.onChange === "function") o.onChange(family);
         });
       });
@@ -7476,7 +7530,7 @@
       return `<li class="empty">No trophies yet</li>`;
     }
     return trophies.map((ach) => {
-      const play = gameHref(ach) ? `<a class="tiny primary" href="${esc(gameHref(ach))}">Play</a>` : "";
+      const play = (funPlayAllowed() && gameHref(ach)) ? `<a class="tiny primary" href="${esc(gameHref(ach))}">Play</a>` : "";
       const mutate = progressCanMutate()
         ? `<button type="button" class="tiny" data-edit="trophy:${esc(ach.id)}">Edit</button><button type="button" class="tiny" data-undo-trophy="${esc(ach.id)}">Undo award</button>`
         : "";
@@ -8139,6 +8193,8 @@
     canUsePreviewSwitch,
     setSiteView,
     audioAllowed,
+    funPlayAllowed,
+    paintEggChip,
     applySiteView,
     mountSiteViewControl,
     siteViewControlHtml,

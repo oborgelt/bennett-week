@@ -7,7 +7,7 @@
     const el = document.getElementById("bananas");
     if (el) el.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
     const eggChip = document.getElementById("egg-chip");
-    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    if (eggChip) Game.paintEggChip(pack);
   }
 
   function lockedCard(ch, index) {
@@ -114,9 +114,11 @@
     const locked = Game.lockedContentCount(library);
     const cards = earned.map((row) => {
       const item = row.item;
-      const play = item.kind === "link"
-        ? `<button type="button" class="tiny primary" data-open-lib="${Game.esc(item.id)}">Open</button>`
-        : `<button type="button" class="tiny primary" data-play-lib="${Game.esc(item.id)}">Play</button>`;
+      const play = !Game.funPlayAllowed()
+        ? ""
+        : (item.kind === "link"
+          ? `<button type="button" class="tiny primary" data-open-lib="${Game.esc(item.id)}">Open</button>`
+          : `<button type="button" class="tiny primary" data-play-lib="${Game.esc(item.id)}">Play</button>`);
       return `
         <article class="sound-card ready">
           <div class="sound-thumb">${Game.libraryThumbHtml(item)}</div>

@@ -528,7 +528,7 @@
     const bananas = document.getElementById("bananas");
     if (bananas) bananas.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;
     const eggChip = document.getElementById("egg-chip");
-    if (eggChip) eggChip.hidden = !Game.hasEggGame(pack);
+    if (eggChip) Game.paintEggChip(pack);
   }
 
   function buildPeriodicTable() {

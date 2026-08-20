@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=135/.test(basecampHtml) && /basecamp\.js\?v=135/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=136/.test(basecampHtml) && /basecamp\.js\?v=136/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -871,6 +871,15 @@ assert(/Bedtime check/.test(bedHtml) && /Before bed/.test(bedHtml), "bedtime che
 assert(/data-followup-toggle/.test(followHtml) && /followup-fold/.test(followHtml), "Progress Needs follow-up can collapse");
 assert(/data-followup-toggle/.test(Game.followupStripHtml(week, proofNow) || "") && /Copy email/.test(Game.followupStripHtml(week, proofNow) || ""), "This Week Needs follow-up expands to the email cards");
 assert(/About Me Slides \(discussion\)/.test(Game.followupStripHtml(week, proofNow) || ""), "This Week strip names the chem discrepancy");
+const webDoneBefore = Game.workState("web-11").done;
+if (!webDoneBefore) Game.touchWork("web-11", "done");
+const doneChips = Game.workStatusChips(weekById["web-11"], proofNow);
+assert(doneChips.some((c) => c.key === "done-here"), "Bennett Done shows a Done chip");
+assert(!doneChips.some((c) => c.key === "not-done"), "Done work is not labeled Not done");
+assert(doneChips.some((c) => c.key === "late"), "school Late stays visible after Bennett marks Done");
+assert(/chip-done-here/.test(Game.needsYouListHtml(week, proofNow)), "Needs you shows Done after he marks it");
+assert(/done-tag/.test(fs.readFileSync(path.join(root, "js/week.js"), "utf8")), "This Week titles show a Done tag");
+if (!webDoneBefore) Game.touchWork("web-11", "done");
 assert.strictEqual(Game.emailsToSend({ work: [] }, proofNow).length, 0, "empty week has no follow-up emails");
 const noteOnlyMiss = Game.workFeedStatus({ id: "x", title: "X", note: "MISSED 0/1" }, proofNow);
 assert.strictEqual(noteOnlyMiss.missing, true);
@@ -1474,7 +1483,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=135/.test(weekHtml) && /week\.js\?v=135/.test(weekHtml) && /game\.js\?v=135/.test(weekHtml) && /telemetry\.js\?v=135/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=136/.test(weekHtml) && /week\.js\?v=136/.test(weekHtml) && /game\.js\?v=136/.test(weekHtml) && /telemetry\.js\?v=136/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1521,8 +1530,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=134\b/.test(html), file + " should not still cache-bust as v=134");
-  assert(/\?v=135/.test(html), file + " should cache-bust v=135");
+  assert(!/\?v=135\b/.test(html), file + " should not still cache-bust as v=135");
+  assert(/\?v=136/.test(html), file + " should cache-bust v=136");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/trophy-chip/.test(hud) && /Trophy Room/.test(hud), file + " HUD includes Trophy Room");
   assert(/week-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1567,7 +1576,7 @@ assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=135/.test(progressHtml) && /theme\.css\?v=135/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=136/.test(progressHtml) && /theme\.css\?v=136/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1598,7 +1607,7 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*133/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 133");
+assert(/build:\s*134/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 134");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2085,6 +2094,8 @@ const testAskFam = Game.emptyFamily();
 testAskFam.notes = [{ id: "t1", from: "bennett", kind: "question", text: "test ping", test: true, at: "2026-08-19T12:00:00-05:00", targetType: "work", targetId: "w1" }];
 assert(/test ping/.test(Game.messagesInboxHtml(testAskFam, { work: [], events: [] }, { canEdit: true, view: "me" })), "test messages appear so they can be deleted");
 assert(/data-del-msg/.test(Game.messagesInboxHtml(askFam, askWeek, { canEdit: true, view: "me" })), "admin can delete a message");
+assert(!/data-del-msg/.test(Game.messagesInboxHtml(askFam, askWeek, { canEdit: true, view: "mom" })), "Mom cannot delete messages");
+assert(/Send reply/.test(Game.messagesInboxHtml(askFam, askWeek, { canEdit: true, view: "mom" })), "Mom can still reply");
 assert(!/data-del-msg/.test(Game.messagesInboxHtml(askFam, askWeek, { canEdit: false, view: "bennett" })), "Bennett cannot delete messages");
 const twoReply = Game.emptyFamily();
 twoReply.notes = [
@@ -2095,6 +2106,20 @@ twoReply.notes = [
 const twoHtml = Game.messagesInboxHtml(twoReply, { work: [], events: [] }, { canEdit: false, view: "bennett" });
 assert(/first reply/.test(twoHtml) && /second reply/.test(twoHtml), "Bennett sees every reply");
 assert(twoHtml.indexOf("first reply") < twoHtml.indexOf("second reply"), "replies stay in time order inside the thread");
+const bounceFam = Game.emptyFamily();
+bounceFam.notes = [
+  { id: "q-a", from: "bennett", kind: "question", text: "first ask", at: "2026-08-18T10:00:00-05:00", targetType: "work", targetId: "w1" },
+  { id: "r-d", from: "orin", kind: "reply", replyTo: "q-a", text: "dad here", at: "2026-08-18T11:00:00-05:00", targetType: "work", targetId: "w1" },
+  { id: "r-m", from: "mom", kind: "reply", replyTo: "q-a", text: "mom here", at: "2026-08-18T12:00:00-05:00", targetType: "work", targetId: "w1" },
+  { id: "q-b", from: "bennett", kind: "question", text: "asked again", at: "2026-08-18T13:00:00-05:00", targetType: "work", targetId: "w1" }
+];
+["me", "mom", "bennett"].forEach((who) => {
+  const html = Game.messagesInboxHtml(bounceFam, { work: [], events: [] }, { canEdit: who !== "bennett", view: who });
+  assert(/first ask/.test(html) && /dad here/.test(html) && /mom here/.test(html) && /asked again/.test(html), who + " sees the full message string");
+  assert(html.indexOf("first ask") < html.indexOf("dad here") && html.indexOf("dad here") < html.indexOf("mom here") && html.indexOf("mom here") < html.indexOf("asked again"), who + " sees Bennett → Dad → Mom → Bennett in order");
+});
+const goneLine = Game.deleteNote(bounceFam, "r-d");
+assert(!(goneLine.notes || []).some((n) => n.id === "r-d") && (goneLine.notes || []).some((n) => n.id === "q-a"), "deleting one message removes that line only");
 const gone = Game.deleteAskThread(twoReply, "q1");
 assert.strictEqual((gone.notes || []).length, 0, "delete removes the ask and all replies");
 store["bw-telemetry"] = JSON.stringify({ url: "https://example.supabase.co", anonKey: "anon", familyToken: "fam", role: "parent" });
@@ -2270,6 +2295,8 @@ assert.strictEqual(localStorage.getItem("bw-signin-seen"), "1", "welcome clip ma
 Game.setSiteView("mom");
 assert.strictEqual(Game.siteView(), "mom");
 assert(!Game.audioAllowed(), "mom mutes audio");
+assert(!Game.funPlayAllowed(), "Mom cannot play the egg game");
+assert(!/>Play</.test(Game.progressTrophyListHtml(pack.achievements)), "Mom Progress finds have no Play");
 assert.strictEqual(JSON.parse(store["bw-telemetry"]).role, "orin", "Mom preview must not change telemetry role");
 assert(adminChip.hidden, "Mom keeps Admin hidden");
 assert(!messagesChip.hidden, "Mom view shows the Messages chip");
