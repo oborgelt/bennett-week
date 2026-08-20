@@ -28,6 +28,7 @@
     workDisputes: "bw-work-disputes",
     classVisits: "bw-class-visits",
     needsYouCollapsed: "bw-needs-you-collapsed",
+    needsYouCollapsedProgress: "bw-needs-you-collapsed-progress",
     followupCollapsed: "bw-followup-collapsed"
   };
 
@@ -4547,16 +4548,21 @@
     }).join("")}</ul>`;
   }
 
+  function needsYouCollapsedKey() {
+    return pageFile() === "progress.html" ? KEYS.needsYouCollapsedProgress : KEYS.needsYouCollapsed;
+  }
+
   function needsYouCollapsed() {
     try {
-      return read(KEYS.needsYouCollapsed, false) === true || read(KEYS.needsYouCollapsed, "") === "1";
+      const key = needsYouCollapsedKey();
+      return read(key, false) === true || read(key, "") === "1";
     } catch (_) {
       return false;
     }
   }
 
   function setNeedsYouCollapsed(on) {
-    write(KEYS.needsYouCollapsed, !!on);
+    write(needsYouCollapsedKey(), !!on);
     return !!on;
   }
 
