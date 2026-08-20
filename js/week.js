@@ -1080,6 +1080,11 @@
   }
 
   function unlockAt(id) {
+    const st = family && family.streaks && family.streaks[id];
+    if (st && st.awardedAt) {
+      const fromStreak = Date.parse(st.awardedAt);
+      if (!Number.isNaN(fromStreak)) return fromStreak;
+    }
     const raw = Game.getUnlocks()[id];
     if (typeof raw === "number") return raw;
     if (raw && typeof raw === "object") {
@@ -1147,14 +1152,6 @@
     return `left:${box.l};top:${box.t};width:${box.w};height:${box.h}`;
   }
 
-  function plaqueLine(ach) {
-    const text = (ach.description || ach.incentive || ach.how || "").trim();
-    if (!text) return "";
-    const stop = text.search(/[.!?](\s|$)/);
-    const cut = stop >= 0 ? text.slice(0, stop + 1) : text;
-    return cut.length > 90 ? cut.slice(0, 87) + "…" : cut;
-  }
-
   function plaqueHtml(ach) {
     const crewId = crewIdOf(ach);
     const ch = crewId && ((roster && roster.characters) || []).find((row) => row.id === crewId);
@@ -1167,9 +1164,12 @@
         ? `<a class="trophy-plaque-go" href="${Game.esc(Game.gameHref(ach))}">Play</a>`
         : contentPlay(ach);
     }
+    const why = String((ach.description || ach.how || ach.incentive || "")).trim();
+    const when = Game.awardWhenLine ? Game.awardWhenLine(ach, family) : "";
     return `<aside class="trophy-plaque">
       <strong>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title)}</strong>
-      ${plaqueLine(ach) ? `<span>${Game.esc(plaqueLine(ach))}</span>` : ""}
+      ${why ? `<span class="trophy-plaque-why">${Game.esc(why)}</span>` : ""}
+      ${when ? `<span class="trophy-plaque-when">${Game.esc(when)}</span>` : ""}
       ${play}
     </aside>`;
   }
@@ -1417,6 +1417,37 @@
     hint.hidden = false;
     if (trophyLanternHintTimer) window.clearTimeout(trophyLanternHintTimer);
     trophyLanternHintTimer = window.setTimeout(dismissLanternHint, 4200);
+  }
+
+  function takeWantedTrophyId() {
+    try {
+      const q = new URLSearchParams(location.search).get("trophy") || "";
+      if (q) return q;
+      const stored = sessionStorage.getItem("bw-open-trophy") || "";
+      if (stored) sessionStorage.removeItem("bw-open-trophy");
+      return stored;
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function focusTrophy(id) {
+    const key = String(id || "");
+    if (!key) return;
+    const earned = orderedTrophies();
+    const ach = earned.find((row) => row.id === key);
+    if (!ach) return;
+    const featured = featuredTrophy(earned);
+    const zone = (featured && featured.id === key) ? "pedestal" : homeZoneOf(ach);
+    enterTrophyZone(zone);
+    window.setTimeout(() => {
+      const el = Array.from(document.querySelectorAll(".trophy-object")).find((node) => node.dataset.id === key);
+      if (!el) return;
+      clearTrophyPlaques();
+      el.insertAdjacentHTML("beforeend", plaqueHtml(ach));
+      el.classList.add("is-open");
+      bindPlaque(el);
+    }, Game.prefersReducedMotion() ? 0 : 80);
   }
 
   function enterTrophyZone(id) {
@@ -2243,6 +2274,10 @@
           url.searchParams.delete("room");
           dirty = true;
         }
+        if (url.searchParams.get("trophy")) {
+          url.searchParams.delete("trophy");
+          dirty = true;
+        }
         if (url.hash === "#trophy" || url.hash === "#trophies") {
           url.hash = "";
           dirty = true;
@@ -2271,6 +2306,10 @@
       const leave = document.getElementById("trophy-leave");
       if (leave) leave.focus();
       revealLanternHint();
+      const wanted = takeWantedTrophyId();
+      if (wanted) {
+        window.setTimeout(() => focusTrophy(wanted), Game.prefersReducedMotion() ? 0 : 360);
+      }
       trophyHintTimer = window.setTimeout(() => {
         const room = document.getElementById("trophy-room");
         if (!room || !shelf.classList.contains("open")) return;
@@ -2285,7 +2324,11 @@
       }, Game.prefersReducedMotion() ? 0 : 1200);
     }
     if (door) door.addEventListener("click", openShelf);
-    document.addEventListener("bw-open-trophy-room", openShelf);
+    document.addEventListener("bw-open-trophy-room", (e) => {
+      openShelf();
+      const id = e && e.detail && e.detail.id;
+      if (id) focusTrophy(id);
+    });
     document.addEventListener("bw-close-trophy-room", closeShelf);
     if ((Game.wantsTrophyRoom && Game.wantsTrophyRoom()) || location.hash === "#trophies" || /(?:^|[?&])room=1(?:&|$)/.test(location.search || "")) {
       openShelf();

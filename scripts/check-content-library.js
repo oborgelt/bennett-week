@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=147/.test(basecampHtml) && /basecamp\.js\?v=147/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=148/.test(basecampHtml) && /basecamp\.js\?v=148/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1511,7 +1511,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=147/.test(weekHtml) && /week\.js\?v=147/.test(weekHtml) && /game\.js\?v=147/.test(weekHtml) && /telemetry\.js\?v=147/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=148/.test(weekHtml) && /week\.js\?v=148/.test(weekHtml) && /game\.js\?v=148/.test(weekHtml) && /telemetry\.js\?v=148/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1559,8 +1559,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=146\b/.test(html), file + " should not still cache-bust as v=146");
-  assert(/\?v=147/.test(html), file + " should cache-bust v=147");
+  assert(!/\?v=147\b/.test(html), file + " should not still cache-bust as v=147");
+  assert(/\?v=148/.test(html), file + " should cache-bust v=148");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
   assert(/week-chip/.test(hud) && /trophy-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1615,7 +1615,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=147/.test(progressHtml) && /theme\.css\?v=147/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=148/.test(progressHtml) && /theme\.css\?v=148/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1654,7 +1654,7 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*145/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 145");
+assert(/build:\s*146/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 146");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2074,6 +2074,8 @@ const previewed = Game.previewTestAward(previewPack, Game.emptyFamily(), "desk-t
 assert(Game.alreadyUnlocked("desk-test"), "Test marks the trophy unlocked on this device");
 assert(previewed.family.streaks["desk-test"] && previewed.family.streaks["desk-test"].preview, "Test stays a parent preview, not Bennett's live award");
 assert.strictEqual(Game.getBananas(), bananasBeforeTest, "Test does not pay bananas");
+assert(/See it in the Trophy room/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "badge unlock asks for a click into the Trophy room");
+assert(/focusTrophy/.test(weekJs) && /trophy-plaque-when/.test(weekJs) && /get\("trophy"\)/.test(weekJs), "Trophy room opens the plaque with why and when");
 assert(/id="award-do"/.test(parentHtml) && /id="badge-picker"/.test(parentHtml), "Awards form has a do-text box and a badge picture picker");
 assert(/id="award-test"/.test(parentHtml) && /id="award-extra-unlock"/.test(parentHtml), "Awards form has Test and hides teammate/gear behind Also unlock");
 assert(/previewTestAward/.test(parentJs) && /testFromForm/.test(parentJs), "Parent desk Test plays the unlock on this screen");
@@ -2432,6 +2434,19 @@ assert(riffLayer && /Opened every class in one day/.test(riffLayer.innerHTML), "
 assert(/See Achievement/.test(riffLayer.innerHTML), "why screen has See Achievement before the Riff clip");
 assert(/char-celebrate-why-panel/.test(riffLayer.innerHTML), "why screen uses the centered why panel");
 assert(!/riff\.mp4/.test(riffLayer.innerHTML), "Riff video waits until See Achievement");
+const badgeFam = Game.emptyFamily();
+badgeFam.streaks["desk-test"] = { awarded: true, awardedAt: "2026-08-20T21:43:00.000Z", preview: true };
+Game.celebrate({
+  id: "desk-test",
+  title: "Logged in 5 days in a row",
+  description: "Consistency is key! You've logged into the site 5 days in a row!",
+  icon: "guitar"
+}, { achievements: [] }, { items: [] }, { family: badgeFam });
+const badgeLayer = document.body.children[document.body.children.length - 1];
+assert(badgeLayer && /You unlocked this/.test(badgeLayer.innerHTML), "badge unlock shows the why screen");
+assert(/See it in the Trophy room/.test(badgeLayer.innerHTML), "badge unlock asks Bennett to click into the Trophy room");
+assert(/Consistency is key/.test(badgeLayer.innerHTML), "badge unlock shows what it was given for");
+assert(/Earned /.test(badgeLayer.innerHTML), "badge unlock shows when");
 const unlockVideoTpl = gameJs.slice(gameJs.indexOf("function showUnlockCharacter"), gameJs.indexOf("function playUnlockClip"));
 assert(/<video src=/.test(unlockVideoTpl) && !/\smuted/.test(unlockVideoTpl), "Riff movie is not muted");
 assert(/playCharacterVideo/.test(unlockVideoTpl), "Riff movie unmutes and plays");

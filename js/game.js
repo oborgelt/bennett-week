@@ -5058,6 +5058,78 @@
     };
   }
 
+  function awardWhenIso(ach, family) {
+    const id = ach && ach.id;
+    if (!id) return "";
+    const st = family && family.streaks && family.streaks[id];
+    if (st && st.awardedAt) return String(st.awardedAt);
+    const raw = getUnlocks()[id];
+    if (typeof raw === "number" && Number.isFinite(raw)) return new Date(raw).toISOString();
+    if (raw && typeof raw === "object") return String(raw.at || raw.date || "");
+    return "";
+  }
+
+  function awardWhenLine(ach, family) {
+    const line = fmtStamp(awardWhenIso(ach, family));
+    return line ? "Earned " + line : "";
+  }
+
+  function trophyRoomHref(id) {
+    return "index.html?room=1&trophy=" + encodeURIComponent(String(id || ""));
+  }
+
+  function openTrophyForAward(id) {
+    closeCharacterCelebrate();
+    const key = String(id || "");
+    if (!key) return;
+    try { sessionStorage.setItem("bw-open-trophy", key); } catch (_) {}
+    const onWeek = !!(document.body && document.body.classList && document.body.classList.contains("week-page"));
+    if (onWeek && document.dispatchEvent) {
+      try {
+        document.dispatchEvent(new CustomEvent("bw-open-trophy-room", { detail: { id: key } }));
+      } catch (_) {}
+      return;
+    }
+    try {
+      if (global.location) global.location.href = trophyRoomHref(key);
+    } catch (_) {}
+  }
+
+  function showAwardUnlock(ach, pack, lib, opts) {
+    const family = (opts && opts.family) || getFamilyDraft();
+    const why = unlockCopy(ach) || "You unlocked this.";
+    const title = (ach && ach.title) || "Achievement";
+    const when = awardWhenLine(ach, family);
+    const src = badgeSrc(ach, lib);
+    const layer = celebrateLayer();
+    layer.classList.add("char-celebrate-full");
+    layer.innerHTML = `
+      <div class="char-celebrate-panel char-celebrate-why-panel award-unlock-panel" role="dialog" aria-labelledby="char-celebrate-title">
+        <p class="char-celebrate-kicker">You unlocked this</p>
+        ${src ? `<img class="award-unlock-badge" src="${esc(src)}" alt="">` : ""}
+        <h2 id="char-celebrate-title">${esc(title)}</h2>
+        <p class="char-celebrate-why">${esc(why)}</p>
+        ${when ? `<p class="award-unlock-when">${esc(when)}</p>` : ""}
+        <button type="button" class="btn primary" id="char-celebrate-see">See it in the Trophy room</button>
+      </div>`;
+    layer.classList.add("open");
+    const play = () => playAwardSound(ach, family, lib);
+    const started = play();
+    confetti({ burst: true });
+    if (!started && layer.addEventListener) {
+      layer.addEventListener("pointerdown", play, { once: true });
+    }
+    const see = document.getElementById("char-celebrate-see");
+    if (see && see.addEventListener) {
+      see.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        stopLibraryAudio();
+        openTrophyForAward(ach && ach.id);
+      });
+    }
+  }
+
   function showUnlockWhy(roster, unlockedChar, opts) {
     const ach = opts && opts.achievement;
     const why = unlockCopy(ach) || "You unlocked this.";
@@ -6307,19 +6379,7 @@
       playUnlockClip(roster || null, ch, { achievement: ach, family, library: lib });
       return;
     }
-    const cur = currency(pack);
-    const prize = ach.incentive ? " · " + ach.incentive : "";
-    const extra = bananasOf(ach) ? " · +" + bananasOf(ach) + " " + cur.name : "";
-    const game = ach.unlocksGame === "egg" ? " · Egg game unlocked" : "";
-    const mate = unlock && unlock.type === "character"
-      ? (unlock.id === "bennett" ? " · Bennett unlocked" : " · teammate unlocked")
-      : "";
-    const content = unlock && unlock.type === "content" ? " · sound unlocked" : "";
-    const gear = unlock && unlock.type !== "character" && unlock.type !== "content" ? " · " + (unlock.label || unlock.type) + " unlocked" : "";
-    const why = unlockCopy(ach);
-    toast((ach.title || "Achievement") + " unlocked!" + (why ? " · " + why : "") + prize + extra + game + mate + content + gear);
-    confetti();
-    playAwardSound(ach, family, lib);
+    showAwardUnlock(ach, pack, lib, opts);
   }
 
   function downloadJson(filename, obj) {
@@ -8486,6 +8546,9 @@
     confetti,
     honk,
     celebrate,
+    showAwardUnlock,
+    awardWhenLine,
+    openTrophyForAward,
     downloadJson,
     markOpened,
     maybeAwardSignIn,
