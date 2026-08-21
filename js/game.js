@@ -3909,6 +3909,58 @@
     return classIdForTitle(work && work.title);
   }
 
+  function gradesFromWeek(week) {
+    return Array.isArray(week && week.grades) ? week.grades.slice() : [];
+  }
+
+  function gradeClassId(classId) {
+    if (classId && typeof classId === "object") return String(classId.id || "");
+    return String(classId || "");
+  }
+
+  function gradeForClass(week, classId) {
+    const key = gradeClassId(classId);
+    if (!key) return null;
+    return gradesFromWeek(week).find((row) => row && String(row.classId) === key) || null;
+  }
+
+  function gradeAsOfLabel(asOf) {
+    const raw = String(asOf || "").trim();
+    const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return "";
+    return Number(m[2]) + "/" + Number(m[3]);
+  }
+
+  function gradeHasMark(row) {
+    const letter = String((row && row.letter) || "").trim();
+    const hasLetter = !!(letter && !/^n\/?a$/i.test(letter) && letter !== "—" && letter !== "-");
+    const hasPercent = row && row.percent != null && row.percent !== "" && !Number.isNaN(Number(row.percent));
+    return { letter: hasLetter ? letter : "", hasPercent: !!hasPercent };
+  }
+
+  function gradePillModel(row) {
+    if (!row) return null;
+    const mark = gradeHasMark(row);
+    if (!mark.letter && !mark.hasPercent) return null;
+    const display = [mark.letter, mark.hasPercent ? (String(row.percent) + "%") : ""].filter(Boolean).join(" ");
+    const sourceBits = [row.source ? String(row.source).trim() : "", gradeAsOfLabel(row.as_of)].filter(Boolean);
+    const detailBits = [row.detail ? String(row.detail).trim() : "", sourceBits.join(" ")].filter(Boolean);
+    return {
+      display,
+      detail: detailBits.join(" · ")
+    };
+  }
+
+  function gradeHtml(grade, extraTest) {
+    if (!grade || (!grade.display && !grade.detail)) return "";
+    const test = !!(grade.test || extraTest);
+    return `<span class="grade-pill${test ? " is-test" : ""}">${test ? '<span class="test-tag">TEST</span> ' : ""}${esc(grade.display || "—")}${grade.detail && grade.detail !== grade.display ? `<span class="grade-detail">${esc(grade.detail)}</span>` : ""}</span>`;
+  }
+
+  function gradePillHtml(week, classId) {
+    return gradeHtml(gradePillModel(gradeForClass(week, classId)));
+  }
+
   const CLASS_SHORT_LABELS = {
     band: "Band",
     sociology: "Soc",
@@ -8735,6 +8787,10 @@
     latestBennettQuestion,
     classIdForTitle,
     classIdForWork,
+    gradesFromWeek,
+    gradeForClass,
+    gradePillModel,
+    gradePillHtml,
     belongsToClass,
     itemsForClassOnDay,
     sortWorkOpenFirst,

@@ -665,6 +665,7 @@
       const who = whoOn(week, d);
       const khan = cls ? Game.khanStripHtmlForClass(cls) : "";
       const className = (cls && cls.name) || Game.classNameForId(classId) || "Class";
+      const gradePill = Game.gradePillHtml(week, classId);
       const hasClassItems = !!(events.length || due.length || startThis.length);
       const emptyLine = hasClassItems ? "" : `<p class="empty">Nothing for ${Game.esc(className)} ${i === 0 ? "today" : "on " + dayLabel(d)}.</p>`;
       const addRow = `<p class="add-work-row"><button type="button" class="mini" data-add-work="${ymd(d)}">Add assignment</button></p>`;
@@ -692,7 +693,7 @@
             ${reflectBlock(i === 0)}
             <section class="class-pane" data-class-id="${Game.esc(classId)}">
               <header class="class-pane-head">
-                <h3 class="class-pane-name">${Game.esc(className)}</h3>
+                <h3 class="class-pane-name">${Game.esc(className)}${gradePill}</h3>
                 ${khan}
               </header>
               ${canvasCheckHtml(i === 0, classId)}
