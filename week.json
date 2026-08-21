@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-20T14:35:00",
+  "as_of": "2026-08-20T21:05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -162,7 +162,7 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East",
-      "note": "Official OE Band times (oeband.com): Mon 7:00\u20138:40 a.m. and 6:30\u20138:30 p.m.; Tue/Fri 7:00\u20138:40; Wed 7:00\u20139:15; Thu none. Rehearsals are graded. Drumline may differ."
+      "note": "Official OE Band times (oeband.com): Mon 7:00–8:40 a.m. and 6:30–8:30 p.m.; Tue/Fri 7:00–8:40; Wed 7:00–9:15; Thu none. Rehearsals are graded. Drumline may differ."
     },
     {
       "id": "band-pm-0817",
@@ -827,6 +827,30 @@
       "start": "2026-08-27",
       "kind": "calendar",
       "note": "Wolgast Gmail 8/19: Picture Day Wed Aug 26 and Thu Aug 27 during English class."
+    },
+    {
+      "id": "band-passoff-opener-0828",
+      "title": "Band: Pass-off — Opener mm 1-97",
+      "start": "2026-08-28",
+      "kind": "calendar",
+      "classId": "band",
+      "note": "Fillingham Gmail 8/20 3:07pm CT (pass-off date CORRECTION). Date-only — no time of day given."
+    },
+    {
+      "id": "band-passoff-ballad-0904",
+      "title": "Band: Pass-off — Ballad mm 98-134 + Chorale Be Thou My Vision",
+      "start": "2026-09-04",
+      "kind": "calendar",
+      "classId": "band",
+      "note": "Fillingham Gmail 8/20 3:07pm CT (pass-off date CORRECTION). Date-only — no time of day given."
+    },
+    {
+      "id": "band-passoff-closer-0918",
+      "title": "Band: Pass-off — Closer mm 139-end",
+      "start": "2026-09-18",
+      "kind": "calendar",
+      "classId": "band",
+      "note": "Fillingham Gmail 8/20 3:07pm CT (pass-off date CORRECTION). Date-only — no time of day given."
     }
   ],
   "work": [
@@ -839,7 +863,7 @@
       "late": false,
       "submitted_at": "2026-08-17T13:14:00",
       "source": "canvas",
-      "note": "Goodson/Carl. Canvas video: full name twice + something you are awesome at. 5 points. Submitted Aug 17 1:14pm. Still ungraded (/5) as of Thu 2:35pm.",
+      "note": "Goodson/Carl. Canvas video: full name twice + something you are awesome at. 5 points. Submitted Aug 17 1:14pm. Still ungraded (/5) as of Thu 9:05pm (unchanged vs 2:35pm Canvas).",
       "canvas": {
         "status": "submitted",
         "points": 5,
@@ -858,7 +882,7 @@
       "id": "eng-comics",
       "title": "English 10: Summer Narrative Comic Strip",
       "due": "2026-08-20T23:59:00",
-      "note": "Goodson/Carl. 10 pts. Not submitted (\u2013/10) as of Thu 2:35pm. Official Canvas due TONIGHT Thursday 11:59pm (after 4:30 handoff to Mom). In class Tuesday; submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence.",
+      "note": "Goodson/Carl. 10 pts. Not submitted (–/10) as of Thu 9:05pm bedtime (unchanged vs 2:35pm Canvas). Official Canvas due TONIGHT Thursday 11:59pm. Bennett is with Mom (handoff 4:30pm). In class Tuesday; submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence.",
       "suggest_from": "2026-08-15",
       "canvas": {
         "status": "open",
@@ -906,7 +930,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. 1 pt. Still blank (\u2013/1), not submitted as of Thu 2:35pm. Due Tue 8/18 11:59. Not yet labeled Missing.",
+      "note": "Pfeiff. 1 pt. Still blank (–/1), not submitted as of Thu 9:05pm (unchanged vs 2:35pm Canvas). Due Tue 8/18 11:59. Not yet labeled Missing.",
       "canvas": {
         "status": "open",
         "points": 1
@@ -934,7 +958,7 @@
       "graded_at": "2026-08-19",
       "source": "canvas",
       "dispute": null,
-      "note": "Pfeiff. Canvas discussion post. Last confirmed: submitted Aug 19 3:33pm, flagged LATE, scored 0/1 (change from Missing). This afternoon (2:35pm) the discussion row is NOT visible to observers (Access Denied on Discussions) \u2014 kept last confirmed school_status late 0/1 + submitted_at, not treated as gone. Course assignment group 0% last confirmed. Student (Plaud 8/20 7:30am): told Orin he already emailed Pfeiff. Email send not verified in ParentVUE/Canvas; followup.email_sent stays false. Do not invent that the email was sent.",
+      "note": "Pfeiff. Canvas discussion post. Last confirmed: submitted Aug 19 3:33pm, flagged LATE, scored 0/1 (change from Missing). Still not visible to observers as of Thu 9:05pm bedtime (Access Denied on Discussions) — kept last confirmed school_status late 0/1 + submitted_at, not treated as gone. Course assignment group 0% last confirmed. Student (Plaud 8/20 7:30am): told Orin he already emailed Pfeiff. Email send not verified in ParentVUE/Canvas; followup.email_sent stays false. Do not invent that the email was sent.",
       "canvas": {
         "status": "late",
         "points": 1,
@@ -953,7 +977,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "discrepancy_reason": "Bennett says he emailed Pfeiff; last confirmed Canvas late 0/1 submitted 8/19 3:33pm. Observer Access Denied on Discussions this afternoon \u2014 do not drop last confirmed status. Teacher-email send not verified \u2014 do not mark follow-up sent."
+      "discrepancy_reason": "Bennett says he emailed Pfeiff; last confirmed Canvas late 0/1 submitted 8/19 3:33pm. Observer Access Denied on Discussions as of 9:05pm bedtime — do not drop last confirmed status. Teacher-email send not verified — do not mark follow-up sent."
     },
     {
       "id": "web-11",
@@ -965,7 +989,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn, P3 9:20. 20 pts. PAST DUE. Still not submitted (Submitted blank, \u2013/20) as of Thu 2:35pm. Due Wed Aug 19 9:20 AM. Work is in CodeHS: 1.1.1 Websites in Your Life, 1.1.2 What is Web Design?, 1.1.3 Your Interests, 1.1.4 Meet a Web Developer video.",
+      "note": "Derek Linn, P3 9:20. 20 pts. PAST DUE. Still not submitted (Submitted blank, –/20) as of Thu 9:05pm (unchanged vs 2:35pm Canvas). Due Wed Aug 19 9:20 AM. Work is in CodeHS: 1.1.1 Websites in Your Life, 1.1.2 What is Web Design?, 1.1.3 Your Interests, 1.1.4 Meet a Web Developer video.",
       "canvas": {
         "status": "late",
         "points": 20
@@ -989,7 +1013,7 @@
       "late": false,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn, P3 9:20. 40 pts. Still open (\u2013/40) as of Thu 2:35pm. Due Mon Aug 24 9:20 AM. Already on Outlook.",
+      "note": "Derek Linn, P3 9:20. 40 pts. Still open (–/40) as of Thu 9:05pm (unchanged vs 2:35pm Canvas). Due Mon Aug 24 9:20 AM. Already on Outlook.",
       "canvas": {
         "status": "open",
         "points": 40
@@ -1007,7 +1031,7 @@
       "id": "eng-letter",
       "title": "English 10: Letter to the teacher",
       "due": "2026-08-20T13:50:00",
-      "note": "Goodson/Carl. In class Wed\u2013Thu 8/19\u20138/20: personalize writing notebooks + letter to teacher by end of hour. Thu 8/20 was the last in-class day for that (class ended ~1:50pm). Completion not confirmed on Canvas. Fri 8/21 unit is now AAB (was Narrative Writing on the morning sheet); class work still check out books + read AAB ch.1. Homework cell blank.",
+      "note": "Goodson/Carl. In class Wed–Thu 8/19–8/20: personalize writing notebooks + letter to teacher by end of hour. Thu 8/20 was the last in-class day for that (class ended ~1:50pm). Completion not confirmed on Canvas. Fri 8/21 unit is now AAB (was Narrative Writing on the morning sheet); class work still check out books + read AAB ch.1. Homework cell blank.",
       "suggest_from": "2026-08-18",
       "school_status": null,
       "student_status": null,
@@ -1047,7 +1071,7 @@
       "late": false,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. 1 pt. NEW since 7:10am pull. Open (\u2013/1) as of Thu 2:35pm. Due Fri 8/21 11:59 PM. Modules Unit 1 Alchemy. Orin asked to add the Outlook reminder (in progress); homework card included regardless.",
+      "note": "Pfeiff. 1 pt. Still open (–/1) as of Thu 9:05pm (unchanged vs 2:35pm Canvas). Due Fri 8/21 11:59 PM. Modules Unit 1 Alchemy. On Outlook.",
       "canvas": {
         "status": "open",
         "points": 1
@@ -1071,17 +1095,17 @@
     {
       "date": "2026-08-19",
       "title": "After-school check (~2:40pm)",
-      "text": "Web Design 1.2 The Internet is new (40 pts, due Mon 8/24 9:20; \u2013/40). 1.1 still blank \u2013/20, now past due. Chem discussion still MISSED 0/1; assignment still blank \u2013/1, not labeled Missing. English name video still submitted 8/17 1:14pm, ungraded /5. Comic \u2013/10 due Thu 11:59pm. Spiral notebook still open Fri. Sociology A- 91% (In-Class Activity 20/22 dated 8/14); ParentVUE Last Update 8/19/2026, no new 8/19 assignment. ParentVUE mail: newest still Fillingham Sun 8/16 photo-link + Band Update; no new messages. Courses: 4 published (Band, English 10, Web Design I, Chemistry); Geometry/Sociology/S&C/Advisory unpublished. Attendance: 8/18 clean; 8/19 August calendar has no absence/tardy/unexcused icon; 8/14 Chem absent closed (do not flag). oeband.com unchanged; fall dates already on Outlook."
+      "text": "Web Design 1.2 The Internet is new (40 pts, due Mon 8/24 9:20; –/40). 1.1 still blank –/20, now past due. Chem discussion still MISSED 0/1; assignment still blank –/1, not labeled Missing. English name video still submitted 8/17 1:14pm, ungraded /5. Comic –/10 due Thu 11:59pm. Spiral notebook still open Fri. Sociology A- 91% (In-Class Activity 20/22 dated 8/14); ParentVUE Last Update 8/19/2026, no new 8/19 assignment. ParentVUE mail: newest still Fillingham Sun 8/16 photo-link + Band Update; no new messages. Courses: 4 published (Band, English 10, Web Design I, Chemistry); Geometry/Sociology/S&C/Advisory unpublished. Attendance: 8/18 clean; 8/19 August calendar has no absence/tardy/unexcused icon; 8/14 Chem absent closed (do not flag). oeband.com unchanged; fall dates already on Outlook."
     },
     {
       "date": "2026-08-20",
       "title": "Morning check (~7:10am)",
-      "text": "No new Canvas items overnight. Dashboard: \u201cNothing new needs attention.\u201d Chem discussion now submitted Aug 19 3:33pm, flagged LATE, still 0/1 (was Missing). Chem assignment still blank \u2013/1, due Tue 8/18 11:59, not labeled Missing. Web 1.1 still blank \u2013/20, past due (CodeHS 1.1.1 Websites in Your Life, 1.1.2 What is Web Design?, 1.1.3 Your Interests, 1.1.4 Meet a Web Developer video). Web 1.2 still open \u2013/40, already on Outlook, due Mon 8/24 9:20. English comic \u2013/10 due TODAY Thu 11:59pm after 4:30 handoff to Mom. Letter to teacher / personalize notebooks: last in-class day today. Spiral notebook still open Fri 8/21. Name video still submitted 8/17 1:14pm, ungraded /5. ParentVUE: no new mail (newest still Fillingham Sun 8/16 7:40pm photo link). Alerts only July items. Sociology A- 91% last update 8/19, 0 missing. All other classes N/A 0 missing. Attendance 8/19 clean, 8/20 no mark. Do not flag 8/14 Chem absence. Published Canvas still 4: Band, English 10, Web Design I, Chemistry. Geometry/Sociology/S&C/AI unpublished. oeband.com unchanged (fall marching dates, calendar under construction, $350 marching contribution). Forms & Fees Night tonight 5:30. Picture day Wed 8/26. 10.1 Case Launch 8/25. Today: Dad until 4:30, then Mom overnight."
+      "text": "No new Canvas items overnight. Dashboard: “Nothing new needs attention.” Chem discussion now submitted Aug 19 3:33pm, flagged LATE, still 0/1 (was Missing). Chem assignment still blank –/1, due Tue 8/18 11:59, not labeled Missing. Web 1.1 still blank –/20, past due (CodeHS 1.1.1 Websites in Your Life, 1.1.2 What is Web Design?, 1.1.3 Your Interests, 1.1.4 Meet a Web Developer video). Web 1.2 still open –/40, already on Outlook, due Mon 8/24 9:20. English comic –/10 due TODAY Thu 11:59pm after 4:30 handoff to Mom. Letter to teacher / personalize notebooks: last in-class day today. Spiral notebook still open Fri 8/21. Name video still submitted 8/17 1:14pm, ungraded /5. ParentVUE: no new mail (newest still Fillingham Sun 8/16 7:40pm photo link). Alerts only July items. Sociology A- 91% last update 8/19, 0 missing. All other classes N/A 0 missing. Attendance 8/19 clean, 8/20 no mark. Do not flag 8/14 Chem absence. Published Canvas still 4: Band, English 10, Web Design I, Chemistry. Geometry/Sociology/S&C/AI unpublished. oeband.com unchanged (fall marching dates, calendar under construction, $350 marching contribution). Forms & Fees Night tonight 5:30. Picture day Wed 8/26. 10.1 Case Launch 8/25. Today: Dad until 4:30, then Mom overnight."
     },
     {
       "date": "2026-08-20",
       "title": "Discrepancy layer (Plaud 7:30am)",
-      "text": "Cadence: 2:30pm primary, 9:00pm bedtime pull added, 7:00am kept. Chem About Me discussion: school late 0/1 submitted 8/19 3:33pm; Bennett told Orin he emailed Pfeiff; follow-up send not verified. Do not invent email sent. No new live school pull in this write \u2014 as_of stays 7:10am."
+      "text": "Cadence: 2:30pm primary, 9:00pm bedtime pull added, 7:00am kept. Chem About Me discussion: school late 0/1 submitted 8/19 3:33pm; Bennett told Orin he emailed Pfeiff; follow-up send not verified. Do not invent email sent. No new live school pull in this write — as_of stays 7:10am."
     },
     {
       "date": "2026-08-25",
@@ -1096,17 +1120,32 @@
     {
       "date": "2026-08-20",
       "title": "After-school check (~2:35pm)",
-      "text": "Live Canvas pull. NEW: Chemistry Penny for Your Thoughts Demo, 1 pt, due Fri 8/21 11:59 PM, open \u2013/1 (Modules Unit 1 Alchemy). Outlook reminder: Orin asked to add it (in progress). Web 1.1 still late blank \u2013/20 due Wed 8/19 9:20 (CodeHS 1.1.1\u20131.1.4). Web 1.2 still open \u2013/40 due Mon 8/24 9:20. Chem About Me assignment still blank \u2013/1 due Tue 8/18. Chem discussion: last confirmed late submitted 8/19 3:33pm, 0/1; this afternoon the discussion row is not visible to observers (Access Denied on Discussions) \u2014 kept last confirmed school_status. Bennett told Orin 8/20 7:30 Plaud he emailed Pfeiff; followup.email_sent stays false (send not verified). English comic still open \u2013/10 due TONIGHT 8/20 11:59pm, not submitted as of 2:35pm; after 4:30 handoff to Mom. Letter to teacher: last in-class day was today. Spiral notebook still open Fri 8/21 in class. Name video still submitted 8/17 1:14pm, ungraded /5. English 8/21 unit now AAB (was Narrative Writing this morning); class work still check out books + AAB ch.1; homework cell blank. Picture day 8/26. ParentVUE grades/attendance not confirmed this pull (pending; not invented). Inbox from live screenshot: no mail newer than Sun Aug 16 Fillingham. Published Canvas still 4: Band, English 10, Web Design I, Chemistry. oeband.com unchanged. Today: Dad until 4:30, then Mom overnight. Forms & Fees Night 5:30pm."
+      "text": "Live Canvas pull. NEW: Chemistry Penny for Your Thoughts Demo, 1 pt, due Fri 8/21 11:59 PM, open –/1 (Modules Unit 1 Alchemy). Outlook reminder: Orin asked to add it (in progress). Web 1.1 still late blank –/20 due Wed 8/19 9:20 (CodeHS 1.1.1–1.1.4). Web 1.2 still open –/40 due Mon 8/24 9:20. Chem About Me assignment still blank –/1 due Tue 8/18. Chem discussion: last confirmed late submitted 8/19 3:33pm, 0/1; this afternoon the discussion row is not visible to observers (Access Denied on Discussions) — kept last confirmed school_status. Bennett told Orin 8/20 7:30 Plaud he emailed Pfeiff; followup.email_sent stays false (send not verified). English comic still open –/10 due TONIGHT 8/20 11:59pm, not submitted as of 2:35pm; after 4:30 handoff to Mom. Letter to teacher: last in-class day was today. Spiral notebook still open Fri 8/21 in class. Name video still submitted 8/17 1:14pm, ungraded /5. English 8/21 unit now AAB (was Narrative Writing this morning); class work still check out books + AAB ch.1; homework cell blank. Picture day 8/26. ParentVUE grades/attendance not confirmed this pull (pending; not invented). Inbox from live screenshot: no mail newer than Sun Aug 16 Fillingham. Published Canvas still 4: Band, English 10, Web Design I, Chemistry. oeband.com unchanged. Today: Dad until 4:30, then Mom overnight. Forms & Fees Night 5:30pm."
     },
     {
       "date": "2026-08-20",
       "title": "English agenda / AAB pages",
-      "text": "Fri 8/21 unit column now AAB (was Narrative Writing on the morning sheet). Class work still: Warm-up; check out books + read first chapter of AAB as a class. Homework cell blank. Picture day 8/26. Later columns show AAB page dues (sheet dates only \u2014 no clock times invented): 8/26\u20138/27 Pg. 5-40 due; 8/31 Pg. 41-82 due; 9/4 Pg. 83-120 due; 9/9\u20139/10 Pg. 121-163 due; 9/14 Pg. 164-203 due; 9/16\u20139/17 Pg. 204-246 due; 9/21 Pg. 247-282 due; 9/23\u20139/24 Pg. 283-313 due."
+      "text": "Fri 8/21 unit column now AAB (was Narrative Writing on the morning sheet). Class work still: Warm-up; check out books + read first chapter of AAB as a class. Homework cell blank. Picture day 8/26. Later columns show AAB page dues (sheet dates only — no clock times invented): 8/26–8/27 Pg. 5-40 due; 8/31 Pg. 41-82 due; 9/4 Pg. 83-120 due; 9/9–9/10 Pg. 121-163 due; 9/14 Pg. 164-203 due; 9/16–9/17 Pg. 204-246 due; 9/21 Pg. 247-282 due; 9/23–9/24 Pg. 283-313 due."
     },
     {
       "date": "2026-08-20",
       "title": "After-school check (~2:40pm)",
-      "text": "Canvas: new Chem Penny for Your Thoughts Demo 1pt due Fri 8/21 11:59, not submitted. Comic still \u2013/10 due tonight. Web 1.1 still late \u2013/20. Chem About Me assignment still blank; discussion last confirmed late 0/1 (observer Access Denied this afternoon). ParentVUE: no new mail/alerts; Sociology A- 91% last update 8/19; attendance 8/19 and 8/20 clean. Gmail (orinborg): Bennett 9:39am 'Parking pass' (got it in advisory); Wolgast picture days Wed 8/26 AND Thu 8/27 during English; Wolgast MTSS snack wish list 8:30am. oeband unchanged. Forms & Fees 5:30 after 4:30 Mom handoff. 7am check retired; cadence is 2:30 and 9pm with Gmail."
+      "text": "Canvas: new Chem Penny for Your Thoughts Demo 1pt due Fri 8/21 11:59, not submitted. Comic still –/10 due tonight. Web 1.1 still late –/20. Chem About Me assignment still blank; discussion last confirmed late 0/1 (observer Access Denied this afternoon). ParentVUE: no new mail/alerts; Sociology A- 91% last update 8/19; attendance 8/19 and 8/20 clean. Gmail (orinborg): Bennett 9:39am 'Parking pass' (got it in advisory); Wolgast picture days Wed 8/26 AND Thu 8/27 during English; Wolgast MTSS snack wish list 8:30am. oeband unchanged. Forms & Fees 5:30 after 4:30 Mom handoff. 7am check retired; cadence is 2:30 and 9pm with Gmail."
+    },
+    {
+      "date": "2026-08-20",
+      "title": "Bedtime check (~9:05pm)",
+      "text": "Canvas UNCHANGED vs 2:35pm. Comic still open –/10, NOT submitted, due TONIGHT 11:59pm. Web 1.1 still late blank –/20. Web 1.2 still open –/40 due Mon 8/24 9:20. Chem About Me assignment still blank –/1. Chem discussion last confirmed late 0/1 submitted 8/19 3:33pm; still not visible to observers (Access Denied on Discussions) — kept last confirmed school_status. Bennett told Orin 8/20 7:30 Plaud he emailed Pfeiff; followup.email_sent stays false (send not verified). Chem penny still open –/1 due Fri 8/21 11:59 (on Outlook). English name video still submitted 8/17 1:14pm, ungraded /5. Spiral notebook still open Fri 8/21 in class. Letter to teacher: last in-class day was today; completion not confirmed on Canvas. Gmail NEW: Todd Keach 3:52pm CT — Open House tonight, he is absent due to illness, will see parents at Parent Conferences (tkeachoe@olatheschools.org). Rebecca Fillingham 3:07pm CT — pass-off date CORRECTION: Aug 28 Opener mm 1-97; Sep 4 Ballad mm 98-134 + Chorale Be Thou My Vision; Sep 18 Closer 139-end; also Finalsite marching chat join link for last-minute weather/changes (rlfillingham@olatheschools.org). Those Gmail messages typically also land in ParentVUE. ParentVUE grades/attendance not confirmed this pull (pending; not invented). oeband.com homepage unchanged. Tonight: Mom (handoff was 4:30pm)."
+    },
+    {
+      "date": "2026-08-20",
+      "title": "Open House — Keach absent",
+      "text": "Todd Keach 3:52pm CT (Gmail; typically also ParentVUE): Open House tonight — he is absent due to illness; will see parents at Parent Conferences. tkeachoe@olatheschools.org."
+    },
+    {
+      "date": "2026-08-20",
+      "title": "Band pass-off dates (Fillingham correction)",
+      "text": "Rebecca Fillingham 3:07pm CT (Gmail; typically also ParentVUE): pass-off date CORRECTION — Aug 28 Opener mm 1-97; Sep 4 Ballad mm 98-134 + Chorale Be Thou My Vision; Sep 18 Closer 139-end. Also Finalsite marching chat join link for last-minute weather/changes. rlfillingham@olatheschools.org. Chat app noted; do not invent that anyone joined."
     }
   ]
 }
