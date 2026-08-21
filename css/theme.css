@@ -763,6 +763,10 @@ html[data-site-view="me"] .admin-chip {
 }
 
 .class-pane-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   margin: 0 0 4px;
   font-size: 1.18rem;
   font-weight: 800;

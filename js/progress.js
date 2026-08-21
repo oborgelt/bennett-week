@@ -48,7 +48,7 @@
         teacher: cls.teacher || "",
         test: !!cls.test,
         khan: cls.khan,
-        grade: cls.grade || null,
+        grade: Game.gradePillModel(Game.gradeForClass(week, cls.id)) || cls.grade || null,
         items: (cls.items || []).map((item) => Object.assign({}, item))
       });
     });

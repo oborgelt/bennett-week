@@ -1,6 +1,32 @@
 {
   "timezone": "America/Chicago",
   "as_of": "2026-08-21T14:15:00",
+  "grades": [
+    {
+      "classId": "sociology",
+      "class": "Sociology",
+      "period": "P2",
+      "teacher": "Todd Keach",
+      "letter": "A-",
+      "percent": 91,
+      "detail": "In-Class Activity 20/22",
+      "source": "ParentVUE",
+      "as_of": "2026-08-19",
+      "missing": 0
+    },
+    {
+      "classId": "english-10",
+      "class": "English 10",
+      "period": "P6",
+      "teacher": "Ann Goodson",
+      "letter": "A+",
+      "percent": 100,
+      "detail": "Summer Narrative Comic Strip 10/10",
+      "source": "ParentVUE",
+      "as_of": "2026-08-21",
+      "missing": 0
+    }
+  ],
   "parenting": [
     {
       "who": "Mom",
