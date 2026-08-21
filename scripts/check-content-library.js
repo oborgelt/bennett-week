@@ -742,19 +742,17 @@ const socGrade = week.grades.find((g) => g.classId === "sociology");
 const engGrade = week.grades.find((g) => g.classId === "english-10");
 assert(socGrade && socGrade.letter === "A-" && socGrade.percent === 91 && socGrade.as_of === "2026-08-19", "Sociology ParentVUE is A- 91% as of 8/19");
 assert(engGrade && engGrade.letter === "A+" && engGrade.percent === 100 && engGrade.as_of === "2026-08-21", "English ParentVUE is A+ 100% as of 8/21");
-assert.deepStrictEqual(Game.gradesFromWeek({}), []);
-assert.deepStrictEqual(Game.gradesFromWeek(week).map((g) => g.classId), ["sociology", "english-10"]);
+assert.strictEqual(Game.gradesFromWeek({}).length, 0, "gradesFromWeek is empty when grades[] is missing");
+assert.deepStrictEqual([...Game.gradesFromWeek(week)].map((g) => g.classId), ["sociology", "english-10"]);
 assert.strictEqual(Game.gradeForClass(week, "sociology").letter, "A-");
 assert.strictEqual(Game.gradeForClass(week, { id: "english-10" }).letter, "A+");
 assert.strictEqual(Game.gradeForClass(week, "chemistry"), null);
-assert.deepStrictEqual(Game.gradePillModel(Game.gradeForClass(week, "sociology")), {
-  display: "A- 91%",
-  detail: "In-Class Activity 20/22 · ParentVUE 8/19"
-});
-assert.deepStrictEqual(Game.gradePillModel(Game.gradeForClass(week, "english-10")), {
-  display: "A+ 100%",
-  detail: "Summer Narrative Comic Strip 10/10 · ParentVUE 8/21"
-});
+const socPill = Game.gradePillModel(Game.gradeForClass(week, "sociology"));
+assert.strictEqual(socPill.display, "A- 91%");
+assert.strictEqual(socPill.detail, "In-Class Activity 20/22 · ParentVUE 8/19");
+const engPill = Game.gradePillModel(Game.gradeForClass(week, "english-10"));
+assert.strictEqual(engPill.display, "A+ 100%");
+assert.strictEqual(engPill.detail, "Summer Narrative Comic Strip 10/10 · ParentVUE 8/21");
 assert.strictEqual(Game.gradePillModel({ classId: "chemistry", source: "ParentVUE" }), null);
 assert.strictEqual(Game.gradePillHtml(week, "chemistry"), "");
 assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "sociology")) && /A-\s*91%/.test(Game.gradePillHtml(week, "sociology")) && /grade-detail/.test(Game.gradePillHtml(week, "sociology")));
