@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-20T21:05:00",
+  "as_of": "2026-08-21T14:15:00",
   "parenting": [
     {
       "who": "Mom",
@@ -863,7 +863,7 @@
       "late": false,
       "submitted_at": "2026-08-17T13:14:00",
       "source": "canvas",
-      "note": "Goodson/Carl. Canvas video: full name twice + something you are awesome at. 5 points. Submitted Aug 17 1:14pm. Still ungraded (/5) as of Thu 9:05pm (unchanged vs 2:35pm Canvas).",
+      "note": "Goodson/Carl. Canvas video: full name twice + something you are awesome at. 5 points. Submitted Aug 17 1:14pm. Still ungraded (/5) as of Fri 2:15pm (unchanged vs Thu 9:05pm Canvas).",
       "canvas": {
         "status": "submitted",
         "points": 5,
@@ -882,11 +882,27 @@
       "id": "eng-comics",
       "title": "English 10: Summer Narrative Comic Strip",
       "due": "2026-08-20T23:59:00",
-      "note": "Goodson/Carl. 10 pts. Not submitted (–/10) as of Thu 9:05pm bedtime (unchanged vs 2:35pm Canvas). Official Canvas due TONIGHT Thursday 11:59pm. Bennett is with Mom (handoff 4:30pm). In class Tuesday; submitting on paper. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence.",
+      "status": "graded",
+      "score": "10/10",
+      "points": 10,
+      "late": false,
+      "submitted_at": null,
+      "graded_at": "2026-08-21T10:38:00",
+      "source": "canvas",
+      "school_status": "graded",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Goodson/Carl. 10 pts. NOW 10/10 graded on live Canvas Fri 2:15pm. No submitted_at on Canvas (graded in class Thursday). Gmail Canvas notification Fri 10:38am. Paper in-class assignment. We completed this on paper during class time. If you were absent, see me for the directions! Illustration (5 pts): Illustrations should be included in every square. They should be detailed and completed in color. No more than 2 boxes should be words-only. Writing (5 pts): On the back, you should turn your comic into a short narrative. This should be a full paragraph (at least 5 sentences) and describe the events illustrated in your comic. Ratings: 5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence.",
       "suggest_from": "2026-08-15",
       "canvas": {
-        "status": "open",
+        "status": "graded",
         "points": 10,
+        "score": 10,
         "due": "2026-08-20T23:59:00",
         "submit": "paper",
         "class_due": "2026-08-18T13:05:00",
@@ -905,20 +921,7 @@
             "ratings": "5 Exceeds / 4 Mastery / 3 Near / 2 Below / 1 No Evidence"
           }
         ]
-      },
-      "school_status": "open",
-      "student_status": null,
-      "submitted_at": null,
-      "discrepancy": false,
-      "followup": {
-        "due_by": null,
-        "email_draft": null,
-        "email_sent": false
-      },
-      "status": "open",
-      "points": 10,
-      "late": false,
-      "source": "canvas"
+      }
     },
     {
       "id": "chem-about-me",
@@ -930,15 +933,19 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. 1 pt. Still blank (–/1), not submitted as of Thu 9:05pm (unchanged vs 2:35pm Canvas). Due Tue 8/18 11:59. Not yet labeled Missing.",
+      "note": "Pfeiff. 1 pt. Still blank (–/1), no Canvas submission as of Fri 2:15pm. Due Tue 8/18 11:59. Not yet labeled Missing. Bennett posted a Google Slides link as a COMMENT Aug 20 4:57pm — school still has no submission.",
       "canvas": {
         "status": "open",
         "points": 1
       },
       "school_status": "open",
-      "student_status": null,
-      "discrepancy": false,
-      "discrepancy_reason": null,
+      "student_status": {
+        "said": "Posted Google Slides link as a comment",
+        "source": "Canvas comment 2026-08-20T16:57",
+        "as_of": "2026-08-20T16:57:00"
+      },
+      "discrepancy": true,
+      "discrepancy_reason": "Bennett posted a Google Slides link as a Canvas comment 8/20 4:57pm; school still has no submission (–/1). Treat comment as him saying it's done. followup.email_sent stays false — do not invent that an email was sent.",
       "followup": {
         "due_by": null,
         "email_draft": null,
@@ -947,25 +954,27 @@
     },
     {
       "id": "chem-aboutme-disc",
-      "title": "Chemistry: About Me Slides (discussion)",
+      "title": "Chemistry: Get to Know You Slides (discussion)",
       "classId": "chemistry",
-      "due": "2026-08-18T23:59:00",
-      "status": "late",
-      "score": "0/1",
+      "due": "2026-08-21T23:59:00",
+      "status": "submitted",
+      "score": null,
       "points": 1,
-      "late": true,
-      "submitted_at": "2026-08-19T15:33:00",
-      "graded_at": "2026-08-19",
+      "late": false,
+      "submitted_at": "2026-08-21T10:58:00",
+      "graded_at": null,
       "source": "canvas",
       "dispute": null,
-      "note": "Pfeiff. Canvas discussion post. Last confirmed: submitted Aug 19 3:33pm, flagged LATE, scored 0/1 (change from Missing). Still not visible to observers as of Thu 9:05pm bedtime (Access Denied on Discussions) — kept last confirmed school_status late 0/1 + submitted_at, not treated as gone. Course assignment group 0% last confirmed. Student (Plaud 8/20 7:30am): told Orin he already emailed Pfeiff. Email send not verified in ParentVUE/Canvas; followup.email_sent stays false. Do not invent that the email was sent.",
+      "note": "Pfeiff. Live Canvas row Fri 2:15pm: Get to Know You Slides (Discussion Submission), due Fri 8/21 11:59, submitted Aug 21 10:58am, score still –/1 ungraded (pending). Looks like the About Me discussion observers could not see. PRIOR observation: late 0/1 submitted Aug 19 3:33pm (then Access Denied on Discussions). Student (Plaud 8/20 7:30am): told Orin he already emailed Pfeiff. Email send not verified; followup.email_sent stays false. Do not invent that the email was sent.",
       "canvas": {
-        "status": "late",
+        "status": "submitted",
         "points": 1,
-        "score": 0,
-        "submitted_at": "2026-08-19T15:33:00"
+        "score": null,
+        "submitted_at": "2026-08-21T10:58:00",
+        "due": "2026-08-21T23:59:00",
+        "type": "discussion"
       },
-      "school_status": "late",
+      "school_status": "submitted",
       "student_status": {
         "said": "Already emailed the teacher about About Me.",
         "source": "Plaud with Orin 2026-08-20 ~7:30am",
@@ -977,7 +986,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "discrepancy_reason": "Bennett says he emailed Pfeiff; last confirmed Canvas late 0/1 submitted 8/19 3:33pm. Observer Access Denied on Discussions as of 9:05pm bedtime — do not drop last confirmed status. Teacher-email send not verified — do not mark follow-up sent."
+      "discrepancy_reason": "Live Canvas: submitted 8/21 10:58am, score still –/1 not yet posted. Prior observer row was late 0/1 submitted 8/19 3:33pm. Bennett told Orin 8/20 he emailed Pfeiff; teacher-email send not verified — do not mark follow-up sent."
     },
     {
       "id": "web-11",
@@ -989,7 +998,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn, P3 9:20. 20 pts. PAST DUE. Still not submitted (Submitted blank, –/20) as of Thu 9:05pm (unchanged vs 2:35pm Canvas). Due Wed Aug 19 9:20 AM. Work is in CodeHS: 1.1.1 Websites in Your Life, 1.1.2 What is Web Design?, 1.1.3 Your Interests, 1.1.4 Meet a Web Developer video.",
+      "note": "Derek Linn, P3 9:20. 20 pts. PAST DUE. Still not submitted (Submitted blank, –/20) as of Fri 2:15pm. Due Wed Aug 19 9:20 AM. Work is in CodeHS: 1.1.1 Websites in Your Life, 1.1.2 What is Web Design?, 1.1.3 Your Interests, 1.1.4 Meet a Web Developer video.",
       "canvas": {
         "status": "late",
         "points": 20
@@ -1013,7 +1022,7 @@
       "late": false,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn, P3 9:20. 40 pts. Still open (–/40) as of Thu 9:05pm (unchanged vs 2:35pm Canvas). Due Mon Aug 24 9:20 AM. Already on Outlook.",
+      "note": "Derek Linn, P3 9:20. 40 pts. Still open (–/40) as of Fri 2:15pm. Due Mon Aug 24 9:20 AM. Already on Outlook.",
       "canvas": {
         "status": "open",
         "points": 40
@@ -1031,7 +1040,7 @@
       "id": "eng-letter",
       "title": "English 10: Letter to the teacher",
       "due": "2026-08-20T13:50:00",
-      "note": "Goodson/Carl. In class Wed–Thu 8/19–8/20: personalize writing notebooks + letter to teacher by end of hour. Thu 8/20 was the last in-class day for that (class ended ~1:50pm). Completion not confirmed on Canvas. Fri 8/21 unit is now AAB (was Narrative Writing on the morning sheet); class work still check out books + read AAB ch.1. Homework cell blank.",
+      "note": "Goodson/Carl. In class Wed–Thu 8/19–8/20: personalize writing notebooks + letter to teacher by end of hour. Thu 8/20 was the last in-class day for that (class ended ~1:50pm). Completion not confirmed on Canvas. Fri 8/21 unit is AAB: checkout + ch.1 in class. Homework cell blank.",
       "suggest_from": "2026-08-18",
       "school_status": null,
       "student_status": null,
@@ -1047,7 +1056,7 @@
       "id": "eng-notebook",
       "title": "English 10: Bring spiral notebook",
       "due": "2026-08-21T13:05:00",
-      "note": "Goodson/Carl. Still open. Bring spiral or composition notebook to class Fri Aug 21. Also highlighter and 100 index cards.",
+      "note": "Goodson/Carl. Still open. Due in class today Fri Aug 21 (bring spiral or composition notebook). Also highlighter and 100 index cards. Bring-to-class not confirmed on Canvas as of Fri 2:15pm.",
       "suggest_from": "2026-08-15",
       "school_status": "open",
       "student_status": null,
@@ -1071,12 +1080,40 @@
       "late": false,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. 1 pt. Still open (–/1) as of Thu 9:05pm (unchanged vs 2:35pm Canvas). Due Fri 8/21 11:59 PM. Modules Unit 1 Alchemy. On Outlook.",
+      "note": "Pfeiff. 1 pt. Still open (–/1) not submitted as of Fri 2:15pm. Due TONIGHT Fri 8/21 11:59 PM. Modules Unit 1 Alchemy. On Outlook.",
       "canvas": {
         "status": "open",
         "points": 1
       },
       "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      }
+    },
+    {
+      "id": "chem-safety",
+      "title": "Chemistry: High School Science Student Safety Exam (Quiz)",
+      "classId": "chemistry",
+      "status": "graded",
+      "score": "34/34",
+      "points": 34,
+      "late": false,
+      "submitted_at": "2026-08-21T11:15:00",
+      "graded_at": "2026-08-21T11:15:00",
+      "source": "canvas",
+      "note": "Pfeiff. Quiz. 34/34 submitted and graded Aug 21 11:15am. This is why the Chem course total is 100% (34/34). Gmail Canvas notification Fri 11:15am. Live Canvas Fri 2:15pm.",
+      "canvas": {
+        "status": "submitted",
+        "points": 34,
+        "score": 34,
+        "submitted_at": "2026-08-21T11:15:00",
+        "type": "quiz"
+      },
+      "school_status": "submitted",
       "student_status": null,
       "discrepancy": false,
       "followup": {
@@ -1146,6 +1183,21 @@
       "date": "2026-08-20",
       "title": "Band pass-off dates (Fillingham correction)",
       "text": "Rebecca Fillingham 3:07pm CT (Gmail; typically also ParentVUE): pass-off date CORRECTION — Aug 28 Opener mm 1-97; Sep 4 Ballad mm 98-134 + Chorale Be Thou My Vision; Sep 18 Closer 139-end. Also Finalsite marching chat join link for last-minute weather/changes. rlfillingham@olatheschools.org. Chat app noted; do not invent that anyone joined."
+    },
+    {
+      "date": "2026-08-21",
+      "title": "After-school check (~2:15pm)",
+      "text": "Live Canvas pull. Comic NOW 10/10 graded (no submitted_at on Canvas; graded in class Thu; Gmail Canvas notification 10:38am). NEW: Chem High School Science Student Safety Exam (Quiz) 34/34 submitted/graded Aug 21 11:15am (Pfeiff) — this is the Chem course total 100% (34/34). NEW visible Chem row: Get to Know You Slides (discussion), due Fri 8/21 11:59, submitted Aug 21 10:58am (Discussion Submission), score still –/1 ungraded; looks like the About Me discussion observers couldn't see (was late 0/1 submitted 8/19 3:33pm). Chem About Me Slides ASSIGNMENT still –/1 no submission; Bennett posted a Google Slides link as a comment Aug 20 4:57pm (discrepancy). Chem penny still open –/1 due TONIGHT 11:59 (Outlook). Web 1.1 still late blank –/20 due Wed 8/19 9:20 (CodeHS). Web 1.2 still open –/40 due Mon 8/24 9:20 (Outlook). English name video still submitted 8/17 1:14pm, ungraded /5. Spiral notebook due in class today. English agenda: 8/21 AAB checkout + ch.1 in class; 8/25 10.1 Case Launch; 8/26–8/27 Pg 5-40 due + picture day; 8/28 DWT on-demand in class. Gmail: Canvas notifications comic graded 10:38am and safety exam graded 11:15am; no new teacher mail since Keach/Fillingham Thu afternoon. Published Canvas still 4: Band, English 10, Web Design I, Chemistry. oeband.com unchanged. ParentVUE grades/attendance/mail not confirmed this pull (pending; not invented). Today: Mom until 4:30, then Dad."
+    },
+    {
+      "date": "2026-08-21",
+      "title": "English agenda",
+      "text": "8/21 AAB checkout + ch.1 in class. 8/25 10.1 Case Launch. 8/26–8/27 Pg 5-40 due + picture day. 8/28 DWT on-demand in class. Later AAB page dues (sheet dates only — no clock times invented): 8/31 Pg. 41-82 due; 9/4 Pg. 83-120 due; 9/9–9/10 Pg. 121-163 due; 9/14 Pg. 164-203 due; 9/16–9/17 Pg. 204-246 due; 9/21 Pg. 247-282 due; 9/23–9/24 Pg. 283-313 due."
+    },
+    {
+      "date": "2026-08-28",
+      "title": "DWT on-demand",
+      "text": "English 10: DWT on-demand in class."
     }
   ]
 }
