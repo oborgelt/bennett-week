@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=148/.test(basecampHtml) && /basecamp\.js\?v=148/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=149/.test(basecampHtml) && /basecamp\.js\?v=149/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -731,7 +731,7 @@ assert.strictEqual(weekById["eng-letter"].due, "2026-08-20T13:50:00");
 assert.strictEqual(weekById["eng-letter"].suggest_from, "2026-08-18");
 assert.strictEqual((week.work || []).filter((w) => /English 10/.test(w.title || "")).length, 4, "English still names+comics+letter+notebook");
 assert(!(week.work || []).some((w) => /English 10/.test(w.title || "") && w.classId), "English work stays title-inferred — no invented classId");
-assert.strictEqual(week.as_of, "2026-08-20T14:35:00");
+assert.strictEqual(week.as_of, "2026-08-20T21:05:00");
 const notesByKey = Object.fromEntries((week.notes || []).map((n) => [n.date + "\t" + n.title, n]));
 const notesByTitle = Object.fromEntries((week.notes || []).map((n) => [n.title, n]));
 const afterSchool819 = notesByKey["2026-08-19\tAfter-school check (~2:40pm)"];
@@ -806,7 +806,7 @@ assert.strictEqual(weekById["chem-aboutme-disc"].student_status.said, "Already e
 assert.strictEqual(weekById["chem-aboutme-disc"].student_status.source, "Plaud with Orin 2026-08-20 ~7:30am");
 assert.strictEqual(weekById["chem-aboutme-disc"].student_status.as_of, "2026-08-20T07:30:00");
 assert.strictEqual(weekById["chem-aboutme-disc"].discrepancy, true);
-assert.strictEqual(weekById["chem-aboutme-disc"].discrepancy_reason, "Bennett says he emailed Pfeiff; last confirmed Canvas late 0/1 submitted 8/19 3:33pm. Observer Access Denied on Discussions this afternoon — do not drop last confirmed status. Teacher-email send not verified — do not mark follow-up sent.");
+assert.strictEqual(weekById["chem-aboutme-disc"].discrepancy_reason, "Bennett says he emailed Pfeiff; last confirmed Canvas late 0/1 submitted 8/19 3:33pm. Observer Access Denied on Discussions as of 9:05pm bedtime — do not drop last confirmed status. Teacher-email send not verified — do not mark follow-up sent.");
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.due_by, "2026-08-21T14:40:00");
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_draft, null);
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_sent, false);
@@ -833,8 +833,8 @@ assert.strictEqual(weekById["web-11"].late, true);
 assert.strictEqual(weekById["web-11"].due, "2026-08-19T09:20:00");
 assert(/CodeHS:? 1\.1\.1/.test(weekById["web-11"].note || ""), "web 1.1 note may mention CodeHS 1.1.1–1.1.4");
 assert(/already on Outlook/i.test(weekById["web-12"].note || ""), "web 1.2 is already on Outlook");
-assert(/ungraded \(\/5\) as of Thu 2:35pm/.test(weekById["eng-names"].note || ""), "name video still ungraded as of Thu 2:35pm");
-assert(/Not submitted \(.\s*\/10\) as of Thu 2:35pm/.test(weekById["eng-comics"].note || "") && /TONIGHT Thursday 11:59pm/.test(weekById["eng-comics"].note || ""), "comic note is due tonight after Mom handoff");
+assert(/ungraded \(\/5\) as of Thu 9:05pm/.test(weekById["eng-names"].note || ""), "name video still ungraded as of Thu 9:05pm");
+assert(/Not submitted \(.\s*\/10\) as of Thu 9:05pm bedtime/.test(weekById["eng-comics"].note || "") && /TONIGHT Thursday 11:59pm/.test(weekById["eng-comics"].note || ""), "comic note is due tonight after Mom handoff");
 const proofNow = new Date("2026-08-20T07:10:00-05:00");
 const discSt = Game.workFeedStatus(weekById["chem-aboutme-disc"], proofNow);
 assert.strictEqual(discSt.missing, false, "chem discussion is no longer Missing");
@@ -912,7 +912,7 @@ const noteOnlyOpen = Game.workFeedStatus({ id: "y", title: "Y", due: "2026-08-20
 assert.strictEqual(noteOnlyOpen.missing, false, "do not invent Missing from Not submitted");
 assert.strictEqual(noteOnlyOpen.notDone, true);
 assert.strictEqual(noteOnlyOpen.dueToday, true);
-assert.strictEqual((week.events || []).length, 77, "merge kept live events[] and added picture-0827");
+assert.strictEqual((week.events || []).length, 80, "merge kept live events[] and appended three Fillingham pass-offs");
 assert((week.events || []).some((e) => e.id === "picture-0827"), "picture-0827 is on the calendar");
 assert.strictEqual((week.events || []).find((e) => e.id === "picture-0827").start, "2026-08-27");
 assert.strictEqual((week.events || []).find((e) => e.id === "picture-0827").title, "Picture day (day 2)");
@@ -1511,7 +1511,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=148/.test(weekHtml) && /week\.js\?v=148/.test(weekHtml) && /game\.js\?v=148/.test(weekHtml) && /telemetry\.js\?v=148/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=149/.test(weekHtml) && /week\.js\?v=149/.test(weekHtml) && /game\.js\?v=149/.test(weekHtml) && /telemetry\.js\?v=149/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1559,8 +1559,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=147\b/.test(html), file + " should not still cache-bust as v=147");
-  assert(/\?v=148/.test(html), file + " should cache-bust v=148");
+  assert(!/\?v=148\b/.test(html), file + " should not still cache-bust as v=148");
+  assert(/\?v=149/.test(html), file + " should cache-bust v=149");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
   assert(/week-chip/.test(hud) && /trophy-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1615,7 +1615,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=148/.test(progressHtml) && /theme\.css\?v=148/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=149/.test(progressHtml) && /theme\.css\?v=149/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1654,7 +1654,7 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*146/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 146");
+assert(/build:\s*147/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 147");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
