@@ -961,40 +961,52 @@
   function applyProgressOverlay(seed, family) {
     const base = seed && typeof seed === "object" ? seed : {};
     const overlay = normalizeFamily(family).overlay.progress;
+    const parked = [];
+    function paintItems(clsId, items) {
+      return (items || [])
+        .filter((item) => item && item.id && overlay.deletedItems.indexOf(item.id) < 0)
+        .map((item) => {
+          const ip = overlay.itemEdits[item.id];
+          return ip ? Object.assign({}, item, ip, { id: item.id }) : item;
+        })
+        .filter((item) => {
+          const dest = String(item.classId || clsId);
+          if (dest && dest !== clsId) {
+            parked.push(item);
+            return false;
+          }
+          return true;
+        });
+    }
     const classes = (base.classes || [])
       .filter((cls) => cls && cls.id && overlay.deletedClasses.indexOf(cls.id) < 0)
       .map((cls) => {
         const patch = overlay.classEdits[cls.id] || {};
-        const items = (cls.items || [])
-          .filter((item) => item && item.id && overlay.deletedItems.indexOf(item.id) < 0)
-          .map((item) => {
-            const ip = overlay.itemEdits[item.id];
-            return ip ? Object.assign({}, item, ip, { id: item.id }) : item;
-          });
-        return Object.assign({}, cls, patch, { id: cls.id, items });
+        return Object.assign({}, cls, patch, { id: cls.id, items: paintItems(cls.id, cls.items) });
       });
     const seen = new Set(classes.map((cls) => cls.id));
     (overlay.addedClasses || []).forEach((row) => {
       const added = normalizeAddedClass(row);
       if (!added || seen.has(added.id) || overlay.deletedClasses.indexOf(added.id) >= 0) return;
       const patch = overlay.classEdits[added.id] || {};
-      const items = (added.items || [])
-        .filter((item) => item && item.id && overlay.deletedItems.indexOf(item.id) < 0)
-        .map((item) => {
-          const ip = overlay.itemEdits[item.id];
-          return ip ? Object.assign({}, item, ip, { id: item.id }) : item;
-        });
-      classes.push(Object.assign({}, added, patch, { id: added.id, items }));
+      classes.push(Object.assign({}, added, patch, { id: added.id, items: paintItems(added.id, added.items) }));
       seen.add(added.id);
     });
     const byClass = new Map(classes.map((cls) => [cls.id, cls]));
     (overlay.addedItems || []).forEach((row) => {
       if (!row || !row.id || overlay.deletedItems.indexOf(row.id) >= 0) return;
-      const cls = byClass.get(row.classId);
-      if (!cls) return;
-      if (cls.items.some((item) => item.id === row.id)) return;
       const ip = overlay.itemEdits[row.id];
-      cls.items.push(ip ? Object.assign({}, row, ip, { id: row.id }) : Object.assign({}, row));
+      const item = ip ? Object.assign({}, row, ip, { id: row.id }) : Object.assign({}, row);
+      const destId = String(item.classId || row.classId || "");
+      const cls = byClass.get(destId);
+      if (!cls) return;
+      if (cls.items.some((cur) => cur.id === row.id)) return;
+      cls.items.push(item);
+    });
+    parked.forEach((item) => {
+      const cls = byClass.get(String(item.classId || ""));
+      if (!cls || cls.items.some((cur) => cur.id === item.id)) return;
+      cls.items.push(item);
     });
     return Object.assign({}, base, { classes });
   }
@@ -1138,7 +1150,12 @@
       note: src.note ? String(src.note).trim() : undefined
     };
     if (classId) patch.classId = classId;
-    let next = editWeekOverlay(family, "work", workId, patch);
+    let next = normalizeFamily(family);
+    const inAdded = (next.overlay.week.added.work || []).some((w) => w && w.id === workId);
+    if (!inAdded) {
+      next = addWeekItem(next, "work", Object.assign({ id: workId }, patch));
+    }
+    next = editWeekOverlay(next, "work", workId, patch);
     next = editProgressItem(next, workId, {
       title: wTitleStrip(title) || title,
       due: src.due,
@@ -1155,8 +1172,11 @@
 
   function editProgressClass(family, id, patch) {
     const next = normalizeFamily(family);
-    next.overlay.progress.classEdits[id] = Object.assign({}, next.overlay.progress.classEdits[id] || {}, patch, { id });
+    const at = (patch && patch.updatedAt) || nowIso();
+    next.overlay.progress.classEdits[id] = Object.assign({}, next.overlay.progress.classEdits[id] || {}, patch, { id, updatedAt: at });
+    stampOverlay(next, at);
     saveFamily(next);
+    if (!overlaySyncing) queueOverlayPush(next);
     return next;
   }
 
@@ -1198,8 +1218,9 @@
 
   function editProgressItem(family, id, patch) {
     const next = normalizeFamily(family);
-    next.overlay.progress.itemEdits[id] = Object.assign({}, next.overlay.progress.itemEdits[id] || {}, patch, { id });
-    stampOverlay(next);
+    const at = (patch && patch.updatedAt) || nowIso();
+    next.overlay.progress.itemEdits[id] = Object.assign({}, next.overlay.progress.itemEdits[id] || {}, patch, { id, updatedAt: at });
+    stampOverlay(next, at);
     saveFamily(next);
     if (!overlaySyncing) queueOverlayPush(next);
     return next;
@@ -1333,7 +1354,11 @@
     const kid = siteViewHidesAdult();
     const kidEdit = opts && opts.kidEdit;
     if (kid && !kidEdit) return "";
-    const edit = `<button type="button" class="tiny" data-edit="${esc(editToken)}">Edit</button>`;
+    const raw = String(editToken || "");
+    const workId = raw.indexOf("work:") === 0 ? raw.slice(5) : raw;
+    const edit = kidEdit
+      ? `<button type="button" class="mini" data-edit-work="${esc(workId)}">Edit</button>`
+      : `<button type="button" class="tiny" data-edit="${esc(editToken)}">Edit</button>`;
     const del = kid ? "" : `<button type="button" class="tiny danger" data-del="${esc(delToken)}">Delete</button>`;
     return `
       ${edit}
@@ -1350,9 +1375,10 @@
 
   function toLocalInput(iso) {
     if (!iso) return "";
-    const s = String(iso);
-    if (s.length === 10) return s;
-    return s.slice(0, 16);
+    const s = String(iso).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s + "T23:59";
+    if (s.length >= 16) return s.slice(0, 16);
+    return s;
   }
 
   function fromLocalInput(value, asDate) {
@@ -7449,7 +7475,7 @@
     Object.keys(remoteMap || {}).forEach((id) => {
       const remote = remoteMap[id];
       const local = out[id];
-      if (!local || String((remote && remote.updatedAt) || "") >= String((local && local.updatedAt) || "")) {
+      if (!local || String((remote && remote.updatedAt) || "") > String((local && local.updatedAt) || "")) {
         out[id] = remote;
       }
     });

@@ -418,9 +418,7 @@ html[data-site-view="bennett"] .crew-page .parent-actions,
 html[data-site-view="mom"] .crew-page .parent-actions,
 body.site-view-kid [data-edit],
 body.site-view-kid [data-del],
-body.site-view-kid [data-undo-trophy],
-body.site-view-kid [data-add-item],
-body.site-view-kid .class-card-tools {
+body.site-view-kid [data-undo-trophy] {
   display: none !important;
 }
 

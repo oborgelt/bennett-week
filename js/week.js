@@ -1605,15 +1605,11 @@
           Game.toast("Add a title first.");
           return;
         }
-        const due = Game.fromLocalInput(fieldValue("due"));
-        if (!due) {
-          Game.toast("Pick a due date.");
-          return;
-        }
+        const due = Game.fromLocalInput(fieldValue("due")) || w.due || "";
         family = Game.updateAssignment(family, seed || baseSeed, id, {
           title,
           classId: fieldValue("classId"),
-          due,
+          due: due || undefined,
           suggest_from: Game.fromLocalInput(fieldValue("suggest"), true) || undefined,
           note: fieldValue("note")
         });

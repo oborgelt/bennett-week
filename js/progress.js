@@ -76,7 +76,7 @@
       const idx = cls.items.findIndex((item) => item.id === w.id);
       if (idx >= 0) {
         cls.items[idx] = Object.assign({}, cls.items[idx], extra, {
-          title: cls.items[idx].title || stripClassPrefix(w.title)
+          title: stripClassPrefix(w.title) || cls.items[idx].title
         });
         return;
       }
@@ -367,7 +367,8 @@
         const status = itemStatus(item);
         const feed = feedOf(item);
         const feedSt = Game.workFeedStatus(feed);
-        const local = status.label ? `<div class="meta">${Game.esc(kindLabel(item.kind))}${status.label ? " · " + Game.esc(status.label) : ""}</div>` : `<div class="meta">${Game.esc(kindLabel(item.kind))}${feed.due ? " · due " + Game.esc(Game.fmtStamp(feed.due)) : ""}</div>`;
+        const dueStamp = feed.due || item.due;
+        const local = status.label ? `<div class="meta">${Game.esc(kindLabel(item.kind))}${status.label ? " · " + Game.esc(status.label) : ""}</div>` : `<div class="meta">${Game.esc(kindLabel(item.kind))}${dueStamp ? " · due " + Game.esc(Game.fmtStamp(dueStamp)) : ""}</div>`;
         return `
           <li class="class-item${feedSt.needsYou ? " needs" : ""}${feedSt.discrepancy ? " discrepancy" : ""}${status.kind === "done" ? " done" : (status.kind === "started" ? " started" : "")}" id="work-${Game.esc(item.id)}">
             <div class="class-item-top">
@@ -381,7 +382,7 @@
             <div class="entry-tools">
               ${item.kind === "event" ? "" : `<button type="button" class="tiny" data-dispute-item="${Game.esc(item.id)}">This looks wrong</button>`}
               <button type="button" class="tiny" data-note-item="${Game.esc(item.id)}">Note</button>
-              ${item.kind === "event" ? "" : `<button type="button" class="tiny" data-edit-work="${Game.esc(item.id)}">Edit</button>`}
+              <button type="button" class="mini" data-edit-work="${Game.esc(item.id)}">Edit</button>
               ${Game.progressCanMutate() ? Game.entryButtons("pitem:" + item.id, "pitem:" + item.id) : ""}
             </div>
           </li>`;
@@ -493,24 +494,68 @@
     });
   }
 
+  function eventFromId(id) {
+    return (week.events || []).find((e) => e && e.id === id) || null;
+  }
+
+  function openEventEdit(id, ev, found) {
+    const src = ev || (found && found.item) || {};
+    openSheet("Edit event", editForm([
+      { name: "title", label: "Title", value: stripClassPrefix(src.title || "") },
+      { name: "start", label: "Start", value: Game.toLocalInput(src.start || src.due), type: "datetime-local" },
+      { name: "end", label: "End", value: Game.toLocalInput(src.end), type: "datetime-local" },
+      { name: "place", label: "Place", value: src.place || "" },
+      { name: "note", label: "Note (optional)", value: src.note || "", type: "textarea" }
+    ]));
+    document.getElementById("edit-save").addEventListener("click", () => {
+      const nextTitle = fieldValue("title");
+      if (!nextTitle) {
+        Game.toast("Add a title first.");
+        return;
+      }
+      const start = Game.fromLocalInput(fieldValue("start"));
+      family = Game.editWeekOverlay(family, "events", id, {
+        title: nextTitle,
+        start: start || undefined,
+        end: Game.fromLocalInput(fieldValue("end")) || undefined,
+        place: fieldValue("place"),
+        note: fieldValue("note")
+      });
+      family = Game.editProgressItem(family, id, {
+        title: nextTitle,
+        note: fieldValue("note") || undefined
+      });
+      closeSheet();
+      Game.familySavedToast("Saved");
+      syncViews();
+      render();
+    });
+  }
+
   function openWorkEdit(id) {
     const key = String(id || "").trim();
     const w = workFromId(key);
     const found = findClassItem(key);
-    if (!w && !found) {
+    const ev = eventFromId(key);
+    if (!w && !found && !ev) {
       Game.toast("That assignment is not on the board yet.");
       return;
     }
-    const src = w || (found && found.item) || {};
+    const item = found && found.item;
+    if ((item && item.kind === "event") || (!w && ev)) {
+      openEventEdit(key, ev, found);
+      return;
+    }
+    const src = w || item || {};
     const title = stripClassPrefix(src.title || "");
-    const due = src.due || "";
+    const due = src.due || (item && item.due) || "";
     const note = src.note || "";
     const classId = Game.classIdForWork(src) || (found && found.cls && found.cls.id) || "";
     openSheet("Edit assignment", `
       ${classSelectHtml(classId)}
       ${editForm([
         { name: "title", label: "Title", value: title },
-        { name: "due", label: "Due", value: Game.toLocalInput(due), type: "datetime-local" },
+        { name: "due", label: "Due (optional)", value: Game.toLocalInput(due), type: "datetime-local" },
         { name: "note", label: "Note (optional)", value: note, type: "textarea" }
       ])}
     `);
@@ -520,15 +565,11 @@
         Game.toast("Add a title first.");
         return;
       }
-      const nextDue = Game.fromLocalInput(fieldValue("due"));
-      if (!nextDue) {
-        Game.toast("Pick a due date.");
-        return;
-      }
+      const nextDue = Game.fromLocalInput(fieldValue("due")) || due || "";
       family = Game.updateAssignment(family, seed || baseSeed, key, {
         title: nextTitle,
         classId: fieldValue("classId"),
-        due: nextDue,
+        due: nextDue || undefined,
         note: fieldValue("note")
       });
       closeSheet();
@@ -958,7 +999,8 @@
     });
     render();
     try {
-      const synced = await Game.syncFamilyBoard(family);
+      const latest = Game.getFamilyDraft() || family;
+      const synced = await Game.syncFamilyBoard(latest);
       family = synced.family;
       syncViews();
       render();

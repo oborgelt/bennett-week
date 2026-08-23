@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=151/.test(basecampHtml) && /basecamp\.js\?v=151/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=152/.test(basecampHtml) && /basecamp\.js\?v=152/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1558,7 +1558,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=151/.test(weekHtml) && /week\.js\?v=151/.test(weekHtml) && /game\.js\?v=151/.test(weekHtml) && /telemetry\.js\?v=151/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=152/.test(weekHtml) && /week\.js\?v=152/.test(weekHtml) && /game\.js\?v=152/.test(weekHtml) && /telemetry\.js\?v=152/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1606,8 +1606,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=150\b/.test(html), file + " should not still cache-bust as v=150");
-  assert(/\?v=151/.test(html), file + " should cache-bust v=151");
+  assert(!/\?v=151\b/.test(html), file + " should not still cache-bust as v=151");
+  assert(/\?v=152/.test(html), file + " should cache-bust v=152");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
   assert(/week-chip/.test(hud) && /trophy-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1662,7 +1662,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=151/.test(progressHtml) && /theme\.css\?v=151/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=152/.test(progressHtml) && /theme\.css\?v=152/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1701,8 +1701,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*149/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 149");
-assert(/2026-08-21T15:10:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-21T15:10:00-05:00");
+assert(/build:\s*150/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 150");
+assert(/2026-08-23T14:20:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-23T14:20:00-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1973,6 +1973,8 @@ assert(/syncFamilyLive/.test(weekJs) && /syncFamilyBoard/.test(fs.readFileSync(p
 assert(/visibilitychange/.test(weekJs) && /25000/.test(weekJs), "This Week pulls on focus, visibility, and every 20-30s");
 assert(/data-add-work/.test(weekJs) && !/const addRow = Game\.siteViewHidesAdult\(\) \? ""/.test(weekJs), "Bennett kid view can add assignments");
 assert(!/body\.site-view-kid \.add-work-row/.test(themeCss), "kid CSS does not hide Add assignment");
+assert(!/body\.site-view-kid \[data-add-item\]/.test(themeCss) && !/body\.site-view-kid \.class-card-tools/.test(themeCss), "kid CSS does not hide Progress Add assignment");
+assert(/body\.site-view-kid \[data-edit\]/.test(themeCss) && /body\.site-view-kid \[data-del\]/.test(themeCss), "kid CSS still hides parent catalog Edit/Delete");
 assert(/familySavedToast/.test(weekJs) && /Mom and Dad will see this/.test(gameSrc), "connected toasts tell Mom and Dad they will see this");
 assert(/Couldn't sync\. Try again/.test(weekJs), "Done path toasts when family-sync errors");
 assert(/beforeProgress/.test(weekJs) && /afterProgress/.test(weekJs), "pullFamilyLive refreshes cards when progress changed");
@@ -2152,13 +2154,46 @@ const packedAch = Telemetry.overlayToRow({
 assert.strictEqual(packedAch.week._jjAchievements.achievements[0].id, "test-riff-reps", "overlay row embeds achievements");
 assert.strictEqual(Telemetry.rowToOverlay(packedAch).awards.characterUnlocks.riff, "t", "overlay row round-trips awards");
 Game.setSiteView("bennett");
-assert(/Edit/.test(Game.entryButtons("work:chem-aboutme-disc", "work:chem-aboutme-disc", { kidEdit: true })), "Bennett can edit an assignment");
-assert(!/Delete/.test(Game.entryButtons("work:chem-aboutme-disc", "work:chem-aboutme-disc", { kidEdit: true })), "Bennett cannot delete from the kid Edit control");
+const kidWorkEdit = Game.entryButtons("work:chem-aboutme-disc", "work:chem-aboutme-disc", { kidEdit: true });
+assert(/data-edit-work="chem-aboutme-disc"/.test(kidWorkEdit), "Bennett Edit uses data-edit-work so kid CSS cannot hide it");
+assert(!/\sdata-edit="/.test(kidWorkEdit), "Bennett assignment Edit is not the parent data-edit control");
+assert(/Edit/.test(kidWorkEdit), "Bennett can edit an assignment");
+assert(!/Delete/.test(kidWorkEdit), "Bennett cannot delete from the kid Edit control");
 assert.strictEqual(Game.entryButtons("event:x", "event:x"), "", "kid view still hides calendar edit");
 assert(/data-edit-work/.test(progressJs) && /openWorkEdit/.test(progressJs), "Progress lets Bennett edit due date");
+assert(/openEventEdit/.test(progressJs), "Progress lets Bennett edit calendar items under a class");
 assert(/closest\("\[data-edit-work\]"\)/.test(progressJs) && /closest\("\[data-edit-work\]"\)/.test(weekJs), "Edit click is delegated so it still works after a redraw");
 assert(!/<button[^>]*class="needs-you-row"/.test(gameSrc), "Needs you row is not a button covering Edit");
 assert(/kidEdit:\s*kind === "work"/.test(weekJs), "This Week shows Edit on assignments in kid view");
+assert.strictEqual(Game.toLocalInput("2026-08-21"), "2026-08-21T23:59", "date-only due fills datetime-local");
+assert.strictEqual(Game.toLocalInput("2026-08-21T13:05:00"), "2026-08-21T13:05", "datetime due keeps hours for the picker");
+localStorage.removeItem("bw-family");
+const progressSeed = {
+  classes: [
+    { id: "chemistry", name: "Chemistry", items: [{ id: "chem-lab", title: "Lab writeup", kind: "assignment" }] },
+    { id: "english-10", name: "English 10", items: [] }
+  ]
+};
+const editedWork = Game.updateAssignment(Game.emptyFamily(), progressSeed, "chem-lab", {
+  title: "Lab rewrite",
+  classId: "chemistry",
+  due: "2026-08-25T23:59:00"
+});
+assert.strictEqual(editedWork.overlay.progress.itemEdits["chem-lab"].title, "Lab rewrite", "Progress overlay stores the new title");
+assert(editedWork.overlay.progress.itemEdits["chem-lab"].updatedAt, "item edits stamp updatedAt so a pull cannot clobber a save");
+assert.strictEqual(editedWork.overlay.week.edits.work["chem-lab"].due, "2026-08-25T23:59:00", "week overlay stores the new due");
+const paintedWork = Game.applyProgressOverlay(progressSeed, editedWork);
+assert.strictEqual(paintedWork.classes.find((cls) => cls.id === "chemistry").items[0].title, "Lab rewrite", "Progress paints the saved title");
+assert.strictEqual(paintedWork.classes.find((cls) => cls.id === "chemistry").items[0].due, "2026-08-25T23:59:00", "Progress paints the saved due");
+const movedWork = Game.updateAssignment(editedWork, progressSeed, "chem-lab", {
+  title: "Lab rewrite",
+  classId: "english-10",
+  due: "2026-08-25T23:59:00"
+});
+const movedPaint = Game.applyProgressOverlay(progressSeed, movedWork);
+assert(!movedPaint.classes.find((cls) => cls.id === "chemistry").items.some((item) => item.id === "chem-lab"), "moved assignment leaves the old class");
+assert(movedPaint.classes.find((cls) => cls.id === "english-10").items.some((item) => item.id === "chem-lab"), "moved assignment lands in the new class");
+localStorage.removeItem("bw-family");
 const checkFam = Game.addReflectionAnswer(Game.emptyFamily(), { prompt: "Which class felt easiest?", text: "Chem lab" });
 assert.strictEqual(checkFam.reflections.answers[0].text, "Chem lab", "check-in answer is stored");
 const packedCheck = Telemetry.overlayToRow(checkFam.overlay, "fam");
