@@ -268,6 +268,48 @@
     };
   }
 
+  function earnRulePlain(ach) {
+    const rule = (ach && ach.unlock) || {};
+    if (rule.type === "done_count") {
+      const n = Number(rule.count) || 3;
+      return "Marks " + n + " assignment" + (n === 1 ? "" : "s") + " Done";
+    }
+    if (rule.type === "open_touched") {
+      return "Taps Done or I started this on every open assignment";
+    }
+    if (rule.type === "class_tour") {
+      const h = Number(rule.hours) || 24;
+      return "Opens every class within " + h + " hours";
+    }
+    if (rule.type === "login_days") {
+      const n = Number(rule.count) || 5;
+      return "Logs in " + n + " days in a row";
+    }
+    if (rule.type === "login_total") {
+      const n = Number(rule.count) || 5;
+      return "Logs in " + n + " days total";
+    }
+    if (rule.type === "easter_egg") return "Finds a secret in the jungle";
+    const intent = String((ach && (ach.intent || ach.how)) || "").trim();
+    if (intent && !/^parents award/i.test(intent) && !/^award this/i.test(intent) && !/^loading the site/i.test(intent)) {
+      return intent.replace(/\.$/, "");
+    }
+    return "You tap Award";
+  }
+
+  function awardLiveStatus(ach, family) {
+    const id = ach && ach.id;
+    const st = (family && family.streaks && id && family.streaks[id]) || {};
+    if (st.awarded && st.preview) return { key: "preview", label: "Preview only" };
+    if (st.awarded || (id && alreadyUnlocked(id) && !achievementIsPreviewOnly(id))) {
+      return { key: "earned", label: "Earned" };
+    }
+    if (ach && ach.unlock && ach.unlock.type && ach.unlock.type !== "parent_award") {
+      return { key: "live", label: "Live for Bennett" };
+    }
+    return { key: "parent", label: "You award it" };
+  }
+
   function uid(prefix) {
     return (prefix || "id") + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
   }
@@ -8538,6 +8580,8 @@
     badgeSrc,
     badgeChoices,
     parseAwardIntent,
+    earnRulePlain,
+    awardLiveStatus,
     consecutiveLoginStreak,
     shiftChicagoYmd,
     getLoginDays,

@@ -5241,6 +5241,129 @@ audio.lib-play {
   margin: 0;
 }
 
+.quest-step {
+  margin: 12px 0 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--banana);
+}
+
+.earn-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+.earn-pick {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.earn-pick.on {
+  border-color: var(--banana);
+  color: var(--banana);
+  background: rgba(244, 211, 94, 0.12);
+}
+
+.quest-group {
+  margin: 0 0 18px;
+}
+
+.quest-group > h3 {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--banana);
+}
+
+.quest-card {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 4px 14px;
+  align-items: start;
+}
+
+.quest-art {
+  grid-column: 1;
+  grid-row: 1 / span 5;
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.quest-gets {
+  grid-column: 2;
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--banana);
+}
+
+.quest-card h3 {
+  grid-column: 2;
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+
+.quest-does {
+  grid-column: 2;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.quest-does span {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.quest-status {
+  grid-column: 2;
+  display: inline-block;
+  width: fit-content;
+  margin: 2px 0 0;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.quest-status.is-live { background: rgba(90, 200, 140, 0.18); color: #8ee0b0; }
+.quest-status.is-parent { background: rgba(244, 211, 94, 0.16); color: var(--banana); }
+.quest-status.is-earned { background: rgba(255, 255, 255, 0.08); color: var(--muted); }
+.quest-status.is-preview { background: rgba(244, 162, 97, 0.2); color: var(--orange); }
+
+.quest-actions {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+}
+
+.preview-all-wrap {
+  margin: 0 0 14px;
+}
+
 body.story-page,
 body.ask-page,
 body.admin-page {

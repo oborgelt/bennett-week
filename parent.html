@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071618">
   <title>Parent desk · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=153">
+  <link rel="stylesheet" href="css/theme.css?v=154">
 </head>
 <body class="parent-page">
   <header class="week-head">
@@ -60,10 +60,10 @@
     </div>
     <div data-parent-panel="awards">
     <div class="parent-actions">
-      <button type="button" class="btn primary" id="add">Add streak</button>
+      <button type="button" class="btn primary" id="add">Schedule reward</button>
       <button type="button" class="btn" id="download-ach">Download achievements.json</button>
     </div>
-    <p class="parent-lead">Type what Bennett has to do. Pick a badge. Hit Test. The pop-up and sound play here, then the trophy lands in the Trophy room on this device. Save for Bennett when it looks right.</p>
+    <p class="parent-lead">He gets a teammate, tool, or trophy. He earns it by a rule you pick. Save for Bennett. Under two minutes.</p>
     </div>
     <div data-parent-panel="pack">
     <div class="parent-actions">
@@ -257,43 +257,12 @@
 
     <div data-parent-panel="awards">
     <section id="editor" hidden>
-      <h2 id="editor-title" style="margin:18px 0 10px;font-size:1.05rem">New streak</h2>
+      <h2 id="editor-title" style="margin:18px 0 10px;font-size:1.05rem">Schedule a reward</h2>
+      <p class="parent-lead">Pick what he gets. Pick how he earns it. Save for Bennett.</p>
       <div class="form-grid">
-        <label>What Bennett has to do
-          <textarea id="award-do" maxlength="200" placeholder="Logs in to the site 5 days in a row"></textarea>
-        </label>
-        <p class="parent-lead" id="award-do-readout">The site will count it when it can. Otherwise you Award it from the desk.</p>
-        <p class="parent-lead">Badge</p>
-        <div id="badge-picker" class="badge-picker" role="listbox" aria-label="Badge pictures"></div>
-        <label class="sr-only">Icon
-          <select id="icon"></select>
-        </label>
-        <input id="badge" type="hidden" value="">
-        <input id="unlock-type" type="hidden" value="parent_award">
-        <input id="unlock-count" type="hidden" value="1">
-        <input id="unlock-hours" type="hidden" value="24">
-        <label>Title
-          <input id="title" maxlength="80" placeholder="Five-day start">
-        </label>
-        <label>What Bennett sees when it unlocks
-          <textarea id="description" maxlength="200" placeholder="Logged in 5 days in a row."></textarea>
-        </label>
-        <label>Incentive
-          <input id="incentive" maxlength="120" placeholder="skip one chore">
-        </label>
-        <div class="form-row">
-          <label>Bananas
-            <input id="reward" type="number" min="0" max="99" value="10">
-          </label>
-        </div>
-        <label>Sound that plays when it unlocks
-          <select id="reward-media">
-            <option value="">None · uses A streak is awarded</option>
-          </select>
-        </label>
-        <details class="award-fine-print" id="award-extra-unlock">
-          <summary>Also unlock a teammate or gear</summary>
-          <p class="parent-lead">Leave this closed for a badge-only trophy. Open it only when this streak should also unlock Ace, a tool, or a library clip.</p>
+        <p class="quest-step">1. He gets</p>
+        <div id="give-picker" class="badge-picker" role="listbox" aria-label="What Bennett gets"></div>
+        <div class="sr-only">
           <label>Reward unlock
             <select id="reward-type">
               <option value="">None · badge and bananas only</option>
@@ -305,14 +274,48 @@
               <option value="content">Content (sound / link)</option>
             </select>
           </label>
-          <p class="parent-lead" id="reward-pick-lead" hidden>Tap the teammate or gear picture. Load new art in Admin Library first.</p>
-          <div id="reward-char-pick" class="badge-picker" hidden></div>
-          <div id="reward-gear-pick" class="badge-picker" hidden></div>
           <label>Reward character
             <select id="reward-character">
               <option value="">None</option>
             </select>
           </label>
+        </div>
+        <p class="quest-step">2. He earns it by</p>
+        <div id="earn-picker" class="earn-picker" role="listbox" aria-label="How Bennett earns it"></div>
+        <label id="earn-count-wrap" hidden>How many
+          <input id="unlock-count" type="number" min="1" max="99" value="1">
+        </label>
+        <p class="parent-lead" id="award-do-readout">You award this from the desk unless you pick a live rule.</p>
+        <label class="sr-only">What Bennett has to do
+          <textarea id="award-do" maxlength="200" placeholder="Logs in to the site 5 days in a row"></textarea>
+        </label>
+        <input id="unlock-type" type="hidden" value="parent_award">
+        <input id="unlock-hours" type="hidden" value="24">
+        <label>Title
+          <input id="title" maxlength="80" placeholder="Meet Scorch">
+        </label>
+        <details class="award-fine-print" id="award-extra-unlock">
+          <summary>Sound, bananas, badge, tools, clips</summary>
+          <p class="parent-lead">Leave this closed unless you need a tool, a library clip, or a custom badge sound.</p>
+          <p class="parent-lead">Badge</p>
+          <div id="badge-picker" class="badge-picker" role="listbox" aria-label="Badge pictures"></div>
+          <label class="sr-only">Icon
+            <select id="icon"></select>
+          </label>
+          <input id="badge" type="hidden" value="">
+          <div class="form-row">
+            <label>Bananas
+              <input id="reward" type="number" min="0" max="99" value="10">
+            </label>
+          </div>
+          <label>Sound that plays when it unlocks
+            <select id="reward-media">
+              <option value="">None · uses A streak is awarded</option>
+            </select>
+          </label>
+          <p class="parent-lead" id="reward-pick-lead" hidden>Tap the teammate or gear picture. Load new art in Admin Library first.</p>
+          <div id="reward-char-pick" class="badge-picker" hidden></div>
+          <div id="reward-gear-pick" class="badge-picker" hidden></div>
           <div class="form-row" id="reward-gear-row" hidden>
             <label>Unlock id
               <input id="reward-unlock-id" maxlength="40" placeholder="notebook-holding">
@@ -329,15 +332,21 @@
         </details>
         <details class="award-fine-print">
           <summary>Fine print</summary>
+          <label>What Bennett sees when it unlocks
+            <textarea id="description" maxlength="200" placeholder="Logged in 5 days in a row."></textarea>
+          </label>
+          <label>Incentive
+            <input id="incentive" maxlength="120" placeholder="skip one chore">
+          </label>
           <label>How you count it
             <textarea id="how" maxlength="200" placeholder="Count each week, then award"></textarea>
           </label>
           <div class="form-row">
             <label>Streak target
-              <input id="target" type="number" min="1" max="99" value="3">
+              <input id="target" type="number" min="1" max="99" value="1">
             </label>
             <label>Unit
-              <input id="unit" maxlength="24" value="week">
+              <input id="unit" maxlength="24" value="time">
             </label>
           </div>
           <label class="check">
@@ -346,14 +355,16 @@
         </details>
       </div>
       <div class="parent-actions">
-        <button type="button" class="btn primary" id="award-test">Test</button>
         <button type="button" class="btn primary" id="save">Save for Bennett</button>
+        <button type="button" class="btn" id="award-test">Test on this device</button>
         <button type="button" class="btn" id="cancel">Cancel</button>
       </div>
     </section>
 
-    <h2 style="font-size:1rem;margin:18px 0 8px">Streaks</h2>
-    <p class="parent-lead" id="streak-live-hint">The badge is the trophy. Test plays the pop-up and sound on this screen, then puts it in the Trophy room on this device. Save for Bennett when the rule is right.</p>
+    <h2 style="font-size:1rem;margin:18px 0 8px">Rewards</h2>
+    <p class="parent-lead" id="streak-live-hint">Each card is Gets / Does. Live means Bennett can earn it on This Week. You award it means it waits for Award. Test stays on this device.</p>
+    <details class="award-fine-print preview-all-wrap">
+      <summary>Preview every reward on this device</summary>
     <div class="preview-all" id="preview-all">
       <p>Parent preview — unlock every reward on this device so you can walk the trophy room. Bennett’s real model stays earned-only. Turn this off when you are done looking.</p>
       <div class="parent-actions">
@@ -361,6 +372,7 @@
         <button type="button" class="btn" id="preview-lock-back">Lock them back</button>
       </div>
     </div>
+    </details>
     <div class="trophy-order" id="trophy-order">
       <h3>Trophy room order</h3>
       <p>Bennett’s treehouse has no Edit / Undo. Drag awarded trophies here to set cubby order. Newest unlock still takes the pedestal.</p>
@@ -473,9 +485,9 @@
   }
 }
   </script>
-  <script src="js/build.js?v=153"></script>
-  <script src="js/game.js?v=153"></script>
-  <script src="js/telemetry.js?v=153"></script>
-  <script src="js/parent.js?v=153"></script>
+  <script src="js/build.js?v=154"></script>
+  <script src="js/game.js?v=154"></script>
+  <script src="js/telemetry.js?v=154"></script>
+  <script src="js/parent.js?v=154"></script>
 </body>
 </html>

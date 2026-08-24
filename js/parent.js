@@ -282,7 +282,7 @@
     const gearRow = document.getElementById("reward-gear-row");
     const contentRow = document.getElementById("reward-content-row");
     const mediaSel = document.getElementById("reward-media");
-    if (charSel) charSel.closest("label").hidden = type !== "character";
+    if (charSel && charSel.closest("label")) charSel.closest("label").hidden = type !== "character";
     if (gearRow) gearRow.hidden = type === "" || type === "character" || type === "content";
     if (contentRow) contentRow.hidden = type !== "content";
     if (mediaSel) mediaSel.closest("label").hidden = type === "content";
@@ -290,6 +290,112 @@
     fillRewardMedia(charId, mediaSel ? mediaSel.value : "");
     fillRewardContent(document.getElementById("reward-content") ? document.getElementById("reward-content").value : "");
     renderRewardPicks();
+    renderGivePicker();
+    renderEarnPicker();
+  }
+
+  const EARN_CHIPS = [
+    { type: "parent_award", label: "I tap Award", doText: "Parents award this from the desk." },
+    { type: "done_count", label: "N assignments Done", doText: "marks 3 assignments done", needsCount: true },
+    { type: "open_touched", label: "Every open assignment", doText: "Mark either Done or I started this on every open assignment." },
+    { type: "class_tour", label: "Open every class in 24h", doText: "Opened every class in one day." },
+    { type: "login_days", label: "Log in N days in a row", doText: "Logs in to the site 5 days in a row", needsCount: true }
+  ];
+
+  function earnCountNeeded(type) {
+    return type === "done_count" || type === "login_days" || type === "login_total";
+  }
+
+  function giveTitle() {
+    const type = (document.getElementById("reward-type") || {}).value || "";
+    const charId = (document.getElementById("reward-character") || {}).value || "";
+    if (type === "character" && charId) {
+      const ch = findChar(charId);
+      return "Meet " + Game.characterLabel(ch, charId);
+    }
+    const gearLabel = (document.getElementById("reward-unlock-label") || {}).value || "";
+    if (type && type !== "character" && type !== "content" && gearLabel) return gearLabel;
+    return "";
+  }
+
+  function paintGiveTitle() {
+    const titleEl = document.getElementById("title");
+    const incentiveEl = document.getElementById("incentive");
+    const next = giveTitle();
+    if (titleEl && next && (!titleEl.value || /^Meet /.test(titleEl.value) || titleEl.value === "New streak")) {
+      titleEl.value = next;
+    }
+    if (incentiveEl && next && !incentiveEl.value) incentiveEl.value = "Unlocks " + next.replace(/^Meet /, "");
+  }
+
+  function renderGivePicker() {
+    const host = document.getElementById("give-picker");
+    if (!host) return;
+    const type = (document.getElementById("reward-type") || {}).value || "";
+    const selected = (document.getElementById("reward-character") || {}).value || "";
+    const chars = (roster && roster.characters) || [];
+    const trophyOn = !type;
+    let html = `<button type="button" class="badge-pick${trophyOn ? " on" : ""}" data-give="" aria-pressed="${trophyOn ? "true" : "false"}">
+      <span>Trophy only</span>
+    </button>`;
+    html += chars.map((ch) => {
+      const src = ch.poster || ("img/characters/" + ch.id + ".jpg");
+      const on = type === "character" && ch.id === selected;
+      return `<button type="button" class="badge-pick${on ? " on" : ""}" data-give="character:${Game.esc(ch.id)}" aria-pressed="${on ? "true" : "false"}">
+        <img src="${Game.esc(src)}" alt="">
+        <span>${Game.esc(ch.name || ch.id)}</span>
+      </button>`;
+    }).join("");
+    host.innerHTML = html;
+  }
+
+  function renderEarnPicker() {
+    const host = document.getElementById("earn-picker");
+    if (!host) return;
+    const current = (document.getElementById("unlock-type") || {}).value || "parent_award";
+    host.innerHTML = EARN_CHIPS.map((row) => {
+      const on = row.type === current;
+      return `<button type="button" class="earn-pick${on ? " on" : ""}" data-earn="${Game.esc(row.type)}" aria-pressed="${on ? "true" : "false"}">${Game.esc(row.label)}</button>`;
+    }).join("");
+    const wrap = document.getElementById("earn-count-wrap");
+    if (wrap) wrap.hidden = !earnCountNeeded(current);
+  }
+
+  function applyEarnChip(type, opts) {
+    const row = EARN_CHIPS.find((item) => item.type === type) || EARN_CHIPS[0];
+    const countEl = document.getElementById("unlock-count");
+    let doText = row.doText;
+    if (row.type === "done_count") {
+      const n = Number((countEl && countEl.value) || 3) || 3;
+      if (countEl && !(opts && opts.keepCount)) countEl.value = n;
+      doText = "marks " + n + " assignments done";
+    }
+    if (row.type === "login_days") {
+      const n = Number((countEl && countEl.value) || 5) || 5;
+      if (countEl && !(opts && opts.keepCount)) countEl.value = n;
+      doText = "Logs in to the site " + n + " days in a row";
+    }
+    const doEl = document.getElementById("award-do");
+    if (doEl) doEl.value = doText;
+    document.getElementById("unlock-type").value = row.type;
+    applyAwardIntent({ fillEmpty: true });
+    paintGiveTitle();
+    renderEarnPicker();
+  }
+
+  function applyGivePick(token) {
+    const typeEl = document.getElementById("reward-type");
+    const charEl = document.getElementById("reward-character");
+    if (token && token.indexOf("character:") === 0) {
+      if (typeEl) typeEl.value = "character";
+      if (charEl) charEl.value = token.slice(10);
+    } else {
+      if (typeEl) typeEl.value = "";
+      if (charEl) charEl.value = "";
+    }
+    syncRewardTypeUi();
+    paintGiveTitle();
+    renderGivePicker();
   }
 
   function paintAwardReadout(intent) {
@@ -734,60 +840,84 @@
     });
   }
 
+  function questCardHtml(ach) {
+    const st = streakOf(ach);
+    const status = Game.awardLiveStatus(ach, family);
+    const unlock = Game.rewardUnlockOf(ach);
+    const gets = unlock
+      ? (unlock.type === "character" ? Game.characterLabel(findChar(unlock.id), unlock.id) : (unlock.label || unlock.id))
+      : "Trophy";
+    const does = Game.earnRulePlain(ach);
+    const art = trophyArt(ach);
+    const media = Game.rewardMediaItem(ach, library);
+    const target = (ach.streak && ach.streak.target) || 1;
+    const showCount = !ach.unlock && target > 1;
+    const preview = status.key === "preview";
+    const earned = status.key === "earned";
+    const more = [];
+    if (showCount) more.push(`<button type="button" class="tiny" data-count="${Game.esc(ach.id)}">Count</button>`);
+    more.push(`<button type="button" class="tiny" data-test="${Game.esc(ach.id)}">Test</button>`);
+    more.push(`<button type="button" class="tiny danger" data-del="${Game.esc(ach.id)}">Delete</button>`);
+    const primary = earned
+      ? `<button type="button" class="tiny" data-revoke="${Game.esc(ach.id)}">Undo</button>`
+      : (status.key === "parent" || preview
+        ? `<button type="button" class="btn primary" data-award="${Game.esc(ach.id)}">${preview ? "Award for real" : "Award now"}</button>`
+        : "");
+    return `
+      <article class="ach-card quest-card">
+        <img class="quest-art" src="${Game.esc(art)}" alt="${media ? Game.esc(media.label) : ""}">
+        <p class="quest-gets">Gets ${Game.esc(gets)}</p>
+        <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title || "Untitled")}</h3>
+        <p class="quest-does"><span>Bennett does</span> ${Game.esc(does)}</p>
+        <p class="quest-status is-${Game.esc(status.key)}">${Game.esc(status.label)}${st.awarded && !preview ? "" : (st.count && showCount ? " · " + st.count + "/" + target : "")}</p>
+        <div class="parent-actions quest-actions">
+          ${primary}
+          <button type="button" class="btn" data-edit="${Game.esc(ach.id)}">Edit</button>
+          ${more.join("")}
+        </div>
+      </article>`;
+  }
+
   function renderAchievements() {
     const list = document.getElementById("list");
-    const cur = Game.currency(pack);
     if (!(pack.achievements || []).length) {
-      list.innerHTML = `<p class="empty">No streak achievements yet. Add one.</p>`;
+      list.innerHTML = `<p class="empty">No rewards yet. Schedule one: he gets Scorch, he earns it by a rule, Save for Bennett.</p>`;
       return;
     }
-    list.innerHTML = pack.achievements.map((ach) => {
-      const st = streakOf(ach);
-      const target = (ach.streak && ach.streak.target) || 1;
-      const unit = (ach.streak && ach.streak.unit) || "week";
-      const unlock = Game.rewardUnlockOf(ach);
-      const gearItem = unlock && unlock.type !== "character" && unlock.type !== "content"
-        ? Game.libraryItem(library, unlock.id)
-        : null;
-      const thumb = gearItem
-        ? `<div class="ach-gear-thumb">${Game.libraryThumbHtml(gearItem)}</div>`
-        : "";
-      const media = Game.rewardMediaItem(ach, library);
-      return `
-        <article class="ach-card${gearItem ? " has-gear" : ""}">
-          ${thumb}
-          <h3>${ach.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(ach.title || "Untitled")}</h3>
-          <p>${Game.esc(ach.description || ach.how || "Add the line Bennett sees when this unlocks.")}</p>
-          <p>Incentive: ${Game.esc(ach.incentive || "—")} · ${Game.bananasOf(ach) || 0} ${cur.name}</p>
-          <p>Reward: ${unlock ? Game.esc(rewardLabel(ach)) : "None"} · sound: ${media ? Game.esc(media.label) : "A streak is awarded"}</p>
-          <p>Streak: ${st.count} / ${target} ${Game.esc(unit)}${st.awarded ? " · awarded" : ""}</p>
-          <div class="parent-actions">
-            <button type="button" class="btn" data-count="${Game.esc(ach.id)}">Count this week</button>
-            ${st.awarded
-              ? `<button type="button" class="tiny" data-revoke="${Game.esc(ach.id)}">Undo award</button>`
-              : `<button type="button" class="btn primary" data-award="${Game.esc(ach.id)}">Award</button>`}
-            <button type="button" class="btn" data-test="${Game.esc(ach.id)}">Test</button>
-            <button type="button" class="tiny" data-edit="${Game.esc(ach.id)}">Edit</button>
-            <button type="button" class="tiny danger" data-del="${Game.esc(ach.id)}">Delete</button>
-          </div>
-        </article>`;
-    }).join("");
+    const groups = [
+      { key: "live", title: "Live for Bennett" },
+      { key: "parent", title: "You award from the desk" },
+      { key: "earned", title: "Earned" },
+      { key: "preview", title: "Preview only (this device)" }
+    ];
+    const byKey = { live: [], parent: [], earned: [], preview: [] };
+    (pack.achievements || []).forEach((ach) => {
+      const status = Game.awardLiveStatus(ach, family);
+      (byKey[status.key] || byKey.parent).push(ach);
+    });
+    list.innerHTML = groups.map((g) => {
+      const rows = byKey[g.key];
+      if (!rows.length) return "";
+      return `<section class="quest-group"><h3>${Game.esc(g.title)}</h3>${rows.map(questCardHtml).join("")}</section>`;
+    }).join("") || `<p class="empty">No rewards yet.</p>`;
 
     list.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => openForm(b.dataset.edit)));
     list.querySelectorAll("[data-test]").forEach((b) => b.addEventListener("click", () => testAchievement(b.dataset.test)));
     list.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => {
-      if (!confirm("Delete this achievement?")) return;
+      if (!confirm("Delete this reward?")) return;
       pack.achievements = pack.achievements.filter((a) => a.id !== b.dataset.del);
       persistAch();
       closeForm();
     }));
-    list.querySelectorAll("[data-count]").forEach((b) => b.addEventListener("click", () => {
-      const id = b.dataset.count;
-      const curSt = streakOf(pack.achievements.find((a) => a.id === id) || { id });
-      family.streaks[id] = { count: curSt.count + 1, awarded: curSt.awarded };
-      persistFamily();
-      Game.toast("Counted. Award when the streak is real.");
-    }));
+    list.querySelectorAll("[data-count]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const id = b.dataset.count;
+        const curSt = streakOf(pack.achievements.find((a) => a.id === id) || { id });
+        family.streaks[id] = { count: curSt.count + 1, awarded: curSt.awarded };
+        persistFamily();
+        Game.toast("Counted. Award when the streak is real.");
+      });
+    });
     list.querySelectorAll("[data-award]").forEach((b) => b.addEventListener("click", () => {
       const id = b.dataset.award;
       const curSt = streakOf(pack.achievements.find((a) => a.id === id) || { id });
@@ -1063,7 +1193,7 @@
       rewardCharacter: "",
       rewardUnlock: null,
       rewardMedia: "",
-      streak: { target: 3, unit: "week" }
+      streak: { target: 1, unit: "time" }
     };
   }
 
@@ -1093,9 +1223,11 @@
     fillRewardMedia(document.getElementById("reward-character").value, ach.rewardMedia || "");
     syncRewardTypeUi();
     const extra = document.getElementById("award-extra-unlock");
-    if (extra) extra.open = !!(unlock && unlock.type);
+    if (extra) extra.open = !!(unlock && unlock.type && unlock.type !== "character");
     renderBadgePicker();
     renderPosterPicker();
+    renderGivePicker();
+    renderEarnPicker();
   }
 
   function slug(title) {
@@ -1178,10 +1310,9 @@
     const ach = id ? pack.achievements.find((a) => a.id === id) : blank();
     fillForm(ach || blank());
     document.getElementById("editor").hidden = false;
-    document.getElementById("editor-title").textContent = id ? "Edit streak" : "New streak";
-    const focusId = id ? "title" : "award-do";
-    const focusEl = document.getElementById(focusId) || document.getElementById("title");
-    if (focusEl) focusEl.focus();
+    document.getElementById("editor-title").textContent = id ? "Edit reward" : "Schedule a reward";
+    const focusEl = document.getElementById("title");
+    if (focusEl && id) focusEl.focus();
   }
 
   function closeForm() {
@@ -1216,6 +1347,29 @@
     const awardDo = document.getElementById("award-do");
     if (awardDo) {
       awardDo.addEventListener("input", () => applyAwardIntent({ fillEmpty: true }));
+    }
+    const givePicker = document.getElementById("give-picker");
+    if (givePicker) {
+      givePicker.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("[data-give]") : null;
+        if (!btn) return;
+        applyGivePick(btn.getAttribute("data-give") || "");
+      });
+    }
+    const earnPicker = document.getElementById("earn-picker");
+    if (earnPicker) {
+      earnPicker.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("[data-earn]") : null;
+        if (!btn) return;
+        applyEarnChip(btn.getAttribute("data-earn") || "parent_award");
+      });
+    }
+    const earnCount = document.getElementById("unlock-count");
+    if (earnCount) {
+      earnCount.addEventListener("input", () => {
+        const type = (document.getElementById("unlock-type") || {}).value || "";
+        if (earnCountNeeded(type)) applyEarnChip(type, { keepCount: true });
+      });
     }
     const badgePicker = document.getElementById("badge-picker");
     if (badgePicker) {
