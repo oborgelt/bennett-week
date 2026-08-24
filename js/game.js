@@ -30,7 +30,8 @@
     classVisits: "bw-class-visits",
     needsYouCollapsed: "bw-needs-you-collapsed",
     needsYouCollapsedProgress: "bw-needs-you-collapsed-progress",
-    followupCollapsed: "bw-followup-collapsed"
+    followupCollapsed: "bw-followup-collapsed",
+    bennettHelpCollapsed: "bw-bennett-help-collapsed"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -4663,6 +4664,147 @@
     });
   }
 
+  const BENNETT_HELP_SECTIONS = [
+    {
+      id: "sign-in",
+      title: "Sign in",
+      body: "Use your Bennett login on this phone. If the bar says Not you, tap it and sign in again."
+    },
+    {
+      id: "this-week",
+      title: "This week",
+      body: "Seven day cards starting today. Class chips jump to a class. Week rally counts Started and Done for the week. Swipe, tap the dots, or use Prev / Next."
+    },
+    {
+      id: "assignments",
+      title: "Assignments",
+      body: "I started this stamps a time. Done marks it finished here. Undo is the small button. You can Edit an assignment. Add one if it is missing from the board."
+    },
+    {
+      id: "little-help",
+      title: "A little help",
+      body: "On due or start-this work, A little help is one first move. It will not finish the assignment. Talk it through opens Base Camp. Khan opens in a new tab when the class has a real course."
+    },
+    {
+      id: "needs-you",
+      title: "Needs you",
+      body: "Open, late, or missing work that still needs you. Plan tells Mom and Dad what you are going to do."
+    },
+    {
+      id: "follow-up",
+      title: "Needs follow-up",
+      body: "School has not logged something you already finished. Copy the teacher email or open mail. Snooze until a date if it is a packet waiting to be turned in, then add a few days for grading. When school marks it submitted or graded, it leaves this list on its own."
+    },
+    {
+      id: "trophy-room",
+      title: "Trophy Room",
+      body: "Tap Trophies to walk the treehouse. Look around and tap a glowing spot. Trophies you earned sit in the room. You cannot undo or edit awards here."
+    },
+    {
+      id: "progress",
+      title: "Progress",
+      body: "Dash on a phone. Same Needs follow-up and Needs you, plus By class, grades the school posted, and check-ins. No made-up course grades. You can edit assignments. You cannot delete a class or undo a trophy."
+    },
+    {
+      id: "crew",
+      title: "Crew",
+      body: "Characters you have earned. Locked teammates stay a silhouette. You unlock as you earn them, not by browsing a catalog."
+    },
+    {
+      id: "basecamp",
+      title: "Base Camp",
+      body: "Jungle Jam Tutor. Photo, file, or chat. He will walk the problem with you and will not fill in the packet. Pick the class, start a new climb when you need a fresh thread. Chem can open the periodic table full size."
+    },
+    {
+      id: "story",
+      title: "Story",
+      body: "Shows on the bar after three teammates (not counting you). Short comic choices. Locked gear stays a silhouette."
+    },
+    {
+      id: "messages",
+      title: "Messages",
+      body: "Daily questions, class asks, and replies. Newest day first. Delete removes that message everywhere."
+    },
+    {
+      id: "khan",
+      title: "Khan Academy",
+      body: "Opens on Khan. No extra login. Real public courses only: ELA, grammar, HS Chemistry, Geometry. Band, Sociology, Web Design, Seminar, and Strength have no Khan link."
+    },
+    {
+      id: "play",
+      title: "Play",
+      body: "If you unlock the egg game, Play appears on the bar. It is extra, not homework."
+    }
+  ];
+
+  function bennettHelpBodyHtml() {
+    return BENNETT_HELP_SECTIONS.map((row) => {
+      return `<article class="bennett-help-card" id="help-${esc(row.id)}">
+        <h3>${esc(row.title)}</h3>
+        <p>${esc(row.body)}</p>
+      </article>`;
+    }).join("");
+  }
+
+  function bennettHelpCollapsed() {
+    try {
+      return read(KEYS.bennettHelpCollapsed, true) === true || read(KEYS.bennettHelpCollapsed, "") === "1";
+    } catch (_) {
+      return true;
+    }
+  }
+
+  function setBennettHelpCollapsed(on) {
+    write(KEYS.bennettHelpCollapsed, !!on);
+    return !!on;
+  }
+
+  function bennettHelpSectionHtml() {
+    const collapsed = bennettHelpCollapsed();
+    const hint = collapsed ? "Show" : "Hide";
+    return `
+      <button type="button" class="needs-you-toggle bennett-help-toggle" data-bennett-help-toggle aria-expanded="${collapsed ? "false" : "true"}">
+        <span class="followup-toggle-title">Help</span>
+        <span class="needs-you-toggle-hint bennett-help-toggle-hint">${esc(hint)}</span>
+      </button>
+      <div class="bennett-help-fold"${collapsed ? " hidden" : ""}>
+        <p class="bennett-help-lead">How your Jungle Jam screens work. HUD Help opens this as its own page.</p>
+        <div class="bennett-help-body">${bennettHelpBodyHtml()}</div>
+        <p class="bennett-help-more"><a href="help.html">Open full Help</a></p>
+      </div>`;
+  }
+
+  function bennettHelpPageHtml() {
+    return `
+      <p class="bennett-help-lead">Your screens, in one place. This is not Mom or Dad's desk.</p>
+      <div class="bennett-help-body">${bennettHelpBodyHtml()}</div>`;
+  }
+
+  function bindBennettHelpToggle() {
+    if (typeof document === "undefined" || !document.addEventListener) return;
+    if (document.documentElement && document.documentElement.dataset.bennettHelpToggleBound === "1") return;
+    if (document.documentElement) document.documentElement.dataset.bennettHelpToggleBound = "1";
+    document.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest && e.target.closest("[data-bennett-help-toggle]");
+      if (!btn) return;
+      e.preventDefault();
+      const collapsed = setBennettHelpCollapsed(!bennettHelpCollapsed());
+      const host = (btn.closest && (btn.closest("#bennett-help") || btn.closest(".bennett-help"))) || btn.parentNode;
+      if (host && host.classList) host.classList.toggle("collapsed", collapsed);
+      btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      const hint = btn.querySelector(".bennett-help-toggle-hint");
+      if (hint) hint.textContent = collapsed ? "Show" : "Hide";
+      const fold = host && host.querySelector ? host.querySelector(".bennett-help-fold") : null;
+      if (fold) fold.hidden = collapsed;
+    });
+  }
+
+  function mountBennettHelpPage() {
+    const host = typeof document !== "undefined" && document.getElementById ? document.getElementById("bennett-help-page") : null;
+    if (!host) return;
+    host.innerHTML = bennettHelpPageHtml();
+  }
+
   function workFeedStatus(work, now) {
     const clock = now || new Date();
     const w = work || {};
@@ -6304,6 +6446,7 @@
     if (file === "characters.html") return "crew";
     if (file === "basecamp.html" || file === "ask.html") return "basecamp";
     if (file === "messages.html") return "messages";
+    if (file === "help.html") return "help";
     if (file === "parent.html") return "parent";
     if (file === "admin.html") return "admin";
     if (file === "story.html") return "story";
@@ -6328,6 +6471,7 @@
       hudChip(cur, "basecamp", "basecamp-chip", "basecamp.html", ' aria-label="Base Camp"', `<span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span>`),
       `<a class="story-chip${cur === "story" ? " on" : ""}" id="story-chip" href="story.html"${cur === "story" ? ' aria-current="page"' : ""} hidden>Story</a>`,
       hudChip(cur, "messages", "messages-chip", "messages.html", ' aria-label="Messages"', `<span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span>`),
+      hudChip(cur, "help", "help-chip", "help.html", ' aria-label="Help"', `<span class="help-chip-full">Help</span><span class="help-chip-short">Help</span>`),
       hudChip(cur, "parent", "parent-chip", "parent.html", ' aria-label="Parent desk"', `<span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span>`),
       hudChip(cur, "admin", "admin-chip", "admin.html", "", "Admin"),
       `<a class="egg-chip${cur === "egg" ? " on" : ""}" id="egg-chip" href="egg.html"${cur === "egg" ? ' aria-current="page"' : ""} hidden>🥚 Play</a>`
@@ -6365,6 +6509,7 @@
       crew: ".crew-chip",
       basecamp: ".basecamp-chip",
       messages: ".messages-chip",
+      help: ".help-chip",
       parent: ".parent-chip",
       admin: ".admin-chip",
       story: ".story-chip",
@@ -9064,6 +9209,14 @@
     bindFollowupToggle,
     bindFollowupCopy,
     bindFollowupSnooze,
+    BENNETT_HELP_SECTIONS,
+    bennettHelpBodyHtml,
+    bennettHelpSectionHtml,
+    bennettHelpPageHtml,
+    bennettHelpCollapsed,
+    setBennettHelpCollapsed,
+    bindBennettHelpToggle,
+    mountBennettHelpPage,
     mailtoHref,
     needsYouWork,
     needsYouCounts,
@@ -9166,6 +9319,8 @@
     bindFollowupToggle();
     bindFollowupCopy();
     bindFollowupSnooze();
+    bindBennettHelpToggle();
+    mountBennettHelpPage();
     bindLibraryPreviewPlay();
     applySiteView();
     bindHudNavClicks();
@@ -9178,6 +9333,8 @@
       bindFollowupToggle();
       bindFollowupCopy();
       bindFollowupSnooze();
+      bindBennettHelpToggle();
+      mountBennettHelpPage();
       bindLibraryPreviewPlay();
       applySiteView();
       bindHudNavClicks();

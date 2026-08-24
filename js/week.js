@@ -332,8 +332,16 @@
     host.innerHTML = html || "";
   }
 
+  function renderBennettHelp() {
+    const host = document.getElementById("bennett-help");
+    if (!host) return;
+    host.innerHTML = Game.bennettHelpSectionHtml();
+    host.classList.toggle("collapsed", !!Game.bennettHelpCollapsed());
+  }
+
   function renderNeedsYou() {
     renderFollowup();
+    renderBennettHelp();
     const host = document.getElementById("needs-you");
     if (!host) return;
     const html = Game.needsYouSectionHtml(week, new Date(), { link: "progress.html", family });
@@ -2474,6 +2482,7 @@
     initSelectedClass();
     renderClassSwitcher();
     renderNeedsYou();
+    renderBennettHelp();
     if (Game.usingMomDraft() || Game.usingFamilyDraft()) {
       document.getElementById("draft-flag").hidden = false;
     }

@@ -7,10 +7,10 @@
   <script src="js/update.js?v=159"></script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
-  <title>Jungle Jam · Base Camp</title>
+  <title>Jungle Jam · Help</title>
   <link rel="stylesheet" href="css/theme.css?v=159">
 </head>
-<body class="ask-page">
+<body class="help-page">
   <header class="week-head">
     <div class="hud-bar progress-hud">
       <div class="bananas" id="bananas" aria-live="polite">🍌 0</div>
@@ -19,10 +19,10 @@
         <a class="trophy-chip" href="index.html?room=1" aria-label="Trophy Room"><span class="trophy-chip-full">Trophy Room</span><span class="trophy-chip-short">Trophies</span></a>
         <a class="progress-chip" href="progress.html" aria-label="Progress"><span class="progress-chip-full">Progress</span><span class="progress-chip-short">Dash</span></a>
         <a class="crew-chip" href="characters.html" aria-label="Characters"><span class="crew-chip-full">Characters</span><span class="crew-chip-short">Crew</span></a>
-        <a class="basecamp-chip on" href="basecamp.html" aria-current="page" aria-label="Base Camp"><span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span></a>
+        <a class="basecamp-chip" href="basecamp.html" aria-label="Base Camp"><span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span></a>
         <a class="story-chip" id="story-chip" href="story.html" hidden>Story</a>
         <a class="messages-chip" href="messages.html" aria-label="Messages"><span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span></a>
-        <a class="help-chip" href="help.html" aria-label="Help"><span class="help-chip-full">Help</span><span class="help-chip-short">Help</span></a>
+        <a class="help-chip on" href="help.html" aria-current="page" aria-label="Help"><span class="help-chip-full">Help</span><span class="help-chip-short">Help</span></a>
         <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
         <a class="admin-chip" href="admin.html">Admin</a>
         <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
@@ -32,31 +32,30 @@
       <a class="banner-home" href="index.html" aria-label="Jungle Jam home · This week"></a>
       <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
       <a class="banner-title" href="index.html">
-        <h1>Base Camp</h1>
-        <p>Jungle Jam Tutor moved here</p>
+        <h1>Help</h1>
+        <p>Bennett's screens</p>
       </a>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 86</span>
-        <span>8/17, 10:10 PM</span>
+        <span>Build 157</span>
+        <span>8/24, 6:35 PM</span>
       </div>
     </div>
   </header>
 
-  <main class="ask-wrap">
-    <p class="ask-lead">Ask AI is now <strong>Base Camp</strong> — Jungle Jam Tutor, class by class. Old <code>?class=</code> and <code>?title=</code> links still work.</p>
-    <p class="ask-help-link"><a id="basecamp-handoff" href="basecamp.html">Continue to Base Camp</a></p>
-  </main>
+  <main class="bennett-help-page" id="bennett-help-page" aria-label="Help"></main>
+
+  <div class="peek-monkey" aria-hidden="true">
+    <img src="img/monkey-tennis.png" alt="">
+  </div>
+  <div class="toast" id="toast" role="status"></div>
 
   <script src="js/build.js?v=159"></script>
   <script src="js/game.js?v=159"></script>
   <script src="js/telemetry.js?v=159"></script>
   <script>
-    (function () {
-      var q = location.search || "";
-      var a = document.getElementById("basecamp-handoff");
-      if (a) a.setAttribute("href", "basecamp.html" + q);
-      location.replace("basecamp.html" + q);
-    })();
+    Game.markOpened();
+    Game.mountHudNav("help");
+    Game.paintHudCurrent("help");
   </script>
 </body>
 </html>

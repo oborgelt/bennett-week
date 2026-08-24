@@ -1,0 +1,14 @@
+---
+description: Keep Bennett Help current whenever Jungle Jam kid-facing features change
+alwaysApply: true
+---
+
+# Bennett Help
+
+When you add, rename, move, or change how a Bennett-facing screen works, update `BENNETT_HELP_SECTIONS` in `js/game.js` in the same commit. That array paints This Week Help and `help.html`.
+
+Cover: This Week, assignments (Started / Done / Edit), A little help, Needs you, Needs follow-up (Copy email, Snooze until), Trophy Room, Progress, Crew, Base Camp, Story, Messages, Khan, Play/egg, sign-in.
+
+Do not document Parent desk, Admin, Locker refs, Site usage, or Connect in Bennett Help. Do not hide Parent desk or Admin on Me.
+
+If Help copy is asserted in `scripts/check-content-library.js`, update those asserts with the feature.

@@ -501,7 +501,8 @@ html[data-site-view="me"] .admin-chip {
 .week-chip,
 .trophy-chip,
 .basecamp-chip,
-.messages-chip {
+.messages-chip,
+.help-chip {
   min-height: 36px;
   min-width: 36px;
   border-radius: 999px;
@@ -520,7 +521,8 @@ html[data-site-view="me"] .admin-chip {
 .week-chip,
 .trophy-chip,
 .basecamp-chip,
-.messages-chip {
+.messages-chip,
+.help-chip {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
@@ -590,6 +592,16 @@ html[data-site-view="me"] .admin-chip {
   background: rgba(244, 211, 94, 0.22);
 }
 
+.help-chip {
+  border-color: rgba(246, 241, 228, 0.35);
+  background: rgba(246, 241, 228, 0.08);
+  color: var(--ink);
+}
+
+.help-chip.on {
+  background: rgba(246, 241, 228, 0.18);
+}
+
 .hud-nav a.on,
 .week-chip.on,
 .trophy-chip.on,
@@ -597,6 +609,7 @@ html[data-site-view="me"] .admin-chip {
 .crew-chip.on,
 .basecamp-chip.on,
 .messages-chip.on,
+.help-chip.on,
 .parent-chip.on,
 .admin-chip.on,
 .story-chip.on,
@@ -638,7 +651,8 @@ html[data-site-view="me"] .admin-chip {
 .week-chip-short,
 .trophy-chip-short,
 .basecamp-chip-short,
-.messages-chip-short { display: none; }
+.messages-chip-short,
+.help-chip-short { display: none; }
 
 @media (max-width: 420px) {
   .parent-chip-full,
@@ -647,14 +661,16 @@ html[data-site-view="me"] .admin-chip {
   .week-chip-full,
   .trophy-chip-full,
   .basecamp-chip-full,
-  .messages-chip-full { display: none; }
+  .messages-chip-full,
+  .help-chip-full { display: none; }
   .parent-chip-short,
   .progress-chip-short,
   .crew-chip-short,
   .week-chip-short,
   .trophy-chip-short,
   .basecamp-chip-short,
-  .messages-chip-short { display: inline; }
+  .messages-chip-short,
+  .help-chip-short { display: inline; }
   .hud-bar {
     grid-template-columns: auto 1fr;
   }
@@ -1167,6 +1183,64 @@ html[data-site-view="me"] .admin-chip {
 
 .needs-you[hidden] {
   display: none;
+}
+
+.bennett-help {
+  margin: 4px 14px 10px;
+  padding: 12px 14px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(246, 241, 228, 0.22);
+  background: rgba(7, 22, 24, 0.55);
+}
+
+.bennett-help.collapsed .bennett-help-fold {
+  display: none;
+}
+
+.bennett-help-lead {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.bennett-help-body {
+  display: grid;
+  gap: 10px;
+}
+
+.bennett-help-card {
+  padding: 8px 0 2px;
+  border-top: 1px solid rgba(246, 241, 228, 0.12);
+}
+
+.bennett-help-card:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.bennett-help-card h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--banana);
+}
+
+.bennett-help-card p {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.bennett-help-more {
+  margin: 12px 0 0;
+}
+
+.bennett-help-more a {
+  color: var(--start);
+  font-weight: 750;
+}
+
+body.help-page .bennett-help-page {
+  margin: 8px 14px 24px;
+  padding: 4px 2px 28px;
 }
 
 .needs-you h2,
@@ -2297,6 +2371,7 @@ body.week-page.in-treehouse .hud-bar {
 .trophy-chip,
 .basecamp-chip,
 .messages-chip,
+.help-chip,
 .site-view-btn:not(.on),
 .trophy-lantern,
 .trophy-back,
