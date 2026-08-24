@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=154/.test(basecampHtml) && /basecamp\.js\?v=154/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=155/.test(basecampHtml) && /basecamp\.js\?v=155/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1558,7 +1558,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=154/.test(weekHtml) && /week\.js\?v=154/.test(weekHtml) && /game\.js\?v=154/.test(weekHtml) && /telemetry\.js\?v=154/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=155/.test(weekHtml) && /week\.js\?v=155/.test(weekHtml) && /game\.js\?v=155/.test(weekHtml) && /telemetry\.js\?v=155/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1606,8 +1606,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=153\b/.test(html), file + " should not still cache-bust as v=153");
-  assert(/\?v=154/.test(html), file + " should cache-bust v=154");
+  assert(!/\?v=154\b/.test(html), file + " should not still cache-bust as v=154");
+  assert(/\?v=155/.test(html), file + " should cache-bust v=155");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
   assert(/week-chip/.test(hud) && /trophy-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1654,6 +1654,10 @@ assert(/data-usage-who="bennett"/.test(usageBlock) && />Bennett</.test(usageBloc
 assert(/data-usage-who="orin"/.test(usageBlock) && />Orin</.test(usageBlock), "usage who-filter includes Orin");
 assert(/data-usage-who="parent"/.test(usageBlock) && />Mom</.test(usageBlock), "usage who-filter includes Mom");
 assert(/filterUsageEvents/.test(adminJs) && /e\.role === usageWho/.test(adminJs), "usage who-filter scopes events by role");
+assert(/renderStats\(rangeEvents, usageEvents\)/.test(adminJs), "Per user uses every role in the range, not the who-filter");
+assert(/Last when/.test(adminJs) && !/<th>Last action<\/th>\s*<th>Last action<\/th>/.test(adminJs), "usage last columns are Last when and Last action");
+assert(/limit:\s*5000/.test(adminJs) && /Range:/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "usage fetch pages past the first 1000 rows");
+assert(/function eventRole/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")) && /trackLogin/.test(gameJs), "logins stamp the session user, not the Connect device role");
 assert(/data-usage-range="24h"/.test(usageBlock) && /7 days/.test(usageBlock) && /data-usage-range="30d"/.test(usageBlock) && /data-usage-range="all"/.test(usageBlock), "usage has 24h / 7 days / 30 days / All");
 assert(/id="usage-showing"/.test(usageBlock) && /id="usage-recent"/.test(usageBlock), "usage shows range count and recent actions");
 assert(/setUsageRange/.test(adminJs) && /filterUsageRange/.test(adminJs) && /Per user/.test(adminJs) && /Recent actions/.test(adminJs), "usage rolls up per user in a selected range");
@@ -1662,7 +1666,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=154/.test(progressHtml) && /theme\.css\?v=154/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=155/.test(progressHtml) && /theme\.css\?v=155/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1701,8 +1705,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*152/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 152");
-assert(/2026-08-24T09:05:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-24T09:05:00-05:00");
+assert(/build:\s*153/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 153");
+assert(/2026-08-24T10:20:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-24T10:20:00-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1921,6 +1925,8 @@ assert(!/bennettb/.test(gameSrc) && !/"OrinB"/.test(gameSrc) && !/password:\s*"M
 assert.strictEqual(Game.tryLogin("bennett", "nope"), null, "wrong password fails");
 assert.strictEqual(Game.tryLogin("bennett", "bennettb"), "bennett");
 assert.strictEqual(Game.sessionUser(), "bennett");
+assert.strictEqual(Telemetry.eventRole(), "bennett", "Bennett login is tagged Bennett even if Connect device is Orin/Mom");
+assert.strictEqual(typeof Telemetry.trackLogin, "function");
 assert.strictEqual(Game.siteView(), "bennett");
 assert.strictEqual(Game.setSiteView("me"), "bennett", "Bennett cannot preview Me");
 assert(!Game.canUsePreviewSwitch(), "Bennett has no Preview slider");
@@ -1936,6 +1942,7 @@ assert.strictEqual(Game.setSiteView("mom"), "mom");
 assert.strictEqual(Game.setSiteView("me"), "me");
 Game.logout();
 assert.strictEqual(Game.sessionUser(), "");
+assert.strictEqual(Telemetry.eventRole(), "orin", "logged-out usage falls back to the Connect device role");
 localStorage.removeItem("bw-session");
 localStorage.removeItem("bw-site-view");
 assert(!Game.siteViewHidesAdult("me") && Game.siteViewHidesAdult("bennett") && Game.siteViewHidesAdult("mom"), "Bennett and Mom hide adult chrome");

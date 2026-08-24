@@ -68,6 +68,18 @@
     return !!(cfg.url && cfg.anonKey && cfg.familyToken);
   }
 
+  function eventRole() {
+    try {
+      if (global.Game && typeof global.Game.sessionUser === "function") {
+        const who = String(global.Game.sessionUser() || "").trim().toLowerCase();
+        if (who === "bennett") return "bennett";
+        if (who === "mom") return "parent";
+        if (who === "orin") return "orin";
+      }
+    } catch (_) {}
+    return getConfig().role || "bennett";
+  }
+
   function progressSyncAvailable() {
     return !!FAMILY_SYNC_URL;
   }
@@ -285,14 +297,13 @@
   function track(type, extra) {
     const kind = String(type || "").trim();
     if (!kind) return;
-    const cfg = getConfig();
     const src = extra && typeof extra === "object" ? extra : {};
     const row = {
       id: uid(),
       ts: new Date().toISOString(),
       term_id: String(src.termId || src.term_id || termId()),
       device_id: deviceId(),
-      role: cfg.role || "bennett",
+      role: eventRole(),
       type: kind,
       page: String(src.page || pageName()),
       class_id: String(src.classId || src.class_id || ""),
@@ -316,6 +327,11 @@
       track("session_start");
       try { localStorage.setItem(SESSION_KEY, String(now)); } catch (_) {}
     }
+  }
+
+  function trackLogin() {
+    try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
+    sessionStart();
   }
 
   function trackPageView() {
@@ -391,12 +407,34 @@
 
   async function fetchEvents(opts) {
     const o = opts || {};
-    const bits = ["select=*", "order=ts.desc", "limit=" + (o.limit || 2000)];
-    if (o.termId) bits.push("term_id=eq." + encodeURIComponent(o.termId));
-    if (o.classId) bits.push("class_id=eq." + encodeURIComponent(o.classId));
-    if (o.assignmentId) bits.push("assignment_id=eq." + encodeURIComponent(o.assignmentId));
-    if (o.since) bits.push("ts=gte." + encodeURIComponent(o.since));
-    return query("/rest/v1/events?" + bits.join("&"));
+    const cap = Math.max(1, Number(o.limit) || 5000);
+    const pageSize = 1000;
+    const out = [];
+    let offset = 0;
+    while (out.length < cap) {
+      const take = Math.min(pageSize, cap - out.length);
+      const bits = ["select=*", "order=ts.desc"];
+      if (o.termId) bits.push("term_id=eq." + encodeURIComponent(o.termId));
+      if (o.classId) bits.push("class_id=eq." + encodeURIComponent(o.classId));
+      if (o.assignmentId) bits.push("assignment_id=eq." + encodeURIComponent(o.assignmentId));
+      if (o.since) bits.push("ts=gte." + encodeURIComponent(o.since));
+      let chunk = [];
+      try {
+        chunk = await rest("/rest/v1/events?" + bits.join("&"), {
+          method: "GET",
+          headers: { Range: offset + "-" + (offset + take - 1), Prefer: "count=exact" }
+        });
+      } catch (err) {
+        if (err && err.status === 416) break;
+        throw err;
+      }
+      const rows = Array.isArray(chunk) ? chunk : [];
+      if (!rows.length) break;
+      out.push.apply(out, rows);
+      if (rows.length < take) break;
+      offset += rows.length;
+    }
+    return out;
   }
 
   async function fetchDevices() {
@@ -803,6 +841,8 @@
     FAMILY_SYNC_URL,
     deviceId,
     track,
+    trackLogin,
+    eventRole,
     flush,
     fetchEvents,
     fetchDevices,

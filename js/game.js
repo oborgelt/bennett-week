@@ -6022,6 +6022,9 @@
     if (sha256hex(pass) !== rec.hash) return null;
     setSessionUser(user);
     if (user === "bennett") recordLoginDay();
+    if (global.Telemetry && typeof global.Telemetry.trackLogin === "function") {
+      global.Telemetry.trackLogin();
+    }
     return user;
   }
 

@@ -5737,6 +5737,12 @@ body.admin-page .usage-panel h2 {
   font-weight: 650;
 }
 
+.usage-table-lead {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin: 0 0 8px;
+}
+
 .usage-table-wrap {
   overflow-x: auto;
   margin: 0 0 14px;

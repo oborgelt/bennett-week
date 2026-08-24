@@ -515,11 +515,11 @@
   }
 
   function paintUsage() {
-    const events = filterUsageEvents(usageEvents);
-    const devices = filterUsageDevices(usageDevices);
+    const rangeEvents = filterUsageRange(usageEvents, (e) => e.ts);
+    const events = usageWho === "all" ? rangeEvents : rangeEvents.filter((e) => e.role === usageWho);
     renderShowing(events);
-    renderHealth(events, devices);
-    renderStats(events);
+    renderHealth(rangeEvents, filterUsageDevices(usageDevices));
+    renderStats(rangeEvents, usageEvents);
     renderRecent(events);
     renderQueries();
     renderClasses(events);
@@ -530,7 +530,8 @@
     if (!el) return;
     const n = (events || []).length;
     const label = USAGE_RANGE_LABEL[usageRange] || usageRange;
-    el.textContent = "Showing: " + label + " · " + n.toLocaleString("en-US") + " action" + (n === 1 ? "" : "s") + " in range";
+    const who = usageWho === "all" ? "everyone" : roleLabel(usageWho);
+    el.textContent = "Showing: " + label + " · " + who + " · " + n.toLocaleString("en-US") + " action" + (n === 1 ? "" : "s") + " in range";
   }
 
   function queryRole(row) {
@@ -627,17 +628,24 @@
       : "";
   }
 
-  function renderStats(events) {
+  function lastEventForRole(events, role) {
+    return (events || [])
+      .filter((e) => (e.role || "unknown") === role)
+      .slice()
+      .sort((a, b) => String(b.ts || "").localeCompare(String(a.ts || "")))[0] || null;
+  }
+
+  function renderStats(rangeEvents, allEvents) {
     const host = document.getElementById("usage-stats");
     if (!host) return;
     const roles = ["bennett", "orin", "parent"];
-    (events || []).forEach((e) => {
+    (allEvents || []).forEach((e) => {
       const role = e.role || "unknown";
       if (roles.indexOf(role) < 0) roles.push(role);
     });
     const rows = roles.map((role) => {
-      const mine = (events || []).filter((e) => (e.role || "unknown") === role);
-      const last = mine.slice().sort((a, b) => String(b.ts || "").localeCompare(String(a.ts || "")))[0];
+      const mine = (rangeEvents || []).filter((e) => (e.role || "unknown") === role);
+      const last = lastEventForRole(rangeEvents, role) || lastEventForRole(allEvents, role);
       return {
         role,
         logins: countBy(mine, "session_start"),
@@ -647,11 +655,13 @@
         asks: countBy(mine, "ask_ai") + countBy(mine, "help_open"),
         total: mine.length,
         lastAt: last ? last.ts : "",
-        lastType: last ? last.type : ""
+        lastType: last ? last.type : "",
+        lastInRange: !!(lastEventForRole(rangeEvents, role))
       };
     }).sort((a, b) => b.total - a.total || roleLabel(a.role).localeCompare(roleLabel(b.role)));
     host.innerHTML = `
       <h3 class="usage-table-title">Per user</h3>
+      <p class="usage-table-lead">Counts are this range. Last action can be older if they were quiet in the range.</p>
       <div class="usage-table-wrap">
         <table class="usage-table">
           <thead>
@@ -663,7 +673,7 @@
               <th class="num">Done</th>
               <th class="num">Asks</th>
               <th class="num">Total actions</th>
-              <th>Last action</th>
+              <th>Last when</th>
               <th>Last action</th>
             </tr>
           </thead>
@@ -676,7 +686,7 @@
               <td class="num">${row.done}</td>
               <td class="num">${row.asks}</td>
               <td class="num">${row.total}</td>
-              <td>${row.lastAt ? Game.esc(Game.fmtStamp(row.lastAt)) : "—"}</td>
+              <td>${row.lastAt ? Game.esc(Game.fmtStamp(row.lastAt)) + (row.lastInRange ? "" : " · older") : "—"}</td>
               <td>${row.lastType ? `<span class="usage-action">${Game.esc(row.lastType)}</span>` : "—"}</td>
             </tr>`).join("")}
           </tbody>
@@ -844,8 +854,7 @@
     paintUsageStatus("Loading usage…");
     try {
       await T.flush();
-      const termId = selectedTermId();
-      usageEvents = await T.fetchEvents({ termId, limit: 2000 }) || [];
+      usageEvents = await T.fetchEvents({ limit: 5000 }) || [];
       usageDevices = await T.fetchDevices() || [];
       const queued = await T.queuedCount();
       paintUsageStatus("Connected · " + usageEvents.length + " events" + (queued ? " · " + queued + " waiting to send" : "") + " · this device " + T.deviceId());
