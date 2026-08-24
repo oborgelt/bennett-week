@@ -1507,7 +1507,9 @@
 
   async function fetchJson(path, fallback) {
     try {
-      const res = await fetch(path, { cache: "no-store" });
+      const raw = String(path || "");
+      const sep = raw.indexOf("?") >= 0 ? "&" : "?";
+      const res = await fetch(raw + sep + "t=" + Date.now(), { cache: "no-store" });
       if (res.ok) return await res.json();
     } catch (_) {}
     return fallback;
