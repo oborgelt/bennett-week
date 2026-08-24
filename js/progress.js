@@ -997,6 +997,12 @@
       e.stopPropagation();
       openWorkEdit(edit.getAttribute("data-edit-work"));
     });
+    document.addEventListener("bw-followup-changed", () => {
+      const latest = Game.getFamilyDraft();
+      if (latest) family = latest;
+      if (!pack) return;
+      render();
+    });
     document.addEventListener("bw-site-view", () => {
       if (!pack) return;
       render();

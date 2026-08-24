@@ -1032,6 +1032,44 @@ html[data-site-view="me"] .admin-chip {
   color: var(--due);
 }
 
+.followup-snooze {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 0 0 6px;
+}
+
+.followup-snooze-label {
+  display: block;
+  flex: 1 1 12rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.followup-snooze-date {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(244, 211, 94, 0.4);
+  background: rgba(7, 22, 24, 0.7);
+  color: var(--ink);
+  font: inherit;
+  color-scheme: dark;
+}
+
+.followup-snooze-hint {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 .followup-email-label {
   display: block;
   font-size: 0.72rem;

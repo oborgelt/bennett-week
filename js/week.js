@@ -2490,6 +2490,11 @@
     } else if (!roster) {
       Game.maybePlayContentCelebration(library);
     }
+    document.addEventListener("bw-followup-changed", () => {
+      const latest = Game.getFamilyDraft();
+      if (latest) family = latest;
+      refreshCardsInPlace();
+    });
     document.addEventListener("bw-site-view", () => {
       if (!pack) return;
       const next = Game.maybeAwardSignIn(pack, family);

@@ -4249,8 +4249,58 @@
     return false;
   }
 
-  function discrepancyFromBits(work, bits) {
+  function parseFollowupSnoozeYmd(raw) {
+    const s = String(raw || "").trim().slice(0, 10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : "";
+  }
+
+  function followupSnoozeUntil(work) {
+    const id = work && work.id;
+    const fromWork = parseFollowupSnoozeYmd(work && (work.followupSnoozeUntil || (work.followup && work.followup.snooze_until)));
+    let fromEdit = "";
+    try {
+      const fam = getFamilyDraft();
+      const edit = id && fam && fam.overlay && fam.overlay.progress && fam.overlay.progress.itemEdits
+        ? fam.overlay.progress.itemEdits[id]
+        : null;
+      fromEdit = parseFollowupSnoozeYmd(edit && edit.followupSnoozeUntil);
+    } catch (_) {}
+    return fromEdit || fromWork;
+  }
+
+  function followupIsSnoozed(work, now) {
+    const until = followupSnoozeUntil(work);
+    if (!until) return false;
+    const today = chicagoYmd(now || new Date());
+    return !!today && until > today;
+  }
+
+  function workFollowupClosedFromBits(bits) {
+    if (!bits) return false;
+    if (bits.excused) return true;
+    if (bits.graded && !bits.zero) return true;
+    return false;
+  }
+
+  function setFollowupSnooze(workId, ymd, family) {
+    const id = String(workId || "").trim();
+    if (!id) return family || getFamilyDraft();
+    const next = family || getFamilyDraft() || emptyFamily();
+    return editProgressItem(next, id, { followupSnoozeUntil: parseFollowupSnoozeYmd(ymd) });
+  }
+
+  function emitFollowupChanged() {
+    try {
+      if (typeof document !== "undefined" && document.dispatchEvent) {
+        document.dispatchEvent(new CustomEvent("bw-followup-changed"));
+      }
+    } catch (_) {}
+  }
+
+  function discrepancyFromBits(work, bits, now) {
     if (!work || String(work.kind || "") === "event") return false;
+    if (workFollowupClosedFromBits(bits)) return false;
+    if (followupIsSnoozed(work, now)) return false;
     if (work.discrepancy === false || work.discrepancy === "false") return false;
     if (work.discrepancy === true || work.discrepancy === "true") return true;
     if (!studentSaysDone(work)) return false;
@@ -4259,8 +4309,6 @@
 
   function workIsDiscrepancy(work, now) {
     if (!work || String(work.kind || "") === "event") return false;
-    if (work.discrepancy === false || work.discrepancy === "false") return false;
-    if (work.discrepancy === true || work.discrepancy === "true") return true;
     return !!(workFeedStatus(work, now) || {}).discrepancy;
   }
 
@@ -4464,6 +4512,12 @@
         <p class="followup-deadline">${esc(deadline)}</p>
         ${reason}
         ${sent}
+        <div class="followup-snooze">
+          <label class="followup-snooze-label">Snooze until
+            <input type="date" class="followup-snooze-date" data-followup-snooze="${esc(work.id)}" value="${esc(followupSnoozeUntil(work))}" min="${esc(chicagoYmd(clock))}">
+          </label>
+        </div>
+        <p class="followup-snooze-hint">Hides until that day. If school grades it first, it leaves this list on its own.</p>
         <label class="followup-email-label">Teacher email
           <textarea class="followup-email" readonly rows="4">${esc(follow.email_draft)}</textarea>
         </label>
@@ -4592,6 +4646,23 @@
     });
   }
 
+  function bindFollowupSnooze() {
+    if (typeof document === "undefined" || !document.addEventListener) return;
+    if (document.documentElement && document.documentElement.dataset.followupSnoozeBound === "1") return;
+    if (document.documentElement) document.documentElement.dataset.followupSnoozeBound = "1";
+    document.addEventListener("change", (e) => {
+      const input = e.target && e.target.closest && e.target.closest("[data-followup-snooze]");
+      if (!input) return;
+      const id = input.getAttribute("data-followup-snooze") || "";
+      if (!id) return;
+      const until = parseFollowupSnoozeYmd(input.value);
+      setFollowupSnooze(id, until);
+      if (until) toast("Snoozed until " + until + ".");
+      else toast("Follow-up is back on the list.");
+      emitFollowupChanged();
+    });
+  }
+
   function workFeedStatus(work, now) {
     const clock = now || new Date();
     const w = work || {};
@@ -4676,8 +4747,10 @@
       status,
       schoolStatus,
       submitted,
-      zero
-    });
+      zero,
+      excused,
+      graded
+    }, clock);
     const needsYou = !!(
       wantContact
       || missing
@@ -8970,6 +9043,9 @@
     teacherFromNote,
     followupEmailSent,
     workIsDiscrepancy,
+    followupSnoozeUntil,
+    followupIsSnoozed,
+    setFollowupSnooze,
     workFollowup,
     discrepancyWork,
     emailsToSend,
@@ -8987,6 +9063,7 @@
     setFollowupCollapsed,
     bindFollowupToggle,
     bindFollowupCopy,
+    bindFollowupSnooze,
     mailtoHref,
     needsYouWork,
     needsYouCounts,
@@ -9088,6 +9165,7 @@
     bindNeedsYouToggle();
     bindFollowupToggle();
     bindFollowupCopy();
+    bindFollowupSnooze();
     bindLibraryPreviewPlay();
     applySiteView();
     bindHudNavClicks();
@@ -9099,6 +9177,7 @@
       bindNeedsYouToggle();
       bindFollowupToggle();
       bindFollowupCopy();
+      bindFollowupSnooze();
       bindLibraryPreviewPlay();
       applySiteView();
       bindHudNavClicks();
