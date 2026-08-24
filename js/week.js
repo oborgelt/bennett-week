@@ -233,6 +233,7 @@
       eggs: Game.getEggs(),
       viewedEvents,
       classIds: standingClasses().map((cls) => cls.id),
+      days: daysFromToday(),
       ...(extra || {})
     });
     family = result.family;

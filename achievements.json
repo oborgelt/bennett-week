@@ -142,10 +142,22 @@
       "streak": { "target": 1, "unit": "time" }
     },
     {
+      "id": "all-assignments-updated",
+      "title": "Meet Scorch",
+      "description": "Marked Done or I started this on every open assignment this week.",
+      "how": "Auto. Bennett taps Done or I started this on every assignment on This Week. Parents can still award Meet Scorch from the desk.",
+      "incentive": "Unlocks Scorch",
+      "icon": "clarinet",
+      "reward": 0,
+      "rewardCharacter": "scorch",
+      "rewardUnlock": { "type": "character", "id": "scorch", "label": "Scorch" },
+      "unlock": { "type": "open_touched" }
+    },
+    {
       "id": "test-scorch-recover",
       "title": "Meet Scorch",
-      "description": "Award this to unlock Scorch for Bennett. Loading the site does not auto-unlock.",
-      "how": "Parents award this when they want Bennett to meet Scorch.",
+      "description": "Award this to unlock Scorch for Bennett without waiting for every open assignment.",
+      "how": "Parents award this when they want Bennett to meet Scorch early. The live path is Done or I started this on every open assignment this week.",
       "incentive": "Unlocks Scorch",
       "icon": "clarinet",
       "reward": 10,

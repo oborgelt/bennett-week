@@ -717,8 +717,9 @@
     else delete week._jjAsk;
     if (src.reflections && typeof src.reflections === "object") week._jjReflections = src.reflections;
     else delete week._jjReflections;
-    if (src.achievements && typeof src.achievements === "object") week._jjAchievements = src.achievements;
-    else delete week._jjAchievements;
+    if (src.achievements && typeof src.achievements === "object" && Array.isArray(src.achievements.achievements) && src.achievements.achievements.length) {
+      week._jjAchievements = src.achievements;
+    } else delete week._jjAchievements;
     if (src.awards && typeof src.awards === "object") week._jjAwards = src.awards;
     else delete week._jjAwards;
     if (src.deletedNotes && typeof src.deletedNotes === "object") week._jjDeletedNotes = src.deletedNotes;

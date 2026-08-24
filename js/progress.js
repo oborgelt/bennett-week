@@ -974,7 +974,8 @@
     syncViews();
     const live = Game.applyLiveUnlocks(pack, family, {
       week: Game.applyWeekOverlay(baseWeek, family),
-      eggs: Game.getEggs()
+      eggs: Game.getEggs(),
+      days: Game.nextNChicagoDays(7)
     });
     family = live.family;
     live.fresh.forEach((ach) => Game.celebrate(ach, pack, null, { roster, family }));

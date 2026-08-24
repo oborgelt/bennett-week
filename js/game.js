@@ -829,6 +829,29 @@
     };
   }
 
+  function mergeAchievementsPack(localRaw, remoteRaw) {
+    const local = normalizeAchievementsPack(localRaw);
+    const remote = normalizeAchievementsPack(remoteRaw);
+    if (!local.achievements.length) return remote;
+    if (!remote.achievements.length) return local;
+    const localNewer = String(local.updatedAt || "") >= String(remote.updatedAt || "");
+    const a = localNewer ? local : remote;
+    const b = localNewer ? remote : local;
+    const byId = {};
+    (b.achievements || []).forEach((ach) => {
+      if (ach && ach.id) byId[ach.id] = ach;
+    });
+    (a.achievements || []).forEach((ach) => {
+      if (!ach || !ach.id) return;
+      byId[ach.id] = Object.assign({}, byId[ach.id] || {}, ach);
+    });
+    return {
+      currency: a.currency || b.currency,
+      achievements: Object.keys(byId).map((id) => byId[id]),
+      updatedAt: localNewer ? local.updatedAt : remote.updatedAt
+    };
+  }
+
   function normalizeAwardsPack(raw) {
     const o = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
     return {
@@ -5545,28 +5568,34 @@
       return classTourComplete(rule.hours, ids, ctx && ctx.family, ach.id);
     }
     if (rule.type === "open_touched") {
-      return openWorkTouched(ctx && ctx.week);
+      return openWorkTouched(ctx && ctx.week, ctx && ctx.days);
     }
     return false;
   }
 
-  function openAssignments(week) {
+  function boardDaysForUnlock(days) {
+    return (days && days.length) ? days : nextNChicagoDays(7);
+  }
+
+  function openAssignments(week, days) {
+    const boardDays = boardDaysForUnlock(days);
     return ((week && week.work) || []).filter((w) => {
       if (!w || !w.id) return false;
       if (String(w.kind || "") === "event") return false;
       const st = workFeedStatus(w);
       if (st.excused || st.submitted || st.graded) return false;
-      if (st.doneHere) return false;
-      return !!(st.notDone || st.missing || st.late || st.unknown || st.needsYou);
+      if (!workOnBoard(w, boardDays) && !st.missing) return false;
+      return true;
     });
   }
 
-  function openWorkTouched(week) {
-    const items = openAssignments(week);
+  function openWorkTouched(week, days) {
+    const items = openAssignments(week, days);
     if (!items.length) return false;
     return items.every((w) => {
       const rec = workState(w.id);
-      return !!(rec.started || rec.done);
+      const st = workFeedStatus(w);
+      return !!(st.doneHere || rec.started || rec.done);
     });
   }
 
@@ -7630,9 +7659,7 @@
       ask: mergeAskThreads(local.ask, remote.ask),
       reflections: mergeReflections(local.reflections, remote.reflections),
       deletedNotes: mergeDeletedNotes(local.deletedNotes, remote.deletedNotes),
-      achievements: String((local.achievements && local.achievements.updatedAt) || "") >= String((remote.achievements && remote.achievements.updatedAt) || "")
-        ? local.achievements
-        : remote.achievements,
+      achievements: mergeAchievementsPack(local.achievements, remote.achievements),
       awards: mergeAwardsPack(local.awards, remote.awards),
       updatedAt: String(local.updatedAt || "") >= String(remote.updatedAt || "") ? local.updatedAt : remote.updatedAt
     };
@@ -7727,7 +7754,7 @@
       packed.achievements = {
         currency: draft.currency || packed.achievements.currency,
         achievements: draft.achievements,
-        updatedAt: packed.achievements.updatedAt || draft.updatedAt || next.overlay.updatedAt || ""
+        updatedAt: packed.achievements.updatedAt || draft.updatedAt || nowIso()
       };
     }
     packed.awards = packed.awards && packed.awards.updatedAt
@@ -8433,6 +8460,7 @@
     { id: "test-bennett-showup", title: "Meet Bennett", reward: 10, rewardCharacter: "bennett", rewardUnlock: { type: "character", id: "bennett", label: "Bennett" } },
     { id: "test-ace-closer", title: "Meet Ace", reward: 10, rewardCharacter: "ace", rewardUnlock: { type: "character", id: "ace", label: "Ace" } },
     { id: "test-riff-reps", title: "Meet Riff", reward: 10, rewardCharacter: "riff", rewardUnlock: { type: "character", id: "riff", label: "Riff" }, unlock: { type: "class_tour", hours: 24 } },
+    { id: "all-assignments-updated", title: "Meet Scorch", reward: 0, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" }, unlock: { type: "open_touched" } },
     { id: "test-scorch-recover", title: "Meet Scorch", reward: 10, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" } },
     { id: "test-deuce-return", title: "Meet Deuce", reward: 10, rewardCharacter: "deuce", rewardUnlock: { type: "character", id: "deuce", label: "Deuce" } },
     { id: "test-fuzz-unplugged", title: "Meet Fuzz", reward: 10, rewardCharacter: "fuzz", rewardUnlock: { type: "character", id: "fuzz", label: "Fuzz" } },
