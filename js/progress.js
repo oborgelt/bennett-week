@@ -972,7 +972,10 @@
     family = Game.maybeAutoPreviewAll(pack, family).family;
     baseSeed = await Game.loadProgress();
     syncViews();
-    const live = Game.applyLiveUnlocks(pack, family, {});
+    const live = Game.applyLiveUnlocks(pack, family, {
+      week: Game.applyWeekOverlay(baseWeek, family),
+      eggs: Game.getEggs()
+    });
     family = live.family;
     live.fresh.forEach((ach) => Game.celebrate(ach, pack, null, { roster, family }));
     document.getElementById("close-sheet").addEventListener("click", closeSheet);

@@ -96,10 +96,15 @@
   const PEDESTAL_SLOT = { l: "36%", t: "38%", w: "28%", h: "42%" };
 
   function parseLocal(iso) {
-    const [d, t] = iso.split("T");
+    if (iso == null || iso === "") return null;
+    const s = String(iso);
+    const [d, t] = s.split("T");
+    if (!d) return null;
     const [y, m, day] = d.split("-").map(Number);
+    if (!y || !m || !day) return null;
     const [hh, mm] = (t || "00:00:00").split(":").map(Number);
-    return new Date(y, m - 1, day, hh || 0, mm || 0, 0);
+    const dt = new Date(y, m - 1, day, hh || 0, mm || 0, 0);
+    return Number.isNaN(dt.getTime()) ? null : dt;
   }
   function ymd(d) {
     const y = d.getFullYear();
@@ -128,6 +133,7 @@
     return d.toLocaleDateString("en-US", { weekday: "long" });
   }
   function dateLabel(d) {
+    if (!d || typeof d.toLocaleDateString !== "function" || Number.isNaN(d.getTime())) return "";
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }
   function whoOn(data, d) {
@@ -136,7 +142,7 @@
     const hits = (data.parenting || []).filter((p) => {
       const a = parseLocal(p.start);
       const b = parseLocal(p.end);
-      return a < end && b > start;
+      return !!(a && b && a < end && b > start);
     });
     if (!hits.length) return { label: "Who: not set", cls: "Split" };
     if (hits.length === 1 && parseLocal(hits[0].start) <= start && parseLocal(hits[0].end) >= end) {
@@ -179,11 +185,14 @@
     const ids = new Set();
     days.forEach((d) => {
       (week.work || []).forEach((w) => {
+        if (!w || !w.due) return;
         if (sameDay(w.due, d)) ids.add(w.id);
         const dueD = parseLocal(w.due);
+        if (!dueD) return;
         const from = w.suggest_from
           ? parseLocal(w.suggest_from + "T00:00:00")
           : new Date(dueD.getTime() - 3 * 86400000);
+        if (!from) return;
         if (!sameDay(w.due, d) && d >= from && d < new Date(dueD.getFullYear(), dueD.getMonth(), dueD.getDate())) {
           ids.add(w.id);
         }
@@ -430,6 +439,7 @@
   function nightWhen(iso) {
     if (!iso) return "";
     const d = parseLocal(iso);
+    if (!d) return "";
     const today = todayInChicago();
     const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const dueDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());

@@ -1134,6 +1134,8 @@
     const unlockHours = Number((document.getElementById("unlock-hours") || {}).value) || 24;
     if (unlockType === "login_days" || unlockType === "login_total" || unlockType === "done_count") {
       next.unlock = { type: unlockType, count: unlockCount };
+    } else if (unlockType === "open_touched") {
+      next.unlock = { type: "open_touched" };
     } else if (unlockType === "class_tour") {
       next.unlock = { type: "class_tour", hours: unlockHours };
     } else if (unlockType === "easter_egg" && prev.unlock && prev.unlock.type === "easter_egg") {

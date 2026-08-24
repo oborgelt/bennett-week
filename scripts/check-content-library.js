@@ -80,7 +80,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=152/.test(basecampHtml) && /basecamp\.js\?v=152/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=153/.test(basecampHtml) && /basecamp\.js\?v=153/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1558,7 +1558,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=152/.test(weekHtml) && /week\.js\?v=152/.test(weekHtml) && /game\.js\?v=152/.test(weekHtml) && /telemetry\.js\?v=152/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=153/.test(weekHtml) && /week\.js\?v=153/.test(weekHtml) && /game\.js\?v=153/.test(weekHtml) && /telemetry\.js\?v=153/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1606,8 +1606,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=151\b/.test(html), file + " should not still cache-bust as v=151");
-  assert(/\?v=152/.test(html), file + " should cache-bust v=152");
+  assert(!/\?v=152\b/.test(html), file + " should not still cache-bust as v=152");
+  assert(/\?v=153/.test(html), file + " should cache-bust v=153");
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
   assert(/week-chip/.test(hud) && /trophy-chip/.test(hud) && /progress-chip/.test(hud) && /crew-chip/.test(hud) && /basecamp-chip/.test(hud) && /messages-chip/.test(hud), file + " HUD has the family core set");
@@ -1662,7 +1662,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=152/.test(progressHtml) && /theme\.css\?v=152/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=153/.test(progressHtml) && /theme\.css\?v=153/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1701,8 +1701,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*150/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 150");
-assert(/2026-08-23T14:20:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-23T14:20:00-05:00");
+assert(/build:\s*151/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 151");
+assert(/2026-08-24T08:50:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-24T08:50:00-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2100,8 +2100,73 @@ assert.strictEqual(intoIntent.count, 5);
 const doneIntent = Game.parseAwardIntent("marks 3 assignments done");
 assert.strictEqual(doneIntent.type, "done_count");
 assert.strictEqual(doneIntent.count, 3);
+const openIntent = Game.parseAwardIntent('Mark either "Done" or "I started this" on every open assignment.');
+assert.strictEqual(openIntent.type, "open_touched", "every open assignment started or done is not a 3-done count");
 const parentIntent = Game.parseAwardIntent("used flash cards for a test");
 assert.strictEqual(parentIntent.type, "parent_award");
+["bw-progress", "bw-unlocks", "bw-character-unlocks", "bw-family"].forEach((key) => localStorage.removeItem(key));
+const openWeek = {
+  work: [
+    { id: "chem-open", title: "Lab", kind: "assignment", status: "open", due: "2026-08-25T23:59:00" },
+    { id: "eng-open", title: "Essay", kind: "assignment", status: "open", due: "2026-08-26T23:59:00" }
+  ]
+};
+assert.strictEqual(Game.openWorkTouched(openWeek), false, "open_touched stays false until every open item is started or done");
+assert.strictEqual(Game.evaluate({ unlock: { type: "open_touched" } }, { week: openWeek }), false);
+Game.touchWork("chem-open", "started");
+assert.strictEqual(Game.openWorkTouched(openWeek), false, "one started assignment is not enough");
+Game.touchWork("eng-open", "done");
+assert(Game.openWorkTouched(openWeek), "every open assignment started or done earns open_touched");
+assert(Game.evaluate({ unlock: { type: "open_touched" } }, { week: openWeek }), "evaluate open_touched is true when the week is touched");
+assert(/open_touched/.test(parentJs), "Parent desk Save can persist the open-assignment unlock");
+const keptRiff = Game.mergeFamilyOverlay(
+  {
+    updatedAt: "2026-08-15T00:00:00.000Z",
+    awards: {
+      updatedAt: "2026-08-15T00:00:00.000Z",
+      characterUnlocks: { riff: "2026-08-15T00:00:00.000Z", ace: "2026-08-15T00:00:00.000Z" },
+      streaks: {
+        "test-riff-reps": { awarded: true, preview: false, grantedCharacter: "riff", grantedUnlock: { type: "character", id: "riff" } }
+      }
+    }
+  },
+  {
+    updatedAt: "2026-08-24T00:00:00.000Z",
+    awards: {
+      updatedAt: "2026-08-24T00:00:00.000Z",
+      characterUnlocks: { ace: "2026-08-24T00:00:00.000Z" },
+      streaks: {
+        "ace-three-done": { awarded: true, preview: false, grantedCharacter: "ace" },
+        "test-riff-reps": { awarded: true, preview: false, grantedCharacter: "riff", grantedUnlock: { type: "character", id: "riff" } }
+      }
+    }
+  }
+);
+assert(keptRiff.awards.characterUnlocks.riff, "a newer awards pack does not drop a still-awarded Riff");
+const droppedRiff = Game.mergeFamilyOverlay(
+  {
+    updatedAt: "2026-08-15T00:00:00.000Z",
+    awards: { updatedAt: "2026-08-15T00:00:00.000Z", characterUnlocks: { riff: "old" }, streaks: {} }
+  },
+  {
+    updatedAt: "2026-08-24T00:00:00.000Z",
+    awards: {
+      updatedAt: "2026-08-24T00:00:00.000Z",
+      characterUnlocks: {},
+      streaks: {
+        "test-riff-reps": { awarded: false, revokedAt: "2026-08-24T00:00:00.000Z", grantedCharacter: "riff", grantedUnlock: { type: "character", id: "riff" } }
+      }
+    }
+  }
+);
+assert(!droppedRiff.awards.characterUnlocks.riff, "parent undo of Meet Riff still drops Riff from the merge");
+["bw-unlocks", "bw-character-unlocks", "bw-character-seen", "bw-preview-all", "bw-preview-ids", "bw-preview-locked", "bw-family"].forEach((key) => localStorage.removeItem(key));
+Game.setSiteView("me");
+const liveRiffFam = Game.awardStreak({ achievements: achievements.achievements }, Game.emptyFamily(), "test-riff-reps");
+assert(Game.alreadyUnlockedCharacter("riff"), "Award Meet Riff unlocks Riff before lock-back");
+const lockedPreview = Game.revokeAllPreview({ achievements: achievements.achievements }, liveRiffFam.family);
+assert(lockedPreview.family.streaks["test-riff-reps"] && lockedPreview.family.streaks["test-riff-reps"].preview === false, "lock preview back leaves a live Meet Riff awarded");
+assert(Game.alreadyUnlockedCharacter("riff"), "lock preview back does not revoke a live Meet Riff");
 const todayYmd = Game.chicagoYmd();
 const fiveDays = [0, 1, 2, 3, 4].map((n) => Game.shiftChicagoYmd(todayYmd, -n));
 assert.strictEqual(Game.consecutiveLoginStreak(fiveDays, todayYmd), 5, "five consecutive login days is a 5-day streak");

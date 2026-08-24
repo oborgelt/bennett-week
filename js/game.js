@@ -215,6 +215,19 @@
         readout: "The site counts Bennett logins. Award at " + count + " days in a row."
       };
     }
+    if ((/every open assignment|all open assignments|every assignment/.test(t) || /started this/.test(t))
+      && /\b(done|finish|complete)\b/.test(t)) {
+      return {
+        type: "open_touched",
+        count: 1,
+        title: "All open assignments updated",
+        description: "Marked Done or I started this on every open assignment.",
+        how: "Auto. Bennett taps Done or I started this on every open assignment this week.",
+        target: 1,
+        unit: "time",
+        readout: "The site watches This Week. Award when every open assignment is Started or Done."
+      };
+    }
     if (/\b(done|finish|complete|mark)\b/.test(t) && /\b(assignment|homework|work|task)/.test(t)) {
       const count = n || 3;
       return {
@@ -2135,9 +2148,9 @@
     const next = normalizeFamily(family);
     next.streaks = Object.assign({}, next.streaks, awards.streaks);
     if (awards.updatedAt) {
-      next.characterUnlocks = asUnlockMap(awards.characterUnlocks);
-      next.gearUnlocks = asUnlockMap(awards.gearUnlocks);
-      next.contentUnlocks = asUnlockMap(awards.contentUnlocks);
+      next.characterUnlocks = mergeCharacterUnlockMaps(asUnlockMap(awards.characterUnlocks), next.characterUnlocks, awards.streaks);
+      next.gearUnlocks = Object.assign({}, asUnlockMap(next.gearUnlocks), asUnlockMap(awards.gearUnlocks));
+      next.contentUnlocks = Object.assign({}, asUnlockMap(next.contentUnlocks), asUnlockMap(awards.contentUnlocks));
       saveCharacterUnlocks(next.characterUnlocks);
       saveGearUnlocks(next.gearUnlocks);
       saveContentUnlocks(next.contentUnlocks);
@@ -5489,7 +5502,30 @@
         : (ctx && Array.isArray(ctx.classIds) && ctx.classIds.length ? ctx.classIds.map(String) : CLASS_IDS);
       return classTourComplete(rule.hours, ids, ctx && ctx.family, ach.id);
     }
+    if (rule.type === "open_touched") {
+      return openWorkTouched(ctx && ctx.week);
+    }
     return false;
+  }
+
+  function openAssignments(week) {
+    return ((week && week.work) || []).filter((w) => {
+      if (!w || !w.id) return false;
+      if (String(w.kind || "") === "event") return false;
+      const st = workFeedStatus(w);
+      if (st.excused || st.submitted || st.graded) return false;
+      if (st.doneHere) return false;
+      return !!(st.notDone || st.missing || st.late || st.unknown || st.needsYou);
+    });
+  }
+
+  function openWorkTouched(week) {
+    const items = openAssignments(week);
+    if (!items.length) return false;
+    return items.every((w) => {
+      const rec = workState(w.id);
+      return !!(rec.started || rec.done);
+    });
   }
 
   function doneAssignmentCount() {
@@ -7559,6 +7595,26 @@
     return merged;
   }
 
+  function mergeCharacterUnlockMaps(newerMap, olderMap, newerStreaks) {
+    const a = asUnlockMap(newerMap);
+    const b = asUnlockMap(olderMap);
+    const merged = Object.assign({}, b, a);
+    Object.keys(merged).forEach((id) => {
+      if (a[id]) return;
+      const stillGranted = Object.keys(newerStreaks || {}).some((achId) => {
+        const st = newerStreaks[achId];
+        return !!(st && st.awarded && streakUnlockMatches(st, "character", id));
+      });
+      if (stillGranted) return;
+      const revoked = Object.keys(newerStreaks || {}).some((achId) => {
+        const st = newerStreaks[achId];
+        return !!(st && !st.awarded && st.revokedAt && streakUnlockMatches(st, "character", id));
+      });
+      if (revoked) delete merged[id];
+    });
+    return merged;
+  }
+
   function mergeAwardsPack(localAwards, remoteAwards) {
     const local = normalizeAwardsPack(localAwards);
     const remote = normalizeAwardsPack(remoteAwards);
@@ -7567,7 +7623,7 @@
     const b = newerFirst ? remote : local;
     return {
       streaks: Object.assign({}, b.streaks, a.streaks),
-      characterUnlocks: a.updatedAt ? Object.assign({}, a.characterUnlocks) : Object.assign({}, b.characterUnlocks, a.characterUnlocks),
+      characterUnlocks: mergeCharacterUnlockMaps(a.characterUnlocks, b.characterUnlocks, a.streaks),
       gearUnlocks: Object.assign({}, b.gearUnlocks, a.gearUnlocks),
       contentUnlocks: Object.assign({}, b.contentUnlocks, a.contentUnlocks),
       unlocks: a.updatedAt ? Object.assign({}, a.unlocks) : Object.assign({}, b.unlocks, a.unlocks),
@@ -8438,6 +8494,8 @@
     let next = normalizeFamily(family);
     let revoked = 0;
     previewAwardIds(working).forEach((id) => {
+      const st = next.streaks[id];
+      if (st && st.awarded && st.preview === false) return;
       const result = revokeAchievement(working, next, id);
       next = result.family;
       if (result.revoked) revoked += 1;
@@ -8512,6 +8570,7 @@
     mergeAchievementUnlocks,
     markClassVisit,
     classTourComplete,
+    openWorkTouched,
     CLASS_IDS,
     clearMomDraft,
     usingMomCharacters,
