@@ -317,15 +317,24 @@
   }
 
   async function postAsk(url, payload, headers) {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: Object.assign({ "Content-Type": "application/json" }, headers || {}),
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error("ask unavailable");
-    const data = await res.json();
-    if (!data || data.error || !data.reply) throw new Error((data && data.error) || "ask error");
-    return Object.assign({ live: true, source: data.source || "live" }, data);
+    const ctrl = (typeof AbortController === "function") ? new AbortController() : null;
+    const timer = ctrl && global.setTimeout ? global.setTimeout(() => {
+      try { ctrl.abort(); } catch (_) {}
+    }, 25000) : 0;
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: Object.assign({ "Content-Type": "application/json" }, headers || {}),
+        body: JSON.stringify(payload),
+        signal: ctrl ? ctrl.signal : undefined
+      });
+      if (!res.ok) throw new Error("ask unavailable");
+      const data = await res.json();
+      if (!data || data.error || !data.reply) throw new Error((data && data.error) || "ask error");
+      return Object.assign({ live: true, source: data.source || "live" }, data);
+    } finally {
+      if (timer && global.clearTimeout) global.clearTimeout(timer);
+    }
   }
 
   async function ask(payload) {

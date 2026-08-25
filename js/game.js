@@ -4712,7 +4712,7 @@
     {
       id: "basecamp",
       title: "Base Camp",
-      body: "Jungle Jam Tutor. Photo, file, or chat. He will walk the problem with you and will not fill in the packet. Pick the class, start a new climb when you need a fresh thread. Chem can open the periodic table full size."
+      body: "Jungle Jam Tutor. Type in the box. Paste a screenshot. Upload a photo or a PDF (first pages). He will walk the problem with you and will not fill in the packet. Pick the class, start a new climb when you need a fresh thread. Chem can open the periodic table full size."
     },
     {
       id: "story",

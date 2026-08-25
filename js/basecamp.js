@@ -138,9 +138,41 @@
     });
   }
 
+  function isPdfFile(file) {
+    const type = String((file && file.type) || "").toLowerCase();
+    const name = String((file && file.name) || "").toLowerCase();
+    return type === "application/pdf" || type === "application/x-pdf" || /\.pdf$/.test(name);
+  }
+
+  function isImageFile(file, fromCamera) {
+    if (fromCamera) return true;
+    const type = String((file && file.type) || "").toLowerCase();
+    const name = String((file && file.name) || "").toLowerCase();
+    if (type.indexOf("image/") === 0) return true;
+    return /\.(png|jpe?g|gif|webp|heic|heif|bmp)$/.test(name);
+  }
+
+  function filesFromDataTransfer(dt) {
+    if (!dt) return [];
+    const seen = {};
+    const out = [];
+    const add = (file) => {
+      if (!file) return;
+      const key = String(file.name || "file") + ":" + String(file.size || 0) + ":" + String(file.type || "");
+      if (seen[key]) return;
+      seen[key] = true;
+      out.push(file);
+    };
+    Array.from(dt.files || []).forEach(add);
+    Array.from(dt.items || []).forEach((item) => {
+      if (item && item.kind === "file" && typeof item.getAsFile === "function") add(item.getAsFile());
+    });
+    return out;
+  }
+
   function compressImage(file) {
     return new Promise((resolve) => {
-      if (!file || !/^image\//.test(file.type || "")) {
+      if (!file || !isImageFile(file, false)) {
         resolve(null);
         return;
       }
@@ -466,11 +498,26 @@
     });
   }
 
+  async function openPdfDocument(pdfjs, buf) {
+    try {
+      return await pdfjs.getDocument({ data: buf }).promise;
+    } catch (err) {
+      const msg = String((err && (err.name || err.message)) || err || "");
+      if (/password/i.test(msg)) {
+        const locked = new Error("locked");
+        locked.code = "locked";
+        throw locked;
+      }
+      return await pdfjs.getDocument({ data: buf, disableWorker: true }).promise;
+    }
+  }
+
   async function addPdf(file) {
+    Game.toast("Reading PDF…");
     try {
       const pdfjs = await loadPdfJs();
       const buf = new Uint8Array(await file.arrayBuffer());
-      const doc = await pdfjs.getDocument({ data: buf }).promise;
+      const doc = await openPdfDocument(pdfjs, buf);
       const max = Math.min(PDF_MAX_PAGES, doc.numPages || 0);
       const pages = [];
       const textParts = [];
@@ -504,7 +551,7 @@
           .trim();
         if (pageText) textParts.push(pageText);
       }
-      if (!pages.length) {
+      if (!pages.length && !textParts.length) {
         Game.toast("Could not read that PDF.");
         return;
       }
@@ -519,7 +566,17 @@
         text: text
       });
       paintPending();
-    } catch (_) {
+      Game.toast(pages.length ? "PDF ready. Type what you noticed, then Send." : "Got the PDF text. Type what you noticed, then Send.");
+    } catch (err) {
+      const code = String((err && (err.code || err.message)) || "");
+      if (code === "locked" || /password/i.test(code)) {
+        Game.toast("That PDF is password locked.");
+        return;
+      }
+      if (/pdf\.js failed to load|pdf\.js missing/i.test(code)) {
+        Game.toast("Could not load the PDF reader. Check the connection and try again.");
+        return;
+      }
       Game.toast("Could not read that PDF.");
     }
   }
@@ -927,13 +984,11 @@
 
   async function addFile(file, fromCamera) {
     if (!file) return;
-    const isPdf = /pdf/.test(file.type || "") || /\.pdf$/i.test(file.name || "");
-    const isImage = /^image\//.test(file.type || "") || fromCamera;
-    if (isPdf) {
+    if (isPdfFile(file) && !fromCamera) {
       await addPdf(file);
       return;
     }
-    if (!isImage) {
+    if (!isImageFile(file, fromCamera)) {
       Game.toast("Photo or PDF only.");
       return;
     }
@@ -948,12 +1003,51 @@
       id: Game.uid("att"),
       kind: "image",
       name: file.name || "Photo",
-      mime: "image/jpeg",
+      mime: compressed.type || file.type || "image/jpeg",
       data: data,
       blob: compressed,
       preview: preview
     });
     paintPending();
+  }
+
+  async function addFiles(list) {
+    const files = Array.from(list || []).filter(Boolean);
+    for (let i = 0; i < files.length; i += 1) {
+      await addFile(files[i], false);
+    }
+  }
+
+  function onComposerPaste(e) {
+    const files = filesFromDataTransfer(e.clipboardData);
+    const usable = files.filter((file) => isPdfFile(file) || isImageFile(file, false));
+    if (!usable.length) return;
+    if (e.preventDefault) e.preventDefault();
+    addFiles(usable);
+  }
+
+  function onComposerDragOver(e) {
+    if (!e.dataTransfer) return;
+    if (e.preventDefault) e.preventDefault();
+    const form = document.getElementById("bc-form");
+    if (form) form.classList.add("is-drop");
+  }
+
+  function onComposerDragLeave(e) {
+    const form = document.getElementById("bc-form");
+    if (!form) return;
+    if (e && e.relatedTarget && form.contains(e.relatedTarget)) return;
+    form.classList.remove("is-drop");
+  }
+
+  function onComposerDrop(e) {
+    const form = document.getElementById("bc-form");
+    if (form) form.classList.remove("is-drop");
+    const files = filesFromDataTransfer(e.dataTransfer);
+    const usable = files.filter((file) => isPdfFile(file) || isImageFile(file, false));
+    if (!usable.length) return;
+    if (e.preventDefault) e.preventDefault();
+    addFiles(usable);
   }
 
   function thinkingBubble() {
@@ -1029,33 +1123,38 @@
     paintSessions();
     await paintLog();
     const sendBtn = document.getElementById("bc-send");
-    sendBtn.disabled = true;
+    if (sendBtn) sendBtn.disabled = true;
     sending = true;
     const thinking = thinkingBubble();
-    const started = Date.now();
-    const title = cardTitle || className();
-    const data = await Tutor.ask({
-      title: title,
-      className: className(),
-      classId: classId,
-      messages: (current() && current().messages) || [],
-      images: sentImages
-    });
-    const wait = 700 - (Date.now() - started);
-    if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
-    if (thinking.parentNode) thinking.parentNode.removeChild(thinking);
-    const reply = Game.addBasecampMessage(family, sessionId, {
-      role: "mentor",
-      text: data.reply || "I can walk it with you. I will not fill it in. What did you already try?",
-      test: !data.live
-    });
-    family = reply.family;
-    sendBtn.disabled = false;
-    sending = false;
-    paintSessions();
-    await paintLog();
-    if (!data.live) {
-      Game.toast("Offline Jungle Jam Tutor — honest fallback, not a photo read.");
+    try {
+      const started = Date.now();
+      const title = cardTitle || className();
+      const data = await Tutor.ask({
+        title: title,
+        className: className(),
+        classId: classId,
+        messages: (current() && current().messages) || [],
+        images: sentImages
+      });
+      const wait = 700 - (Date.now() - started);
+      if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
+      const reply = Game.addBasecampMessage(family, sessionId, {
+        role: "mentor",
+        text: data.reply || "I can walk it with you. I will not fill it in. What did you already try?",
+        test: !data.live
+      });
+      family = reply.family;
+      paintSessions();
+      await paintLog();
+      if (!data.live) {
+        Game.toast("Offline Jungle Jam Tutor — honest fallback, not a photo read.");
+      }
+    } catch (_) {
+      Game.toast("Tutor hit a snag. Try Send again.");
+    } finally {
+      if (thinking && thinking.parentNode) thinking.parentNode.removeChild(thinking);
+      if (sendBtn) sendBtn.disabled = false;
+      sending = false;
     }
   }
 
@@ -1180,6 +1279,9 @@
       });
     }
     playBasecampIntro();
+    window.setTimeout(() => {
+      if (!introDone) finishBasecampIntro();
+    }, 20000);
   }
 
   function maybeStartBasecampIntro() {
@@ -1218,6 +1320,11 @@
       send();
     });
     document.getElementById("bc-input").addEventListener("keydown", onComposerKeydown);
+    document.getElementById("bc-input").addEventListener("paste", onComposerPaste);
+    document.getElementById("bc-form").addEventListener("paste", onComposerPaste);
+    document.getElementById("bc-form").addEventListener("dragover", onComposerDragOver);
+    document.getElementById("bc-form").addEventListener("dragleave", onComposerDragLeave);
+    document.getElementById("bc-form").addEventListener("drop", onComposerDrop);
     document.addEventListener("wheel", onBasecampWheel, { passive: false });
     document.getElementById("bc-new").addEventListener("click", newSession);
     const railToggle = document.getElementById("bc-rail-toggle");
@@ -1231,9 +1338,9 @@
       addFile(file, true);
     });
     document.getElementById("bc-upload").addEventListener("change", (e) => {
-      const file = e.target.files && e.target.files[0];
+      const files = e.target.files ? Array.from(e.target.files) : [];
       e.target.value = "";
-      addFile(file, false);
+      addFiles(files);
     });
     document.getElementById("bc-calc-pad").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-calc]");

@@ -6814,6 +6814,13 @@ body.basecamp-page .bc-tools-drawer > summary {
   color: var(--ink);
   padding: 10px 12px;
   font: inherit;
+  caret-color: #ffe08a;
+}
+
+.bc-composer.is-drop {
+  outline: 2px solid #ffe08a;
+  outline-offset: 2px;
+  border-radius: 16px;
 }
 
 .bc-tools {
