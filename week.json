@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-24T21:52:00",
+  "as_of": "2026-08-25T14:10:00",
   "parenting": [
     {
       "who": "Mom",
@@ -831,7 +831,7 @@
       "title": "Picture day (day 2)",
       "start": "2026-08-27",
       "kind": "calendar",
-      "note": "Wolgast Gmail 8/19: Picture Day Wed Aug 26 and Thu Aug 27 during English class."
+      "note": "OE homepage + Wolgast: Picture Day Thu Aug 27 7:00am–2:40pm during English class."
     },
     {
       "id": "band-passoff-opener-0828",
@@ -874,6 +874,29 @@
       "classId": "band",
       "place": "Olathe East High School",
       "note": "Fillingham Band Update 8/23: Booster Meeting 6:00 PM; rehearsal 6:30 PM same night."
+    },
+    {
+      "id": "picture-0826",
+      "title": "Picture day",
+      "start": "2026-08-26",
+      "kind": "calendar",
+      "note": "OE homepage + Wolgast: Picture Day Wed Aug 26 7:00am–2:40pm during English class."
+    },
+    {
+      "id": "labor-day-0907",
+      "title": "OE: Labor Day - No School",
+      "start": "2026-09-07",
+      "kind": "calendar",
+      "place": "Olathe East"
+    },
+    {
+      "id": "clubs-fair-0825",
+      "title": "Activity / Clubs Fair",
+      "start": "2026-08-25T10:55:00",
+      "end": "2026-08-25T12:10:00",
+      "kind": "calendar",
+      "place": "Olathe East",
+      "note": "east.olatheschools.org homepage."
     }
   ],
   "work": [
@@ -1080,7 +1103,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn, P3 9:20. 20 pts. PAST DUE. Live Canvas Mon ~5:15pm: still no submission/score (–/20). ParentVUE 0 missing. Work is in CodeHS: 1.1.1–1.1.4.",
+      "note": "Derek Linn, P3 9:20. 20 pts. PAST DUE. Live Canvas Tue 8/25 ~2:10pm: still no submission/score (–/20), no Missing flag. ParentVUE not pulled this pass (login expired).",
       "canvas": {
         "status": "late",
         "points": 20
@@ -1104,7 +1127,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn, P3 9:20. 40 pts. PAST DUE Mon 8/24 9:20am. Live Canvas Mon ~5:15pm: No Submission, –/40 ungraded, no Missing flag. ParentVUE 0 missing. Already on Outlook.",
+      "note": "Derek Linn, P3 9:20. 40 pts. PAST DUE Mon 8/24 9:20am. Live Canvas Tue 8/25 ~2:10pm: still No Submission, –/40, no Missing flag. ParentVUE not pulled this pass.",
       "canvas": {
         "status": "late",
         "points": 40,
@@ -1175,7 +1198,7 @@
       "late": false,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Goodson/Carl. 5 pts. Open –/5. Due Fri Aug 28 11:59 PM. On Outlook. Unchanged Mon 8/24 after-school.",
+      "note": "Goodson/Carl. 5 pts. Open –/5. Due Fri Aug 28 11:59 PM. On Outlook. Unchanged Tue 8/25 after-school.",
       "canvas": {
         "status": "open",
         "points": 5,
@@ -1200,7 +1223,7 @@
       "late": false,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn. 10 pts. Due Mon Aug 31 9:20am. Seen on Canvas Mon 8/24 after-school pull.",
+      "note": "Derek Linn. 10 pts. Due Mon Aug 31 9:20am. Unchanged Tue 8/25 after-school. Still no submission.",
       "canvas": {
         "status": "open",
         "points": 10,
@@ -1224,7 +1247,7 @@
       "late": false,
       "submitted_at": null,
       "source": "english-agenda",
-      "note": "Goodson Daily Agendas 8/24: listen CH2 Quinn; homework read to p.40 by block day. Sheet also: 8/26–8/27 pg. 5–40 due. Picture day 8/26. Not a Canvas assignment row.",
+      "note": "Goodson Daily Agendas: 8/25 row is EMPTY (10.1 Case Launch not on the sheet). Canvas has 3DE Materials link “10.1 - Freddie Mac” but no assignment row. Sheet still: 8/26–8/27 pg. 5–40 due; picture day 8/26. Homework from 8/24: read to p.40 by block day.",
       "school_status": "open",
       "student_status": null,
       "discrepancy": false,
@@ -1232,6 +1255,56 @@
         "due_by": null,
         "email_draft": null,
         "email_sent": false
+      }
+    },
+    {
+      "id": "web-14",
+      "title": "Web Design: 1.4 Viewing Websites",
+      "classId": "web-design",
+      "due": "2026-08-31T09:20:00",
+      "status": "open",
+      "points": 11,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Derek Linn. NEW Tue 8/25 after-school. 11 pts. Due Mon Aug 31 9:20am. No submission. On Canvas To Do with 1.3 and 1.5.",
+      "canvas": {
+        "status": "open",
+        "points": 11,
+        "due": "2026-08-31T09:20:00"
+      }
+    },
+    {
+      "id": "web-15",
+      "title": "Web Design: 1.5 What is the Web? Quiz",
+      "classId": "web-design",
+      "due": "2026-08-31T09:20:00",
+      "status": "open",
+      "points": 13,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Derek Linn. NEW Tue 8/25 after-school. 13 pts. Listed as Assignment not a Canvas quiz. Due Mon Aug 31 9:20am. No submission.",
+      "canvas": {
+        "status": "open",
+        "points": 13,
+        "due": "2026-08-31T09:20:00"
       }
     }
   ],
@@ -1335,6 +1408,11 @@
       "date": "2026-08-24",
       "title": "Bedtime check (~9:52pm CT)",
       "text": "Canvas unchanged vs 5:15pm (Chem 100% 36/36; English 100% 25/25; Web 1.1/1.2/1.3 no submissions). ParentVUE after Orin sign-in: Grade Book unchanged — Soc A- 91% (8/19), Chem A+ 100% (8/24), English A+ 100% (8/23), others N/A, 0 missing. NEW ParentVUE mail 9:30pm: Justin Pfeiff, Safety Contracts — parent/guardian signature needed TONIGHT so Bennett can participate in first lab. Alerts: nothing new (only July 1 athletics). Attendance: no new marks; 8/14 not flagged. Gmail: district alignment/closure recommendation for Sept 3 BOE (not OE-specific). No Bennett-said-done today; no new discrepancy."
+    },
+    {
+      "date": "2026-08-25",
+      "title": "After-school check (~2:10pm CT)",
+      "text": "NEW Canvas: Web Design 1.4 Viewing Websites –/11 and 1.5 What is the Web? Quiz –/13, both due Mon 8/31 9:20am with 1.3 Browsers. 1.1 –/20 and 1.2 –/40 still no submission, no Missing flag. English 100% (25/25); Choice Book Check-In still –/5 due Fri 8/28. Agenda 8/25 row EMPTY (no 10.1 Case Launch on the sheet); Canvas 3DE module has “10.1 - Freddie Mac” link only. AAB pg 5-40 due block day 8/26–27; picture day Wed–Thu. Chem 100% (36/36), no new items, About Me row still gone. No newly published courses. ParentVUE not pulled: login expired, password box empty. Gmail NEW: Bennett forwarded Keach Sociology syllabus (PDF) to both parents Tue 9:00am; Keach original Mon 10:30am “Keep it handy.” oeband.com public site unchanged (calendar under construction). Labor Day Mon Sep 7 no school. No Bennett-said-done today; no new discrepancy."
     }
   ],
   "grades": [
