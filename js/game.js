@@ -30,8 +30,7 @@
     classVisits: "bw-class-visits",
     needsYouCollapsed: "bw-needs-you-collapsed",
     needsYouCollapsedProgress: "bw-needs-you-collapsed-progress",
-    followupCollapsed: "bw-followup-collapsed",
-    bennettHelpCollapsed: "bw-bennett-help-collapsed"
+    followupCollapsed: "bw-followup-collapsed"
   };
 
   const SITE_VIEWS = ["me", "bennett", "mom"];
@@ -4668,17 +4667,17 @@
     {
       id: "sign-in",
       title: "Sign in",
-      body: "Use your Bennett login on this phone. If the bar says Not you, tap it and sign in again."
+      body: "Use your Bennett login on this phone. If the bar says Not you, tap it and sign in again. Dad can Preview as Bennett or Mom. Your work stays yours."
     },
     {
       id: "this-week",
       title: "This week",
-      body: "Seven day cards starting today. Class chips jump to a class. Week rally counts Started and Done for the week. Swipe, tap the dots, or use Prev / Next."
+      body: "Seven day cards starting today. Class chips jump to a class. Week rally counts Started and Done for the week. Swipe, tap the dots, or use Prev / Next. Later sits under the week if something is not on these seven days."
     },
     {
       id: "assignments",
       title: "Assignments",
-      body: "I started this stamps a time. Done marks it finished here. Undo is the small button. You can Edit an assignment. Add one if it is missing from the board."
+      body: "I started this stamps a time. Done marks it finished here. Undo is the small button next to the stamp. You can Edit an assignment. Add one if it is missing from the board. Delete is gone on purpose."
     },
     {
       id: "little-help",
@@ -4688,7 +4687,7 @@
     {
       id: "needs-you",
       title: "Needs you",
-      body: "Open, late, or missing work that still needs you. Plan tells Mom and Dad what you are going to do."
+      body: "Open, late, or missing work that still needs you. Plan tells Mom and Dad what you are going to do. That list is on This Week and on Progress."
     },
     {
       id: "follow-up",
@@ -4737,72 +4736,214 @@
     }
   ];
 
-  function bennettHelpBodyHtml() {
-    return BENNETT_HELP_SECTIONS.map((row) => {
-      return `<article class="bennett-help-card" id="help-${esc(row.id)}">
-        <h3>${esc(row.title)}</h3>
-        <p>${esc(row.body)}</p>
-      </article>`;
-    }).join("");
+  function helpNeedle(q) {
+    return String(q || "").trim().toLowerCase();
   }
 
-  function bennettHelpCollapsed() {
-    try {
-      return read(KEYS.bennettHelpCollapsed, true) === true || read(KEYS.bennettHelpCollapsed, "") === "1";
-    } catch (_) {
-      return true;
+  function filterBennettHelp(q) {
+    const needle = helpNeedle(q);
+    if (!needle) return BENNETT_HELP_SECTIONS.slice();
+    return BENNETT_HELP_SECTIONS.filter((row) => {
+      const hay = ((row && row.title) || "") + " " + ((row && row.body) || "");
+      return hay.toLowerCase().indexOf(needle) >= 0;
+    });
+  }
+
+  function markHelpMatch(text, q) {
+    const raw = String(text || "");
+    const needle = helpNeedle(q);
+    if (!needle) return esc(raw);
+    const lower = raw.toLowerCase();
+    let out = "";
+    let i = 0;
+    while (i < raw.length) {
+      const hit = lower.indexOf(needle, i);
+      if (hit < 0) {
+        out += esc(raw.slice(i));
+        break;
+      }
+      out += esc(raw.slice(i, hit)) + "<mark>" + esc(raw.slice(hit, hit + needle.length)) + "</mark>";
+      i = hit + needle.length;
     }
+    return out;
   }
 
-  function setBennettHelpCollapsed(on) {
-    write(KEYS.bennettHelpCollapsed, !!on);
-    return !!on;
+  function bennettHelpCardHtml(row, q) {
+    const item = row || {};
+    return `<article class="help-article" id="help-${esc(item.id)}" data-help-id="${esc(item.id)}">
+        <h2>${markHelpMatch(item.title, q)}</h2>
+        <p>${markHelpMatch(item.body, q)}</p>
+      </article>`;
   }
 
-  function bennettHelpSectionHtml() {
-    const collapsed = bennettHelpCollapsed();
-    const hint = collapsed ? "Show" : "Hide";
+  function bennettHelpBodyHtml(q) {
+    const rows = filterBennettHelp(q);
+    if (!rows.length) {
+      const shown = esc(String(q || "").trim());
+      return `<p class="help-empty">Nothing in Help matches "${shown}".</p>`;
+    }
+    return rows.map((row) => bennettHelpCardHtml(row, q)).join("");
+  }
+
+  function bennettHelpTocHtml(q) {
+    const rows = filterBennettHelp(q);
+    if (!rows.length) return "";
+    const items = rows.map((row) => {
+      return `<li><a class="help-toc-link" href="#help-${esc(row.id)}">${markHelpMatch(row.title, q)}</a></li>`;
+    }).join("");
+    return `<ol class="help-toc-list">${items}</ol>`;
+  }
+
+  function helpLaunchHtml(file) {
+    const name = String(file || pageFile() || "").toLowerCase();
+    const onHelp = name === "help.html";
+    const extra = onHelp
+      ? ' aria-current="page"'
+      : ' target="_blank" rel="noopener noreferrer"';
+    const label = onHelp ? "Help" : "Open Help in a new tab";
+    return `<a class="help-launch${onHelp ? " on" : ""}" href="help.html"${extra} aria-label="${esc(label)}"><span class="help-launch-mark" aria-hidden="true">?</span><span class="help-launch-label">Help</span></a>`;
+  }
+
+  function mountHelpLaunch() {
+    if (typeof document === "undefined" || !document.querySelectorAll) return null;
+    const html = helpLaunchHtml();
+    const hosts = [];
+    Array.from(document.querySelectorAll(".hud-bar, .pt-head") || []).forEach((bar) => {
+      if (bar) hosts.push(bar);
+    });
+    hosts.forEach((bar) => {
+      const existing = bar.querySelector ? bar.querySelector(".help-launch") : null;
+      if (!existing) {
+        if (bar.insertAdjacentHTML) bar.insertAdjacentHTML("beforeend", html);
+        return;
+      }
+      const wrap = document.createElement("div");
+      wrap.innerHTML = html;
+      const next = wrap.firstElementChild;
+      if (next && existing.parentNode && existing.parentNode.replaceChild) {
+        existing.parentNode.replaceChild(next, existing);
+      }
+    });
+    return document.querySelector ? document.querySelector(".help-launch") : null;
+  }
+
+  function bennettHelpPageHtml(q) {
+    const needle = String(q || "");
+    const rows = filterBennettHelp(needle);
+    const n = BENNETT_HELP_SECTIONS.length;
+    const status = helpNeedle(needle)
+      ? (rows.length ? rows.length + " match" + (rows.length === 1 ? "" : "es") : "No matches")
+      : n + " topics";
     return `
-      <button type="button" class="needs-you-toggle bennett-help-toggle" data-bennett-help-toggle aria-expanded="${collapsed ? "false" : "true"}">
-        <span class="followup-toggle-title">Help</span>
-        <span class="needs-you-toggle-hint bennett-help-toggle-hint">${esc(hint)}</span>
-      </button>
-      <div class="bennett-help-fold"${collapsed ? " hidden" : ""}>
-        <p class="bennett-help-lead">How your Jungle Jam screens work. HUD Help opens this as its own page.</p>
-        <div class="bennett-help-body">${bennettHelpBodyHtml()}</div>
-        <p class="bennett-help-more"><a href="help.html">Open full Help</a></p>
+      <header class="help-desk-head">
+        <p class="help-desk-kicker">Bennett's screens</p>
+        <h2 class="help-desk-title">How Jungle Jam works</h2>
+        <p class="help-desk-lead">Your screens, in one place. This is not Mom or Dad's desk. Tap a topic or search.</p>
+        <label class="help-search">
+          <span class="sr-only">Search Help</span>
+          <input type="search" id="help-search" name="q" value="${esc(needle)}" placeholder="Search Help" autocomplete="off" spellcheck="false">
+        </label>
+        <p class="help-search-status" id="help-search-status" role="status">${esc(status)}</p>
+      </header>
+      <div class="help-desk-layout">
+        <nav class="help-toc" id="help-toc" aria-label="On this page">
+          <h2 class="help-toc-title">On this page</h2>
+          ${bennettHelpTocHtml(needle)}
+        </nav>
+        <div class="help-desk-body" id="help-desk-body">${bennettHelpBodyHtml(needle)}</div>
       </div>`;
   }
 
-  function bennettHelpPageHtml() {
-    return `
-      <p class="bennett-help-lead">Your screens, in one place. This is not Mom or Dad's desk.</p>
-      <div class="bennett-help-body">${bennettHelpBodyHtml()}</div>`;
+  function paintBennettHelpResults(host, q) {
+    if (!host || !host.querySelector) return;
+    const needle = String(q || "");
+    const rows = filterBennettHelp(needle);
+    const n = BENNETT_HELP_SECTIONS.length;
+    const status = helpNeedle(needle)
+      ? (rows.length ? rows.length + " match" + (rows.length === 1 ? "" : "es") : "No matches")
+      : n + " topics";
+    const toc = host.querySelector("#help-toc");
+    const body = host.querySelector("#help-desk-body");
+    const note = host.querySelector("#help-search-status");
+    if (toc) toc.innerHTML = `<h2 class="help-toc-title">On this page</h2>${bennettHelpTocHtml(needle)}`;
+    if (body) body.innerHTML = bennettHelpBodyHtml(needle);
+    if (note) note.textContent = status;
   }
 
-  function bindBennettHelpToggle() {
-    if (typeof document === "undefined" || !document.addEventListener) return;
-    if (document.documentElement && document.documentElement.dataset.bennettHelpToggleBound === "1") return;
-    if (document.documentElement) document.documentElement.dataset.bennettHelpToggleBound = "1";
-    document.addEventListener("click", (e) => {
-      const btn = e.target && e.target.closest && e.target.closest("[data-bennett-help-toggle]");
-      if (!btn) return;
-      e.preventDefault();
-      const collapsed = setBennettHelpCollapsed(!bennettHelpCollapsed());
-      const host = (btn.closest && (btn.closest("#bennett-help") || btn.closest(".bennett-help"))) || btn.parentNode;
-      if (host && host.classList) host.classList.toggle("collapsed", collapsed);
-      btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
-      const hint = btn.querySelector(".bennett-help-toggle-hint");
-      if (hint) hint.textContent = collapsed ? "Show" : "Hide";
-      const fold = host && host.querySelector ? host.querySelector(".bennett-help-fold") : null;
-      if (fold) fold.hidden = collapsed;
-    });
+  function helpTypingTarget(el) {
+    if (!el) return false;
+    const tag = String(el.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return true;
+    return !!(el.isContentEditable);
+  }
+
+  function bindBennettHelpPage(host) {
+    const root = host || (typeof document !== "undefined" && document.getElementById ? document.getElementById("bennett-help-page") : null);
+    if (!root || !root.querySelector) return;
+    const input = root.querySelector("#help-search");
+    if (input && !input.dataset.helpSearchBound) {
+      input.dataset.helpSearchBound = "1";
+      const apply = () => paintBennettHelpResults(root, input.value);
+      input.addEventListener("input", apply);
+      input.addEventListener("search", apply);
+    }
+    if (typeof document !== "undefined" && document.addEventListener && document.documentElement && document.documentElement.dataset.bennettHelpKeysBound !== "1") {
+      document.documentElement.dataset.bennettHelpKeysBound = "1";
+      document.addEventListener("keydown", (e) => {
+        if (!e) return;
+        const field = root.querySelector("#help-search");
+        if (!field) return;
+        if (e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey && !helpTypingTarget(e.target)) {
+          e.preventDefault();
+          try { field.focus(); } catch (_) {}
+        }
+        if (e.key === "Escape" && e.target === field) {
+          field.value = "";
+          paintBennettHelpResults(root, "");
+          try { field.blur(); } catch (_) {}
+        }
+      });
+    }
+    if (typeof document !== "undefined" && document.addEventListener && root.dataset.helpTocBound !== "1") {
+      root.dataset.helpTocBound = "1";
+      root.addEventListener("click", (e) => {
+        const link = e.target && e.target.closest && e.target.closest("a.help-toc-link");
+        if (!link) return;
+        const href = String(link.getAttribute("href") || "");
+        if (href.charAt(0) !== "#") return;
+        const target = root.querySelector(href);
+        if (!target) return;
+        e.preventDefault();
+        try { target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {
+          try { target.scrollIntoView(true); } catch (__) {}
+        }
+        try {
+          if (global.history && typeof global.history.replaceState === "function") {
+            global.history.replaceState(null, "", href);
+          } else if (global.location) {
+            global.location.hash = href;
+          }
+        } catch (_) {}
+        Array.from(root.querySelectorAll(".help-toc-link") || []).forEach((a) => {
+          const on = a === link;
+          if (a.classList && a.classList.toggle) a.classList.toggle("on", on);
+        });
+      });
+    }
+    try {
+      const hash = String(((global.location || {}).hash || "")).replace(/^#/, "");
+      if (hash) {
+        const jump = root.querySelector("#" + hash.replace(/[^\w-]/g, ""));
+        if (jump && jump.scrollIntoView) jump.scrollIntoView(true);
+      }
+    } catch (_) {}
   }
 
   function mountBennettHelpPage() {
     const host = typeof document !== "undefined" && document.getElementById ? document.getElementById("bennett-help-page") : null;
     if (!host) return;
     host.innerHTML = bennettHelpPageHtml();
+    bindBennettHelpPage(host);
   }
 
   function workFeedStatus(work, now) {
@@ -6471,7 +6612,6 @@
       hudChip(cur, "basecamp", "basecamp-chip", "basecamp.html", ' aria-label="Base Camp"', `<span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span>`),
       `<a class="story-chip${cur === "story" ? " on" : ""}" id="story-chip" href="story.html"${cur === "story" ? ' aria-current="page"' : ""} hidden>Story</a>`,
       hudChip(cur, "messages", "messages-chip", "messages.html", ' aria-label="Messages"', `<span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span>`),
-      hudChip(cur, "help", "help-chip", "help.html", ' aria-label="Help"', `<span class="help-chip-full">Help</span><span class="help-chip-short">Help</span>`),
       hudChip(cur, "parent", "parent-chip", "parent.html", ' aria-label="Parent desk"', `<span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span>`),
       hudChip(cur, "admin", "admin-chip", "admin.html", "", "Admin"),
       `<a class="egg-chip${cur === "egg" ? " on" : ""}" id="egg-chip" href="egg.html"${cur === "egg" ? ' aria-current="page"' : ""} hidden>🥚 Play</a>`
@@ -6509,7 +6649,6 @@
       crew: ".crew-chip",
       basecamp: ".basecamp-chip",
       messages: ".messages-chip",
-      help: ".help-chip",
       parent: ".parent-chip",
       admin: ".admin-chip",
       story: ".story-chip",
@@ -6712,6 +6851,7 @@
     }
     mountHudNav();
     mountSiteViewControl();
+    mountHelpLaunch();
     mountMessagesChip();
     mountBaseCampChip();
     hideAdultShortcuts(hideAdult);
@@ -9210,12 +9350,14 @@
     bindFollowupCopy,
     bindFollowupSnooze,
     BENNETT_HELP_SECTIONS,
+    filterBennettHelp,
+    markHelpMatch,
+    helpLaunchHtml,
+    mountHelpLaunch,
     bennettHelpBodyHtml,
-    bennettHelpSectionHtml,
+    bennettHelpTocHtml,
     bennettHelpPageHtml,
-    bennettHelpCollapsed,
-    setBennettHelpCollapsed,
-    bindBennettHelpToggle,
+    bindBennettHelpPage,
     mountBennettHelpPage,
     mailtoHref,
     needsYouWork,
@@ -9319,7 +9461,7 @@
     bindFollowupToggle();
     bindFollowupCopy();
     bindFollowupSnooze();
-    bindBennettHelpToggle();
+    mountHelpLaunch();
     mountBennettHelpPage();
     bindLibraryPreviewPlay();
     applySiteView();
@@ -9333,7 +9475,7 @@
       bindFollowupToggle();
       bindFollowupCopy();
       bindFollowupSnooze();
-      bindBennettHelpToggle();
+      mountHelpLaunch();
       mountBennettHelpPage();
       bindLibraryPreviewPlay();
       applySiteView();

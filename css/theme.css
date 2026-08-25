@@ -176,7 +176,8 @@ header.week-head {
   top: 0;
   z-index: 50;
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  grid-template-areas: "bananas nav help";
   gap: 6px;
   align-items: center;
   width: 100%;
@@ -188,9 +189,14 @@ header.week-head {
   overflow: visible;
 }
 
+.hud-bar .bananas { grid-area: bananas; }
+.hud-bar .hud-nav { grid-area: nav; }
+.hud-bar .help-launch { grid-area: help; }
+
 .hud-bar .bananas,
 .hud-bar .hud-nav a,
-.hud-bar .hud-nav .site-view-seg {
+.hud-bar .hud-nav .site-view-seg,
+.hud-bar .help-launch {
   background: rgba(7, 18, 20, 0.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -502,7 +508,7 @@ html[data-site-view="me"] .admin-chip {
 .trophy-chip,
 .basecamp-chip,
 .messages-chip,
-.help-chip {
+.help-launch {
   min-height: 36px;
   min-width: 36px;
   border-radius: 999px;
@@ -521,8 +527,7 @@ html[data-site-view="me"] .admin-chip {
 .week-chip,
 .trophy-chip,
 .basecamp-chip,
-.messages-chip,
-.help-chip {
+.messages-chip {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
@@ -592,14 +597,54 @@ html[data-site-view="me"] .admin-chip {
   background: rgba(244, 211, 94, 0.22);
 }
 
-.help-chip {
-  border-color: rgba(246, 241, 228, 0.35);
-  background: rgba(246, 241, 228, 0.08);
+.help-launch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  min-width: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(246, 241, 228, 0.5);
+  background: rgba(246, 241, 228, 0.12);
   color: var(--ink);
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  justify-self: end;
 }
 
-.help-chip.on {
-  background: rgba(246, 241, 228, 0.18);
+.help-launch-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  background: rgba(7, 22, 24, 0.55);
+  color: #ffe08a;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.help-launch.on {
+  background: linear-gradient(180deg, #ffe08a, #f3c34a);
+  color: #2a1d08;
+  border-color: rgba(243, 195, 74, 0.95);
+}
+
+.help-launch.on .help-launch-mark {
+  background: #2a1d08;
+  color: #ffe08a;
+}
+
+.help-launch:focus-visible {
+  outline: 2px solid #ffe08a;
+  outline-offset: 2px;
 }
 
 .hud-nav a.on,
@@ -609,7 +654,7 @@ html[data-site-view="me"] .admin-chip {
 .crew-chip.on,
 .basecamp-chip.on,
 .messages-chip.on,
-.help-chip.on,
+.help-launch.on,
 .parent-chip.on,
 .admin-chip.on,
 .story-chip.on,
@@ -651,8 +696,7 @@ html[data-site-view="me"] .admin-chip {
 .week-chip-short,
 .trophy-chip-short,
 .basecamp-chip-short,
-.messages-chip-short,
-.help-chip-short { display: none; }
+.messages-chip-short { display: none; }
 
 @media (max-width: 420px) {
   .parent-chip-full,
@@ -661,21 +705,23 @@ html[data-site-view="me"] .admin-chip {
   .week-chip-full,
   .trophy-chip-full,
   .basecamp-chip-full,
-  .messages-chip-full,
-  .help-chip-full { display: none; }
+  .messages-chip-full { display: none; }
   .parent-chip-short,
   .progress-chip-short,
   .crew-chip-short,
   .week-chip-short,
   .trophy-chip-short,
   .basecamp-chip-short,
-  .messages-chip-short,
-  .help-chip-short { display: inline; }
+  .messages-chip-short { display: inline; }
   .hud-bar {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    grid-template-areas:
+      "bananas . help"
+      "nav nav nav";
   }
+  .help-launch-label { display: none; }
+  .help-launch { padding: 0 8px; }
   .hud-nav {
-    grid-column: 1 / -1;
     justify-content: flex-end;
   }
   .site-view-kicker { display: none; }
@@ -1186,61 +1232,179 @@ html[data-site-view="me"] .admin-chip {
 }
 
 .bennett-help {
-  margin: 4px 14px 10px;
-  padding: 12px 14px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(246, 241, 228, 0.22);
-  background: rgba(7, 22, 24, 0.55);
-}
-
-.bennett-help.collapsed .bennett-help-fold {
   display: none;
 }
 
-.bennett-help-lead {
-  margin: 0 0 10px;
+.help-desk {
+  margin: 8px 14px 28px;
+  padding: 4px 2px 36px;
+}
+
+.help-desk-head {
+  max-width: 52rem;
+}
+
+.help-desk-kicker {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--muted);
-  font-size: 0.92rem;
 }
 
-.bennett-help-body {
+.help-desk-title {
+  margin: 0 0 8px;
+  font-size: 1.45rem;
+  color: var(--banana);
+}
+
+.help-desk-lead {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 40rem;
+}
+
+.help-search {
+  display: block;
+  margin: 0 0 8px;
+}
+
+.help-search input {
+  width: 100%;
+  max-width: 36rem;
+  min-height: 48px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(244, 211, 94, 0.4);
+  background: rgba(7, 22, 24, 0.72);
+  color: #fff6d8;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.help-search input:focus {
+  outline: 2px solid #ffe08a;
+  outline-offset: 2px;
+}
+
+.help-search-status {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.help-desk-layout {
   display: grid;
-  gap: 10px;
+  gap: 18px;
+  align-items: start;
 }
 
-.bennett-help-card {
-  padding: 8px 0 2px;
+.help-toc {
+  padding: 12px 14px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(246, 241, 228, 0.16);
+  background: rgba(7, 22, 24, 0.45);
+}
+
+.help-toc-title {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.help-toc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.help-toc-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(240, 195, 110, 0.35);
+  background: rgba(240, 195, 110, 0.08);
+  color: var(--due);
+  text-decoration: none;
+  font-weight: 750;
+  font-size: 0.85rem;
+}
+
+.help-toc-link.on,
+.help-toc-link:hover {
+  background: rgba(244, 211, 94, 0.22);
+  color: var(--banana);
+}
+
+.help-article {
+  scroll-margin-top: 72px;
+  padding: 16px 0 4px;
   border-top: 1px solid rgba(246, 241, 228, 0.12);
 }
 
-.bennett-help-card:first-child {
+.help-article:first-child {
   border-top: 0;
   padding-top: 0;
 }
 
-.bennett-help-card h3 {
-  margin: 0 0 4px;
-  font-size: 1rem;
+.help-article h2 {
+  margin: 0 0 6px;
+  font-size: 1.12rem;
   color: var(--banana);
 }
 
-.bennett-help-card p {
+.help-article p {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: 1rem;
+  line-height: 1.45;
+  max-width: 40rem;
 }
 
-.bennett-help-more {
-  margin: 12px 0 0;
+.help-article mark,
+.help-toc-link mark {
+  background: rgba(255, 224, 138, 0.45);
+  color: inherit;
+  padding: 0 0.12em;
+  border-radius: 4px;
 }
 
-.bennett-help-more a {
-  color: var(--start);
-  font-weight: 750;
+.help-empty {
+  margin: 8px 0 0;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px dashed rgba(246, 241, 228, 0.22);
+  color: var(--muted);
 }
 
-body.help-page .bennett-help-page {
-  margin: 8px 14px 24px;
-  padding: 4px 2px 28px;
+@media (min-width: 880px) {
+  .help-desk-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 28px;
+  }
+  .help-toc {
+    position: sticky;
+    top: 58px;
+  }
+  .help-toc-list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .help-toc-link {
+    justify-content: flex-start;
+    border-radius: 12px;
+  }
 }
 
 .needs-you h2,
@@ -2371,7 +2535,7 @@ body.week-page.in-treehouse .hud-bar {
 .trophy-chip,
 .basecamp-chip,
 .messages-chip,
-.help-chip,
+.help-launch,
 .site-view-btn:not(.on),
 .trophy-lantern,
 .trophy-back,
@@ -3214,7 +3378,7 @@ body.progress-page .peek-monkey {
 }
 
 .progress-hud {
-  grid-template-columns: auto 1fr;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
 }
 
 .progress-tagline {
@@ -3623,8 +3787,13 @@ body.progress-page .dash {
   .class-pane { overflow: visible; }
   .class-list { overflow: visible; }
   .progress-tagline { display: none; }
-  body.progress-page .progress-hud { grid-template-columns: auto auto; }
-  body.progress-page .progress-hud .hud-nav { grid-column: auto; }
+  body.progress-page .progress-hud {
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    grid-template-areas:
+      "bananas . help"
+      "nav nav nav";
+  }
+  body.progress-page .progress-hud .hud-nav { grid-area: nav; }
   .stat-card { padding: 8px 10px 6px; }
   .stat-lead { font-size: 0.95rem; }
   .stat-sub { margin-bottom: 4px; }
@@ -7059,6 +7228,13 @@ body.pt-page .pt-head {
   margin: 0 0 10px;
   padding-right: 120px;
   position: relative;
+}
+
+body.pt-page .pt-head .help-launch {
+  position: relative;
+  z-index: 4;
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 body.pt-page .pt-head h1 {

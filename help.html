@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <script src="js/update.js?v=159"></script>
+  <script src="js/update.js?v=160"></script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
   <title>Jungle Jam · Help</title>
-  <link rel="stylesheet" href="css/theme.css?v=159">
+  <link rel="stylesheet" href="css/theme.css?v=160">
 </head>
 <body class="help-page">
   <header class="week-head">
@@ -22,11 +22,11 @@
         <a class="basecamp-chip" href="basecamp.html" aria-label="Base Camp"><span class="basecamp-chip-full">Base Camp</span><span class="basecamp-chip-short">Camp</span></a>
         <a class="story-chip" id="story-chip" href="story.html" hidden>Story</a>
         <a class="messages-chip" href="messages.html" aria-label="Messages"><span class="messages-chip-full">Messages</span><span class="messages-chip-short">Msgs</span><span class="messages-badge" hidden></span></a>
-        <a class="help-chip on" href="help.html" aria-current="page" aria-label="Help"><span class="help-chip-full">Help</span><span class="help-chip-short">Help</span></a>
         <a class="parent-chip" href="parent.html" aria-label="Parent desk"><span class="parent-chip-full">Parent desk</span><span class="parent-chip-short">Desk</span></a>
         <a class="admin-chip" href="admin.html">Admin</a>
         <a class="egg-chip" id="egg-chip" href="egg.html" hidden>🥚 Play</a>
       </div>
+        <a class="help-launch on" href="help.html" aria-current="page" aria-label="Help"><span class="help-launch-mark" aria-hidden="true">?</span><span class="help-launch-label">Help</span></a>
     </div>
     <div class="banner-wrap">
       <a class="banner-home" href="index.html" aria-label="Jungle Jam home · This week"></a>
@@ -36,26 +36,27 @@
         <p>Bennett's screens</p>
       </a>
       <div class="build-stamp" id="build-stamp">
-        <span>Build 157</span>
-        <span>8/24, 6:35 PM</span>
+        <span>Build 158</span>
+        <span>8/25, 7:35 AM</span>
       </div>
     </div>
   </header>
 
-  <main class="bennett-help-page" id="bennett-help-page" aria-label="Help"></main>
+  <main class="help-desk" id="bennett-help-page" aria-label="Help"></main>
 
   <div class="peek-monkey" aria-hidden="true">
     <img src="img/monkey-tennis.png" alt="">
   </div>
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="js/build.js?v=159"></script>
-  <script src="js/game.js?v=159"></script>
-  <script src="js/telemetry.js?v=159"></script>
+  <script src="js/build.js?v=160"></script>
+  <script src="js/game.js?v=160"></script>
+  <script src="js/telemetry.js?v=160"></script>
   <script>
     Game.markOpened();
-    Game.mountHudNav("help");
-    Game.paintHudCurrent("help");
+    Game.mountHudNav();
+    Game.mountHelpLaunch();
+    Game.paintHudCurrent();
   </script>
 </body>
 </html>

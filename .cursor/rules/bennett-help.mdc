@@ -5,7 +5,9 @@ alwaysApply: true
 
 # Bennett Help
 
-When you add, rename, move, or change how a Bennett-facing screen works, update `BENNETT_HELP_SECTIONS` in `js/game.js` in the same commit. That array paints This Week Help and `help.html`.
+When you add, rename, move, or change how a Bennett-facing screen works, update `BENNETT_HELP_SECTIONS` in `js/game.js` in the same commit. That array paints `help.html` (search, table of contents, and articles).
+
+Help is a top-right `help-launch` button on every screen. Off Help it opens `help.html` in a new tab. Do not put Help back in the HUD chip row. Do not dump Help copy onto This Week.
 
 Cover: This Week, assignments (Started / Done / Edit), A little help, Needs you, Needs follow-up (Copy email, Snooze until), Trophy Room, Progress, Crew, Base Camp, Story, Messages, Khan, Play/egg, sign-in.
 
