@@ -237,7 +237,10 @@
       ...(extra || {})
     });
     family = result.family;
-    result.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
+    const celebrating = document.getElementById("char-celebrate");
+    if (!(celebrating && celebrating.classList && celebrating.classList.contains("open"))) {
+      result.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
+    }
     if (roster) Game.maybePlayUnlockCelebration(roster, pack, family, library);
     hud();
     if (document.getElementById("shelf").classList.contains("open")) renderShelf();
@@ -2462,11 +2465,8 @@
     family = Game.ensureReflectionPool(family);
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);
-    const signin = Game.maybeAwardSignIn(pack, family);
-    family = signin.family;
-    if (signin.awarded && signin.achievement) {
-      Game.celebrate(signin.achievement, pack, library, { roster, family });
-    }
+    const loginAwards = Game.playBennettLoginAwards(pack, family, library, { roster });
+    family = loginAwards.family;
     if (Game.warmupLibraryAudio) Game.warmupLibraryAudio(library, family);
     baseSeed = await Game.loadProgress();
     syncWeek();
@@ -2497,9 +2497,8 @@
     });
     document.addEventListener("bw-site-view", () => {
       if (!pack) return;
-      const next = Game.maybeAwardSignIn(pack, family);
+      const next = Game.playBennettLoginAwards(pack, family, library, { roster });
       family = next.family;
-      if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack, library, { roster, family });
       hud();
       refreshCardsInPlace();
       const shelf = document.getElementById("shelf");

@@ -972,13 +972,17 @@
     family = Game.maybeAutoPreviewAll(pack, family).family;
     baseSeed = await Game.loadProgress();
     syncViews();
+    const loginAwards = Game.playBennettLoginAwards(pack, family, null, { roster });
+    family = loginAwards.family;
     const live = Game.applyLiveUnlocks(pack, family, {
       week: Game.applyWeekOverlay(baseWeek, family),
       eggs: Game.getEggs(),
       days: Game.nextNChicagoDays(7)
     });
     family = live.family;
-    live.fresh.forEach((ach) => Game.celebrate(ach, pack, null, { roster, family }));
+    if (!(loginAwards.scorch && loginAwards.scorch.celebrate)) {
+      live.fresh.forEach((ach) => Game.celebrate(ach, pack, null, { roster, family }));
+    }
     document.getElementById("close-sheet").addEventListener("click", closeSheet);
     document.getElementById("sheet").addEventListener("click", (e) => {
       if (e.target.id === "sheet") closeSheet();
@@ -1005,6 +1009,8 @@
     });
     document.addEventListener("bw-site-view", () => {
       if (!pack) return;
+      const next = Game.playBennettLoginAwards(pack, family, null, { roster });
+      family = next.family;
       render();
     });
     render();

@@ -162,25 +162,23 @@
     roster = await Game.loadCharacters();
     let family = await Game.loadFamily();
     family = Game.recordLoginDay(family) || family;
-    const signin = Game.maybeAwardSignIn(pack, family);
-    family = signin.family;
     library = await Game.loadLibrary();
+    const loginAwards = Game.playBennettLoginAwards(pack, family, library, { roster });
+    family = loginAwards.family;
     hud();
     render();
-    if (signin.awarded && signin.achievement) {
-      Game.celebrate(signin.achievement, pack, library, { roster, family });
-    }
     const live = Game.applyLiveUnlocks(pack, family, {});
     family = live.family;
-    live.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
+    if (!(loginAwards.scorch && loginAwards.scorch.celebrate)) {
+      live.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
+    }
     if (!Game.maybePlayUnlockCelebration(roster, pack, family, library)) {
       Game.maybePlayContentCelebration(library);
     }
     document.addEventListener("bw-site-view", () => {
       if (!pack) return;
-      const next = Game.maybeAwardSignIn(pack, family);
+      const next = Game.playBennettLoginAwards(pack, family, library, { roster });
       family = next.family;
-      if (next.awarded && next.achievement) Game.celebrate(next.achievement, pack, library, { roster, family });
       hud();
       render();
       if (roster) Game.maybePlayUnlockCelebration(roster, pack, family, library);

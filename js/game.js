@@ -47,6 +47,7 @@
   const ACE_DONE_COUNT = 3;
   const ACE_DONE_ACHIEVEMENT = "ace-three-done";
   const SIGNIN_ACHIEVEMENT = "signin-bennett";
+  const SCORCH_LIVE_ACHIEVEMENT = "all-assignments-updated";
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
   const GEAR_SLOTS = ["tool", "weapon", "ability", "outfit"];
   const CONTENT_SLOT = "content";
@@ -2700,10 +2701,15 @@
 
   function achievementGrantingCharacter(pack, characterId) {
     if (!characterId) return null;
-    return ((pack && pack.achievements) || []).find((ach) => {
+    const rows = ((pack && pack.achievements) || []).filter((ach) => {
       if (!ach || rewardCharacterId(ach) !== characterId) return false;
       return alreadyUnlocked(ach.id) && !achievementIsPreviewOnly(ach.id);
-    }) || null;
+    });
+    if (characterId === "scorch") {
+      const live = rows.find((ach) => ach && ach.id === SCORCH_LIVE_ACHIEVEMENT);
+      if (live) return live;
+    }
+    return rows[0] || null;
   }
 
   function rewardUnlockOf(ach) {
@@ -5949,11 +5955,26 @@
 
   function openWorkTouched(week, days) {
     const items = openAssignments(week, days);
-    if (!items.length) return false;
-    return items.every((w) => {
+    if (items.length) {
+      return items.every((w) => {
+        const rec = workState(w.id);
+        const st = workFeedStatus(w);
+        return !!(st.doneHere || rec.started || rec.done);
+      });
+    }
+    const boardDays = boardDaysForUnlock(days);
+    const board = ((week && week.work) || []).filter((w) => {
+      if (!w || !w.id) return false;
+      if (String(w.kind || "") === "event") return false;
+      const st = workFeedStatus(w);
+      if (!workOnBoard(w, boardDays) && !st.missing) return false;
+      return true;
+    });
+    if (!board.length) return false;
+    return board.every((w) => {
       const rec = workState(w.id);
       const st = workFeedStatus(w);
-      return !!(st.doneHere || rec.started || rec.done);
+      return !!(st.doneHere || st.submitted || st.graded || st.excused || rec.started || rec.done);
     });
   }
 
@@ -7078,6 +7099,66 @@
 
   function shouldPlayBasecampIntro(view) {
     return !hasPlayedBasecampIntroToday(view);
+  }
+
+  function scorchLiveAchievement(pack) {
+    const found = ((pack && pack.achievements) || []).find((ach) => ach && ach.id === SCORCH_LIVE_ACHIEVEMENT);
+    if (found) return found;
+    const shipped = ((shippedAchievements && shippedAchievements.achievements) || []).find((ach) => ach && ach.id === SCORCH_LIVE_ACHIEVEMENT);
+    if (shipped) return shipped;
+    return {
+      id: SCORCH_LIVE_ACHIEVEMENT,
+      title: "Meet Scorch",
+      description: "You marked Done or I started this on every open assignment.",
+      how: "Auto. Bennett taps Done or I started this on every assignment on This Week.",
+      incentive: "Unlocks Scorch",
+      reward: 0,
+      rewardCharacter: "scorch",
+      rewardUnlock: { type: "character", id: "scorch", label: "Scorch" },
+      unlock: { type: "open_touched" }
+    };
+  }
+
+  function maybeAwardScorch(pack, family) {
+    const next = normalizeFamily(family);
+    const st = next.streaks[SCORCH_LIVE_ACHIEVEMENT];
+    if (st && st.awarded === false && st.awardedAt) {
+      return { family: next, awarded: false, celebrate: false, achievement: null };
+    }
+    if (sessionUser() !== "bennett") {
+      return { family: next, awarded: false, celebrate: false, achievement: null };
+    }
+    const livePack = mergeAchievementUnlocks(pack, shippedAchievements);
+    const ach = scorchLiveAchievement(livePack);
+    const earned = alreadyUnlocked(SCORCH_LIVE_ACHIEVEMENT) && !achievementIsPreviewOnly(SCORCH_LIVE_ACHIEVEMENT);
+    const charEarned = alreadyUnlockedCharacter("scorch") && !unlockTargetIsPreviewOnly("character", "scorch");
+    const seen = !!(getCharacterSeen().scorch);
+    if (earned && charEarned && seen) {
+      return { family: next, awarded: false, celebrate: false, achievement: ach };
+    }
+    if (earned && charEarned && !seen) {
+      return { family: next, awarded: false, celebrate: true, achievement: ach };
+    }
+    const result = awardStreak(livePack, next, SCORCH_LIVE_ACHIEVEMENT, { preview: false, force: true });
+    return {
+      family: result.family,
+      awarded: !!result.achievement,
+      celebrate: true,
+      achievement: result.achievement || ach
+    };
+  }
+
+  function playBennettLoginAwards(pack, family, lib, opts) {
+    const roster = opts && opts.roster;
+    const signin = maybeAwardSignIn(pack, family);
+    const scorch = maybeAwardScorch(pack, signin.family);
+    const next = scorch.family;
+    if (scorch.celebrate && scorch.achievement) {
+      celebrate(scorch.achievement, pack, lib, { roster, family: next });
+    } else if (signin.awarded && signin.achievement) {
+      celebrate(signin.achievement, pack, lib, { roster, family: next });
+    }
+    return { family: next, signin, scorch };
   }
 
   function maybeAwardSignIn(pack, family) {
@@ -9124,6 +9205,9 @@
     downloadJson,
     markOpened,
     maybeAwardSignIn,
+    maybeAwardScorch,
+    playBennettLoginAwards,
+    SCORCH_LIVE_ACHIEVEMENT,
     getOpens,
     chicagoYmd,
     lastNChicagoDays,
