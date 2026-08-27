@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-26T14:10:00",
+  "as_of": "2026-08-26T21:05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1357,7 +1357,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Pfeiff. NEW Wed 8/26. 1 pt. Due TONIGHT 11:59pm. Unsubmitted, no Missing flag. Unit 1 Alchemy.",
+      "note": "Pfeiff. 1 pt. Due TONIGHT Wed 8/26 11:59pm. Still unsubmitted as of 9:05pm bedtime pull. No Missing flag.",
       "canvas": {
         "status": "open",
         "points": 1,
@@ -1407,6 +1407,100 @@
         "email_sent": false
       },
       "note": "Goodson Daily Agendas NEW Wed 8/26: 8/28 homework “Read to page 82 by Monday”; 8/31 pg. 41-82 due. Not a Canvas assignment row."
+    },
+    {
+      "id": "chem-defining-matter",
+      "title": "Chemistry: Defining Matter (Lesson 3)",
+      "classId": "chemistry",
+      "due": "2026-08-21T23:59:00",
+      "status": "graded",
+      "school_status": "graded",
+      "points": 1,
+      "score": "1/1",
+      "late": false,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "graded_at": "2026-08-26T15:21:00",
+      "note": "Pfeiff. Backfilled Wed 8/26 (graded 3:21pm, re-graded 4:36pm). 1/1. Due was Aug 21.",
+      "canvas": {
+        "status": "graded",
+        "points": 1,
+        "score": 1,
+        "due": "2026-08-21T23:59:00"
+      }
+    },
+    {
+      "id": "chem-safety-contract",
+      "title": "Chemistry: Safety Contract",
+      "classId": "chemistry",
+      "due": "2026-08-24T23:59:00",
+      "status": "graded",
+      "school_status": "graded",
+      "points": 1,
+      "score": "1/1",
+      "late": false,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "graded_at": "2026-08-26T17:07:00",
+      "note": "Pfeiff. Paper parent-signed contract. Canvas Project row now 1/1 graded Wed 8/26 5:07pm.",
+      "canvas": {
+        "status": "graded",
+        "points": 1,
+        "score": 1,
+        "due": "2026-08-24T23:59:00"
+      }
+    },
+    {
+      "id": "chem-density-5",
+      "title": "Chemistry: Density Lesson 5",
+      "classId": "chemistry",
+      "due": "2026-08-27T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "points": 1,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Pfeiff. NEW Wed 8/26 evening. 1 pt. Due Thu Aug 27 11:59pm. Open –/1.",
+      "canvas": {
+        "status": "open",
+        "points": 1,
+        "due": "2026-08-27T23:59:00"
+      }
+    },
+    {
+      "id": "chem-mass-vol-graph",
+      "title": "Chemistry: Mass vs Volume Graph",
+      "classId": "chemistry",
+      "due": "2026-08-27T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "points": 1,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Pfeiff. NEW Wed 8/26 evening. 1 pt. Due Thu Aug 27 11:59pm. Open –/1.",
+      "canvas": {
+        "status": "open",
+        "points": 1,
+        "due": "2026-08-27T23:59:00"
+      }
     }
   ],
   "notes": [
@@ -1519,6 +1613,11 @@
       "date": "2026-08-26",
       "title": "After-school check (~2:10pm CT)",
       "text": "NEW Canvas: Chem Mass and Volume Lab Sheet –/1 due TONIGHT 11:59pm. English 10.1 Skills Assessment –/5 due Thu 8/27. Web Design NOW graded: 1.1 20/20, 1.2 37.5/40, course 95.83% (57.5/60). NEW Web 2.1/2.2 HTML –/28 due Mon 8/31 with 1.3–1.5. Agenda: DWT moved into 8/26–27 block with 10.1 Skills + journals + AAB p.5-40 due; 8/28 “read to page 82 by Monday.” 8/25 still blank. Picture day today and Thu 7:00–2:40. oeband.com unchanged. Labor Day Sep 7. ParentVUE not pulled (login expired, password box empty). Gmail: Canvas graded notices for Web 1.1/1.2 ~11:17–11:19am. No Bennett-said-done today; no new discrepancy. Choice Book still –/5 due Fri (planner-checked only)."
+    },
+    {
+      "date": "2026-08-26",
+      "title": "Bedtime check (~9:05pm CT)",
+      "text": "NEW vs 2:10: Chem Defining Matter Lesson 3 1/1 (backfilled); Safety Contract 1/1; Density Lesson 5 –/1 due Thu 8/27; Mass vs Volume Graph –/1 due Thu 8/27. Chem total 38/38 100%. Mass and Volume Lab Sheet STILL unsubmitted –/1 due TONIGHT 11:59pm. English/Web unchanged. ParentVUE still blocked (no saved password). No Bennett-said-done; no new discrepancy."
     }
   ],
   "grades": [
@@ -1553,7 +1652,7 @@
       "teacher": "Justin Pfeiff",
       "letter": "A+",
       "percent": 100,
-      "detail": "Safety 34/34, Penny 1/1, Get to Know You Slides 1/1 (36/36); Mass and Volume Lab Sheet open –/1 due tonight",
+      "detail": "38/38 graded (incl Defining Matter 1/1, Safety Contract 1/1). Lab sheet –/1 due tonight; Density 5 and Mass vs Volume Graph due Thu.",
       "source": "Canvas",
       "as_of": "2026-08-26",
       "missing": 0
