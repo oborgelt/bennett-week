@@ -346,19 +346,7 @@
   }
 
   function workButtons(w) {
-    const st = Game.workState(w.id);
-    const stamp = st.started && st.startedAt ? `Started ${Game.fmtStamp(st.startedAt)}` : "";
-    return `
-      <div class="actions">
-        <button type="button" class="act ${st.started ? "started" : ""}" data-act="started" data-id="${Game.esc(w.id)}">
-          ${st.started ? "Started" : "I started this"}
-        </button>
-        <button type="button" class="act ${st.done ? "done-on" : ""}" data-act="done" data-id="${Game.esc(w.id)}">
-          Done
-        </button>
-      </div>
-      ${stamp ? `<p class="started-row"><span class="started-at">${Game.esc(stamp)}</span><button type="button" class="tiny undo-mini" data-act="started" data-id="${Game.esc(w.id)}">Undo</button></p>` : ""}
-      ${st.done ? `<p class="started-row"><span class="started-at">Marked done</span><button type="button" class="tiny undo-mini" data-act="done" data-id="${Game.esc(w.id)}">Undo</button></p>` : ""}`;
+    return Game.workActionButtons(w);
   }
 
   function noteBubble(n) {

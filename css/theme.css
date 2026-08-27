@@ -3612,7 +3612,8 @@ body.progress-page .dash {
 
 .class-card summary {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 10px;
   list-style: none;
   cursor: pointer;
@@ -3635,8 +3636,8 @@ body.progress-page .dash {
 .class-card[open] .chev { transform: rotate(45deg); }
 
 .class-copy {
-  flex: 1;
-  min-width: 0;
+  flex: 1 1 12rem;
+  min-width: 12rem;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -3664,8 +3665,10 @@ body.progress-page .dash {
 }
 
 .grade-pill {
-  flex: 0 0 auto;
+  flex: 1 1 12rem;
+  max-width: 100%;
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: 6px;
   min-height: 32px;
@@ -3676,6 +3679,7 @@ body.progress-page .dash {
   color: var(--banana);
   font-weight: 800;
   font-size: 0.95rem;
+  white-space: normal;
 }
 
 .grade-pill.is-test {
@@ -3690,9 +3694,12 @@ body.progress-page .dash {
 }
 
 .grade-detail {
+  flex: 1 1 100%;
   font-size: 0.68rem;
   font-weight: 650;
   color: var(--muted);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .class-items {

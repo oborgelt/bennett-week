@@ -4,6 +4,7 @@
   let pack = null;
   let roster = null;
   let family = null;
+  let library = null;
   let baseSeed = null;
   let seed = null;
 
@@ -379,11 +380,11 @@
               </div>
               ${item.grade ? gradeHtml(item.grade, item.test) : (feedSt.score ? `<span class="grade-pill">${Game.esc(feedSt.score)}</span>` : "")}
             </div>
+            ${item.kind === "event" ? "" : Game.workActionButtons(feed)}
             <div class="entry-tools">
               ${item.kind === "event" ? "" : `<button type="button" class="tiny" data-dispute-item="${Game.esc(item.id)}">This looks wrong</button>`}
               <button type="button" class="tiny" data-note-item="${Game.esc(item.id)}">Note</button>
-              <button type="button" class="mini" data-edit-work="${Game.esc(item.id)}">Edit</button>
-              ${Game.progressCanMutate() ? Game.entryButtons("pitem:" + item.id, "pitem:" + item.id) : ""}
+              ${Game.entryButtons("work:" + item.id, "pitem:" + item.id, { kidEdit: true })}
             </div>
           </li>`;
       }).join("")
@@ -774,6 +775,34 @@
   }
 
   function bindDash() {
+    document.querySelectorAll("[data-act]").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        const act = btn.dataset.act;
+        if (!id || (act !== "started" && act !== "done")) return;
+        const before = Game.workState(id);
+        const undo = btn.classList.contains("undo-mini");
+        const touched = Game.touchWork(id, act);
+        if (!undo && (act === "started" || act === "done") && library) Game.primeLibraryAudio();
+        if (!undo && act === "started" && !before.started && library) {
+          Game.playWorkActionCue(family, library, id, "started");
+        }
+        if (!undo && act === "done" && !before.done && library) {
+          Game.playWorkActionCue(family, library, id, "done");
+        }
+        syncViews();
+        render();
+        try {
+          const sync = touched && touched.synced ? await touched.synced : await Game.syncFamilyProgress();
+          if (sync && sync.failed) Game.toast("Couldn't sync. Try again.");
+          else Game.familySavedToast(undo ? "Undone" : (act === "done" ? "Done" : "Started"));
+        } catch (_) {
+          Game.toast("Couldn't sync. Try again.");
+        }
+      });
+    });
     document.querySelectorAll(".class-summary-khan a, .class-card .khan-strip a").forEach((a) => {
       a.addEventListener("click", (e) => e.stopPropagation());
     });
@@ -970,6 +999,7 @@
     family = Game.recordLoginDay(family) || family;
     family = Game.ensureReflectionPool(family);
     family = Game.maybeAutoPreviewAll(pack, family).family;
+    library = await Game.loadLibrary();
     baseSeed = await Game.loadProgress();
     syncViews();
     const loginAwards = Game.playBennettLoginAwards(pack, family, null, { roster });

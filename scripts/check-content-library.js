@@ -81,7 +81,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=162/.test(basecampHtml) && /basecamp\.js\?v=162/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=163/.test(basecampHtml) && /basecamp\.js\?v=163/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -706,12 +706,12 @@ assert(weekById["chem-aboutme-disc"].discrepancy_reason, "Parenting left a discr
 assert.strictEqual(weekById["chem-about-me"].school_status, "open");
 assert.strictEqual(weekById["chem-about-me"].student_status && weekById["chem-about-me"].student_status.said, "Posted Google Slides link as a comment");
 assert.strictEqual(weekById["chem-about-me"].discrepancy, true);
-assert.strictEqual(weekById["web-11"].school_status, "late");
+assert.strictEqual(weekById["web-11"].school_status, "graded");
 assert.strictEqual(weekById["web-11"].student_status, null);
 assert.strictEqual(weekById["web-11"].discrepancy, false);
 assert.strictEqual(weekById["eng-notebook"].school_status, "open");
 assert.strictEqual((week.work || []).filter((w) => w.discrepancy === true).map((w) => w.id).join(","), "chem-about-me", "About Me assignment is the remaining week.json discrepancy");
-assert.strictEqual((week.work || []).filter((w) => w.followup && typeof w.followup === "object").length, 13, "Parenting put a followup object on all work rows");
+assert.strictEqual((week.work || []).filter((w) => w.followup && typeof w.followup === "object").length, 19, "Parenting put a followup object on all work rows");
 assert.strictEqual(weekById["chem-aboutme-disc"].followup && weekById["chem-aboutme-disc"].followup.due_by, null);
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_draft, null, "Parenting left email_draft null");
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_sent, false, "do not invent that Bennett already emailed");
@@ -723,19 +723,20 @@ assert(weekById["web-11"], "week.json has web-11");
 assert.strictEqual(weekById["web-11"].title, "Web Design: 1.1 What is the Web?");
 assert.strictEqual(weekById["web-11"].due, "2026-08-19T09:20:00");
 assert.strictEqual(weekById["web-11"].classId, "web-design");
-assert.strictEqual(weekById["web-11"].canvas && weekById["web-11"].canvas.status, "late");
+assert.strictEqual(weekById["web-11"].canvas && weekById["web-11"].canvas.status, "graded");
 assert.strictEqual(weekById["web-11"].canvas.points, 20);
 assert(weekById["web-12"], "week.json has web-12");
 assert.strictEqual(weekById["web-12"].title, "Web Design: 1.2 The Internet");
 assert.strictEqual(weekById["web-12"].due, "2026-08-24T09:20:00");
 assert.strictEqual(weekById["web-12"].classId, "web-design");
-assert.strictEqual(weekById["web-12"].status, "late");
+assert.strictEqual(weekById["web-12"].status, "graded");
 assert.strictEqual(weekById["web-12"].points, 40);
-assert.strictEqual(weekById["web-12"].late, true);
+assert.strictEqual(weekById["web-12"].late, false);
 assert.strictEqual(weekById["web-12"].submitted_at, null);
 assert.strictEqual(weekById["web-12"].source, "canvas");
-assert.strictEqual(weekById["web-12"].canvas && weekById["web-12"].canvas.status, "late");
+assert.strictEqual(weekById["web-12"].canvas && weekById["web-12"].canvas.status, "graded");
 assert.strictEqual(weekById["web-12"].canvas.points, 40);
+assert.strictEqual(weekById["web-12"].canvas.score, 37.5);
 assert.strictEqual(weekById["eng-comics"].due, "2026-08-20T23:59:00");
 assert.strictEqual(weekById["eng-comics"].title, "English 10: Summer Narrative Comic Strip");
 assert(weekById["eng-comics"].suggest_from, "comics still suggest_from so they show as Start this");
@@ -750,19 +751,19 @@ assert(weekById["eng-notebook"], "notebook stays — bring-to-class, not on this
 assert(/highlighter/i.test(weekById["eng-notebook"].note || "") && /100 index cards/i.test(weekById["eng-notebook"].note || ""), "notebook keeps highlighter + 100 index cards");
 assert(weekById["eng-letter"], "week.json has eng-letter");
 assert.strictEqual(weekById["eng-letter"].due, "2026-08-20T23:59:00");
-assert.strictEqual((week.work || []).filter((w) => /English 10/.test(w.title || "")).length, 6, "English keeps names+comics+letter+notebook plus choice book and AAB");
-assert.strictEqual(week.as_of, "2026-08-24T21:52:00");
+assert.strictEqual((week.work || []).filter((w) => /English 10/.test(w.title || "")).length, 8, "English keeps names+comics+letter+notebook plus choice book, AAB, and 10.1");
+assert.strictEqual(week.as_of, "2026-08-26T14:10:00");
 assert(Array.isArray(week.grades), "week.json has ParentVUE grades[]");
-assert.strictEqual(week.grades.length, 3, "grades[] is sociology, english-10, and chemistry");
-assert.deepStrictEqual(week.grades.map((g) => g.classId), ["sociology", "english-10", "chemistry"], "grades[] rows are sociology, english-10, chemistry");
+assert.strictEqual(week.grades.length, 4, "grades[] is sociology, english-10, chemistry, and web-design");
+assert.deepStrictEqual(week.grades.map((g) => g.classId), ["sociology", "english-10", "chemistry", "web-design"], "grades[] rows are sociology, english-10, chemistry, web-design");
 const socGrade = week.grades.find((g) => g.classId === "sociology");
 const engGrade = week.grades.find((g) => g.classId === "english-10");
 const chemGrade = week.grades.find((g) => g.classId === "chemistry");
 assert(socGrade && socGrade.letter === "A-" && socGrade.percent === 91 && socGrade.as_of === "2026-08-19", "Sociology ParentVUE is A- 91% as of 8/19");
-assert(engGrade && engGrade.letter === "A+" && engGrade.percent === 100 && engGrade.as_of === "2026-08-23", "English ParentVUE is A+ 100% as of 8/23");
-assert(chemGrade && chemGrade.letter === "A+" && chemGrade.percent === 100 && chemGrade.as_of === "2026-08-24", "Chemistry ParentVUE is A+ 100% as of 8/24");
+assert(engGrade && engGrade.letter === "A+" && engGrade.percent === 100 && engGrade.as_of === "2026-08-26", "English Canvas is A+ 100% as of 8/26");
+assert(chemGrade && chemGrade.letter === "A+" && chemGrade.percent === 100 && chemGrade.as_of === "2026-08-26", "Chemistry Canvas is A+ 100% as of 8/26");
 assert.strictEqual(Game.gradesFromWeek({}).length, 0, "gradesFromWeek is empty when grades[] is missing");
-assert.deepStrictEqual([...Game.gradesFromWeek(week)].map((g) => g.classId), ["sociology", "english-10", "chemistry"]);
+assert.deepStrictEqual([...Game.gradesFromWeek(week)].map((g) => g.classId), ["sociology", "english-10", "chemistry", "web-design"]);
 assert.strictEqual(Game.gradeForClass(week, "sociology").letter, "A-");
 assert.strictEqual(Game.gradeForClass(week, { id: "english-10" }).letter, "A+");
 assert.strictEqual(Game.gradeForClass(week, "chemistry").letter, "A+");
@@ -771,13 +772,13 @@ assert.strictEqual(socPill.display, "A- 91%");
 assert.strictEqual(socPill.detail, "In-Class Activity 20/22 · ParentVUE 8/19");
 const engPill = Game.gradePillModel(Game.gradeForClass(week, "english-10"));
 assert.strictEqual(engPill.display, "A+ 100%");
-assert.strictEqual(engPill.detail, "Names 5/5, Comic 10/10, Letter to Goodson 10/10 · ParentVUE 8/23");
+assert.strictEqual(engPill.detail, "Names 5/5, Comic 10/10, Letter 10/10 (25/25); 10.1 Skills –/5 due 8/27, Choice Book –/5 due 8/28 · Canvas 8/26");
 assert.strictEqual(Game.gradePillModel({ classId: "chemistry", source: "ParentVUE" }), null);
 assert(/A\+\s*100%/.test(Game.gradePillHtml(week, "chemistry")));
 assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "sociology")) && /A-\s*91%/.test(Game.gradePillHtml(week, "sociology")) && /grade-detail/.test(Game.gradePillHtml(week, "sociology")));
 assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "english-10")) && /A\+\s*100%/.test(Game.gradePillHtml(week, "english-10")));
-assert.strictEqual((week.work || []).length, 13, "work[] stays the live set");
-assert.strictEqual((week.notes || []).length, 20, "notes[] stays the live set");
+assert.strictEqual((week.work || []).length, 19, "work[] stays the live set");
+assert.strictEqual((week.notes || []).length, 22, "notes[] stays the live set");
 const notesByKey = Object.fromEntries((week.notes || []).map((n) => [n.date + "\t" + n.title, n]));
 const notesByTitle = Object.fromEntries((week.notes || []).map((n) => [n.title, n]));
 const afterSchool819 = notesByKey["2026-08-19\tAfter-school check (~2:40pm)"];
@@ -811,9 +812,12 @@ assert(!(week.work || []).some((w) => /Case Launch|Picture day/i.test(w.title ||
 assert.deepStrictEqual((week.work || []).map((w) => w.id).sort(), [
   "chem-about-me",
   "chem-aboutme-disc",
+  "chem-mass-vol",
   "chem-penny",
   "chem-safety",
+  "eng-10-1-skills",
   "eng-aab-p40",
+  "eng-aab-p82",
   "eng-choicebook",
   "eng-comics",
   "eng-letter",
@@ -821,7 +825,10 @@ assert.deepStrictEqual((week.work || []).map((w) => w.id).sort(), [
   "eng-notebook",
   "web-11",
   "web-12",
-  "web-13"
+  "web-13",
+  "web-14",
+  "web-15",
+  "web-21"
 ], "work ids stay the live set");
 assert(weekById["chem-safety"], "week.json has chem-safety");
 assert.strictEqual(weekById["chem-safety"].score, "34/34");
@@ -878,10 +885,10 @@ assert(weekById["chem-aboutme-disc"].discrepancy_reason, "Parenting left a discr
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.due_by, null);
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_draft, null);
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_sent, false);
-assert.strictEqual(weekById["web-11"].school_status, "late");
+assert.strictEqual(weekById["web-11"].school_status, "graded");
 assert.strictEqual(weekById["web-11"].student_status, null);
 assert.strictEqual(weekById["web-11"].discrepancy, false);
-assert.strictEqual(weekById["web-12"].school_status, "late");
+assert.strictEqual(weekById["web-12"].school_status, "graded");
 assert.strictEqual(weekById["web-12"].student_status, null);
 assert.strictEqual(weekById["web-12"].discrepancy, false);
 assert.strictEqual(weekById["eng-letter"].school_status, "graded");
@@ -896,11 +903,11 @@ assert(!(week.work || []).some((w) => w.followup && w.followup.email_sent === tr
 assert.strictEqual(weekById["chem-about-me"].status, "open");
 assert.strictEqual(weekById["chem-about-me"].late, true);
 assert.notStrictEqual(weekById["chem-about-me"].status, "missing");
-assert.strictEqual(weekById["web-11"].status, "late");
-assert.strictEqual(weekById["web-11"].late, true);
+assert.strictEqual(weekById["web-11"].status, "graded");
+assert.strictEqual(weekById["web-11"].late, false);
 assert.strictEqual(weekById["web-11"].due, "2026-08-19T09:20:00");
-assert(/CodeHS:? 1\.1\.1/.test(weekById["web-11"].note || ""), "web 1.1 note may mention CodeHS 1.1.1–1.1.4");
-assert(/already on Outlook/i.test(weekById["web-12"].note || ""), "web 1.2 is already on Outlook");
+assert(/GRADED 20\/20/.test(weekById["web-11"].note || ""), "web 1.1 note is graded 20/20");
+assert(/GRADED 37\.5\/40/.test(weekById["web-12"].note || ""), "web 1.2 note is graded 37.5/40");
 assert(/GRADED Sun 8\/23/.test(weekById["eng-names"].note || "") && /5\/5/.test(weekById["eng-names"].note || ""), "name video is graded 5/5");
 assert(/10\/10 graded/.test(weekById["eng-comics"].note || "") && /No submitted_at on Canvas/.test(weekById["eng-comics"].note || ""), "comic note is 10/10 graded with no submitted_at");
 const proofNow = new Date("2026-08-20T07:10:00-05:00");
@@ -921,21 +928,24 @@ assert(asgSt.needsYou, "chem assignment needs you");
 assert.strictEqual(asgSt.discrepancy, true, "About Me assignment is still a discrepancy");
 const webSt = Game.workFeedStatus(weekById["web-11"], proofNow);
 assert.strictEqual(webSt.dueToday, false);
-assert.strictEqual(webSt.notDone, true);
+assert.strictEqual(webSt.notDone, false);
 assert.strictEqual(webSt.missing, false);
-assert.strictEqual(webSt.late, true, "web 1.1 is still past due as of Thu 7:10 CT");
-assert(webSt.needsYou, "web 1.1 needs you");
+assert.strictEqual(webSt.late, false, "web 1.1 is graded");
+assert.strictEqual(webSt.graded, true);
+assert(!webSt.needsYou, "graded web 1.1 is not Needs you");
 const web12St = Game.workFeedStatus(weekById["web-12"], proofNow);
 assert.strictEqual(web12St.dueToday, false);
 assert.strictEqual(web12St.missing, false);
-assert.strictEqual(web12St.notDone, true);
+assert.strictEqual(web12St.notDone, false);
+assert.strictEqual(web12St.graded, true);
 const needIds = Game.needsYouWork(week, proofNow).map((w) => w.id);
-assert(needIds.indexOf("chem-about-me") >= 0 && needIds.indexOf("web-11") >= 0, "Needs you includes chem assignment and web 1.1");
+assert(needIds.indexOf("chem-about-me") >= 0, "Needs you includes chem assignment");
+assert(needIds.indexOf("web-11") < 0, "graded web 1.1 is not Needs you");
 assert(needIds.indexOf("chem-aboutme-disc") < 0, "graded chem discussion is not Needs you");
-assert(needIds.indexOf("web-12") < 0, "Needs you does not include next-Monday Web 1.2 at 7:10 CT");
+assert(needIds.indexOf("web-12") < 0, "graded web 1.2 is not Needs you");
 assert(Game.workIsDiscrepancy(weekById["chem-about-me"], proofNow), "chem assignment is a discrepancy");
 assert(!Game.workIsDiscrepancy(weekById["chem-aboutme-disc"], proofNow), "graded chem discussion is not a discrepancy");
-assert(!Game.workIsDiscrepancy(weekById["web-11"], proofNow), "web 1.1 is late work, not a student-vs-school discrepancy");
+assert(!Game.workIsDiscrepancy(weekById["web-11"], proofNow), "graded web 1.1 is not a discrepancy");
 assert(!Game.workIsDiscrepancy(weekById["eng-names"], proofNow), "submitted name video is not a discrepancy");
 assert(Game.workIsDiscrepancy({
   id: "web-11-claim",
@@ -992,15 +1002,15 @@ assert(Game.workIsDiscrepancy(weekById["chem-about-me"], proofNow), "clearing sn
 Game.setSiteView(snoozeViewBefore || "me");
 if (snoozeFamBefore) localStorage.setItem("bw-family", snoozeFamBefore);
 else localStorage.removeItem("bw-family");
-const webDoneBefore = Game.workState("web-11").done;
-if (!webDoneBefore) Game.touchWork("web-11", "done");
-const doneChips = Game.workStatusChips(weekById["web-11"], proofNow);
+const chemDoneBefore = Game.workState("chem-about-me").done;
+if (!chemDoneBefore) Game.touchWork("chem-about-me", "done");
+const doneChips = Game.workStatusChips(weekById["chem-about-me"], proofNow);
 assert(doneChips.some((c) => c.key === "done-here"), "Bennett Done shows a Done chip");
 assert(!doneChips.some((c) => c.key === "not-done"), "Done work is not labeled Not done");
 assert(doneChips.some((c) => c.key === "late"), "school Late stays visible after Bennett marks Done");
 assert(/chip-done-here/.test(Game.needsYouListHtml(week, proofNow)), "Needs you shows Done after he marks it");
 assert(/done-tag/.test(fs.readFileSync(path.join(root, "js/week.js"), "utf8")), "This Week titles show a Done tag");
-if (!webDoneBefore) Game.touchWork("web-11", "done");
+if (!chemDoneBefore) Game.touchWork("chem-about-me", "done");
 assert.strictEqual(Game.emailsToSend({ work: [] }, proofNow).length, 0, "empty week has no follow-up emails");
 const noteOnlyMiss = Game.workFeedStatus({ id: "x", title: "X", note: "MISSED 0/1" }, proofNow);
 assert.strictEqual(noteOnlyMiss.missing, true);
@@ -1009,11 +1019,13 @@ const noteOnlyOpen = Game.workFeedStatus({ id: "y", title: "Y", due: "2026-08-20
 assert.strictEqual(noteOnlyOpen.missing, false, "do not invent Missing from Not submitted");
 assert.strictEqual(noteOnlyOpen.notDone, true);
 assert.strictEqual(noteOnlyOpen.dueToday, true);
-assert.strictEqual((week.events || []).length, 82, "merge kept live events[] including Fillingham pass-offs and boosters");
+assert.strictEqual((week.events || []).length, 85, "merge kept live events[] including Fillingham pass-offs and boosters");
 assert((week.events || []).some((e) => e.id === "picture-0827"), "picture-0827 is on the calendar");
 assert.strictEqual((week.events || []).find((e) => e.id === "picture-0827").start, "2026-08-27");
 assert.strictEqual((week.events || []).find((e) => e.id === "picture-0827").title, "Picture day (day 2)");
-assert(!(week.events || []).some((e) => e.id === "picture-0826"), "do not invent picture-0826 as an event");
+assert((week.events || []).some((e) => e.id === "picture-0826"), "picture-0826 is on the calendar");
+assert.strictEqual((week.events || []).find((e) => e.id === "picture-0826").start, "2026-08-26");
+assert.strictEqual((week.events || []).find((e) => e.id === "picture-0826").title, "Picture day");
 const weekText = fs.readFileSync(path.join(root, "week.json"), "utf8");
 assert(!/6:50/.test(weekText), "week.json must not keep the old 6:50 marching time");
 assert(!/6:40/.test(weekText), "week.json must not keep the old 6:40 arrive-by time");
@@ -1067,11 +1079,11 @@ assert.strictEqual(Game.classAttentionCount({ id: "geometry" }, week, weekDays, 
 assert.strictEqual(Game.classAttentionCount({ id: "band" }, week, weekDays, proofNow), 0, "Marching Band rehearsals are not due-work badges");
 assert(Game.classAttentionCount({ id: "chemistry" }, week, weekDays, proofNow) >= 1, "Chem badge counts late/due work");
 const afterWeb12 = new Date("2026-08-24T12:00:00-05:00");
-assert(Game.classAttentionCount({ id: "web-design" }, week, weekDays, afterWeb12) >= 1, "Web badge counts late 1.2 after it is due");
+assert.strictEqual(Game.classAttentionCount({ id: "web-design" }, week, weekDays, afterWeb12), 0, "graded Web 1.1/1.2 is not an attention badge");
 assert.strictEqual(Game.classShortLabel("band"), "Band");
 assert.strictEqual(Game.classShortLabel("english-10"), "Eng");
 assert.strictEqual(Game.classShortLabel("academic-intervention"), "Seminar");
-assert.strictEqual(Game.pickClassId(progress.classes, week, weekDays, "", proofNow), "web-design", "default opens first class with due work");
+assert.strictEqual(Game.pickClassId(progress.classes, week, weekDays, "", proofNow), "chemistry", "default opens first class with due work");
 assert.strictEqual(Game.pickClassId(progress.classes, week, weekDays, "geometry", proofNow), "geometry", "remembered class stays put");
 const parenting = week.parenting || [];
 assert(!parenting.some((p) => p.end === "2026-08-22T00:00:00"), "Mom overnight must not run through Friday midnight");
@@ -1106,9 +1118,9 @@ assert(!khanAskChem.some((k) => k.id === "ela"), "Ask chemistry chips should not
 assert(Game.khanStripHtml("Chemistry", { classId: "chemistry" }).indexOf("/ela") >= 0, "Ask chemistry strip still lists ELA");
 assert.strictEqual(Game.classDueLabel(3), "3 due");
 assert.strictEqual(Game.classDueLabel(0), "Nothing due yet");
-assert.strictEqual(Game.classDueCount(english, week), 6, "English has 6 due from week.json");
-assert.strictEqual(Game.classDueCount(byId.chemistry, week), 4, "Chemistry has About Me assignment + discussion + penny demo + safety exam");
-assert.strictEqual(Game.classDueCount(byId["web-design"], week), 3, "Web Design has 1.1, 1.2, and 1.3 due");
+assert.strictEqual(Game.classDueCount(english, week), 8, "English due count matches week.json");
+assert.strictEqual(Game.classDueCount(byId.chemistry, week), 5, "Chemistry due count matches week.json");
+assert.strictEqual(Game.classDueCount(byId["web-design"], week), 6, "Web Design due count matches week.json");
 assert.strictEqual(Game.classPeriodLine(band), "P1 Marching Band");
 
 assert.strictEqual(progress.term.id, "2025-26-s1", "progress.json should name the current term");
@@ -1613,7 +1625,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=162/.test(weekHtml) && /week\.js\?v=162/.test(weekHtml) && /game\.js\?v=162/.test(weekHtml) && /telemetry\.js\?v=162/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=163/.test(weekHtml) && /week\.js\?v=163/.test(weekHtml) && /game\.js\?v=163/.test(weekHtml) && /telemetry\.js\?v=163/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1661,8 +1673,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=161\b/.test(html), file + " should not still cache-bust as v=161");
-  assert(/\?v=162/.test(html), file + " should cache-bust v=162");
+  assert(!/\?v=162\b/.test(html), file + " should not still cache-bust as v=162");
+  assert(/\?v=163/.test(html), file + " should cache-bust v=163");
   const bar = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
@@ -1677,7 +1689,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 });
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(/js\/update\.js\?v=162/.test(html), file + " loads the live-build checker");
+  assert(/js\/update\.js\?v=163/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
 const updateJs = fs.readFileSync(path.join(root, "js/update.js"), "utf8");
@@ -1732,6 +1744,8 @@ assert(/renderStats\(rangeEvents, usageEvents\)/.test(adminJs), "Per user uses e
 assert(/Last when/.test(adminJs) && !/<th>Last action<\/th>\s*<th>Last action<\/th>/.test(adminJs), "usage last columns are Last when and Last action");
 assert(/limit:\s*5000/.test(adminJs) && /Range:/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "usage fetch pages past the first 1000 rows");
 assert(/function eventRole/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")) && /trackLogin/.test(gameJs), "logins stamp the session user, not the Connect device role");
+assert(/canFlushPublic/.test(telemetryJs) && /events: rows/.test(telemetryJs), "usage events flush through family-sync without Admin Connect");
+assert(/writeEvents/.test(familySyncFn) && /function mapEvent/.test(familySyncFn), "family-sync writes usage events");
 assert(/data-usage-range="24h"/.test(usageBlock) && /7 days/.test(usageBlock) && /data-usage-range="30d"/.test(usageBlock) && /data-usage-range="all"/.test(usageBlock), "usage has 24h / 7 days / 30 days / All");
 assert(/id="usage-showing"/.test(usageBlock) && /id="usage-recent"/.test(usageBlock), "usage shows range count and recent actions");
 assert(/setUsageRange/.test(adminJs) && /filterUsageRange/.test(adminJs) && /Per user/.test(adminJs) && /Recent actions/.test(adminJs), "usage rolls up per user in a selected range");
@@ -1740,7 +1754,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=162/.test(progressHtml) && /theme\.css\?v=162/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=163/.test(progressHtml) && /theme\.css\?v=163/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1780,8 +1794,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*160/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 160");
-assert(/2026-08-26T16:40:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-26T16:40:00-05:00");
+assert(/build:\s*161/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 161");
+assert(/2026-08-27T17:33:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-27T17:33:00-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2360,6 +2374,13 @@ assert(/Edit/.test(kidWorkEdit), "Bennett can edit an assignment");
 assert(!/Delete/.test(kidWorkEdit), "Bennett cannot delete from the kid Edit control");
 assert.strictEqual(Game.entryButtons("event:x", "event:x"), "", "kid view still hides calendar edit");
 assert(/data-edit-work/.test(progressJs) && /openWorkEdit/.test(progressJs), "Progress lets Bennett edit due date");
+assert(/workActionButtons/.test(progressJs) && /data-act/.test(progressJs), "Progress has I started this and Done");
+assert(/entryButtons\("work:" \+ item\.id/.test(progressJs), "Progress assignment Edit goes through entryButtons");
+assert(!/<button type="button" class="mini" data-edit-work=/.test(progressJs), "Progress does not paint a second hardcoded Edit");
+assert(/flex-wrap:\s*wrap/.test(themeCss.slice(themeCss.indexOf(".class-card summary"), themeCss.indexOf(".class-card summary") + 220)), "class summary wraps instead of crushing the name");
+assert(/min-width:\s*12rem/.test(themeCss.slice(themeCss.indexOf(".class-copy"), themeCss.indexOf(".class-copy") + 180)), "class name keeps a readable min width");
+assert(/max-width:\s*100%/.test(themeCss.slice(themeCss.indexOf(".grade-pill"), themeCss.indexOf(".grade-pill") + 280)), "long grade pills wrap on Progress");
+assert(Game.filterBennettHelp("done").some((row) => row.id === "progress" && /Done work here/.test(row.body)), "Help says Done works on Progress");
 assert(/openEventEdit/.test(progressJs), "Progress lets Bennett edit calendar items under a class");
 assert(/closest\("\[data-edit-work\]"\)/.test(progressJs) && /closest\("\[data-edit-work\]"\)/.test(weekJs), "Edit click is delegated so it still works after a redraw");
 assert(!/<button[^>]*class="needs-you-row"/.test(gameSrc), "Needs you row is not a button covering Edit");
@@ -2931,6 +2952,12 @@ document.documentElement = prevRoot;
   };
   const pulled = await Telemetry.fetchProgress();
   assert(pulled.length === 1 && pulled[0].assignment_id === "chem-about-me", "fetchProgress uses family-sync first");
+  window.location.protocol = "https:";
+  assert(Telemetry.canFlushPublic(), "GitHub Pages can flush usage without Admin Connect");
+  Telemetry.track("page_view");
+  const flushed = await Telemetry.flush();
+  assert(flushed && flushed.sent > 0, "queued usage events send through family-sync");
+  assert(syncCalls.some((row) => row.body && /"events"/.test(String(row.body))), "usage flush posts an events array");
   assert(syncCalls[0] && String(syncCalls[0].url).indexOf("/functions/v1/family-sync") >= 0, "telemetry/game call /functions/v1/family-sync");
   assert(!syncCalls[0].headers.apikey && !syncCalls[0].headers.Authorization, "family-sync client sends no anon key");
   const pushed = await Telemetry.upsertProgress([{ id: "chem-about-me", rec: { done: 99, updatedAt: "2026-08-18T22:00:00.000Z" } }]);

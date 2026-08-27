@@ -68,7 +68,7 @@
     return !!(cfg.url && cfg.anonKey && cfg.familyToken);
   }
 
-  function eventRole() {
+  function sessionRole() {
     try {
       if (global.Game && typeof global.Game.sessionUser === "function") {
         const who = String(global.Game.sessionUser() || "").trim().toLowerCase();
@@ -77,7 +77,29 @@
         if (who === "orin") return "orin";
       }
     } catch (_) {}
-    return getConfig().role || "bennett";
+    try {
+      const raw = localStorage.getItem("bw-session");
+      const obj = raw ? JSON.parse(raw) : null;
+      const who = String((obj && obj.user) || "").trim().toLowerCase();
+      if (who === "bennett") return "bennett";
+      if (who === "mom" || who === "parent") return "parent";
+      if (who === "orin" || who === "dad" || who === "me") return "orin";
+    } catch (_) {}
+    return "";
+  }
+
+  function eventRole() {
+    return sessionRole() || getConfig().role || "bennett";
+  }
+
+  function canFlushPublic() {
+    if (!progressSyncAvailable()) return false;
+    try {
+      const proto = String((global.location && global.location.protocol) || "");
+      return proto === "http:" || proto === "https:";
+    } catch (_) {
+      return false;
+    }
   }
 
   function progressSyncAvailable() {
@@ -264,10 +286,39 @@
     return null;
   }
 
+  function eventPayload(row) {
+    return {
+      id: row.id,
+      ts: row.ts,
+      term_id: row.term_id || row.termId || "",
+      device_id: row.device_id || row.deviceId || deviceId(),
+      role: row.role || eventRole(),
+      type: row.type,
+      page: row.page || "",
+      class_id: row.class_id || row.classId || "",
+      assignment_id: row.assignment_id || row.assignmentId || "",
+      ms: row.ms == null ? null : row.ms,
+      message: row.message || "",
+      href: row.href || ""
+    };
+  }
+
   async function flush() {
-    if (!connected()) return { sent: 0, queued: (await pending()).length };
     const rows = await pending();
     if (!rows.length) return { sent: 0, queued: 0 };
+    if (canFlushPublic()) {
+      try {
+        const chunk = 80;
+        for (let i = 0; i < rows.length; i += chunk) {
+          await familySyncRequest("POST", {
+            events: rows.slice(i, i + chunk).map(eventPayload)
+          });
+        }
+        await dropIds(rows.map((row) => row.id));
+        return { sent: rows.length, queued: 0 };
+      } catch (_) {}
+    }
+    if (!connected()) return { sent: 0, queued: rows.length };
     const cfg = getConfig();
     const payload = rows.map((row) => Object.assign({}, row, { family_token: cfg.familyToken }));
     try {
@@ -282,7 +333,7 @@
         headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify([{
           device_id: deviceId(),
-          role: cfg.role,
+          role: eventRole() || cfg.role,
           family_token: cfg.familyToken,
           last_seen: new Date().toISOString(),
           user_agent: (typeof navigator !== "undefined" && navigator.userAgent) ? String(navigator.userAgent).slice(0, 180) : ""
@@ -313,7 +364,7 @@
       href: src.href ? String(src.href).slice(0, 280) : ""
     };
     enqueue(row);
-    if (connected() && typeof setTimeout === "function") {
+    if ((canFlushPublic() || connected()) && typeof setTimeout === "function") {
       if (flushTimer) clearTimeout(flushTimer);
       flushTimer = setTimeout(() => { flush(); }, 400);
     }
@@ -837,6 +888,7 @@
     ROLES,
     getConfig,
     setConfig,
+    canFlushPublic,
     connected,
     progressSyncAvailable,
     FAMILY_SYNC_URL,

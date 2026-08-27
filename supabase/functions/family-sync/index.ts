@@ -86,6 +86,33 @@ function parsePayload(raw: unknown): Record<string, unknown> {
   return {};
 }
 
+function mapEvent(input: Record<string, unknown>, family: string) {
+  const id = String(input.id || "").trim();
+  const type = String(input.type || "").trim();
+  if (!id || !type) return null;
+  const roleRaw = String(input.role || "").trim().toLowerCase();
+  const role = roleRaw === "parent" || roleRaw === "mom"
+    ? "parent"
+    : (roleRaw === "orin" || roleRaw === "dad" || roleRaw === "me" ? "orin" : "bennett");
+  const msRaw = input.ms;
+  const ms = msRaw == null || msRaw === "" ? null : Number(msRaw);
+  return {
+    id,
+    ts: stampOrNull(input.ts) || new Date().toISOString(),
+    term_id: String(input.term_id || input.termId || ""),
+    device_id: String(input.device_id || input.deviceId || ""),
+    role,
+    type,
+    page: String(input.page || "").slice(0, 80),
+    class_id: String(input.class_id || input.classId || ""),
+    assignment_id: String(input.assignment_id || input.assignmentId || ""),
+    ms: Number.isFinite(ms) ? ms : null,
+    message: String(input.message || "").slice(0, 500),
+    href: String(input.href || "").slice(0, 280),
+    family_token: family,
+  };
+}
+
 function mapWork(input: Record<string, unknown>, family: string) {
   const payload = parsePayload(input.payload);
   const id = String(input.id || payload.id || "").trim();
@@ -297,6 +324,16 @@ async function writeWork(family: string, rows: Record<string, unknown>[]) {
   return rows.length;
 }
 
+async function writeEvents(family: string, rows: Record<string, unknown>[]) {
+  if (!rows.length) return 0;
+  await rest("/rest/v1/events?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
+    body: JSON.stringify(rows),
+  });
+  return rows.length;
+}
+
 async function writeOverlay(family: string, row: Record<string, unknown>) {
   await rest("/rest/v1/family_overlay?on_conflict=family_token", {
     method: "POST",
@@ -350,6 +387,14 @@ Deno.serve(async (req: Request) => {
     }
 
     let n = 0;
+    const eventRows = Array.isArray(body.events)
+      ? (body.events as unknown[]).map((row) => {
+        if (!row || typeof row !== "object") return null;
+        return mapEvent(row as Record<string, unknown>, family);
+      }).filter(Boolean) as Record<string, unknown>[]
+      : [];
+    if (eventRows.length) n += await writeEvents(family, eventRows);
+
     const progressRows = collectProgress(body, family);
     if (progressRows.length) n += await writeProgress(family, progressRows);
 

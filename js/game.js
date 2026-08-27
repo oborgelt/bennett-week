@@ -1429,6 +1429,23 @@
     return window.confirm("Delete this " + (label || "entry") + "? It disappears on this device. Export the family pack so Mom and Orin stay in sync.");
   }
 
+  function workActionButtons(w) {
+    if (!w || !w.id) return "";
+    const st = workState(w.id);
+    const stamp = st.started && st.startedAt ? "Started " + fmtStamp(st.startedAt) : "";
+    return `
+      <div class="actions">
+        <button type="button" class="act ${st.started ? "started" : ""}" data-act="started" data-id="${esc(w.id)}">
+          ${st.started ? "Started" : "I started this"}
+        </button>
+        <button type="button" class="act ${st.done ? "done-on" : ""}" data-act="done" data-id="${esc(w.id)}">
+          Done
+        </button>
+      </div>
+      ${stamp ? `<p class="started-row"><span class="started-at">${esc(stamp)}</span><button type="button" class="tiny undo-mini" data-act="started" data-id="${esc(w.id)}">Undo</button></p>` : ""}
+      ${st.done ? `<p class="started-row"><span class="started-at">Marked done</span><button type="button" class="tiny undo-mini" data-act="done" data-id="${esc(w.id)}">Undo</button></p>` : ""}`;
+  }
+
   function entryButtons(editToken, delToken, opts) {
     const kid = siteViewHidesAdult();
     const kidEdit = opts && opts.kidEdit;
@@ -4708,7 +4725,7 @@
     {
       id: "progress",
       title: "Progress",
-      body: "Dash on a phone. Same Needs follow-up and Needs you, plus By class, grades the school posted, and check-ins. No made-up course grades. You can edit assignments. You cannot delete a class or undo a trophy."
+      body: "Dash on a phone. Same Needs follow-up and Needs you, plus By class, grades the school posted, and check-ins. No made-up course grades. I started this and Done work here the same as This Week. You can edit assignments. You cannot delete a class or undo a trophy."
     },
     {
       id: "crew",
@@ -5948,7 +5965,7 @@
       if (String(w.kind || "") === "event") return false;
       const st = workFeedStatus(w);
       if (st.excused || st.submitted || st.graded) return false;
-      if (!workOnBoard(w, boardDays) && !st.missing) return false;
+      if (!workOnBoard(w, boardDays) && !st.missing && !st.pastDue) return false;
       return true;
     });
   }
@@ -5967,7 +5984,7 @@
       if (!w || !w.id) return false;
       if (String(w.kind || "") === "event") return false;
       const st = workFeedStatus(w);
-      if (!workOnBoard(w, boardDays) && !st.missing) return false;
+      if (!workOnBoard(w, boardDays) && !st.missing && !st.pastDue) return false;
       return true;
     });
     if (!board.length) return false;
@@ -9170,6 +9187,7 @@
     updateAnswer,
     deleteAnswer,
     confirmDelete,
+    workActionButtons,
     entryButtons,
     hasEggGame,
     gameHref,
