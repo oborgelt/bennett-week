@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-28T14:35:00",
+  "as_of": "2026-08-28T17:29:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1731,6 +1731,11 @@
       "date": "2026-08-28",
       "title": "After-school check (~2:35pm CT)",
       "text": "Live Canvas via desktop Chrome (browserUse driver was down; session already signed in). NEW: English Formative On-Demand –/10 due TONIGHT 11:59pm (matches in-class DWT). Choice Book still –/5 tonight; dashboard planner-checked, gradebook no submit — not treated as Bennett-said-done. English 30/30 100%. Chem 38/38 100%; lab sheet still –/1 past due 8/26; Density 5 + Mass vs Volume Graph –/1 past due 8/27; none flagged Missing. Web 95.83% unchanged; 1.3–2.2 due Mon 9:20am. AAB Reading Check #1 –/10 Mon. Published: Band, Geometry, English 10, Web, Chem. Sociology/S&C/AI unpublished. Gmail: no new teacher/school mail after last night (10.1 Skills graded notice already known). oeband.com unchanged. English agenda unchanged. OE homepage: Clubs Fair today 10:55–12:10; Picture Day rolled off. Labor Day Sep 7. ParentVUE BLOCKED: login page, username filled, password box empty (same as 8/25–8/27). Inbox/Alerts/Attendance/Calendar not pulled. Tonight: Mom (through Sun 6pm). No Bennett-said-done; no new discrepancy. Do not flag 8/14 Chem absence."
+    },
+    {
+      "date": "2026-08-28",
+      "title": "ParentVUE Grade Book (~5:29pm CT)",
+      "text": "Live ParentVUE Grade Book (MT1, Bennett Borgelt, Olathe East 423513) ~5:29pm CT. All 7 classes 0 Missing Assignments. Academic Intervention is not in Grade Book. P1 Marching Band Fillingham rm 415 A+ 100.0% last update 8/27 (Daily Skills 30/30, Forms 25/25, Extra Rehearsals 10/10 + 10/10, Pass off #1 50/50). P2 Sociology Keach rm 315 A 96% last update 8/28 (Scavenger Hunt 20/22; 1.1 Reading 14/14; 1.2 Reading 12/12; CSI 1.1 Contemporary Issues Article Not Due 33 pts Drop Box 8/26–8/28 today). P3 Web Design I Linn rm 513 A 96% last update 8/26 (1.1 20/20, 1.2 37.5/40). P4 Chemistry Pfeiff rm 113 B 85.7% last update 8/28 (overview 85.7 / detail also 86.0; using 85.7; lab sheet 0.5/1; Density Lesson 5 Not Graded 1.0000 pts; Mass vs Volume Graph 1/1; Safety Exam 34/34; Safety Contract 1/1; Defining Matter 1/1 Notes \"Mi\"; Get to Know You 1/1; Penny 1/1; no late flags; 0 upcoming). P5 Strength and Conditioning I Pauly WEIGHT ROOM A+ 100.00% last update 8/28 (First 2 weeks Activity Participation 35/35). P6 English 10 Goodson rm 816 A+ 100.00% last update 8/23 (3 items only: letter 10/10, comic 10/10, names 5/5; 10.1 Skills / Choice Book / Formative On-Demand not in ParentVUE yet). P7 Geometry Foster rm 814 A 97% last update 8/25 (Quiz 1.2-1.4 19/20; Quiz Review 10/10)."
     }
   ],
   "grades": [
@@ -1739,11 +1744,11 @@
       "class": "Sociology",
       "period": "P2",
       "teacher": "Todd Keach",
-      "letter": "A-",
-      "percent": 91,
-      "detail": "In-Class Activity 20/22. Syllabus (Keach 8/13 PDF): HW ~55 / Tests ~30 / Quizzes ~15; late work 50% until end of quarter; weekly Contemporary Social Issues; wired headphones required. Assignments on Synergy, not Canvas.",
+      "letter": "A",
+      "percent": 96,
+      "detail": "Last update 8/28. Summer Scavenger Hunt 20/22; 1.1 Reading 14/14; 1.2 Reading 12/12. CSI (1.1) Contemporary Issues Article Not Due, 33 pts, Drop Box 8/26–8/28 today. Room 315.",
       "source": "ParentVUE",
-      "as_of": "2026-08-19",
+      "as_of": "2026-08-28",
       "missing": 0
     },
     {
@@ -1753,8 +1758,8 @@
       "teacher": "Ann Goodson",
       "letter": "A+",
       "percent": 100,
-      "detail": "30/30 (names 5/5, letter 10/10, comic 10/10, 10.1 Skills 5/5). Choice Book –/5 tonight (planner-checked, no gradebook submit). NEW Formative On-Demand –/10 tonight. AAB Reading Check #1 –/10 Mon.",
-      "source": "Canvas",
+      "detail": "Last update 8/23. ParentVUE has 3 items only: Letter to Goodson 10/10, Summer Narrative Comic Strip 10/10, Help me learn your names! 5/5. 10.1 Skills / Choice Book / Formative On-Demand not in ParentVUE yet. Room 816.",
+      "source": "ParentVUE",
       "as_of": "2026-08-28",
       "missing": 0
     },
@@ -1763,10 +1768,10 @@
       "class": "Chemistry",
       "period": "P4",
       "teacher": "Justin Pfeiff",
-      "letter": "A+",
-      "percent": 100,
-      "detail": "38/38 graded. Lab sheet –/1 past due 8/26 (not Missing). Density 5 and Mass vs Volume Graph –/1 past due 8/27 (not Missing).",
-      "source": "Canvas",
+      "letter": "B",
+      "percent": 85.7,
+      "detail": "Last update 8/28. Overview B 85.7% (detail also showed 86.0%; using 85.7). Mass and Volume Lab Sheet 0.5/1 (8/26 Project). Density Lesson 5 Assignment Not Graded 1.0000 pts (8/27). Mass vs Volume Graph 1/1 (8/27). Safety Exam 34/34, Safety Contract 1/1 (8/24). Defining Matter Lesson 3 1/1 Notes \"Mi\" (imported from Canvas); Get to Know You Slides 1/1; Penny for Your Thoughts Demo 1/1 (8/21). No late flags. 0 upcoming. Room 113.",
+      "source": "ParentVUE",
       "as_of": "2026-08-28",
       "missing": 0
     },
@@ -1775,10 +1780,46 @@
       "class": "Web Design I",
       "period": "P3",
       "teacher": "Derek Linn",
-      "letter": null,
-      "percent": 95.83,
-      "detail": "1.1 20/20, 1.2 37.5/40 (57.5/60). 1.3–2.2 still open due Mon 8/31 9:20am (62 pts).",
-      "source": "Canvas",
+      "letter": "A",
+      "percent": 96,
+      "detail": "Last update 8/26. 1.1 What is the Web? 20/20 (8/19); 1.2 The Internet 37.5/40 (8/24). Room 513.",
+      "source": "ParentVUE",
+      "as_of": "2026-08-28",
+      "missing": 0
+    },
+    {
+      "classId": "geometry",
+      "class": "Geometry",
+      "period": "P7",
+      "teacher": "Katelyn Foster",
+      "letter": "A",
+      "percent": 97,
+      "detail": "Last update 8/25. Quiz 1.2-1.4 19/20; Quiz Review 1.2-1.4 Practice 10/10 (both 8/21). Room 814.",
+      "source": "ParentVUE",
+      "as_of": "2026-08-28",
+      "missing": 0
+    },
+    {
+      "classId": "band",
+      "class": "Marching Band",
+      "period": "P1",
+      "teacher": "Rebecca Fillingham",
+      "letter": "A+",
+      "percent": 100,
+      "detail": "Last update 8/27. 8/17–8/26 Daily Skills 30/30; Forms Daily Skills 25/25; Mon 8/17 Extra Rehearsals 10/10; Mon 8/24 Extra Rehearsals 10/10; Pass off #1 Test 50/50 (all dated 8/26). Room 415.",
+      "source": "ParentVUE",
+      "as_of": "2026-08-28",
+      "missing": 0
+    },
+    {
+      "classId": "strength",
+      "class": "Strength and Conditioning I",
+      "period": "P5",
+      "teacher": "Rachelle Pauly",
+      "letter": "A+",
+      "percent": 100,
+      "detail": "Last update 8/28. First 2 weeks Activity Participation 35/35. WEIGHT ROOM.",
+      "source": "ParentVUE",
       "as_of": "2026-08-28",
       "missing": 0
     }
