@@ -297,6 +297,7 @@
       "icon": "badge",
       "badge": "crew-six-as",
       "reward": 0,
+      "rewardMedia": "chunky",
       "rewardUnlock": { "type": "content", "id": "crew-six-as-run", "label": "Six A's rush" },
       "unlock": { "type": "bennett_login" },
       "streak": { "target": 1, "unit": "time" }

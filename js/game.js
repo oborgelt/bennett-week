@@ -2714,7 +2714,7 @@
   function rewardMediaItem(ach, lib) {
     const id = rewardMediaId(ach);
     if (!id) {
-      if (ach && ach.id === "test-riff-reps") return libraryItemNamed(lib, "chunky");
+      if (ach && (ach.id === "test-riff-reps" || ach.id === SIX_AS_LIVE_ACHIEVEMENT)) return libraryItemNamed(lib, "chunky");
       return null;
     }
     return libraryItem(lib, id) || libraryItemNamed(lib, id);
@@ -2734,7 +2734,7 @@
 
   function playAwardSound(ach, family, lib) {
     if (playAwardMedia(ach, lib)) return true;
-    if (ach && ach.id === "test-riff-reps") {
+    if (ach && (ach.id === "test-riff-reps" || ach.id === SIX_AS_LIVE_ACHIEVEMENT)) {
       const chunky = libraryItemNamed(lib, "chunky");
       if (chunky) {
         if (playLibraryItem(chunky)) return true;
@@ -7225,6 +7225,7 @@
       icon: "badge",
       badge: "crew-six-as",
       reward: 0,
+      rewardMedia: "chunky",
       rewardUnlock: { type: "content", id: "crew-six-as-run", label: "Six A's rush" },
       unlock: { type: "bennett_login" }
     };
@@ -9023,7 +9024,7 @@
     { id: "test-ace-closer", title: "Meet Ace", reward: 10, rewardCharacter: "ace", rewardUnlock: { type: "character", id: "ace", label: "Ace" } },
     { id: "test-riff-reps", title: "Meet Riff", reward: 10, rewardCharacter: "riff", rewardUnlock: { type: "character", id: "riff", label: "Riff" }, unlock: { type: "class_tour", hours: 24 } },
     { id: "all-assignments-updated", title: "Meet Scorch", reward: 0, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" }, unlock: { type: "open_touched" } },
-    { id: "six-as-classes", title: "6 A's in your classes!", reward: 0, rewardUnlock: { type: "content", id: "crew-six-as-run", label: "Six A's rush" }, unlock: { type: "bennett_login" } },
+    { id: "six-as-classes", title: "6 A's in your classes!", reward: 0, rewardMedia: "chunky", rewardUnlock: { type: "content", id: "crew-six-as-run", label: "Six A's rush" }, unlock: { type: "bennett_login" } },
     { id: "test-scorch-recover", title: "Meet Scorch", reward: 10, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" } },
     { id: "test-deuce-return", title: "Meet Deuce", reward: 10, rewardCharacter: "deuce", rewardUnlock: { type: "character", id: "deuce", label: "Deuce" } },
     { id: "test-fuzz-unplugged", title: "Meet Fuzz", reward: 10, rewardCharacter: "fuzz", rewardUnlock: { type: "character", id: "fuzz", label: "Fuzz" } },

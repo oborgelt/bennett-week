@@ -1332,7 +1332,10 @@
       const item = Game.libraryItem(library, document.getElementById("reward-content").value);
       if (item) {
         next.rewardUnlock = { type: "content", id: item.id, label: item.label };
-        next.rewardMedia = item.id;
+        const sound = (document.getElementById("reward-media") || {}).value || prev.rewardMedia || "";
+        if (item.kind === "audio" || item.synth) next.rewardMedia = item.id;
+        else if (sound && sound !== item.id) next.rewardMedia = sound;
+        else delete next.rewardMedia;
       }
     } else if (rewardType && rewardType !== "character") {
       const id = document.getElementById("reward-unlock-id").value.trim() || slug(document.getElementById("reward-unlock-label").value || rewardType);
