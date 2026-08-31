@@ -923,6 +923,24 @@
     });
   }
 
+  async function markNeedsYouDone(id) {
+    if (!id) return;
+    const before = Game.workState(id);
+    if (before.done) return;
+    const touched = Game.touchWork(id, "done");
+    if (library) Game.primeLibraryAudio();
+    if (library) Game.playWorkActionCue(family, library, id, "done");
+    syncViews();
+    render();
+    try {
+      const sync = touched && touched.synced ? await touched.synced : await Game.syncFamilyProgress();
+      if (sync && sync.failed) Game.toast("Couldn't sync. Try again.");
+      else Game.familySavedToast("Done");
+    } catch (_) {
+      Game.toast("Couldn't sync. Try again.");
+    }
+  }
+
   function renderGradesPane(classes) {
     const host = document.getElementById("grades-pane");
     if (!host) return;
@@ -1023,6 +1041,13 @@
         e.preventDefault();
         e.stopPropagation();
         openWorkPlan(plan.getAttribute("data-plan-work"));
+        return;
+      }
+      const needsDone = e.target && e.target.closest && e.target.closest("[data-needs-done]");
+      if (needsDone) {
+        e.preventDefault();
+        e.stopPropagation();
+        void markNeedsYouDone(needsDone.getAttribute("data-needs-done"));
         return;
       }
       const edit = e.target && e.target.closest && e.target.closest("[data-edit-work]");

@@ -81,7 +81,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=172/.test(basecampHtml) && /basecamp\.js\?v=172/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=173/.test(basecampHtml) && /basecamp\.js\?v=173/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -743,7 +743,7 @@ assert.strictEqual(weekById["web-11"].student_status, null);
 assert.strictEqual(weekById["web-11"].discrepancy, false);
 assert.strictEqual(weekById["eng-notebook"].school_status, "open");
 assert.strictEqual((week.work || []).filter((w) => w.discrepancy === true).map((w) => w.id).join(","), "chem-about-me", "About Me assignment is the remaining week.json discrepancy");
-assert.strictEqual((week.work || []).filter((w) => w.followup && typeof w.followup === "object").length, 24, "Parenting put a followup object on all work rows");
+assert.strictEqual((week.work || []).filter((w) => w.followup && typeof w.followup === "object").length, 25, "Parenting put a followup object on all work rows");
 assert.strictEqual(weekById["chem-aboutme-disc"].followup && weekById["chem-aboutme-disc"].followup.due_by, null);
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_draft, null, "Parenting left email_draft null");
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_sent, false, "do not invent that Bennett already emailed");
@@ -784,7 +784,7 @@ assert(/highlighter/i.test(weekById["eng-notebook"].note || "") && /100 index ca
 assert(weekById["eng-letter"], "week.json has eng-letter");
 assert.strictEqual(weekById["eng-letter"].due, "2026-08-20T23:59:00");
 assert.strictEqual((week.work || []).filter((w) => /English 10/.test(w.title || "")).length, 11, "English keeps names+comics+letter+notebook plus choice book, AAB, 10.1, and Formative On-Demand");
-assert.strictEqual(week.as_of, "2026-08-31T07:19:00");
+assert.strictEqual(week.as_of, "2026-08-31T15:16:00");
 assert(Array.isArray(week.grades), "week.json has ParentVUE grades[]");
 assert.strictEqual(week.grades.length, 7, "grades[] is the seven ParentVUE classes with marks");
 assert.deepStrictEqual(week.grades.map((g) => g.classId), ["sociology", "english-10", "chemistry", "web-design", "geometry", "band", "strength"], "grades[] rows follow the ParentVUE pull");
@@ -803,16 +803,16 @@ assert.strictEqual(Game.gradeForClass(week, { id: "english-10" }).letter, "A+");
 assert.strictEqual(Game.gradeForClass(week, "chemistry").letter, "B");
 const socPill = Game.gradePillModel(Game.gradeForClass(week, "sociology"));
 assert.strictEqual(socPill.display, "A 97%");
-assert.strictEqual(socPill.detail, "Last update 8/30. CSI (1.1) NOW 30/30 (was Not Due 33 pts, Drop Box 8/26–8/28). 1.2 Reading 12/12; 1.1 Reading 14/14; Summer Scavenger Hunt 20/22. Room 315. · ParentVUE 8/31");
+assert.strictEqual(socPill.detail, "Last update 8/31 (was 8/30). NEW: 1.3 Reading due 9/1 Not Due 16 pts. CSI 1.1 30/30; 1.2 12/12; 1.1 14/14; Scavenger Hunt 20/22. Room 315. · ParentVUE 8/31");
 const engPill = Game.gradePillModel(Game.gradeForClass(week, "english-10"));
 assert.strictEqual(engPill.display, "A+ 98.33%");
-assert.strictEqual(engPill.detail, "Last update 8/30 — now matches Canvas. Choice Book Check-In 5/5; Formative On-Demand 9.25/10; 10.1 Skills Assessment 5/5; Letter 10/10; comic 10/10; names 5/5. Room 816. · ParentVUE 8/31");
+assert.strictEqual(engPill.detail, "Last update 8/30. Choice Book 5/5; Formative 9.25/10; 10.1 Skills 5/5; letter 10/10; comic 10/10; names 5/5. No AAB Reading Check #1 row in ParentVUE. Room 816. · ParentVUE 8/31");
 assert.strictEqual(Game.gradePillModel({ classId: "chemistry", source: "ParentVUE" }), null);
 assert(/B\s*85\.7%/.test(Game.gradePillHtml(week, "chemistry")));
 assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "sociology")) && /A\s*97%/.test(Game.gradePillHtml(week, "sociology")) && /grade-detail/.test(Game.gradePillHtml(week, "sociology")));
 assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "english-10")) && /A\+\s*98\.33%/.test(Game.gradePillHtml(week, "english-10")));
-assert.strictEqual((week.work || []).length, 26, "work[] stays the live set");
-assert.strictEqual((week.notes || []).length, 37, "notes[] stays the live set");
+assert.strictEqual((week.work || []).length, 27, "work[] stays the live set");
+assert.strictEqual((week.notes || []).length, 41, "notes[] stays the live set");
 const notesByKey = Object.fromEntries((week.notes || []).map((n) => [n.date + "\t" + n.title, n]));
 const notesByTitle = Object.fromEntries((week.notes || []).map((n) => [n.title, n]));
 const afterSchool819 = notesByKey["2026-08-19\tAfter-school check (~2:40pm)"];
@@ -869,7 +869,8 @@ assert.deepStrictEqual((week.work || []).map((w) => w.id).sort(), [
   "web-13",
   "web-14",
   "web-15",
-  "web-21"
+  "web-21",
+  "web-23"
 ], "work ids stay the live set");
 assert(weekById["chem-safety"], "week.json has chem-safety");
 assert.strictEqual(weekById["chem-safety"].score, "34/34");
@@ -1049,9 +1050,12 @@ const doneChips = Game.workStatusChips(weekById["chem-about-me"], proofNow);
 assert(doneChips.some((c) => c.key === "done-here"), "Bennett Done shows a Done chip");
 assert(!doneChips.some((c) => c.key === "not-done"), "Done work is not labeled Not done");
 assert(doneChips.some((c) => c.key === "late"), "school Late stays visible after Bennett marks Done");
-assert(/chip-done-here/.test(Game.needsYouListHtml(week, proofNow)), "Needs you shows Done after he marks it");
-assert(/done-tag/.test(fs.readFileSync(path.join(root, "js/week.js"), "utf8")), "This Week titles show a Done tag");
+assert(!Game.workFeedStatus(weekById["chem-about-me"], proofNow).needsYou, "Done work leaves Needs you");
+assert(Game.needsYouWork(week, proofNow).every((w) => w.id !== "chem-about-me"), "Needs you drops work Bennett marked Done");
+assert(/data-needs-done/.test(gameJs), "Needs you rows have a Done control");
 if (!chemDoneBefore) Game.touchWork("chem-about-me", "done");
+assert(/data-needs-done="chem-about-me"/.test(Game.needsYouListHtml(week, proofNow)), "Needs you shows Done next to Plan and Edit");
+assert(/done-tag/.test(fs.readFileSync(path.join(root, "js/week.js"), "utf8")), "This Week titles show a Done tag");
 assert.strictEqual(Game.emailsToSend({ work: [] }, proofNow).length, 0, "empty week has no follow-up emails");
 const noteOnlyMiss = Game.workFeedStatus({ id: "x", title: "X", note: "MISSED 0/1" }, proofNow);
 assert.strictEqual(noteOnlyMiss.missing, true);
@@ -1060,7 +1064,7 @@ const noteOnlyOpen = Game.workFeedStatus({ id: "y", title: "Y", due: "2026-08-20
 assert.strictEqual(noteOnlyOpen.missing, false, "do not invent Missing from Not submitted");
 assert.strictEqual(noteOnlyOpen.notDone, true);
 assert.strictEqual(noteOnlyOpen.dueToday, true);
-assert.strictEqual((week.events || []).length, 88, "merge kept live events[] including Fillingham pass-offs and boosters");
+assert.strictEqual((week.events || []).length, 89, "merge kept live events[] including Fillingham pass-offs and boosters");
 assert((week.events || []).some((e) => e.id === "picture-0827"), "picture-0827 is on the calendar");
 assert.strictEqual((week.events || []).find((e) => e.id === "picture-0827").start, "2026-08-27");
 assert.strictEqual((week.events || []).find((e) => e.id === "picture-0827").title, "Picture day (day 2)");
@@ -1161,7 +1165,7 @@ assert.strictEqual(Game.classDueLabel(3), "3 due");
 assert.strictEqual(Game.classDueLabel(0), "Nothing due yet");
 assert.strictEqual(Game.classDueCount(english, week), 11, "English due count matches week.json");
 assert.strictEqual(Game.classDueCount(byId.chemistry, week), 9, "Chemistry due count matches week.json");
-assert.strictEqual(Game.classDueCount(byId["web-design"], week), 6, "Web Design due count matches week.json");
+assert.strictEqual(Game.classDueCount(byId["web-design"], week), 7, "Web Design due count matches week.json");
 assert.strictEqual(Game.classPeriodLine(band), "P1 Marching Band");
 
 assert.strictEqual(progress.term.id, "2025-26-s1", "progress.json should name the current term");
@@ -1693,7 +1697,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=172/.test(weekHtml) && /week\.js\?v=172/.test(weekHtml) && /game\.js\?v=172/.test(weekHtml) && /telemetry\.js\?v=172/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=173/.test(weekHtml) && /week\.js\?v=173/.test(weekHtml) && /game\.js\?v=173/.test(weekHtml) && /telemetry\.js\?v=173/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1741,8 +1745,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=171\b/.test(html), file + " should not still cache-bust as v=171");
-  assert(/\?v=172/.test(html), file + " should cache-bust v=172");
+  assert(!/\?v=172\b/.test(html), file + " should not still cache-bust as v=172");
+  assert(/\?v=173/.test(html), file + " should cache-bust v=173");
   const bar = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
@@ -1758,7 +1762,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 });
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(/js\/update\.js\?v=172/.test(html), file + " loads the live-build checker");
+  assert(/js\/update\.js\?v=173/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
 ["favicon-16.png", "favicon-32.png", "favicon.ico", "apple-touch-icon.png", "favicon-192.png"].forEach((name) => {
@@ -1830,7 +1834,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=172/.test(progressHtml) && /theme\.css\?v=172/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=173/.test(progressHtml) && /theme\.css\?v=173/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1861,6 +1865,7 @@ assert.strictEqual((plannedAgain.notes || []).filter((n) => n.kind === "plan").l
 assert.strictEqual(Game.workPlanFor(plannedAgain, "chem-about-me").text, "Ask Mr. X first period.");
 const needsPlanHtml = Game.needsYouListHtml(week, proofNow, { family: plannedAgain });
 assert(/data-plan-work="chem-about-me"/.test(needsPlanHtml) && />Plan</.test(needsPlanHtml), "Needs you shows Plan next to Edit");
+assert(/>Done</.test(needsPlanHtml) && /data-needs-done="chem-about-me"/.test(needsPlanHtml), "Needs you shows Done on the row");
 assert(/Ask Mr\. X first period/.test(needsPlanHtml), "Needs you shows the current plan");
 assert(/msg-kicker">Plan/.test(Game.messagesInboxHtml(plannedAgain, week, { view: "me" })), "Mom and Dad see the plan in Messages");
 assert(/#sheet-body[\s\S]{0,80}overflow-y:\s*auto/.test(themeCss) && /lib-preview/.test(themeCss), "Library preview sheet body scrolls");
@@ -1878,8 +1883,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*170/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 170");
-assert(/2026-08-31T15:24:17-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T15:24:17-05:00");
+assert(/build:\s*171/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 171");
+assert(/2026-08-31T15:50:03-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T15:50:03-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2496,6 +2501,8 @@ assert(/flex-wrap:\s*wrap/.test(themeCss.slice(themeCss.indexOf(".class-card sum
 assert(/min-width:\s*12rem/.test(themeCss.slice(themeCss.indexOf(".class-copy"), themeCss.indexOf(".class-copy") + 180)), "class name keeps a readable min width");
 assert(/max-width:\s*100%/.test(themeCss.slice(themeCss.indexOf(".grade-pill"), themeCss.indexOf(".grade-pill") + 280)), "long grade pills wrap on Progress");
 assert(Game.filterBennettHelp("done").some((row) => row.id === "progress" && /Done work here/.test(row.body)), "Help says Done works on Progress");
+assert(Game.filterBennettHelp("needs you").some((row) => row.id === "needs-you" && /takes it off this list/.test(row.body)), "Help says Needs you Done clears the list");
+assert(/closest\("\[data-needs-done\]"\)/.test(progressJs) && /closest\("\[data-needs-done\]"\)/.test(weekJs), "Needs you Done click is delegated so it still works after a redraw");
 assert(/openEventEdit/.test(progressJs), "Progress lets Bennett edit calendar items under a class");
 assert(/closest\("\[data-edit-work\]"\)/.test(progressJs) && /closest\("\[data-edit-work\]"\)/.test(weekJs), "Edit click is delegated so it still works after a redraw");
 assert(!/<button[^>]*class="needs-you-row"/.test(gameSrc), "Needs you row is not a button covering Edit");

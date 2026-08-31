@@ -345,6 +345,24 @@
     host.innerHTML = html || "";
   }
 
+  async function markNeedsYouDone(id) {
+    if (!id) return;
+    const before = Game.workState(id);
+    if (before.done) return;
+    const touched = Game.touchWork(id, "done");
+    Game.primeLibraryAudio();
+    Game.playWorkActionCue(family, library, id, "done");
+    refreshCardsInPlace();
+    runUnlocks();
+    try {
+      const sync = touched && touched.synced ? await touched.synced : await Game.syncFamilyProgress();
+      if (sync && sync.failed) Game.toast("Couldn't sync. Try again.");
+      else Game.familySavedToast("Done");
+    } catch (_) {
+      Game.toast("Couldn't sync. Try again.");
+    }
+  }
+
   function workButtons(w) {
     return Game.workActionButtons(w);
   }
@@ -2449,6 +2467,13 @@
         e.preventDefault();
         e.stopPropagation();
         openPlan(plan.getAttribute("data-plan-work"));
+        return;
+      }
+      const needsDone = e.target && e.target.closest && e.target.closest("[data-needs-done]");
+      if (needsDone) {
+        e.preventDefault();
+        e.stopPropagation();
+        void markNeedsYouDone(needsDone.getAttribute("data-needs-done"));
         return;
       }
       const edit = e.target && e.target.closest && e.target.closest("[data-edit-work]");

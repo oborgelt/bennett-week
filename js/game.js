@@ -4781,7 +4781,7 @@
     {
       id: "needs-you",
       title: "Needs you",
-      body: "Open, late, or missing work that still needs you. Plan tells Mom and Dad what you are going to do. That list is on This Week and on Progress."
+      body: "Open, late, or missing work that still needs you. Done marks it finished here, logs it, and takes it off this list. Plan tells Mom and Dad what you are going to do. That list is on This Week and on Progress. If school has not logged it yet, it can still show under Needs follow-up."
     },
     {
       id: "follow-up",
@@ -4796,7 +4796,7 @@
     {
       id: "progress",
       title: "Progress",
-      body: "Dash on a phone. Same Needs follow-up and Needs you, plus By class, grades the school posted, and check-ins. No made-up course grades. I started this and Done work here the same as This Week. You can edit assignments. You cannot delete a class or undo a trophy."
+      body: "Dash on a phone. Same Needs follow-up and Needs you, plus By class, grades the school posted, and check-ins. No made-up course grades. I started this and Done work here the same as This Week. Needs you has Done so finished work leaves that list. You can edit assignments. You cannot delete a class or undo a trophy."
     },
     {
       id: "crew",
@@ -5128,7 +5128,7 @@
       excused,
       graded
     }, clock);
-    const needsYou = !!(
+    const stillNeeds = !!(
       wantContact
       || missing
       || discrepancy
@@ -5136,6 +5136,7 @@
       || (dueToday && !submitted && !excused && status !== "graded")
       || (pastDue && (status === "open" || status === "late" || status === "unknown"))
     );
+    const needsYou = stillNeeds && !doneHere;
 
     return {
       status,
@@ -5292,7 +5293,7 @@
       const href = link ? (link + (link.indexOf("?") >= 0 ? "&" : "?") + "class=" + encodeURIComponent(cid) + "&work=" + encodeURIComponent(w.id) + "#needs-you") : "";
       const plan = workPlanFor(opts && opts.family, w.id);
       const planLine = plan ? `<span class="needs-you-plan-text">${esc(plan.text)}</span>` : "";
-      const tools = `<span class="needs-you-tools"><button type="button" class="tiny needs-you-plan" data-plan-work="${esc(w.id)}">Plan</button><button type="button" class="tiny needs-you-edit" data-edit-work="${esc(w.id)}">Edit</button></span>`;
+      const tools = `<span class="needs-you-tools"><button type="button" class="tiny needs-you-done" data-needs-done="${esc(w.id)}">Done</button><button type="button" class="tiny needs-you-plan" data-plan-work="${esc(w.id)}">Plan</button><button type="button" class="tiny needs-you-edit" data-edit-work="${esc(w.id)}">Edit</button></span>`;
       const inner = `
         <span class="needs-you-class">${esc(classShortLabel(cid) || classNameForId(cid) || cid)}</span>
         <span class="needs-you-copy">

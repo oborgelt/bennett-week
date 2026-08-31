@@ -1510,7 +1510,8 @@ html[data-site-view="me"] .admin-chip {
 }
 
 .needs-you-edit,
-.needs-you-plan {
+.needs-you-plan,
+.needs-you-done {
   flex: 0 0 auto;
   margin-top: 0;
   position: relative;
