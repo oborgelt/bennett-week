@@ -5707,6 +5707,33 @@
     } catch (_) {}
   }
 
+  function bindCelebrateSee(layer, onSee) {
+    if (!layer || typeof onSee !== "function") return;
+    let used = false;
+    const run = (e) => {
+      if (used) return;
+      used = true;
+      if (e && e.preventDefault) e.preventDefault();
+      if (e && e.stopPropagation) e.stopPropagation();
+      onSee();
+    };
+    const see = layer.querySelector ? layer.querySelector("[data-celebrate-see], #char-celebrate-see") : null;
+    if (see) {
+      see.onclick = run;
+      if (see.addEventListener) see.addEventListener("click", run);
+    }
+    if (layer.addEventListener) {
+      layer.addEventListener("click", (e) => {
+        const t = e && e.target;
+        const btn = t && t.closest
+          ? t.closest("[data-celebrate-see], #char-celebrate-see")
+          : (t && (t.id === "char-celebrate-see" || (t.getAttribute && t.getAttribute("data-celebrate-see"))) ? t : null);
+        if (!btn) return;
+        run(e);
+      });
+    }
+  }
+
   function playTrophyVideo(item, opts) {
     if (!item || item.kind !== "video") return false;
     if (!canPlayLibraryItem(item, opts && opts.preview)) return false;
@@ -5723,22 +5750,17 @@
         <p class="char-celebrate-kicker">${rewatch ? "Watch again" : "You unlocked this"}</p>
         <h2 id="char-celebrate-title">${esc(item.label || "Clip")}</h2>
         <video src="${esc(src)}"${item.poster ? ` poster="${esc(item.poster)}"` : ""} playsinline webkit-playsinline controls ${prefersReducedMotion() ? "" : "autoplay"}></video>
-        <button type="button" class="btn primary" id="${btnId}">${esc(afterLabel)}</button>
+        <button type="button" class="btn primary" id="${btnId}"${after ? ' data-celebrate-see="1"' : ""}>${esc(afterLabel)}</button>
       </div>`;
     layer.classList.add("open");
     stopLibraryAudio();
     playCharacterVideo(layer.querySelector("video"));
     if (after) {
-      const see = document.getElementById("char-celebrate-see");
-      if (see && see.addEventListener) {
-        see.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          stopLibraryAudio();
-          closeCharacterCelebrate();
-          after();
-        });
-      }
+      bindCelebrateSee(layer, () => {
+        stopLibraryAudio();
+        closeCharacterCelebrate();
+        after();
+      });
       layer.onclick = (e) => {
         if (e.target === layer) closeCharacterCelebrate();
       };
@@ -5764,7 +5786,7 @@
         <h2 id="char-celebrate-title">${esc(title)}</h2>
         <p class="char-celebrate-why">${esc(why)}</p>
         ${when ? `<p class="award-unlock-when">${esc(when)}</p>` : ""}
-        <button type="button" class="btn primary" id="char-celebrate-see">See Achievement</button>
+        <button type="button" class="btn primary" id="char-celebrate-see" data-celebrate-see="1">See Achievement</button>
       </div>`;
       layer.classList.add("open");
       if (video.id) markContentSeen(video.id);
@@ -5774,18 +5796,14 @@
       if (!started && layer.addEventListener) {
         layer.addEventListener("pointerdown", play, { once: true });
       }
-      const see = document.getElementById("char-celebrate-see");
-      if (see && see.addEventListener) {
-        see.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          stopLibraryAudio();
-          playTrophyVideo(video, {
-            after: () => openTrophyForAward(ach && ach.id),
-            afterLabel: "See it in the Trophy room"
-          });
+      bindCelebrateSee(layer, () => {
+        stopLibraryAudio();
+        playTrophyVideo(video, {
+          preview: true,
+          after: () => openTrophyForAward(ach && ach.id),
+          afterLabel: "See it in the Trophy room"
         });
-      }
+      });
       return;
     }
     layer.innerHTML = `
@@ -5795,7 +5813,7 @@
         <h2 id="char-celebrate-title">${esc(title)}</h2>
         <p class="char-celebrate-why">${esc(why)}</p>
         ${when ? `<p class="award-unlock-when">${esc(when)}</p>` : ""}
-        <button type="button" class="btn primary" id="char-celebrate-see">See it in the Trophy room</button>
+        <button type="button" class="btn primary" id="char-celebrate-see" data-celebrate-see="1">See it in the Trophy room</button>
       </div>`;
     layer.classList.add("open");
     const play = () => playAwardSound(ach, family, lib);
@@ -5804,15 +5822,10 @@
     if (!started && layer.addEventListener) {
       layer.addEventListener("pointerdown", play, { once: true });
     }
-    const see = document.getElementById("char-celebrate-see");
-    if (see && see.addEventListener) {
-      see.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        stopLibraryAudio();
-        openTrophyForAward(ach && ach.id);
-      });
-    }
+    bindCelebrateSee(layer, () => {
+      stopLibraryAudio();
+      openTrophyForAward(ach && ach.id);
+    });
   }
 
   function showUnlockWhy(roster, unlockedChar, opts) {
@@ -6310,6 +6323,11 @@
       awardedAt: nowIso(),
       preview: true
     });
+    const unlock = rewardUnlockOf(ach);
+    if (unlock && unlock.type === "content") {
+      const grant = grantContent(next, unlock);
+      Object.assign(next, grant.family);
+    }
     saveFamily(next);
     return { family: next, achievement: ach };
   }
@@ -7324,7 +7342,7 @@
     return {
       id: SIX_AS_LIVE_ACHIEVEMENT,
       title: "6 A's in your classes!",
-      description: "Ace, Riff, and Scorch ran in for six letter A's.",
+      description: "Ace, Riff, and Scorch ran in to celebrate A's in 6 classes.",
       how: "Auto. Bennett's next Jungle Jam login. Preview as Bennett does not count. Parents can still award it from the desk.",
       incentive: "Unlocks Six A's rush",
       icon: "badge",

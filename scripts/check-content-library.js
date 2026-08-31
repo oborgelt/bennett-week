@@ -81,7 +81,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=170/.test(basecampHtml) && /basecamp\.js\?v=170/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=171/.test(basecampHtml) && /basecamp\.js\?v=171/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -268,6 +268,7 @@ assert.strictEqual(sixAsRun.slot, "content", "Six A's rush is gated until the lo
 assert(!sixAsStill.device && !sixAsClip.device && !sixAsRun.device, "Six A's assets are shipped, not a device drop");
 const sixAsAch = (achievements.achievements || []).find((a) => a.id === "six-as-classes");
 assert(sixAsAch && sixAsAch.title === "6 A's in your classes!", "Six A's award title");
+assert.strictEqual(sixAsAch.description, "Ace, Riff, and Scorch ran in to celebrate A's in 6 classes.", "Six A's writeup copy");
 assert(!sixAsAch.test, "Six A's login award is live, not TEST");
 assert.strictEqual(sixAsAch.unlock && sixAsAch.unlock.type, "bennett_login", "Six A's award fires on Bennett login");
 assert.strictEqual(sixAsAch.rewardUnlock && sixAsAch.rewardUnlock.id, "crew-six-as-run", "Six A's award grants the rush clip");
@@ -1692,7 +1693,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=170/.test(weekHtml) && /week\.js\?v=170/.test(weekHtml) && /game\.js\?v=170/.test(weekHtml) && /telemetry\.js\?v=170/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=171/.test(weekHtml) && /week\.js\?v=171/.test(weekHtml) && /game\.js\?v=171/.test(weekHtml) && /telemetry\.js\?v=171/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1740,8 +1741,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=169\b/.test(html), file + " should not still cache-bust as v=169");
-  assert(/\?v=170/.test(html), file + " should cache-bust v=170");
+  assert(!/\?v=170\b/.test(html), file + " should not still cache-bust as v=170");
+  assert(/\?v=171/.test(html), file + " should cache-bust v=171");
   const bar = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
@@ -1756,7 +1757,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 });
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(/js\/update\.js\?v=170/.test(html), file + " loads the live-build checker");
+  assert(/js\/update\.js\?v=171/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
 const updateJs = fs.readFileSync(path.join(root, "js/update.js"), "utf8");
@@ -1821,7 +1822,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=170/.test(progressHtml) && /theme\.css\?v=170/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=171/.test(progressHtml) && /theme\.css\?v=171/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1858,6 +1859,7 @@ assert(/#sheet-body[\s\S]{0,80}overflow-y:\s*auto/.test(themeCss) && /lib-previe
 assert(/playTrophyVideo/.test(gameJs) && /See Achievement/.test(gameJs), "Six A's writeup then plays the rush clip");
 const awardWhyTpl = gameJs.slice(gameJs.indexOf("function showAwardUnlock"), gameJs.indexOf("function showUnlockWhy"));
 assert(/See Achievement/.test(awardWhyTpl), "Six A's first screen uses See Achievement like Scorch");
+assert(/bindCelebrateSee/.test(awardWhyTpl) && /preview:\s*true/.test(awardWhyTpl), "See Achievement plays the rush even if it is still gated");
 assert(!/<video/.test(awardWhyTpl), "Six A's writeup does not embed the rush clip");
 const trophyVidTpl = gameJs.slice(gameJs.indexOf("function playTrophyVideo"), gameJs.indexOf("function showAwardUnlock"));
 assert(/<video[^>]*>/.test(trophyVidTpl) && !/\smuted/.test(trophyVidTpl.match(/<video[^>]*>/)[0]), "Six A's rush clip is not muted");
@@ -1868,8 +1870,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*168/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 168");
-assert(/2026-08-31T09:28:18-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T09:28:18-05:00");
+assert(/build:\s*169/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 169");
+assert(/2026-08-31T09:49:46-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T09:49:46-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2430,6 +2432,12 @@ const previewed = Game.previewTestAward(previewPack, Game.emptyFamily(), "desk-t
 assert(Game.alreadyUnlocked("desk-test"), "Test marks the trophy unlocked on this device");
 assert(previewed.family.streaks["desk-test"] && previewed.family.streaks["desk-test"].preview, "Test stays a parent preview, not Bennett's live award");
 assert.strictEqual(Game.getBananas(), bananasBeforeTest, "Test does not pay bananas");
+["bw-unlocks", "bw-content-unlocks", "bw-preview-ids", "bw-family"].forEach((key) => localStorage.removeItem(key));
+const bananasBeforeSixTest = Game.getBananas();
+const sixTested = Game.previewTestAward({ achievements: achievements.achievements }, Game.emptyFamily(), "six-as-classes");
+assert(sixTested.family.streaks["six-as-classes"] && sixTested.family.streaks["six-as-classes"].preview, "Six A's Test stays a parent preview");
+assert(Game.alreadyUnlockedContent("crew-six-as-run"), "Six A's Test grants the rush so See Achievement can play");
+assert.strictEqual(Game.getBananas(), bananasBeforeSixTest, "Six A's Test does not pay bananas");
 assert(/See it in the Trophy room/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "badge unlock asks for a click into the Trophy room");
 assert(/focusTrophy/.test(weekJs) && /trophy-plaque-when/.test(weekJs) && /get\("trophy"\)/.test(weekJs), "Trophy room opens the plaque with why and when");
 assert(/id="award-do"/.test(parentHtml) && /id="badge-picker"/.test(parentHtml), "Awards form has a do-text box and a badge picture picker");
@@ -2770,7 +2778,10 @@ function fakeEl(tag) {
       if (name === "id") this.id = String(value);
       if (name === "class") this.className = String(value);
     },
-    addEventListener() {},
+    addEventListener(type, fn) {
+      if (!this._on) this._on = {};
+      (this._on[type] || (this._on[type] = [])).push(fn);
+    },
     closest() { return null; }
   };
   return el;
@@ -2869,13 +2880,24 @@ const trophyLayer = document.body.children[document.body.children.length - 1];
 assert(trophyLayer && /riff\.mp4/.test(trophyLayer.innerHTML), "Trophy Room Watch plays the Riff movie");
 assert(/<video[^>]*>/.test(trophyLayer.innerHTML) && !/\smuted/.test(trophyLayer.innerHTML.match(/<video[^>]*>/)[0]), "Trophy Room Riff movie is unmuted");
 Game.showAwardUnlock(
-  { id: "six-as-classes", title: "6 A's in your classes!", description: "Ace, Riff, and Scorch ran in for six letter A's.", rewardMedia: "chunky", rewardClips: ["crew-six-as-clip", "crew-six-as-run"], rewardUnlock: { type: "content", id: "crew-six-as-run" } },
+  { id: "six-as-classes", title: "6 A's in your classes!", description: "Ace, Riff, and Scorch ran in to celebrate A's in 6 classes.", rewardMedia: "chunky", rewardClips: ["crew-six-as-clip", "crew-six-as-run"], rewardUnlock: { type: "content", id: "crew-six-as-run" } },
   { achievements: [] },
   Game.defaultLibrary()
 );
 const sixUnlockLayer = document.body.children[document.body.children.length - 1];
 assert(sixUnlockLayer && /See Achievement/.test(sixUnlockLayer.innerHTML) && /in your classes/.test(sixUnlockLayer.innerHTML), "Six A's first screen matches Scorch");
+assert(/ran in to celebrate/.test(sixUnlockLayer.innerHTML), "Six A's why copy");
 assert(!/crew-six-as-run\.mp4/.test(sixUnlockLayer.innerHTML), "Six A's video waits until See Achievement");
+["bw-content-unlocks"].forEach((key) => localStorage.removeItem(key));
+assert(!Game.playTrophyVideo(Game.libraryItem(Game.defaultLibrary(), "crew-six-as-run")), "gated rush does not play until awarded or previewed");
+const seeClicks = sixUnlockLayer._on && sixUnlockLayer._on.click;
+assert(seeClicks && seeClicks.length, "See Achievement is bound on the overlay");
+seeClicks[0]({
+  target: { closest() { return { id: "char-celebrate-see" }; } },
+  preventDefault() {},
+  stopPropagation() {}
+});
+assert(/crew-six-as-run\.mp4/.test(document.body.children[document.body.children.length - 1].innerHTML), "clicking See Achievement plays the rush");
 assert(Game.playTrophyVideo(Game.libraryItem(Game.defaultLibrary(), "crew-six-as-run"), { rewatch: true, preview: true }), "See Achievement can play the rush clip");
 const sixVidLayer = document.body.children[document.body.children.length - 1];
 assert(sixVidLayer && /crew-six-as-run\.mp4/.test(sixVidLayer.innerHTML), "Six A's rush plays after See Achievement");
