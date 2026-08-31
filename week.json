@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-30T21:20:00",
+  "as_of": "2026-08-31T07:19:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1795,6 +1795,11 @@
       "date": "2026-08-30",
       "title": "Band Update 8/30 (Fillingham)",
       "text": "Gmail Sun 2:51pm CT rlfillingham@olatheschools.org via ParentVUE: Band Update 8/30/26. Priorities: (1) first Band Booster Meeting Mon Aug 31 6:00pm choir/band room, then observe rehearsal 6:30–8:30; (2) marching contributions still short ($350, oeband.com or check to OE Band Boosters); (3) picture orders close Sep 5 at attigphotography.shootproof.com; (4) mattress sale fundraiser Nov 15 (credit toward Orlando or next-year fees). Snack donations and bus chaperone SignUpGenius still open. Forms still required to ride the bus. Fees do not affect the grade. Home game Sep 11 call 5pm (show shirt); Old Settlers Sep 12 call 8am (dri-fit)."
+    },
+    {
+      "date": "2026-08-31",
+      "title": "ParentVUE Grade Book (~7:19am CT)",
+      "text": "Live ParentVUE Grade Book (MT1, Bennett Borgelt, Olathe East 423513) ~7:19am CT. All 7 classes 0 Missing Assignments. Academic Intervention is not in Grade Book. P1 Marching Band Fillingham rm 415 A+ 100.0% last update 8/27 — UNCHANGED (Daily Skills 30/30, Forms 25/25, extra rehearsals 10/10+10/10, Pass off #1 50/50). P2 Sociology Keach rm 315 A 97% (was 96) last update 8/30 — CSI (1.1) NOW 30/30 (was Not Due 33 pts, Drop Box 8/26–8/28); 1.2 Reading 12/12; 1.1 Reading 14/14; Summer Scavenger Hunt 20/22. P3 Web Design I Linn rm 513 A 96% last update 8/26 — UNCHANGED (1.1 20/20, 1.2 37.5/40). No 1.3–2.2 rows in ParentVUE yet. P4 Chemistry Pfeiff rm 113 B 85.7% last update 8/28 — UNCHANGED. Density Lesson 5 still Not Graded 1 pt; graph 1/1; lab sheet 0.5/1; safety exam 34/34; safety contract 1/1; Defining Matter 1/1 Notes \"Mi\"; Get to Know You 1/1; Penny 1/1. P5 Strength and Conditioning I Pauly WEIGHT ROOM A+ 100.00% last update 8/28 — UNCHANGED (First 2 weeks 35/35). P6 English 10 Goodson rm 816 A+ 98.33% last update 8/30 — NOW MATCHES Canvas. Choice Book Check-In 5/5; Formative On-Demand 9.25/10; 10.1 Skills Assessment 5/5; Letter 10/10; comic 10/10; names 5/5. P7 Geometry Foster rm 814 A 97% last update 8/25 — UNCHANGED (Quiz 1.2-1.4 19/20; review 10/10). Mail: only NEW ParentVUE message since Fri 8/28 is Fillingham Band Update 8/30/26 Sun 2:50pm (already known from Gmail). No new Goodson/Pfeiff/Keach/Linn/Foster/Pauly/Peterson mail."
     }
   ],
   "grades": [
@@ -1804,10 +1809,10 @@
       "period": "P2",
       "teacher": "Todd Keach",
       "letter": "A",
-      "percent": 96,
-      "detail": "Last update 8/28. Summer Scavenger Hunt 20/22; 1.1 Reading 14/14; 1.2 Reading 12/12. CSI (1.1) Contemporary Issues Article Not Due, 33 pts, Drop Box 8/26–8/28 today. Room 315.",
+      "percent": 97,
+      "detail": "Last update 8/30. CSI (1.1) NOW 30/30 (was Not Due 33 pts, Drop Box 8/26–8/28). 1.2 Reading 12/12; 1.1 Reading 14/14; Summer Scavenger Hunt 20/22. Room 315.",
       "source": "ParentVUE",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-31",
       "missing": 0
     },
     {
@@ -1817,9 +1822,9 @@
       "teacher": "Ann Goodson",
       "letter": "A+",
       "percent": 98.33,
-      "detail": "Canvas Sun 9:20pm 98.33% (44.25/45). Names 5/5, letter 10/10, comic 10/10, 10.1 Skills 5/5, Formative On-Demand 9.25/10, Choice Book NOW 5/5 (graded Sun 7:33pm). AAB Reading Check #1 –/10 Mon. ParentVUE last update 8/23 (Grade Book not pulled Sun 9pm). Room 816.",
-      "source": "Canvas",
-      "as_of": "2026-08-30",
+      "detail": "Last update 8/30 — now matches Canvas. Choice Book Check-In 5/5; Formative On-Demand 9.25/10; 10.1 Skills Assessment 5/5; Letter 10/10; comic 10/10; names 5/5. Room 816.",
+      "source": "ParentVUE",
+      "as_of": "2026-08-31",
       "missing": 0
     },
     {
@@ -1829,9 +1834,9 @@
       "teacher": "Justin Pfeiff",
       "letter": "B",
       "percent": 85.7,
-      "detail": "Live Canvas Sun 9:20pm still 98.75%. Lab sheet 0.5/1; Density Lesson 5 still –/1 unsubmitted/ungraded; Mass vs Volume Graph 1/1. ParentVUE Fri 5:29pm B 85.7% — Sun 9pm ParentVUE not pulled (browser/login block). Room 113.",
-      "source": "Canvas + ParentVUE Fri",
-      "as_of": "2026-08-30",
+      "detail": "Last update 8/28. Density Lesson 5 still Not Graded 1 pt; Mass vs Volume Graph 1/1; lab sheet 0.5/1; Safety Exam 34/34; Safety Contract 1/1; Defining Matter 1/1 Notes \"Mi\"; Get to Know You 1/1; Penny 1/1. Room 113.",
+      "source": "ParentVUE",
+      "as_of": "2026-08-31",
       "missing": 0
     },
     {
@@ -1841,9 +1846,9 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 96,
-      "detail": "Canvas Sun 9:20pm still 95.83% (57.5/60). 1.1 20/20, 1.2 37.5/40. 1.3–2.2 still open due Mon 8/31 9:20am (62 pts across 4 items, no submissions). ParentVUE last update 8/26 A 96% (not re-pulled Sun). Room 513.",
-      "source": "Canvas",
-      "as_of": "2026-08-30",
+      "detail": "Last update 8/26. 1.1 20/20, 1.2 37.5/40. No 1.3–2.2 rows in ParentVUE yet. Room 513.",
+      "source": "ParentVUE",
+      "as_of": "2026-08-31",
       "missing": 0
     },
     {
@@ -1855,7 +1860,7 @@
       "percent": 97,
       "detail": "Last update 8/25. Quiz 1.2-1.4 19/20; Quiz Review 1.2-1.4 Practice 10/10 (both 8/21). Room 814.",
       "source": "ParentVUE",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-31",
       "missing": 0
     },
     {
@@ -1867,7 +1872,7 @@
       "percent": 100,
       "detail": "Last update 8/27. 8/17–8/26 Daily Skills 30/30; Forms Daily Skills 25/25; Mon 8/17 Extra Rehearsals 10/10; Mon 8/24 Extra Rehearsals 10/10; Pass off #1 Test 50/50 (all dated 8/26). Room 415.",
       "source": "ParentVUE",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-31",
       "missing": 0
     },
     {
@@ -1879,7 +1884,7 @@
       "percent": 100,
       "detail": "Last update 8/28. First 2 weeks Activity Participation 35/35. WEIGHT ROOM.",
       "source": "ParentVUE",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-31",
       "missing": 0
     }
   ]
