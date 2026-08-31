@@ -10,10 +10,10 @@
   let baseSeed = null;
   let editingId = null;
   let editingCharId = null;
-  let selectedCharId = null;
+  let selectedCharId = "all";
   let selectedLibId = null;
   let pickedTrophy = null;
-  const PARENT_TABS = ["awards", "crew", "sounds", "notes", "daily", "classes", "story", "pack"];
+  const CREW_LIB_CATS = ["all", "ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew"];
   let parentTab = "awards";
 
   function applyParentTab() {
@@ -83,6 +83,22 @@
     const text = Game.boardSyncNotice(sync);
     el.hidden = !text;
     el.textContent = text;
+  }
+
+  function paintCrewLibCats() {
+    const current = CREW_LIB_CATS.indexOf(selectedCharId) >= 0 ? selectedCharId : (selectedCharId === "fun" ? "" : "all");
+    document.querySelectorAll("[data-crew-lib]").forEach((tab) => {
+      const on = tab.dataset.crewLib === (current || "all") && selectedCharId !== "fun";
+      tab.classList.toggle("on", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+    });
+  }
+
+  function setCrewLibCat(id) {
+    selectedCharId = CREW_LIB_CATS.indexOf(id) >= 0 ? id : "all";
+    selectedLibId = null;
+    renderCharacters();
+    renderCharLibrary();
   }
 
   function persistAch() {
@@ -1025,25 +1041,28 @@
     const box = document.getElementById("char-library");
     const grid = document.getElementById("char-lib-grid");
     if (!box || !grid) return;
-    if (!selectedCharId) {
-      box.hidden = true;
-      return;
-    }
-    const ch = findChar(selectedCharId);
+    if (!selectedCharId) selectedCharId = "all";
     box.hidden = false;
+    paintCrewLibCats();
     const funMode = selectedCharId === "fun";
+    const allMode = selectedCharId === "all";
+    const ch = findChar(selectedCharId);
     document.getElementById("char-lib-title").textContent = funMode
       ? "Fun / Sounds"
-      : ((ch ? Game.characterLabel(ch) : selectedCharId) + " library");
+      : (allMode ? "All clips and stills" : ((ch ? Game.characterLabel(ch) : selectedCharId) + " library"));
     const lead = document.getElementById("char-lib-lead");
     if (lead) {
       lead.textContent = funMode
         ? "Meme-style sounds and links. Attach one to a streak to unlock it for Bennett, or to a story / week beat."
-        : "Assets for this teammate, plus Fun sounds. Attach one to a streak reward or a story / week beat.";
+        : (allMode
+          ? "Every animation and image in the library. Tap a card to select it, Preview to play it, then attach it to a streak or story beat."
+          : "Assets for this teammate. Attach one to a streak reward or a story / week beat.");
     }
-    const items = Game.libraryFor(library, selectedCharId, false);
-    const fun = funMode ? [] : Game.libraryFor(library, "fun", false);
-    const crew = funMode ? [] : Game.libraryFor(library, "crew", false);
+    const items = allMode
+      ? Game.libraryVisualItems(library)
+      : Game.libraryFor(library, selectedCharId, false);
+    const fun = funMode || allMode ? [] : Game.libraryFor(library, "fun", false);
+    const crew = funMode || allMode || selectedCharId === "crew" ? [] : Game.libraryFor(library, "crew", false);
     const showFun = fun.length ? `
       <h3 class="lib-sub">Fun / Sounds</h3>
       <div class="lib-grid">${fun.map((item) => libPickCard(item, false)).join("")}</div>
@@ -1053,25 +1072,41 @@
       <div class="lib-grid">${crew.map((item) => libPickCard(item, true)).join("")}</div>
     ` : "";
     grid.innerHTML = (items.length
-      ? items.map((item) => libPickCard(item, false)).join("")
-      : `<p class="empty">${funMode ? "No Fun sounds yet. Drop audio on Admin." : "No files tagged to this teammate yet. Add them on Admin."}</p>`) + showFun + showCrew;
+      ? items.map((item) => libPickCard(item, selectedCharId === "crew")).join("")
+      : `<p class="empty">${funMode ? "No Fun sounds yet. Drop audio on Admin." : (allMode ? "No clips or stills in the library yet." : "No files tagged to this teammate yet. Add them on Admin.")}</p>`) + showFun + showCrew;
     box.querySelectorAll("[data-pick-lib]").forEach((b) => {
       b.addEventListener("click", () => {
         selectedLibId = b.dataset.pickLib;
         renderCharLibrary();
       });
     });
+    box.querySelectorAll("[data-preview-lib]").forEach((b) => {
+      b.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const item = Game.libraryItem(library, b.dataset.previewLib);
+        if (!item) return;
+        openSheet(item.label || "Preview", Game.libraryPlayerHtml(item));
+        const sheet = document.getElementById("sheet-body");
+        sheet.querySelectorAll("[data-play-lib]").forEach((btn) => {
+          btn.addEventListener("click", () => Game.playLibraryItem(item));
+        });
+      });
+    });
     fillAttachStreaks();
   }
 
   function libPickCard(item, crew) {
+    const visual = Game.isLibraryVisual ? Game.isLibraryVisual(item) : (item.kind === "image" || item.kind === "video");
     return `
       <article class="lib-card ${selectedLibId === item.id ? "selected" : ""} ${crew ? "crew" : ""}">
         <button type="button" class="lib-media" data-pick-lib="${Game.esc(item.id)}">
           ${Game.libraryThumbHtml(item)}
+          ${item.kind === "video" ? '<span class="lib-play-badge">Play</span>' : ""}
         </button>
         <h3>${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.label)}</h3>
         <p>${Game.esc(Game.libraryKindLabel(item))} · ${Game.esc(item.character)}</p>
+        ${visual ? `<button type="button" class="tiny" data-preview-lib="${Game.esc(item.id)}">Preview</button>` : ""}
       </article>`;
   }
 
@@ -1530,6 +1565,14 @@
         renderCharLibrary();
       });
     }
+    const crewCats = document.getElementById("crew-lib-cats");
+    if (crewCats) {
+      crewCats.addEventListener("click", (e) => {
+        const tab = e.target && e.target.closest ? e.target.closest("[data-crew-lib]") : null;
+        if (!tab) return;
+        setCrewLibCat(tab.dataset.crewLib);
+      });
+    }
     document.getElementById("add-ingredient").addEventListener("click", () => {
       const text = (document.getElementById("new-ingredient").value || "").trim();
       if (!text) {
@@ -1645,7 +1688,7 @@
       roster = await Game.loadCharacters();
       library = await Game.loadLibrary();
       week = Game.applyWeekOverlay(baseWeek, family);
-      selectedCharId = null;
+      selectedCharId = "all";
       fillRewardSelect("");
       fillRewardContent("");
       renderAchievements();

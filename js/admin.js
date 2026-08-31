@@ -106,11 +106,13 @@
         ? (Game.libraryBoardLabel ? Game.libraryBoardLabel(item) : ("On this device" + (item.filename ? " · " + item.filename : "")))
         : (src || item.path || item.url || "—");
     const audio = item.kind === "audio" || !!item.synth;
+    const visual = Game.isLibraryVisual ? Game.isLibraryVisual(item) : (item.kind === "image" || item.kind === "video");
+    const playAttr = audio ? `data-play="${Game.esc(item.id)}"` : (visual ? `data-preview="${Game.esc(item.id)}"` : "");
     return `
-      <article class="lib-card${audio ? " lib-card-play" : ""}" ${audio ? `data-play="${Game.esc(item.id)}"` : ""}>
+      <article class="lib-card${audio || visual ? " lib-card-play" : ""}" ${playAttr}>
         <div class="lib-media" aria-hidden="true">
           ${Game.libraryThumbHtml(item)}
-          ${audio ? '<span class="lib-play-badge">Play</span>' : ""}
+          ${audio ? '<span class="lib-play-badge">Play</span>' : (item.kind === "video" ? '<span class="lib-play-badge">Play</span>' : "")}
         </div>
         <h3>${item.test ? '<span class="test-tag">TEST</span> ' : ""}${Game.esc(item.label)}</h3>
         <p>${Game.esc(Game.libraryKindLabel(item))} · ${Game.esc(detail)}</p>
@@ -118,7 +120,7 @@
           <select data-tag="${Game.esc(item.id)}">${tagSelect(item)}</select>
         </label>
         <div class="parent-actions">
-          ${audio ? "" : `<button type="button" class="tiny" data-preview="${Game.esc(item.id)}">Preview</button>`}
+          ${audio ? "" : `<button type="button" class="tiny">Preview</button>`}
           <button type="button" class="tiny danger" data-del-lib="${Game.esc(item.id)}">Delete</button>
         </div>
       </article>`;
@@ -147,7 +149,8 @@
 
   function bindLibraryClicks(host) {
     host.querySelectorAll("[data-preview]").forEach((b) => {
-      b.addEventListener("click", () => {
+      b.addEventListener("click", (e) => {
+        if (e.target.closest("select, label, [data-del-lib]")) return;
         const item = Game.libraryItem(library, b.dataset.preview);
         if (item) previewItem(item);
       });
@@ -196,10 +199,17 @@
   }
 
   function applyLibCat() {
+    const catalogue = document.getElementById("library-catalogue");
+    if (catalogue) catalogue.hidden = libCat !== "all";
     document.querySelectorAll("#library-groups [data-lib-shelf]").forEach((el) => {
-      const show = libCat === "all" || el.dataset.libShelf === libCat;
+      const shelf = el.dataset.libShelf;
+      if (shelf === "catalogue") {
+        el.hidden = libCat !== "all";
+        return;
+      }
+      const show = libCat !== "all" && shelf === libCat;
       el.hidden = !show;
-      if (show && libCat !== "all" && el.tagName === "DETAILS") el.open = true;
+      if (show && el.tagName === "DETAILS") el.open = true;
     });
   }
 
@@ -303,12 +313,22 @@
 
   function renderLibrary() {
     const host = document.getElementById("library-groups");
+    const visuals = Game.libraryVisualItems(library);
+    const clips = visuals.filter((item) => item.kind === "video").length;
+    const stills = visuals.filter((item) => item.kind === "image").length;
+    const catalogue = `
+      <section class="lib-catalogue" id="library-catalogue" data-lib-shelf="catalogue">
+        <h3>All clips and stills</h3>
+        <p>${clips} clip${clips === 1 ? "" : "s"} · ${stills} still${stills === 1 ? "" : "s"}. Tap a card to play or view full size. Audio lives on Sounds.</p>
+        <div class="lib-grid">${visuals.length ? visuals.map(cardHtml).join("") : `<p class="empty">No clips or stills in the library yet.</p>`}</div>
+      </section>`;
     const charShelves = GROUPS.filter((g) => g.id !== "fun" && g.id !== "crew").map((g) => {
       return groupBlock(g.id, g.title, Game.libraryFor(library, g.id, false));
     }).join("");
     const gear = groupBlock("gear", "Gear", Game.gearLibraryItems(library), "No awardable gear stills yet.");
     const crew = groupBlock("crew", "Crew", Game.libraryFor(library, "crew", false));
     host.innerHTML = `
+      ${catalogue}
       ${charShelves}
       ${gear}
       ${crew}`;

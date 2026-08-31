@@ -5127,6 +5127,19 @@ body.crew-page {
   margin: 16px 0 8px;
 }
 
+.lib-catalogue {
+  margin: 12px 0 18px;
+}
+
+.lib-catalogue h3 {
+  font-size: 1rem;
+  margin: 0 0 6px;
+}
+
+.parent-page .library-cats {
+  margin: 12px 0 8px;
+}
+
 details.lib-group {
   border: 1px solid var(--line);
   border-radius: 16px;

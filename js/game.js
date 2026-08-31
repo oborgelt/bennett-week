@@ -2553,6 +2553,23 @@
     });
   }
 
+  function isLibraryVisual(item) {
+    return !!(item && (item.kind === "image" || item.kind === "video"));
+  }
+
+  function libraryVisualItems(lib) {
+    const rank = (id) => {
+      const i = LIBRARY_GROUPS.indexOf(id);
+      return i >= 0 ? i : LIBRARY_GROUPS.length;
+    };
+    return ((lib && lib.items) || []).filter(isLibraryVisual).slice().sort((a, b) => {
+      if (a.kind !== b.kind) return a.kind === "video" ? -1 : 1;
+      const byChar = rank(a.character) - rank(b.character);
+      if (byChar) return byChar;
+      return String(a.label || a.id).localeCompare(String(b.label || b.id));
+    });
+  }
+
   function libraryForAttach(lib, character) {
     return libraryFor(lib, character, false, character !== "fun");
   }
@@ -9140,6 +9157,8 @@
     PACK_BLOB_MAX,
     libraryItem,
     libraryFor,
+    libraryVisualItems,
+    isLibraryVisual,
     libraryForAttach,
     libraryThumb,
     libraryThumbHtml,

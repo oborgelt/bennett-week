@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <script src="js/update.js?v=163"></script>
+  <script src="js/update.js?v=164"></script>
   <meta name="theme-color" content="#071618">
   <title>Parent desk · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=163">
+  <link rel="stylesheet" href="css/theme.css?v=164">
 </head>
 <body class="parent-page">
   <header class="week-head">
@@ -58,9 +58,6 @@
       Inbox is now <a href="messages.html">Messages</a>. Asks and A little help from Bennett land there. Daily questions live on the Daily Qs tab.
     </p>
     </div>
-    <div data-parent-panel="crew">
-    <p class="parent-lead">Bennett never sees this catalog, only trophies you award. Pick a teammate to see that library.</p>
-    </div>
     <div data-parent-panel="awards">
     <div class="parent-actions">
       <button type="button" class="btn primary" id="add">Schedule reward</button>
@@ -81,8 +78,7 @@
     <div data-parent-panel="crew">
     <h2 class="parent-h">Characters</h2>
     <p style="color:var(--muted);font-size:0.82rem;margin:0 0 8px">
-      Pick Ace, Riff, Scorch, Deuce, Fuzz, or <strong>Fun / Sounds</strong> to see that library. Crew art is for team story beats.
-      Award a streak to unlock a teammate, tool, weapon, ability, outfit, or a library sound/link. After 3 character unlocks, Story is a real page.
+      All clips and stills open here. Filter by teammate to attach one file. Crew art is for team story beats with Ace, Riff, and Scorch.
     </p>
     <div class="parent-actions">
       <button type="button" class="btn primary" id="add-char">Add / edit character</button>
@@ -90,9 +86,19 @@
       <button type="button" class="btn" id="pick-fun">Fun / Sounds</button>
     </div>
     <div class="char-grid" id="char-list"></div>
-    <section class="char-library" id="char-library" hidden>
-      <h2 id="char-lib-title">Library</h2>
-      <p id="char-lib-lead">Assets for this teammate. Attach one to a streak reward or a story beat. Crew files show when you build a team beat.</p>
+    <nav class="library-cats" id="crew-lib-cats" aria-label="Library catalogue">
+      <button type="button" class="library-cat on" data-crew-lib="all" aria-selected="true">All</button>
+      <button type="button" class="library-cat" data-crew-lib="ace" aria-selected="false">Ace</button>
+      <button type="button" class="library-cat" data-crew-lib="riff" aria-selected="false">Riff</button>
+      <button type="button" class="library-cat" data-crew-lib="scorch" aria-selected="false">Scorch</button>
+      <button type="button" class="library-cat" data-crew-lib="deuce" aria-selected="false">Deuce</button>
+      <button type="button" class="library-cat" data-crew-lib="fuzz" aria-selected="false">Fuzz</button>
+      <button type="button" class="library-cat" data-crew-lib="bennett" aria-selected="false">Bennett</button>
+      <button type="button" class="library-cat" data-crew-lib="crew" aria-selected="false">Crew</button>
+    </nav>
+    <section class="char-library" id="char-library">
+      <h2 id="char-lib-title">All clips and stills</h2>
+      <p id="char-lib-lead">Tap a card to select it, then attach it to a streak or a story beat. Audio is on the Sounds tab.</p>
       <div class="lib-grid" id="char-lib-grid"></div>
       <div class="form-grid" id="char-lib-attach">
         <label>Attach selected file to streak
@@ -489,9 +495,9 @@
   }
 }
   </script>
-  <script src="js/build.js?v=163"></script>
-  <script src="js/game.js?v=163"></script>
-  <script src="js/telemetry.js?v=163"></script>
-  <script src="js/parent.js?v=163"></script>
+  <script src="js/build.js?v=164"></script>
+  <script src="js/game.js?v=164"></script>
+  <script src="js/telemetry.js?v=164"></script>
+  <script src="js/parent.js?v=164"></script>
 </body>
 </html>
