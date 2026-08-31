@@ -81,7 +81,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=168/.test(basecampHtml) && /basecamp\.js\?v=168/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=169/.test(basecampHtml) && /basecamp\.js\?v=169/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1690,7 +1690,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=168/.test(weekHtml) && /week\.js\?v=168/.test(weekHtml) && /game\.js\?v=168/.test(weekHtml) && /telemetry\.js\?v=168/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=169/.test(weekHtml) && /week\.js\?v=169/.test(weekHtml) && /game\.js\?v=169/.test(weekHtml) && /telemetry\.js\?v=169/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1738,8 +1738,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=167\b/.test(html), file + " should not still cache-bust as v=167");
-  assert(/\?v=168/.test(html), file + " should cache-bust v=168");
+  assert(!/\?v=168\b/.test(html), file + " should not still cache-bust as v=168");
+  assert(/\?v=169/.test(html), file + " should cache-bust v=169");
   const bar = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
@@ -1754,7 +1754,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 });
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(/js\/update\.js\?v=168/.test(html), file + " loads the live-build checker");
+  assert(/js\/update\.js\?v=169/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
 const updateJs = fs.readFileSync(path.join(root, "js/update.js"), "utf8");
@@ -1819,7 +1819,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=168/.test(progressHtml) && /theme\.css\?v=168/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=169/.test(progressHtml) && /theme\.css\?v=169/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1854,13 +1854,16 @@ assert(/Ask Mr\. X first period/.test(needsPlanHtml), "Needs you shows the curre
 assert(/msg-kicker">Plan/.test(Game.messagesInboxHtml(plannedAgain, week, { view: "me" })), "Mom and Dad see the plan in Messages");
 assert(/#sheet-body[\s\S]{0,80}overflow-y:\s*auto/.test(themeCss) && /lib-preview/.test(themeCss), "Library preview sheet body scrolls");
 assert(/award-unlock-clip/.test(gameJs) && /6 A's in your classes!/.test(gameJs), "award popup can play the Six A's rush clip");
+const awardClipTpl = gameJs.slice(gameJs.indexOf("function showAwardUnlock"), gameJs.indexOf("function showUnlockWhy"));
+assert(/<video[^>]*>/.test(awardClipTpl) && !/\smuted/.test(awardClipTpl.match(/<video[^>]*>/)[0]), "Six A's rush clip is not muted");
+assert(/playCharacterVideo/.test(awardClipTpl), "award clip unmutes like Riff");
 assert(/\.note-field[\s\S]{0,120}display:\s*none/.test(themeCss), "This Week does not paint drifting notes over the page");
 assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNotes no longer spawns floating notes");
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*166/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 166");
-assert(/2026-08-31T09:13:14-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T09:13:14-05:00");
+assert(/build:\s*167/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 167");
+assert(/2026-08-31T09:20:25-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T09:20:25-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2859,6 +2862,14 @@ Game.playUnlockClip(Game.defaultCharacters(), riffClip, { rewatch: true });
 const trophyLayer = document.body.children[document.body.children.length - 1];
 assert(trophyLayer && /riff\.mp4/.test(trophyLayer.innerHTML), "Trophy Room Watch plays the Riff movie");
 assert(/<video[^>]*>/.test(trophyLayer.innerHTML) && !/\smuted/.test(trophyLayer.innerHTML.match(/<video[^>]*>/)[0]), "Trophy Room Riff movie is unmuted");
+Game.showAwardUnlock(
+  { id: "six-as-classes", title: "6 A's in your classes!", rewardUnlock: { type: "content", id: "crew-six-as-run" } },
+  { achievements: [] },
+  Game.defaultLibrary()
+);
+const sixUnlockLayer = document.body.children[document.body.children.length - 1];
+assert(sixUnlockLayer && /crew-six-as-run\.mp4/.test(sixUnlockLayer.innerHTML), "Six A's writeup embeds the rush clip");
+assert(!/\smuted/.test(sixUnlockLayer.innerHTML.match(/<video[^>]*>/)[0]), "live Six A's rush video is unmuted");
 assert.strictEqual(Game.unlockCopy({ description: "Opened every class in one day.", how: "Tap all 8" }), "Opened every class in one day.");
 FakeAudio.plays.length = 0;
 assert(Game.playAwardSound({ rewardMedia: "honk" }, Game.emptyFamily(), funLib), "attached unlock sound plays");

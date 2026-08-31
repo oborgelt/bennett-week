@@ -5685,7 +5685,7 @@
     layer.innerHTML = `
       <div class="char-celebrate-panel char-celebrate-why-panel award-unlock-panel" role="dialog" aria-labelledby="char-celebrate-title">
         <p class="char-celebrate-kicker">You unlocked this</p>
-        ${clipSrc ? `<video class="lib-play award-unlock-clip" src="${esc(clipSrc)}"${poster ? ` poster="${esc(poster)}"` : ""} playsinline webkit-playsinline controls autoplay muted></video>` : (src ? `<img class="award-unlock-badge" src="${esc(src)}" alt="">` : "")}
+        ${clipSrc ? `<video class="lib-play award-unlock-clip" src="${esc(clipSrc)}"${poster ? ` poster="${esc(poster)}"` : ""} playsinline webkit-playsinline controls ${prefersReducedMotion() ? "" : "autoplay"}></video>` : (src ? `<img class="award-unlock-badge" src="${esc(src)}" alt="">` : "")}
         <h2 id="char-celebrate-title">${esc(title)}</h2>
         <p class="char-celebrate-why">${esc(why)}</p>
         ${when ? `<p class="award-unlock-when">${esc(when)}</p>` : ""}
@@ -5693,6 +5693,7 @@
       </div>`;
     layer.classList.add("open");
     if (item && item.id) markContentSeen(item.id);
+    if (clipSrc) playCharacterVideo(layer.querySelector("video"));
     const play = () => playAwardSound(ach, family, lib);
     const started = play();
     confetti({ burst: true });
