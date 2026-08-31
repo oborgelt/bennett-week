@@ -120,6 +120,29 @@
       "character": "crew"
     },
     {
+      "id": "crew-six-as",
+      "label": "Six A's",
+      "path": "img/library/crew-six-as.jpg",
+      "kind": "image",
+      "character": "crew"
+    },
+    {
+      "id": "crew-six-as-clip",
+      "label": "Six A's clip",
+      "path": "img/library/crew-six-as.mp4",
+      "poster": "img/library/crew-six-as.jpg",
+      "kind": "video",
+      "character": "crew"
+    },
+    {
+      "id": "crew-six-as-run",
+      "label": "Six A's rush",
+      "path": "img/library/crew-six-as-run.mp4",
+      "poster": "img/library/crew-six-as-run.jpg",
+      "kind": "video",
+      "character": "crew"
+    },
+    {
       "id": "angle-finder",
       "label": "Angle Finder",
       "path": "img/library/angle-finder.png",

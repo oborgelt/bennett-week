@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <script src="js/update.js?v=164"></script>
+  <script src="js/update.js?v=165"></script>
   <meta name="theme-color" content="#071618">
   <title>Admin · Jungle Jam</title>
-  <link rel="stylesheet" href="css/theme.css?v=164">
+  <link rel="stylesheet" href="css/theme.css?v=165">
 </head>
 <body class="parent-page admin-page">
   <header class="week-head">
@@ -144,8 +144,8 @@
       <h2>Library</h2>
       <p class="usage-lead">
         All clips and stills are on this tab. Tap <strong>All</strong> to see every animation and image in one grid, including fight clips, locker videos, gear, and crew art. Tagged Fun audio stays on <strong>Sounds</strong>.
-        Drop a file to add it. Files stay <strong>on this device</strong> until you export the family pack.
-        Default tag is <strong>Fun / Sounds</strong>. Retag anytime.
+        Story clips and stills (Six A's, fight clips, Grok animations) belong in this shipped catalogue. Paste the Downloads path in chat. Do not use Choose files for those: they stay on this laptop, and anything over 2 MB never makes the family pack.
+        Drop below is for Fun / Sounds on this device. Default tag is <strong>Fun / Sounds</strong>. Retag anytime.
         <strong>Reload shipped files</strong> pulls in new locker / gear / fight stills without deleting Fun / Sounds.
       </p>
       <div class="parent-actions">
@@ -161,7 +161,7 @@
       <div class="lib-drop" id="lib-drop" tabindex="0" role="button" aria-label="Drop or choose audio, image, or video files">
         <input id="lib-files" type="file" accept="audio/*,image/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.mp4,.webm,.mov,.jpg,.jpeg,.png,.gif,.webp" multiple class="sr-only">
         <p class="lib-drop-lead">Drop a sound here</p>
-        <p class="lib-drop-hint">mp3, wav, ogg, m4a — or drop the whole audio folder (keep manifest.json). Stays on this phone or laptop. Tagged Fun / Sounds unless you retag it.</p>
+        <p class="lib-drop-hint">mp3, wav, ogg, m4a — or drop the whole audio folder (keep manifest.json). Stays on this phone or laptop. Tagged Fun / Sounds unless you retag it. Story clips and Grok stills go in chat so they land in the catalogue.</p>
         <input id="lib-folder" type="file" webkitdirectory directory multiple class="sr-only">
         <div class="parent-actions" style="margin-top:10px">
           <button type="button" class="btn primary" id="lib-pick">Choose files</button>
@@ -300,6 +300,9 @@
     {"id":"crew-run","label":"Crew run","path":"img/library/crew-run.jpg","kind":"image","character":"crew"},
     {"id":"crew-burst","label":"Crew burst","path":"img/library/crew-burst.jpg","kind":"image","character":"crew"},
     {"id":"crew-adventure","label":"Crew adventure clip","path":"img/library/crew-adventure.mp4","poster":"img/library/crew-hero.jpg","kind":"video","character":"crew"},
+    {"id":"crew-six-as","label":"Six A's","path":"img/library/crew-six-as.jpg","kind":"image","character":"crew"},
+    {"id":"crew-six-as-clip","label":"Six A's clip","path":"img/library/crew-six-as.mp4","poster":"img/library/crew-six-as.jpg","kind":"video","character":"crew"},
+    {"id":"crew-six-as-run","label":"Six A's rush","path":"img/library/crew-six-as-run.mp4","poster":"img/library/crew-six-as-run.jpg","kind":"video","character":"crew"},
     {"id":"angle-finder","label":"Angle Finder","path":"img/library/angle-finder.png","poster":"img/library/angle-finder.png","kind":"image","character":"deuce","slot":"tool"},
     {"id":"field-kit","label":"Field Kit","path":"img/library/field-kit.png","poster":"img/library/field-kit.png","kind":"image","character":"scorch","slot":"tool"},
     {"id":"unplugged-strap","label":"Unplugged Strap","path":"img/library/unplugged-strap.png","poster":"img/library/unplugged-strap.png","kind":"image","character":"fuzz","slot":"outfit"},
@@ -323,9 +326,9 @@
   ]
 }
   </script>
-  <script src="js/build.js?v=164"></script>
-  <script src="js/game.js?v=164"></script>
-  <script src="js/telemetry.js?v=164"></script>
-  <script src="js/admin.js?v=164"></script>
+  <script src="js/build.js?v=165"></script>
+  <script src="js/game.js?v=165"></script>
+  <script src="js/telemetry.js?v=165"></script>
+  <script src="js/admin.js?v=165"></script>
 </body>
 </html>

@@ -81,7 +81,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=164/.test(basecampHtml) && /basecamp\.js\?v=164/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=165/.test(basecampHtml) && /basecamp\.js\?v=165/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -248,6 +248,23 @@ assert.strictEqual(basecampIntro.path, "img/library/basecamp-intro.mp4", "baseca
 assert.strictEqual(basecampIntro.poster, "img/library/basecamp-bg.jpg", "basecamp-intro poster is the still");
 assert.strictEqual(basecampIntro.character, "crew", "basecamp-intro sits on Crew");
 assert(!basecampIntro.device, "basecamp-intro is shipped");
+const sixAsStill = library.items.find((item) => item.id === "crew-six-as");
+const sixAsClip = library.items.find((item) => item.id === "crew-six-as-clip");
+const sixAsRun = library.items.find((item) => item.id === "crew-six-as-run");
+assert(sixAsStill && sixAsStill.kind === "image" && sixAsStill.character === "crew", "Six A's still should be in library.json");
+assert.strictEqual(sixAsStill.path, "img/library/crew-six-as.jpg", "Six A's still path");
+assert(sixAsClip && sixAsClip.kind === "video" && sixAsClip.character === "crew", "Six A's clip should be in library.json");
+assert.strictEqual(sixAsClip.path, "img/library/crew-six-as.mp4", "Six A's clip path");
+assert.strictEqual(sixAsClip.poster, "img/library/crew-six-as.jpg", "Six A's clip poster is the still");
+assert(sixAsRun && sixAsRun.kind === "video" && sixAsRun.character === "crew", "Six A's rush should be in library.json");
+assert.strictEqual(sixAsRun.path, "img/library/crew-six-as-run.mp4", "Six A's rush path");
+assert.strictEqual(sixAsRun.poster, "img/library/crew-six-as-run.jpg", "Six A's rush poster");
+assert(fs.existsSync(path.join(root, "img/library/crew-six-as.jpg")), "Six A's still should already be on disk");
+assert(fs.existsSync(path.join(root, "img/library/crew-six-as.mp4")), "Six A's clip should already be on disk");
+assert(fs.existsSync(path.join(root, "img/library/crew-six-as-run.mp4")), "Six A's rush should already be on disk");
+assert(fs.existsSync(path.join(root, "img/library/crew-six-as-run.jpg")), "Six A's rush poster should already be on disk");
+assert(!sixAsStill.slot && !sixAsClip.slot && !sixAsRun.slot, "Six A's assets are crew story art, not gated fight clips");
+assert(!sixAsStill.device && !sixAsClip.device && !sixAsRun.device, "Six A's assets are shipped, not a device drop");
 assert(fs.existsSync(path.join(root, "audio/tablesloud.mp3")), "audio/tablesloud.mp3 should already be on disk");
 assert(fs.existsSync(path.join(root, "audio/undo.wav")), "audio/undo.wav should already be on disk");
 const tableClick = library.items.find((item) => item.id === "tablesloud");
@@ -280,6 +297,8 @@ assert(adminHtml.includes("img/library/angle-finder.png") && adminHtml.includes(
 assert(adminHtml.includes("img/library/ace-frog.mp4") && adminHtml.includes("img/library/riff-bird.mp4") && adminHtml.includes("img/library/scorch-spider.mp4"), "Admin file:// seed should include fight clips");
 assert(adminHtml.includes("img/library/trophy-room.jpg") && adminHtml.includes("img/library/trophy-window.jpg"), "Admin file:// seed should include trophy-room stills");
 assert(adminHtml.includes("img/library/basecamp-bg.jpg") && adminHtml.includes("img/library/basecamp-intro.mp4"), "Admin file:// seed should include Base Camp intro assets");
+assert(adminHtml.includes("img/library/crew-six-as.jpg") && adminHtml.includes("img/library/crew-six-as.mp4") && adminHtml.includes("img/library/crew-six-as-run.mp4"), "Admin file:// seed should include Six A's still and clips");
+assert(/Paste the Downloads path in chat/.test(adminHtml), "Admin should say story clips ship from chat, not Choose files");
 assert(adminHtml.includes("audio/tablesloud.mp3") && /"id"\s*:\s*"tablesloud"/.test(adminHtml), "Admin file:// seed should include Table click");
 assert(adminHtml.includes("audio/undo.wav") && /"id"\s*:\s*"undo-click"/.test(adminHtml), "Admin file:// seed should include Undo");
 assert(/Reload shipped files/.test(adminHtml), "Admin should offer Reload shipped files");
@@ -711,7 +730,7 @@ assert.strictEqual(weekById["web-11"].student_status, null);
 assert.strictEqual(weekById["web-11"].discrepancy, false);
 assert.strictEqual(weekById["eng-notebook"].school_status, "open");
 assert.strictEqual((week.work || []).filter((w) => w.discrepancy === true).map((w) => w.id).join(","), "chem-about-me", "About Me assignment is the remaining week.json discrepancy");
-assert.strictEqual((week.work || []).filter((w) => w.followup && typeof w.followup === "object").length, 23, "Parenting put a followup object on all work rows");
+assert.strictEqual((week.work || []).filter((w) => w.followup && typeof w.followup === "object").length, 24, "Parenting put a followup object on all work rows");
 assert.strictEqual(weekById["chem-aboutme-disc"].followup && weekById["chem-aboutme-disc"].followup.due_by, null);
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_draft, null, "Parenting left email_draft null");
 assert.strictEqual(weekById["chem-aboutme-disc"].followup.email_sent, false, "do not invent that Bennett already emailed");
@@ -751,34 +770,36 @@ assert(weekById["eng-notebook"], "notebook stays — bring-to-class, not on this
 assert(/highlighter/i.test(weekById["eng-notebook"].note || "") && /100 index cards/i.test(weekById["eng-notebook"].note || ""), "notebook keeps highlighter + 100 index cards");
 assert(weekById["eng-letter"], "week.json has eng-letter");
 assert.strictEqual(weekById["eng-letter"].due, "2026-08-20T23:59:00");
-assert.strictEqual((week.work || []).filter((w) => /English 10/.test(w.title || "")).length, 10, "English keeps names+comics+letter+notebook plus choice book, AAB, and 10.1");
-assert.strictEqual(week.as_of, "2026-08-27T14:35:00");
+assert.strictEqual((week.work || []).filter((w) => /English 10/.test(w.title || "")).length, 11, "English keeps names+comics+letter+notebook plus choice book, AAB, 10.1, and Formative On-Demand");
+assert.strictEqual(week.as_of, "2026-08-31T07:19:00");
 assert(Array.isArray(week.grades), "week.json has ParentVUE grades[]");
-assert.strictEqual(week.grades.length, 4, "grades[] is sociology, english-10, chemistry, and web-design");
-assert.deepStrictEqual(week.grades.map((g) => g.classId), ["sociology", "english-10", "chemistry", "web-design"], "grades[] rows are sociology, english-10, chemistry, web-design");
+assert.strictEqual(week.grades.length, 7, "grades[] is the seven ParentVUE classes with marks");
+assert.deepStrictEqual(week.grades.map((g) => g.classId), ["sociology", "english-10", "chemistry", "web-design", "geometry", "band", "strength"], "grades[] rows follow the ParentVUE pull");
 const socGrade = week.grades.find((g) => g.classId === "sociology");
 const engGrade = week.grades.find((g) => g.classId === "english-10");
 const chemGrade = week.grades.find((g) => g.classId === "chemistry");
-assert(socGrade && socGrade.letter === "A-" && socGrade.percent === 91 && socGrade.as_of === "2026-08-19", "Sociology ParentVUE is A- 91% as of 8/19");
-assert(engGrade && engGrade.letter === "A+" && engGrade.percent === 100 && engGrade.as_of === "2026-08-27", "English Canvas is A+ 100% as of 8/27");
-assert(chemGrade && chemGrade.letter === "A+" && chemGrade.percent === 100 && chemGrade.as_of === "2026-08-27", "Chemistry Canvas is A+ 100% as of 8/27");
+const webGrade = week.grades.find((g) => g.classId === "web-design");
+assert(socGrade && socGrade.letter === "A" && socGrade.percent === 97 && socGrade.as_of === "2026-08-31", "Sociology ParentVUE is A 97% as of 8/31");
+assert(engGrade && engGrade.letter === "A+" && engGrade.percent === 98.33 && engGrade.as_of === "2026-08-31", "English ParentVUE is A+ 98.33% as of 8/31");
+assert(chemGrade && chemGrade.letter === "B" && chemGrade.percent === 85.7 && chemGrade.as_of === "2026-08-31", "Chemistry ParentVUE is B 85.7% as of 8/31");
+assert(webGrade && webGrade.letter === "A" && webGrade.percent === 96 && webGrade.as_of === "2026-08-31", "Web Design ParentVUE is A 96% as of 8/31");
 assert.strictEqual(Game.gradesFromWeek({}).length, 0, "gradesFromWeek is empty when grades[] is missing");
-assert.deepStrictEqual([...Game.gradesFromWeek(week)].map((g) => g.classId), ["sociology", "english-10", "chemistry", "web-design"]);
-assert.strictEqual(Game.gradeForClass(week, "sociology").letter, "A-");
+assert.deepStrictEqual([...Game.gradesFromWeek(week)].map((g) => g.classId), ["sociology", "english-10", "chemistry", "web-design", "geometry", "band", "strength"]);
+assert.strictEqual(Game.gradeForClass(week, "sociology").letter, "A");
 assert.strictEqual(Game.gradeForClass(week, { id: "english-10" }).letter, "A+");
-assert.strictEqual(Game.gradeForClass(week, "chemistry").letter, "A+");
+assert.strictEqual(Game.gradeForClass(week, "chemistry").letter, "B");
 const socPill = Game.gradePillModel(Game.gradeForClass(week, "sociology"));
-assert.strictEqual(socPill.display, "A- 91%");
-assert.strictEqual(socPill.detail, "In-Class Activity 20/22. Syllabus (Keach 8/13 PDF): HW ~55 / Tests ~30 / Quizzes ~15; late work 50% until end of quarter; weekly Contemporary Social Issues; wired headphones required. Assignments on Synergy, not Canvas. · ParentVUE 8/19");
+assert.strictEqual(socPill.display, "A 97%");
+assert.strictEqual(socPill.detail, "Last update 8/30. CSI (1.1) NOW 30/30 (was Not Due 33 pts, Drop Box 8/26–8/28). 1.2 Reading 12/12; 1.1 Reading 14/14; Summer Scavenger Hunt 20/22. Room 315. · ParentVUE 8/31");
 const engPill = Game.gradePillModel(Game.gradeForClass(week, "english-10"));
-assert.strictEqual(engPill.display, "A+ 100%");
-assert.strictEqual(engPill.detail, "30/30 (names 5/5, letter 10/10, comic 10/10, 10.1 Skills 5/5). Choice Book –/5 Fri; AAB Reading Check #1 –/10 Mon. · Canvas 8/27");
+assert.strictEqual(engPill.display, "A+ 98.33%");
+assert.strictEqual(engPill.detail, "Last update 8/30 — now matches Canvas. Choice Book Check-In 5/5; Formative On-Demand 9.25/10; 10.1 Skills Assessment 5/5; Letter 10/10; comic 10/10; names 5/5. Room 816. · ParentVUE 8/31");
 assert.strictEqual(Game.gradePillModel({ classId: "chemistry", source: "ParentVUE" }), null);
-assert(/A\+\s*100%/.test(Game.gradePillHtml(week, "chemistry")));
-assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "sociology")) && /A-\s*91%/.test(Game.gradePillHtml(week, "sociology")) && /grade-detail/.test(Game.gradePillHtml(week, "sociology")));
-assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "english-10")) && /A\+\s*100%/.test(Game.gradePillHtml(week, "english-10")));
-assert.strictEqual((week.work || []).length, 25, "work[] stays the live set");
-assert.strictEqual((week.notes || []).length, 25, "notes[] stays the live set");
+assert(/B\s*85\.7%/.test(Game.gradePillHtml(week, "chemistry")));
+assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "sociology")) && /A\s*97%/.test(Game.gradePillHtml(week, "sociology")) && /grade-detail/.test(Game.gradePillHtml(week, "sociology")));
+assert(/class="grade-pill"/.test(Game.gradePillHtml(week, "english-10")) && /A\+\s*98\.33%/.test(Game.gradePillHtml(week, "english-10")));
+assert.strictEqual((week.work || []).length, 26, "work[] stays the live set");
+assert.strictEqual((week.notes || []).length, 37, "notes[] stays the live set");
 const notesByKey = Object.fromEntries((week.notes || []).map((n) => [n.date + "\t" + n.title, n]));
 const notesByTitle = Object.fromEntries((week.notes || []).map((n) => [n.title, n]));
 const afterSchool819 = notesByKey["2026-08-19\tAfter-school check (~2:40pm)"];
@@ -826,6 +847,7 @@ assert.deepStrictEqual((week.work || []).map((w) => w.id).sort(), [
   "eng-aab-reading-check-1",
   "eng-choicebook",
   "eng-comics",
+  "eng-formative-ondemand",
   "eng-letter",
   "eng-names",
   "eng-notebook",
@@ -1025,7 +1047,7 @@ const noteOnlyOpen = Game.workFeedStatus({ id: "y", title: "Y", due: "2026-08-20
 assert.strictEqual(noteOnlyOpen.missing, false, "do not invent Missing from Not submitted");
 assert.strictEqual(noteOnlyOpen.notDone, true);
 assert.strictEqual(noteOnlyOpen.dueToday, true);
-assert.strictEqual((week.events || []).length, 87, "merge kept live events[] including Fillingham pass-offs and boosters");
+assert.strictEqual((week.events || []).length, 88, "merge kept live events[] including Fillingham pass-offs and boosters");
 assert((week.events || []).some((e) => e.id === "picture-0827"), "picture-0827 is on the calendar");
 assert.strictEqual((week.events || []).find((e) => e.id === "picture-0827").start, "2026-08-27");
 assert.strictEqual((week.events || []).find((e) => e.id === "picture-0827").title, "Picture day (day 2)");
@@ -1124,7 +1146,7 @@ assert(!khanAskChem.some((k) => k.id === "ela"), "Ask chemistry chips should not
 assert(Game.khanStripHtml("Chemistry", { classId: "chemistry" }).indexOf("/ela") >= 0, "Ask chemistry strip still lists ELA");
 assert.strictEqual(Game.classDueLabel(3), "3 due");
 assert.strictEqual(Game.classDueLabel(0), "Nothing due yet");
-assert.strictEqual(Game.classDueCount(english, week), 10, "English due count matches week.json");
+assert.strictEqual(Game.classDueCount(english, week), 11, "English due count matches week.json");
 assert.strictEqual(Game.classDueCount(byId.chemistry, week), 9, "Chemistry due count matches week.json");
 assert.strictEqual(Game.classDueCount(byId["web-design"], week), 6, "Web Design due count matches week.json");
 assert.strictEqual(Game.classPeriodLine(band), "P1 Marching Band");
@@ -1421,6 +1443,9 @@ gearSeed.forEach((row) => {
 assert.strictEqual(Game.gearLibraryItems(seededLib).length, 6, "Gear group should list the six stills");
 assert(Game.libraryVisualItems(seededLib).some((item) => item.id === "ace-frog" && item.kind === "video"), "catalogue includes Frog Serve");
 assert(Game.libraryVisualItems(seededLib).some((item) => item.id === "crew-adventure" && item.kind === "video"), "catalogue includes crew adventure clip");
+assert(Game.libraryVisualItems(seededLib).some((item) => item.id === "crew-six-as" && item.kind === "image"), "catalogue includes Six A's still");
+assert(Game.libraryVisualItems(seededLib).some((item) => item.id === "crew-six-as-clip" && item.kind === "video"), "catalogue includes Six A's clip");
+assert(Game.libraryVisualItems(seededLib).some((item) => item.id === "crew-six-as-run" && item.kind === "video"), "catalogue includes Six A's rush");
 assert(Game.libraryVisualItems(seededLib).some((item) => item.id === "ace-clip"), "catalogue includes Ace locker clip");
 assert(!Game.libraryVisualItems(seededLib).some((item) => item.id === "tablesloud"), "catalogue is clips and stills, not Fun audio");
 assert(Game.libraryVisualItems(Game.normalizeLibrary({
@@ -1479,6 +1504,8 @@ fightSeed.forEach((row) => {
   assert(!Game.canPlayLibraryItem(item), row.id + " should stay locked until awarded");
   assert(Game.canPlayLibraryItem(item, true), row.id + " should play in parent preview");
 });
+assert(Game.defaultLibrary().items.some((item) => item.id === "crew-six-as-clip" && item.path === "img/library/crew-six-as.mp4" && item.character === "crew"), "file:// default library includes Six A's clip");
+assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "crew-six-as-clip")), "Six A's clip stays playable in the catalogue");
 assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "ace-clip")), "Ace locker clip stays playable");
 assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "scorch-spider-beam")), "beam still is extra library art, not a gated locker replacement");
 assert(!Game.contentLibraryItems(seededLib).some((it) => it.id === "ace-clip"), "locker clips are not gated content");
@@ -1641,7 +1668,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=164/.test(weekHtml) && /week\.js\?v=164/.test(weekHtml) && /game\.js\?v=164/.test(weekHtml) && /telemetry\.js\?v=164/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=165/.test(weekHtml) && /week\.js\?v=165/.test(weekHtml) && /game\.js\?v=165/.test(weekHtml) && /telemetry\.js\?v=165/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1689,8 +1716,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=163\b/.test(html), file + " should not still cache-bust as v=163");
-  assert(/\?v=164/.test(html), file + " should cache-bust v=164");
+  assert(!/\?v=164\b/.test(html), file + " should not still cache-bust as v=164");
+  assert(/\?v=165/.test(html), file + " should cache-bust v=165");
   const bar = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
@@ -1705,7 +1732,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 });
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(/js\/update\.js\?v=164/.test(html), file + " loads the live-build checker");
+  assert(/js\/update\.js\?v=165/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
 const updateJs = fs.readFileSync(path.join(root, "js/update.js"), "utf8");
@@ -1770,7 +1797,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=164/.test(progressHtml) && /theme\.css\?v=164/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=165/.test(progressHtml) && /theme\.css\?v=165/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1810,8 +1837,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*162/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 162");
-assert(/2026-08-31T07:50:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T07:50:00-05:00");
+assert(/build:\s*163/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 163");
+assert(/2026-08-31T08:15:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T08:15:00-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
