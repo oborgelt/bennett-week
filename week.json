@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-08-31T07:19:00",
+  "as_of": "2026-08-31T14:40:00",
   "parenting": [
     {
       "who": "Mom",
@@ -923,6 +923,14 @@
       "kind": "calendar",
       "classId": "band",
       "note": "Gmail Sat 8/29 10:07am CT from bobrogerstravel@email.groupcollect.com: AutoPay heads-up — Bennett OE Band Orlando deposit $400.00 due Sep 01, 2026. Manage/disable: https://bobrogerstravel.groupcollect.com/v2/user/49023/trips/22768. Date-only — charge day, no clock time given."
+    },
+    {
+      "id": "oe-half-day-1014",
+      "title": "OE: Half Day (AM) Grades 9–12",
+      "start": "2026-10-14",
+      "kind": "calendar",
+      "place": "Olathe East",
+      "note": "District calendar: Half Day Oct 14, 2026. Grades 9–12 7:40–11:05 a.m. Conferences Oct 12–14; conferences (no students) Oct 15; no school Oct 16."
     }
   ],
   "work": [
@@ -1256,10 +1264,10 @@
       "due": "2026-08-31T09:20:00",
       "status": "open",
       "points": 10,
-      "late": false,
+      "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Derek Linn. 10 pts. Due Mon Aug 31 9:20am. Live Canvas Sun 8/30 ~9:20pm still –/10, unsubmitted.",
+      "note": "Derek Linn. 10 pts. Due Mon Aug 31 9:20am. Live Canvas Mon 8/31 ~2:35pm: still –/10, no submission, no Missing/Late flag. PAST DUE. With 1.4/1.5/2.1-2.2 = 62 pts still open.",
       "canvas": {
         "status": "open",
         "points": 10,
@@ -1300,7 +1308,7 @@
       "due": "2026-08-31T09:20:00",
       "status": "open",
       "points": 11,
-      "late": false,
+      "late": true,
       "submitted_at": null,
       "source": "canvas",
       "school_status": "open",
@@ -1311,7 +1319,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. 11 pts. Due Mon Aug 31 9:20am. Live Canvas Sun 8/30 ~9:20pm still –/11, unsubmitted.",
+      "note": "Derek Linn. 11 pts. Due Mon Aug 31 9:20am. Live Canvas Mon 8/31 ~2:35pm: still –/11, no submission, no Missing/Late flag. PAST DUE.",
       "canvas": {
         "status": "open",
         "points": 11,
@@ -1325,7 +1333,7 @@
       "due": "2026-08-31T09:20:00",
       "status": "open",
       "points": 13,
-      "late": false,
+      "late": true,
       "submitted_at": null,
       "source": "canvas",
       "school_status": "open",
@@ -1336,7 +1344,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. 13 pts. Due Mon Aug 31 9:20am. Live Canvas Sun 8/30 ~9:20pm still –/13, unsubmitted.",
+      "note": "Derek Linn. 13 pts. Due Mon Aug 31 9:20am. Live Canvas Mon 8/31 ~2:35pm: still –/13, no submission, no Missing/Late flag. PAST DUE.",
       "canvas": {
         "status": "open",
         "points": 13,
@@ -1351,7 +1359,7 @@
       "status": "open",
       "school_status": "open",
       "points": 28,
-      "late": false,
+      "late": true,
       "submitted_at": null,
       "source": "canvas",
       "discrepancy": false,
@@ -1361,7 +1369,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. 28 pts. Due Mon Aug 31 9:20am. Live Canvas Sun 8/30 ~9:20pm still –/28, unsubmitted. With 1.3–1.5 = 62 pts Monday morning.",
+      "note": "Derek Linn. 28 pts. Due Mon Aug 31 9:20am. Live Canvas Mon 8/31 ~2:35pm: still –/28, no submission, no Missing/Late flag. PAST DUE. With 1.3–1.5 = 62 pts still open.",
       "canvas": {
         "status": "open",
         "points": 28,
@@ -1441,7 +1449,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson Daily Agendas unchanged Sun 8/30: 8/31 Reading Check; Character lenses; Pg. 41-82 due. HW from 8/28: read to page 82 by Monday. Not a Canvas assignment row."
+      "note": "Goodson Daily Agendas Mon 8/31: Reading Check; Character lenses; Pg. 41-82 due. HW: read to page 120 before next week. Reading Check submitted 1:40pm on Canvas. Page-82 reading is not a Canvas assignment row; completion not confirmed."
     },
     {
       "id": "chem-defining-matter",
@@ -1505,7 +1513,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Pfeiff. 1 pt. PAST DUE Thu 8/27 11:59pm. Live Canvas Sun 8/30 ~9:20pm still –/1 unsubmitted/ungraded. Course still 98.75%. ParentVUE not pulled Sun 9pm (browser then known login block). Not flagged Missing. No Bennett-said-done.",
+      "note": "Pfeiff. 1 pt. PAST DUE Thu 8/27 11:59pm. Live Canvas Mon 8/31 ~2:35pm still –/1 unsubmitted/ungraded. Course still 98.75%. ParentVUE not pulled this afternoon (login expired, password box empty). Not flagged Missing. No Bennett-said-done.",
       "canvas": {
         "status": "open",
         "points": 1,
@@ -1545,11 +1553,11 @@
       "title": "English 10: AAB Reading Check #1 (Respondus LockDown)",
       "classId": "english-10",
       "due": "2026-08-31T23:59:00",
-      "status": "open",
-      "school_status": "open",
+      "status": "submitted",
+      "school_status": "submitted",
       "points": 10,
       "late": false,
-      "submitted_at": null,
+      "submitted_at": "2026-08-31T13:40:00",
       "source": "canvas",
       "discrepancy": false,
       "student_status": null,
@@ -1558,12 +1566,13 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson/Carl. Canvas quiz 10 pts. Requires Respondus LockDown Browser. Due Mon Aug 31 11:59pm. Live Canvas Sun 8/30 ~9:20pm: still –/10, unsubmitted. Dashboard To Do unchanged.",
+      "note": "Goodson/Carl. Canvas quiz 10 pts. Requires Respondus LockDown Browser. SUBMITTED Mon Aug 31 1:40pm CT (live Canvas ~2:35pm). Score still –/10 needs grading. English total still 98.33% (44.25/45). No Bennett-said-done (school-side submit).",
       "canvas": {
-        "status": "open",
+        "status": "submitted",
         "points": 10,
         "due": "2026-08-31T23:59:00",
-        "type": "quiz"
+        "type": "quiz",
+        "submitted_at": "2026-08-31T13:40:00"
       }
     },
     {
@@ -1583,7 +1592,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson Daily Agendas unchanged Sun 8/30: 8/31 homework “Read to page 120 before next week”; 9/9–9/10 Pg. 83-120 due. Not a Canvas assignment row."
+      "note": "Goodson Daily Agendas Mon 8/31: homework “Read to page 120 before next week”; 9/9–9/10 Pg. 83-120 due. 9/1 class work now “Pass back narrative on-demands (stable in journal); Narrative writing mini-lesson.” Not a Canvas assignment row."
     },
     {
       "id": "eng-formative-ondemand",
@@ -1613,6 +1622,31 @@
       },
       "score": "9.25/10",
       "graded_at": "2026-08-30T10:28:00"
+    },
+    {
+      "id": "web-23",
+      "title": "Web Design: 2.3 Formatting Text",
+      "classId": "web-design",
+      "due": "2026-09-08T09:20:00",
+      "status": "open",
+      "school_status": "open",
+      "points": 19,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Derek Linn. NEW Canvas assignment Mon 8/31 after-school. 19 pts. Due Tue Sep 8 9:20am. Live Canvas –/19 unsubmitted. Dashboard Sep 8.",
+      "canvas": {
+        "status": "open",
+        "points": 19,
+        "due": "2026-09-08T09:20:00"
+      }
     }
   ],
   "notes": [
@@ -1800,6 +1834,21 @@
       "date": "2026-08-31",
       "title": "ParentVUE Grade Book (~7:19am CT)",
       "text": "Live ParentVUE Grade Book (MT1, Bennett Borgelt, Olathe East 423513) ~7:19am CT. All 7 classes 0 Missing Assignments. Academic Intervention is not in Grade Book. P1 Marching Band Fillingham rm 415 A+ 100.0% last update 8/27 — UNCHANGED (Daily Skills 30/30, Forms 25/25, extra rehearsals 10/10+10/10, Pass off #1 50/50). P2 Sociology Keach rm 315 A 97% (was 96) last update 8/30 — CSI (1.1) NOW 30/30 (was Not Due 33 pts, Drop Box 8/26–8/28); 1.2 Reading 12/12; 1.1 Reading 14/14; Summer Scavenger Hunt 20/22. P3 Web Design I Linn rm 513 A 96% last update 8/26 — UNCHANGED (1.1 20/20, 1.2 37.5/40). No 1.3–2.2 rows in ParentVUE yet. P4 Chemistry Pfeiff rm 113 B 85.7% last update 8/28 — UNCHANGED. Density Lesson 5 still Not Graded 1 pt; graph 1/1; lab sheet 0.5/1; safety exam 34/34; safety contract 1/1; Defining Matter 1/1 Notes \"Mi\"; Get to Know You 1/1; Penny 1/1. P5 Strength and Conditioning I Pauly WEIGHT ROOM A+ 100.00% last update 8/28 — UNCHANGED (First 2 weeks 35/35). P6 English 10 Goodson rm 816 A+ 98.33% last update 8/30 — NOW MATCHES Canvas. Choice Book Check-In 5/5; Formative On-Demand 9.25/10; 10.1 Skills Assessment 5/5; Letter 10/10; comic 10/10; names 5/5. P7 Geometry Foster rm 814 A 97% last update 8/25 — UNCHANGED (Quiz 1.2-1.4 19/20; review 10/10). Mail: only NEW ParentVUE message since Fri 8/28 is Fillingham Band Update 8/30/26 Sun 2:50pm (already known from Gmail). No new Goodson/Pfeiff/Keach/Linn/Foster/Pauly/Peterson mail."
+    },
+    {
+      "date": "2026-08-31",
+      "title": "After-school check (~2:40pm CT)",
+      "text": "Live Canvas via desktop Chrome (page browser driver down; session reused, Bennett confirmed). NEW vs 7:19am/Sun 9:20pm: AAB Reading Check #1 SUBMITTED today 1:40pm, still –/10 needs grading; English 98.33% unchanged. Web 1.3–2.2 (62 pts) still unsubmitted, now PAST DUE 9:20am, no Missing flag. NEW Canvas: Web 2.3 Formatting Text –/19 due Tue Sep 8 9:20am. Chem Density 5 still –/1. Totals: English 98.33% (44.25/45), Chem 98.75% (39.50/40), Web 95.83% (57.50/60). Published unchanged. ParentVUE BLOCKED: session expired; username filled, password box empty (same encryption-key bug). Inbox/Alerts/Attendance/Calendar not pulled; Grade Book frozen at 7:19am. Gmail NEW: Wolgast All Sports Pass 8:34am; Orin emailed attendance 1:19pm for 2:30p pickup (3p Mateo), Shackelford issued a pass 1:20pm. English agenda 9/1 now includes pass-back of narrative on-demands. oeband.com homepage identical, $350 unchanged, calendar still under construction. Tonight: Band Booster 6:00–8:00 + rehearsal 6:30–8:30 confirmed on OE homepage. Labor Day Sep 7. Dad through Thu Sep 3 4:30pm. No Bennett-said-done; no new discrepancy. Do not flag 8/14 Chem absence."
+    },
+    {
+      "date": "2026-08-31",
+      "title": "Early pickup 2:30p — Mateo",
+      "text": "Gmail Mon 1:19pm CT Orin → oeattendance: pick Bennett up at 2:30p today for a 3:00p therapist appointment. Jennifer Shackelford (Attendance Secretary) 1:20pm: “We’ll issue a pass.” ParentVUE attendance for 8/31 not pulled (login blocked)."
+    },
+    {
+      "date": "2026-08-31",
+      "title": "English agenda 9/1 pass-back",
+      "text": "Daily Agendas gviz changed vs Sun 8/30: Tue 9/1 CLASS WORK now “Warm-up; Pass back narrative on-demands (stable in journal); Narrative writing mini-lesson.” 8/31 still Reading Check + character lenses + Pg. 41-82 due; HW read to page 120 before next week."
     }
   ],
   "grades": [
@@ -1810,7 +1859,7 @@
       "teacher": "Todd Keach",
       "letter": "A",
       "percent": 97,
-      "detail": "Last update 8/30. CSI (1.1) NOW 30/30 (was Not Due 33 pts, Drop Box 8/26–8/28). 1.2 Reading 12/12; 1.1 Reading 14/14; Summer Scavenger Hunt 20/22. Room 315.",
+      "detail": "Last update 8/30. CSI (1.1) NOW 30/30 (was Not Due 33 pts, Drop Box 8/26–8/28). 1.2 Reading 12/12; 1.1 Reading 14/14; Summer Scavenger Hunt 20/22. Room 315. Afternoon 2:40pm ParentVUE blocked (password empty); figures from 7:19am.",
       "source": "ParentVUE",
       "as_of": "2026-08-31",
       "missing": 0
@@ -1822,7 +1871,7 @@
       "teacher": "Ann Goodson",
       "letter": "A+",
       "percent": 98.33,
-      "detail": "Last update 8/30 — now matches Canvas. Choice Book Check-In 5/5; Formative On-Demand 9.25/10; 10.1 Skills Assessment 5/5; Letter 10/10; comic 10/10; names 5/5. Room 816.",
+      "detail": "Last update 8/30 — now matches Canvas. Choice Book Check-In 5/5; Formative On-Demand 9.25/10; 10.1 Skills Assessment 5/5; Letter 10/10; comic 10/10; names 5/5. Room 816. Afternoon 2:40pm ParentVUE blocked (password empty); figures from 7:19am.",
       "source": "ParentVUE",
       "as_of": "2026-08-31",
       "missing": 0
@@ -1834,7 +1883,7 @@
       "teacher": "Justin Pfeiff",
       "letter": "B",
       "percent": 85.7,
-      "detail": "Last update 8/28. Density Lesson 5 still Not Graded 1 pt; Mass vs Volume Graph 1/1; lab sheet 0.5/1; Safety Exam 34/34; Safety Contract 1/1; Defining Matter 1/1 Notes \"Mi\"; Get to Know You 1/1; Penny 1/1. Room 113.",
+      "detail": "Last update 8/28. Density Lesson 5 still Not Graded 1 pt; Mass vs Volume Graph 1/1; lab sheet 0.5/1; Safety Exam 34/34; Safety Contract 1/1; Defining Matter 1/1 Notes \"Mi\"; Get to Know You 1/1; Penny 1/1. Room 113. Afternoon 2:40pm ParentVUE blocked (password empty); figures from 7:19am.",
       "source": "ParentVUE",
       "as_of": "2026-08-31",
       "missing": 0
@@ -1846,7 +1895,7 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 96,
-      "detail": "Last update 8/26. 1.1 20/20, 1.2 37.5/40. No 1.3–2.2 rows in ParentVUE yet. Room 513.",
+      "detail": "Last update 8/26. 1.1 20/20, 1.2 37.5/40. No 1.3–2.2 rows in ParentVUE yet. Room 513. Afternoon 2:40pm ParentVUE blocked (password empty); figures from 7:19am.",
       "source": "ParentVUE",
       "as_of": "2026-08-31",
       "missing": 0
@@ -1858,7 +1907,7 @@
       "teacher": "Katelyn Foster",
       "letter": "A",
       "percent": 97,
-      "detail": "Last update 8/25. Quiz 1.2-1.4 19/20; Quiz Review 1.2-1.4 Practice 10/10 (both 8/21). Room 814.",
+      "detail": "Last update 8/25. Quiz 1.2-1.4 19/20; Quiz Review 1.2-1.4 Practice 10/10 (both 8/21). Room 814. Afternoon 2:40pm ParentVUE blocked (password empty); figures from 7:19am.",
       "source": "ParentVUE",
       "as_of": "2026-08-31",
       "missing": 0
@@ -1870,7 +1919,7 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100,
-      "detail": "Last update 8/27. 8/17–8/26 Daily Skills 30/30; Forms Daily Skills 25/25; Mon 8/17 Extra Rehearsals 10/10; Mon 8/24 Extra Rehearsals 10/10; Pass off #1 Test 50/50 (all dated 8/26). Room 415.",
+      "detail": "Last update 8/27. 8/17–8/26 Daily Skills 30/30; Forms Daily Skills 25/25; Mon 8/17 Extra Rehearsals 10/10; Mon 8/24 Extra Rehearsals 10/10; Pass off #1 Test 50/50 (all dated 8/26). Room 415. Afternoon 2:40pm ParentVUE blocked (password empty); figures from 7:19am.",
       "source": "ParentVUE",
       "as_of": "2026-08-31",
       "missing": 0
@@ -1882,7 +1931,7 @@
       "teacher": "Rachelle Pauly",
       "letter": "A+",
       "percent": 100,
-      "detail": "Last update 8/28. First 2 weeks Activity Participation 35/35. WEIGHT ROOM.",
+      "detail": "Last update 8/28. First 2 weeks Activity Participation 35/35. WEIGHT ROOM. Afternoon 2:40pm ParentVUE blocked (password empty); figures from 7:19am.",
       "source": "ParentVUE",
       "as_of": "2026-08-31",
       "missing": 0
