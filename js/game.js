@@ -1572,6 +1572,8 @@
       if (live.rewardCharacter && !next.rewardCharacter) next.rewardCharacter = live.rewardCharacter;
       if (live.rewardUnlock && !next.rewardUnlock) next.rewardUnlock = live.rewardUnlock;
       if (live.rewardMedia && !next.rewardMedia) next.rewardMedia = live.rewardMedia;
+      if (live.rewardClips && !next.rewardClips) next.rewardClips = live.rewardClips;
+      if (live.badge && !next.badge) next.badge = live.badge;
       if (live.description && !next.description) next.description = live.description;
       if (live.how && !next.how) next.how = live.how;
       return next;
@@ -2709,6 +2711,41 @@
       const blob = (String(item.label || "") + " " + String(item.filename || "") + " " + String(item.id || "")).toLowerCase();
       return blob.indexOf(want) >= 0;
     }) || null;
+  }
+
+  function rewardClipIds(ach) {
+    const ids = [];
+    const seen = {};
+    const push = (id) => {
+      const key = String(id || "").trim();
+      if (!key || seen[key]) return;
+      seen[key] = true;
+      ids.push(key);
+    };
+    const listed = ach && Array.isArray(ach.rewardClips) ? ach.rewardClips : [];
+    listed.forEach(push);
+    const unlock = rewardUnlockOf(ach);
+    if (unlock && unlock.type === "content") push(unlock.id);
+    return ids;
+  }
+
+  function rewardClipItems(ach, lib) {
+    return rewardClipIds(ach).map((id) => libraryItem(lib, id)).filter((item) => item && item.kind === "video");
+  }
+
+  function rewardClipWatchLabel(item) {
+    if (!item) return "Watch";
+    if (item.id === "crew-six-as-clip") return "Watch clip";
+    if (item.id === "crew-six-as-run") return "Watch rush";
+    const label = String(item.label || "").trim();
+    return label ? "Watch " + label : "Watch";
+  }
+
+  function awardUnlockVideo(ach, lib) {
+    const clips = rewardClipItems(ach, lib);
+    const rush = clips.find((item) => item && item.id === "crew-six-as-run");
+    if (rush) return rush;
+    return clips[0] || null;
   }
 
   function rewardMediaItem(ach, lib) {
@@ -4754,7 +4791,7 @@
     {
       id: "trophy-room",
       title: "Trophy Room",
-      body: "Tap Trophies to walk the treehouse. Look around and tap a glowing spot. Trophies you earned sit in the room. You cannot undo or edit awards here."
+      body: "Tap Trophies to walk the treehouse. Look around and tap a glowing spot. Trophies you earned sit in the room. Newest sits on the pedestal. 6 A's stays on the pedestal so you can watch the clip and the rush again. You cannot undo or edit awards here."
     },
     {
       id: "progress",
@@ -5670,30 +5707,97 @@
     } catch (_) {}
   }
 
+  function playTrophyVideo(item, opts) {
+    if (!item || item.kind !== "video") return false;
+    if (!canPlayLibraryItem(item, opts && opts.preview)) return false;
+    const src = librarySrc(item);
+    if (!src) return false;
+    const layer = celebrateLayer();
+    const rewatch = !!(opts && opts.rewatch);
+    const after = opts && typeof opts.after === "function" ? opts.after : null;
+    const afterLabel = String((opts && opts.afterLabel) || (after ? "See it in the Trophy room" : "Nice"));
+    const btnId = after ? "char-celebrate-see" : "char-celebrate-close";
+    layer.classList.add("char-celebrate-full");
+    layer.innerHTML = `
+      <div class="char-celebrate-panel" role="dialog" aria-labelledby="char-celebrate-title">
+        <p class="char-celebrate-kicker">${rewatch ? "Watch again" : "You unlocked this"}</p>
+        <h2 id="char-celebrate-title">${esc(item.label || "Clip")}</h2>
+        <video src="${esc(src)}"${item.poster ? ` poster="${esc(item.poster)}"` : ""} playsinline webkit-playsinline controls ${prefersReducedMotion() ? "" : "autoplay"}></video>
+        <button type="button" class="btn primary" id="${btnId}">${esc(afterLabel)}</button>
+      </div>`;
+    layer.classList.add("open");
+    stopLibraryAudio();
+    playCharacterVideo(layer.querySelector("video"));
+    if (after) {
+      const see = document.getElementById("char-celebrate-see");
+      if (see && see.addEventListener) {
+        see.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          stopLibraryAudio();
+          closeCharacterCelebrate();
+          after();
+        });
+      }
+      layer.onclick = (e) => {
+        if (e.target === layer) closeCharacterCelebrate();
+      };
+    } else {
+      bindCelebrateClose(layer);
+    }
+    return true;
+  }
+
   function showAwardUnlock(ach, pack, lib, opts) {
     const family = (opts && opts.family) || getFamilyDraft();
     const why = unlockCopy(ach) || "You unlocked this.";
     const title = (ach && ach.title) || "Achievement";
     const when = awardWhenLine(ach, family);
     const src = badgeSrc(ach, lib);
-    const unlock = rewardUnlockOf(ach);
-    const item = (lib && unlock && unlock.type === "content") ? libraryItem(lib, unlock.id) : null;
-    const clipSrc = item && item.kind === "video" ? librarySrc(item) : "";
-    const poster = item && item.kind === "video" ? (item.poster || "") : "";
+    const video = awardUnlockVideo(ach, lib);
     const layer = celebrateLayer();
     layer.classList.add("char-celebrate-full");
+    if (video) {
+      layer.innerHTML = `
+      <div class="char-celebrate-panel char-celebrate-why-panel award-unlock-panel" role="dialog" aria-labelledby="char-celebrate-title">
+        <p class="char-celebrate-kicker">You unlocked this</p>
+        <h2 id="char-celebrate-title">${esc(title)}</h2>
+        <p class="char-celebrate-why">${esc(why)}</p>
+        ${when ? `<p class="award-unlock-when">${esc(when)}</p>` : ""}
+        <button type="button" class="btn primary" id="char-celebrate-see">See Achievement</button>
+      </div>`;
+      layer.classList.add("open");
+      if (video.id) markContentSeen(video.id);
+      const play = () => playAwardSound(ach, family, lib);
+      const started = play();
+      confetti({ burst: true });
+      if (!started && layer.addEventListener) {
+        layer.addEventListener("pointerdown", play, { once: true });
+      }
+      const see = document.getElementById("char-celebrate-see");
+      if (see && see.addEventListener) {
+        see.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          stopLibraryAudio();
+          playTrophyVideo(video, {
+            after: () => openTrophyForAward(ach && ach.id),
+            afterLabel: "See it in the Trophy room"
+          });
+        });
+      }
+      return;
+    }
     layer.innerHTML = `
       <div class="char-celebrate-panel char-celebrate-why-panel award-unlock-panel" role="dialog" aria-labelledby="char-celebrate-title">
         <p class="char-celebrate-kicker">You unlocked this</p>
-        ${clipSrc ? `<video class="lib-play award-unlock-clip" src="${esc(clipSrc)}"${poster ? ` poster="${esc(poster)}"` : ""} playsinline webkit-playsinline controls ${prefersReducedMotion() ? "" : "autoplay"}></video>` : (src ? `<img class="award-unlock-badge" src="${esc(src)}" alt="">` : "")}
+        ${src ? `<img class="award-unlock-badge" src="${esc(src)}" alt="">` : ""}
         <h2 id="char-celebrate-title">${esc(title)}</h2>
         <p class="char-celebrate-why">${esc(why)}</p>
         ${when ? `<p class="award-unlock-when">${esc(when)}</p>` : ""}
         <button type="button" class="btn primary" id="char-celebrate-see">See it in the Trophy room</button>
       </div>`;
     layer.classList.add("open");
-    if (item && item.id) markContentSeen(item.id);
-    if (clipSrc) playCharacterVideo(layer.querySelector("video"));
     const play = () => playAwardSound(ach, family, lib);
     const started = play();
     confetti({ burst: true });
@@ -7227,6 +7331,7 @@
       badge: "crew-six-as",
       reward: 0,
       rewardMedia: "chunky",
+      rewardClips: ["crew-six-as-clip", "crew-six-as-run"],
       rewardUnlock: { type: "content", id: "crew-six-as-run", label: "Six A's rush" },
       unlock: { type: "bennett_login" }
     };
@@ -9025,7 +9130,7 @@
     { id: "test-ace-closer", title: "Meet Ace", reward: 10, rewardCharacter: "ace", rewardUnlock: { type: "character", id: "ace", label: "Ace" } },
     { id: "test-riff-reps", title: "Meet Riff", reward: 10, rewardCharacter: "riff", rewardUnlock: { type: "character", id: "riff", label: "Riff" }, unlock: { type: "class_tour", hours: 24 } },
     { id: "all-assignments-updated", title: "Meet Scorch", reward: 0, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" }, unlock: { type: "open_touched" } },
-    { id: "six-as-classes", title: "6 A's in your classes!", reward: 0, rewardMedia: "chunky", rewardUnlock: { type: "content", id: "crew-six-as-run", label: "Six A's rush" }, unlock: { type: "bennett_login" } },
+    { id: "six-as-classes", title: "6 A's in your classes!", reward: 0, rewardMedia: "chunky", rewardClips: ["crew-six-as-clip", "crew-six-as-run"], rewardUnlock: { type: "content", id: "crew-six-as-run", label: "Six A's rush" }, unlock: { type: "bennett_login" } },
     { id: "test-scorch-recover", title: "Meet Scorch", reward: 10, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" } },
     { id: "test-deuce-return", title: "Meet Deuce", reward: 10, rewardCharacter: "deuce", rewardUnlock: { type: "character", id: "deuce", label: "Deuce" } },
     { id: "test-fuzz-unplugged", title: "Meet Fuzz", reward: 10, rewardCharacter: "fuzz", rewardUnlock: { type: "character", id: "fuzz", label: "Fuzz" } },
@@ -9423,6 +9528,9 @@
     unmarkCharacterSeen,
     aceMedia,
     playUnlockClip,
+    playTrophyVideo,
+    rewardClipItems,
+    rewardClipWatchLabel,
     maybePlayUnlockCelebration,
     applyFamilyCharacterUnlocks,
     grantCharacter,

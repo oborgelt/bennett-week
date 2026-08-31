@@ -2849,6 +2849,17 @@ body.week-page.in-treehouse .hud-bar {
   font-weight: 750;
 }
 
+.trophy-plaque-plays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.trophy-plaque-plays .trophy-plaque-go {
+  margin-top: 0;
+}
+
 .trophy-wide,
 .trophy-close {
   transition: opacity 0.48s ease;

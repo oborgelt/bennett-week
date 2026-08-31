@@ -1108,6 +1108,8 @@
   }
 
   function featuredTrophy(earned) {
+    const six = earned.find((ach) => ach && ach.id === (Game.SIX_AS_LIVE_ACHIEVEMENT || "six-as-classes"));
+    if (six) return six;
     const items = earned.filter((ach) => !crewIdOf(ach));
     if (!items.length) return null;
     return [...items].sort((a, b) => unlockAt(b.id) - unlockAt(a.id))[0];
@@ -1124,14 +1126,14 @@
   }
 
   function trophiesForZone(zoneId, earned) {
+    const featured = featuredTrophy(earned);
     if (zoneId === "pedestal") {
-      const featured = featuredTrophy(earned);
       return featured ? [featured] : [];
     }
     if (zoneId === "window") {
       return CREW_ORDER.filter((id) => Game.alreadyUnlockedCharacter(id)).map(crewSlotItem);
     }
-    return earned.filter((ach) => homeZoneOf(ach) === zoneId && !crewIdOf(ach));
+    return earned.filter((ach) => homeZoneOf(ach) === zoneId && !crewIdOf(ach) && (!featured || ach.id !== featured.id));
   }
 
   function slotBox(zoneId, ach, index) {
@@ -1161,7 +1163,13 @@
     const watch = ch && ch.video
       ? `<button type="button" class="trophy-plaque-go" data-watch-crew="${Game.esc(ch.id)}">Watch</button>`
       : "";
+    const videos = (Game.rewardClipItems ? Game.rewardClipItems(ach, library) : []).filter((item) => Game.canPlayLibraryItem(item));
     let play = watch;
+    if (!play && videos.length) {
+      play = `<span class="trophy-plaque-plays">${videos.map((item) =>
+        `<button type="button" class="trophy-plaque-go" data-watch-clip="${Game.esc(item.id)}">${Game.esc(Game.rewardClipWatchLabel(item))}</button>`
+      ).join("")}</span>`;
+    }
     if (!play && Game.funPlayAllowed()) {
       play = Game.gameHref(ach)
         ? `<a class="trophy-plaque-go" href="${Game.esc(Game.gameHref(ach))}">Play</a>`
@@ -1192,6 +1200,14 @@
         e.stopPropagation();
         const ch = ((roster && roster.characters) || []).find((row) => row.id === btn.dataset.watchCrew);
         if (ch) Game.playUnlockClip(roster, ch, { rewatch: true });
+      });
+    });
+    root.querySelectorAll("[data-watch-clip]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const item = Game.libraryItem(library, btn.dataset.watchClip);
+        if (item && Game.playTrophyVideo) Game.playTrophyVideo(item, { rewatch: true });
       });
     });
   }
