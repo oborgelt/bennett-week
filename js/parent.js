@@ -14,7 +14,9 @@
   let selectedLibId = null;
   let pickedTrophy = null;
   const CREW_LIB_CATS = ["all", "ace", "riff", "scorch", "deuce", "fuzz", "bennett", "crew"];
+  const PARENT_TABS = ["awards", "crew", "sounds", "notes", "daily", "classes", "story", "pack"];
   let parentTab = "awards";
+  let awardFind = "";
 
   function applyParentTab() {
     document.querySelectorAll("[data-parent-panel]").forEach((el) => {
@@ -895,6 +897,12 @@
       </article>`;
   }
 
+  function awardMatchesFind(ach) {
+    if (!awardFind) return true;
+    const blob = [ach.id, ach.title, ach.description, ach.how, Game.earnRulePlain(ach)].join(" ").toLowerCase();
+    return blob.indexOf(awardFind) >= 0;
+  }
+
   function renderAchievements() {
     const list = document.getElementById("list");
     if (!(pack.achievements || []).length) {
@@ -909,6 +917,7 @@
     ];
     const byKey = { live: [], parent: [], earned: [], preview: [] };
     (pack.achievements || []).forEach((ach) => {
+      if (!awardMatchesFind(ach)) return;
       const status = Game.awardLiveStatus(ach, family);
       (byKey[status.key] || byKey.parent).push(ach);
     });
@@ -916,7 +925,7 @@
       const rows = byKey[g.key];
       if (!rows.length) return "";
       return `<section class="quest-group"><h3>${Game.esc(g.title)}</h3>${rows.map(questCardHtml).join("")}</section>`;
-    }).join("") || `<p class="empty">No rewards yet.</p>`;
+    }).join("") || `<p class="empty">${awardFind ? "No rewards match that search." : "No rewards yet."}</p>`;
 
     list.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => openForm(b.dataset.edit)));
     list.querySelectorAll("[data-test]").forEach((b) => b.addEventListener("click", () => testAchievement(b.dataset.test)));
@@ -1347,8 +1356,10 @@
     editingId = id || null;
     const ach = id ? pack.achievements.find((a) => a.id === id) : blank();
     fillForm(ach || blank());
-    document.getElementById("editor").hidden = false;
+    const editor = document.getElementById("editor");
+    editor.hidden = false;
     document.getElementById("editor-title").textContent = id ? "Edit reward" : "Schedule a reward";
+    if (editor.scrollIntoView) editor.scrollIntoView({ block: "start", behavior: "smooth" });
     const focusEl = document.getElementById("title");
     if (focusEl && id) focusEl.focus();
   }
@@ -1463,6 +1474,13 @@
       setParentTab("awards");
       openForm(null);
     });
+    const find = document.getElementById("award-find");
+    if (find) {
+      find.addEventListener("input", () => {
+        awardFind = (find.value || "").trim().toLowerCase();
+        renderAchievements();
+      });
+    }
     document.getElementById("cancel").addEventListener("click", closeForm);
     document.getElementById("add-char").addEventListener("click", () => {
       setParentTab("crew");
@@ -1730,7 +1748,9 @@
         paintBoardSync(synced);
         week = Game.applyWeekOverlay(baseWeek, family);
         const livePack = Game.getMomDraft();
-        if (livePack && Array.isArray(livePack.achievements) && livePack.achievements.length) pack = livePack;
+        if (livePack && Array.isArray(livePack.achievements) && livePack.achievements.length) {
+          pack = Game.mergeAchievementUnlocks(livePack, pack);
+        }
         renderAchievements();
         renderInbox();
         renderAskInbox();

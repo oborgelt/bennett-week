@@ -4331,12 +4331,33 @@ body.messages-page .msg-tabs {
   margin: 8px 0 12px;
 }
 
-.award-fine-print summary {
+    .award-fine-print summary {
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--muted);
   margin-bottom: 8px;
+}
+
+.award-find {
+  display: block;
+  margin: 0 0 14px;
+  max-width: 360px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.award-find input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(7, 22, 24, 0.55);
+  color: inherit;
+  font: inherit;
 }
 
 .form-grid label {
