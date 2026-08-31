@@ -315,7 +315,8 @@
     { type: "done_count", label: "N assignments Done", doText: "marks 3 assignments done", needsCount: true },
     { type: "open_touched", label: "Every open assignment", doText: "Mark either Done or I started this on every open assignment." },
     { type: "class_tour", label: "Open every class in 24h", doText: "Opened every class in one day." },
-    { type: "login_days", label: "Log in N days in a row", doText: "Logs in to the site 5 days in a row", needsCount: true }
+    { type: "login_days", label: "Log in N days in a row", doText: "Logs in to the site 5 days in a row", needsCount: true },
+    { type: "bennett_login", label: "Next Bennett login", doText: "Bennett's next Jungle Jam login. Preview as Bennett does not count." }
   ];
 
   function earnCountNeeded(type) {
@@ -1303,6 +1304,8 @@
       next.unlock = { type: unlockType, count: unlockCount };
     } else if (unlockType === "open_touched") {
       next.unlock = { type: "open_touched" };
+    } else if (unlockType === "bennett_login") {
+      next.unlock = { type: "bennett_login" };
     } else if (unlockType === "class_tour") {
       next.unlock = { type: "class_tour", hours: unlockHours };
     } else if (unlockType === "easter_egg" && prev.unlock && prev.unlock.type === "easter_egg") {

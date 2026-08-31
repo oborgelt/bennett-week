@@ -140,7 +140,8 @@
       "path": "img/library/crew-six-as-run.mp4",
       "poster": "img/library/crew-six-as-run.jpg",
       "kind": "video",
-      "character": "crew"
+      "character": "crew",
+      "slot": "content"
     },
     {
       "id": "angle-finder",

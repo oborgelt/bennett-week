@@ -169,7 +169,7 @@
     render();
     const live = Game.applyLiveUnlocks(pack, family, {});
     family = live.family;
-    if (!(loginAwards.scorch && loginAwards.scorch.celebrate)) {
+    if (!(loginAwards.sixAs && loginAwards.sixAs.celebrate) && !(loginAwards.scorch && loginAwards.scorch.celebrate)) {
       live.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
     }
     if (!Game.maybePlayUnlockCelebration(roster, pack, family, library)) {

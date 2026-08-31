@@ -48,6 +48,7 @@
   const ACE_DONE_ACHIEVEMENT = "ace-three-done";
   const SIGNIN_ACHIEVEMENT = "signin-bennett";
   const SCORCH_LIVE_ACHIEVEMENT = "all-assignments-updated";
+  const SIX_AS_LIVE_ACHIEVEMENT = "six-as-classes";
   const LIBRARY_KINDS = ["image", "video", "audio", "link"];
   const GEAR_SLOTS = ["tool", "weapon", "ability", "outfit"];
   const CONTENT_SLOT = "content";
@@ -256,6 +257,18 @@
         readout: "The site counts class visits. Award when every class is opened within " + hours + " hours."
       };
     }
+    if (/next login|bennett'?s next|next time (he |bennett )?(logs?|signs?) in/.test(t)) {
+      return {
+        type: "bennett_login",
+        count: 1,
+        title: "Next login",
+        description: "Bennett's next Jungle Jam login.",
+        how: "Auto. Bennett's next Jungle Jam login. Preview as Bennett does not count.",
+        target: 1,
+        unit: "time",
+        readout: "The site awards this the next time Bennett signs in. Preview as Bennett does not count."
+      };
+    }
     const count = n || 1;
     return {
       type: "parent_award",
@@ -290,6 +303,7 @@
       const n = Number(rule.count) || 5;
       return "Logs in " + n + " days total";
     }
+    if (rule.type === "bennett_login") return "Bennett's next login";
     if (rule.type === "easter_egg") return "Finds a secret in the jungle";
     const intent = String((ach && (ach.intent || ach.how)) || "").trim();
     if (intent && !/^parents award/i.test(intent) && !/^award this/i.test(intent) && !/^loading the site/i.test(intent)) {
@@ -1827,7 +1841,7 @@
         { id: "crew-adventure", label: "Crew adventure clip", path: "img/library/crew-adventure.mp4", poster: "img/library/crew-hero.jpg", kind: "video", character: "crew" },
         { id: "crew-six-as", label: "Six A's", path: "img/library/crew-six-as.jpg", kind: "image", character: "crew" },
         { id: "crew-six-as-clip", label: "Six A's clip", path: "img/library/crew-six-as.mp4", poster: "img/library/crew-six-as.jpg", kind: "video", character: "crew" },
-        { id: "crew-six-as-run", label: "Six A's rush", path: "img/library/crew-six-as-run.mp4", poster: "img/library/crew-six-as-run.jpg", kind: "video", character: "crew" },
+        { id: "crew-six-as-run", label: "Six A's rush", path: "img/library/crew-six-as-run.mp4", poster: "img/library/crew-six-as-run.jpg", kind: "video", character: "crew", slot: "content" },
         { id: "angle-finder", label: "Angle Finder", path: "img/library/angle-finder.png", poster: "img/library/angle-finder.png", kind: "image", character: "deuce", slot: "tool" },
         { id: "field-kit", label: "Field Kit", path: "img/library/field-kit.png", poster: "img/library/field-kit.png", kind: "image", character: "scorch", slot: "tool" },
         { id: "unplugged-strap", label: "Unplugged Strap", path: "img/library/unplugged-strap.png", poster: "img/library/unplugged-strap.png", kind: "image", character: "fuzz", slot: "outfit" },
@@ -5593,6 +5607,10 @@
   }
 
   function celebrateLayer() {
+    if (!document || !document.body || typeof document.body.appendChild !== "function") {
+      const noop = { add() {}, remove() {}, contains() { return false; } };
+      return { classList: noop, innerHTML: "", onclick: null, addEventListener() {}, querySelector() { return null; } };
+    }
     let layer = document.getElementById("char-celebrate");
     if (!layer) {
       layer = document.createElement("div");
@@ -5658,18 +5676,23 @@
     const title = (ach && ach.title) || "Achievement";
     const when = awardWhenLine(ach, family);
     const src = badgeSrc(ach, lib);
+    const unlock = rewardUnlockOf(ach);
+    const item = (lib && unlock && unlock.type === "content") ? libraryItem(lib, unlock.id) : null;
+    const clipSrc = item && item.kind === "video" ? librarySrc(item) : "";
+    const poster = item && item.kind === "video" ? (item.poster || "") : "";
     const layer = celebrateLayer();
     layer.classList.add("char-celebrate-full");
     layer.innerHTML = `
       <div class="char-celebrate-panel char-celebrate-why-panel award-unlock-panel" role="dialog" aria-labelledby="char-celebrate-title">
         <p class="char-celebrate-kicker">You unlocked this</p>
-        ${src ? `<img class="award-unlock-badge" src="${esc(src)}" alt="">` : ""}
+        ${clipSrc ? `<video class="lib-play award-unlock-clip" src="${esc(clipSrc)}"${poster ? ` poster="${esc(poster)}"` : ""} playsinline webkit-playsinline controls autoplay muted></video>` : (src ? `<img class="award-unlock-badge" src="${esc(src)}" alt="">` : "")}
         <h2 id="char-celebrate-title">${esc(title)}</h2>
         <p class="char-celebrate-why">${esc(why)}</p>
         ${when ? `<p class="award-unlock-when">${esc(when)}</p>` : ""}
         <button type="button" class="btn primary" id="char-celebrate-see">See it in the Trophy room</button>
       </div>`;
     layer.classList.add("open");
+    if (item && item.id) markContentSeen(item.id);
     const play = () => playAwardSound(ach, family, lib);
     const started = play();
     confetti({ burst: true });
@@ -5970,6 +5993,9 @@
     }
     if (rule.type === "open_touched") {
       return openWorkTouched(ctx && ctx.week, ctx && ctx.days);
+    }
+    if (rule.type === "bennett_login") {
+      return sessionUser() === "bennett";
     }
     return false;
   }
@@ -7185,17 +7211,75 @@
     };
   }
 
+  function sixAsLiveAchievement(pack) {
+    const found = ((pack && pack.achievements) || []).find((ach) => ach && ach.id === SIX_AS_LIVE_ACHIEVEMENT);
+    if (found) return found;
+    const shipped = ((shippedAchievements && shippedAchievements.achievements) || []).find((ach) => ach && ach.id === SIX_AS_LIVE_ACHIEVEMENT);
+    if (shipped) return shipped;
+    return {
+      id: SIX_AS_LIVE_ACHIEVEMENT,
+      title: "6 A's in your classes!",
+      description: "Ace, Riff, and Scorch ran in for six letter A's.",
+      how: "Auto. Bennett's next Jungle Jam login. Preview as Bennett does not count. Parents can still award it from the desk.",
+      incentive: "Unlocks Six A's rush",
+      icon: "badge",
+      badge: "crew-six-as",
+      reward: 0,
+      rewardUnlock: { type: "content", id: "crew-six-as-run", label: "Six A's rush" },
+      unlock: { type: "bennett_login" }
+    };
+  }
+
+  function maybeAwardSixAs(pack, family) {
+    const next = normalizeFamily(family);
+    const st = next.streaks[SIX_AS_LIVE_ACHIEVEMENT];
+    if (st && st.awarded === false && st.awardedAt) {
+      return { family: next, awarded: false, celebrate: false, achievement: null };
+    }
+    if (sessionUser() !== "bennett") {
+      return { family: next, awarded: false, celebrate: false, achievement: null };
+    }
+    const livePack = mergeAchievementUnlocks(pack, shippedAchievements);
+    const ach = sixAsLiveAchievement(livePack);
+    const earned = alreadyUnlocked(SIX_AS_LIVE_ACHIEVEMENT) && !achievementIsPreviewOnly(SIX_AS_LIVE_ACHIEVEMENT);
+    const clipEarned = alreadyUnlockedContent("crew-six-as-run") && !unlockTargetIsPreviewOnly("content", "crew-six-as-run");
+    const seen = !!(getContentSeen()["crew-six-as-run"]);
+    if (earned && clipEarned && seen) {
+      return { family: next, awarded: false, celebrate: false, achievement: ach };
+    }
+    if (earned && clipEarned && !seen) {
+      return { family: next, awarded: false, celebrate: true, achievement: ach };
+    }
+    const working = Object.assign({}, livePack, {
+      achievements: ((livePack && livePack.achievements) || []).concat(
+        ((livePack && livePack.achievements) || []).some((row) => row && row.id === SIX_AS_LIVE_ACHIEVEMENT)
+          ? []
+          : [ach]
+      )
+    });
+    const result = awardStreak(working, next, SIX_AS_LIVE_ACHIEVEMENT, { preview: false, force: true });
+    return {
+      family: result.family,
+      awarded: !!result.achievement,
+      celebrate: true,
+      achievement: result.achievement || ach
+    };
+  }
+
   function playBennettLoginAwards(pack, family, lib, opts) {
     const roster = opts && opts.roster;
     const signin = maybeAwardSignIn(pack, family);
     const scorch = maybeAwardScorch(pack, signin.family);
-    const next = scorch.family;
-    if (scorch.celebrate && scorch.achievement) {
+    const sixAs = maybeAwardSixAs(pack, scorch.family);
+    const next = sixAs.family;
+    if (sixAs.celebrate && sixAs.achievement) {
+      celebrate(sixAs.achievement, pack, lib, { roster, family: next });
+    } else if (scorch.celebrate && scorch.achievement) {
       celebrate(scorch.achievement, pack, lib, { roster, family: next });
     } else if (signin.awarded && signin.achievement) {
       celebrate(signin.achievement, pack, lib, { roster, family: next });
     }
-    return { family: next, signin, scorch };
+    return { family: next, signin, scorch, sixAs };
   }
 
   function maybeAwardSignIn(pack, family) {
@@ -8939,6 +9023,7 @@
     { id: "test-ace-closer", title: "Meet Ace", reward: 10, rewardCharacter: "ace", rewardUnlock: { type: "character", id: "ace", label: "Ace" } },
     { id: "test-riff-reps", title: "Meet Riff", reward: 10, rewardCharacter: "riff", rewardUnlock: { type: "character", id: "riff", label: "Riff" }, unlock: { type: "class_tour", hours: 24 } },
     { id: "all-assignments-updated", title: "Meet Scorch", reward: 0, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" }, unlock: { type: "open_touched" } },
+    { id: "six-as-classes", title: "6 A's in your classes!", reward: 0, rewardUnlock: { type: "content", id: "crew-six-as-run", label: "Six A's rush" }, unlock: { type: "bennett_login" } },
     { id: "test-scorch-recover", title: "Meet Scorch", reward: 10, rewardCharacter: "scorch", rewardUnlock: { type: "character", id: "scorch", label: "Scorch" } },
     { id: "test-deuce-return", title: "Meet Deuce", reward: 10, rewardCharacter: "deuce", rewardUnlock: { type: "character", id: "deuce", label: "Deuce" } },
     { id: "test-fuzz-unplugged", title: "Meet Fuzz", reward: 10, rewardCharacter: "fuzz", rewardUnlock: { type: "character", id: "fuzz", label: "Fuzz" } },
@@ -9246,8 +9331,10 @@
     markOpened,
     maybeAwardSignIn,
     maybeAwardScorch,
+    maybeAwardSixAs,
     playBennettLoginAwards,
     SCORCH_LIVE_ACHIEVEMENT,
+    SIX_AS_LIVE_ACHIEVEMENT,
     getOpens,
     chicagoYmd,
     lastNChicagoDays,

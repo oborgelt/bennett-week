@@ -5078,6 +5078,11 @@ body.crew-page {
   background: #071618;
 }
 
+.award-unlock-clip {
+  max-height: min(42dvh, 320px);
+  border: 2px solid #f3c34a;
+}
+
 @media (min-width: 720px) {
   .char-grid { grid-template-columns: 1fr 1fr 1fr; }
   .crew-wrap { padding-top: 16px; }

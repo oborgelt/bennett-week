@@ -287,6 +287,19 @@
       "reward": 10,
       "rewardUnlock": { "type": "content", "id": "scorch-spider", "label": "Web Burn" },
       "streak": { "target": 1, "unit": "time" }
+    },
+    {
+      "id": "six-as-classes",
+      "title": "6 A's in your classes!",
+      "description": "Ace, Riff, and Scorch ran in for six letter A's.",
+      "how": "Auto. Bennett's next Jungle Jam login. Preview as Bennett does not count. Parents can still award it from the desk.",
+      "incentive": "Unlocks Six A's rush",
+      "icon": "badge",
+      "badge": "crew-six-as",
+      "reward": 0,
+      "rewardUnlock": { "type": "content", "id": "crew-six-as-run", "label": "Six A's rush" },
+      "unlock": { "type": "bennett_login" },
+      "streak": { "target": 1, "unit": "time" }
     }
   ]
 }

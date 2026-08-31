@@ -1002,7 +1002,7 @@
     library = await Game.loadLibrary();
     baseSeed = await Game.loadProgress();
     syncViews();
-    const loginAwards = Game.playBennettLoginAwards(pack, family, null, { roster });
+    const loginAwards = Game.playBennettLoginAwards(pack, family, library, { roster });
     family = loginAwards.family;
     const live = Game.applyLiveUnlocks(pack, family, {
       week: Game.applyWeekOverlay(baseWeek, family),
@@ -1010,8 +1010,8 @@
       days: Game.nextNChicagoDays(7)
     });
     family = live.family;
-    if (!(loginAwards.scorch && loginAwards.scorch.celebrate)) {
-      live.fresh.forEach((ach) => Game.celebrate(ach, pack, null, { roster, family }));
+    if (!(loginAwards.sixAs && loginAwards.sixAs.celebrate) && !(loginAwards.scorch && loginAwards.scorch.celebrate)) {
+      live.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
     }
     document.getElementById("close-sheet").addEventListener("click", closeSheet);
     document.getElementById("sheet").addEventListener("click", (e) => {

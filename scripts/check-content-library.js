@@ -81,7 +81,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=165/.test(basecampHtml) && /basecamp\.js\?v=165/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=166/.test(basecampHtml) && /basecamp\.js\?v=166/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -263,8 +263,15 @@ assert(fs.existsSync(path.join(root, "img/library/crew-six-as.jpg")), "Six A's s
 assert(fs.existsSync(path.join(root, "img/library/crew-six-as.mp4")), "Six A's clip should already be on disk");
 assert(fs.existsSync(path.join(root, "img/library/crew-six-as-run.mp4")), "Six A's rush should already be on disk");
 assert(fs.existsSync(path.join(root, "img/library/crew-six-as-run.jpg")), "Six A's rush poster should already be on disk");
-assert(!sixAsStill.slot && !sixAsClip.slot && !sixAsRun.slot, "Six A's assets are crew story art, not gated fight clips");
+assert(!sixAsStill.slot && !sixAsClip.slot, "Six A's still and 6s clip stay catalogue art");
+assert.strictEqual(sixAsRun.slot, "content", "Six A's rush is gated until the login award");
 assert(!sixAsStill.device && !sixAsClip.device && !sixAsRun.device, "Six A's assets are shipped, not a device drop");
+const sixAsAch = (achievements.achievements || []).find((a) => a.id === "six-as-classes");
+assert(sixAsAch && sixAsAch.title === "6 A's in your classes!", "Six A's award title");
+assert(!sixAsAch.test, "Six A's login award is live, not TEST");
+assert.strictEqual(sixAsAch.unlock && sixAsAch.unlock.type, "bennett_login", "Six A's award fires on Bennett login");
+assert.strictEqual(sixAsAch.rewardUnlock && sixAsAch.rewardUnlock.id, "crew-six-as-run", "Six A's award grants the rush clip");
+assert(/Preview as Bennett does not count/i.test(sixAsAch.how || ""), "Six A's how says Preview does not count");
 assert(fs.existsSync(path.join(root, "audio/tablesloud.mp3")), "audio/tablesloud.mp3 should already be on disk");
 assert(fs.existsSync(path.join(root, "audio/undo.wav")), "audio/undo.wav should already be on disk");
 const tableClick = library.items.find((item) => item.id === "tablesloud");
@@ -292,6 +299,8 @@ assert(!undoClick.synth, "undo-click is the wav, not a synth");
 const parentHtml = fs.readFileSync(path.join(root, "parent.html"), "utf8");
 assert(/test-angle-finder/.test(parentHtml) && /test-field-kit/.test(parentHtml) && /test-unplugged-strap/.test(parentHtml) && /test-daily-pick/.test(parentHtml), "parent desk fallback should list the four gear awards");
 assert(/test-ace-frog/.test(parentHtml) && /test-riff-bird/.test(parentHtml) && /test-scorch-spider/.test(parentHtml), "parent desk fallback should list the three fight awards");
+assert(/six-as-classes/.test(parentHtml), "parent desk fallback should list Six A's in your classes");
+assert(!/six-as-classes/.test(gameJs.slice(gameJs.indexOf("const PREVIEW_AWARD_IDS"), gameJs.indexOf("const PREVIEW_CHARACTER_IDS"))), "live Six A's is not a preview-only trophy");
 assert(/outfit/.test(parentHtml), "parent desk should offer an outfit reward type");
 assert(adminHtml.includes("img/library/angle-finder.png") && adminHtml.includes("img/library/daily-pick.png"), "Admin file:// seed should include gear stills");
 assert(adminHtml.includes("img/library/ace-frog.mp4") && adminHtml.includes("img/library/riff-bird.mp4") && adminHtml.includes("img/library/scorch-spider.mp4"), "Admin file:// seed should include fight clips");
@@ -1505,7 +1514,9 @@ fightSeed.forEach((row) => {
   assert(Game.canPlayLibraryItem(item, true), row.id + " should play in parent preview");
 });
 assert(Game.defaultLibrary().items.some((item) => item.id === "crew-six-as-clip" && item.path === "img/library/crew-six-as.mp4" && item.character === "crew"), "file:// default library includes Six A's clip");
+assert(Game.defaultLibrary().items.some((item) => item.id === "crew-six-as-run" && item.slot === "content"), "file:// default library gates Six A's rush");
 assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "crew-six-as-clip")), "Six A's clip stays playable in the catalogue");
+assert(!Game.canPlayLibraryItem(Game.libraryItem(seededLib, "crew-six-as-run")), "Six A's rush stays locked until awarded");
 assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "ace-clip")), "Ace locker clip stays playable");
 assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "scorch-spider-beam")), "beam still is extra library art, not a gated locker replacement");
 assert(!Game.contentLibraryItems(seededLib).some((it) => it.id === "ace-clip"), "locker clips are not gated content");
@@ -1642,6 +1653,8 @@ assert(/700/.test(askJs) && /ask-send/.test(askJs) && /disabled = true/.test(ask
 assert(/do not do the assignment/i.test(tutorJs), "live A little help should use a Socratic first-move prompt");
 const crewJs = fs.readFileSync(path.join(root, "js/characters.js"), "utf8");
 const parentJs = fs.readFileSync(path.join(root, "js/parent.js"), "utf8");
+assert(/Next Bennett login/.test(parentJs), "Parent desk has a Next Bennett login earn chip");
+assert(/bennett_login/.test(parentJs), "Parent desk Save can persist a next-login unlock");
 assert(weekJs.includes('"bennett"') && weekJs.includes("CREW_ORDER") && weekJs.includes("renderPortraitRail"), "window portrait rail should include bennett");
 assert(crewJs.includes("markOpened") && crewJs.includes("playBennettLoginAwards"), "Characters page should sign in and award Bennett and Scorch");
 assert(/<h3>Locked<\/h3>/.test(crewJs) && /Keep the streak going/.test(crewJs), "locked crew cards stay nameless");
@@ -1668,7 +1681,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=165/.test(weekHtml) && /week\.js\?v=165/.test(weekHtml) && /game\.js\?v=165/.test(weekHtml) && /telemetry\.js\?v=165/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=166/.test(weekHtml) && /week\.js\?v=166/.test(weekHtml) && /game\.js\?v=166/.test(weekHtml) && /telemetry\.js\?v=166/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1716,8 +1729,8 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(!/\?v=164\b/.test(html), file + " should not still cache-bust as v=164");
-  assert(/\?v=165/.test(html), file + " should cache-bust v=165");
+  assert(!/\?v=165\b/.test(html), file + " should not still cache-bust as v=165");
+  assert(/\?v=166/.test(html), file + " should cache-bust v=166");
   const bar = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
@@ -1732,7 +1745,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 });
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(/js\/update\.js\?v=165/.test(html), file + " loads the live-build checker");
+  assert(/js\/update\.js\?v=166/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
 const updateJs = fs.readFileSync(path.join(root, "js/update.js"), "utf8");
@@ -1797,7 +1810,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=165/.test(progressHtml) && /theme\.css\?v=165/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=166/.test(progressHtml) && /theme\.css\?v=166/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1831,14 +1844,14 @@ assert(/data-plan-work="chem-about-me"/.test(needsPlanHtml) && />Plan</.test(nee
 assert(/Ask Mr\. X first period/.test(needsPlanHtml), "Needs you shows the current plan");
 assert(/msg-kicker">Plan/.test(Game.messagesInboxHtml(plannedAgain, week, { view: "me" })), "Mom and Dad see the plan in Messages");
 assert(/#sheet-body[\s\S]{0,80}overflow-y:\s*auto/.test(themeCss) && /lib-preview/.test(themeCss), "Library preview sheet body scrolls");
-assert(/data-play-preview/.test(gameJs) && /min\(48dvh,\s*360px\)/.test(themeCss), "Library video preview keeps Play on screen");
+assert(/award-unlock-clip/.test(gameJs) && /6 A's in your classes!/.test(gameJs), "award popup can play the Six A's rush clip");
 assert(/\.note-field[\s\S]{0,120}display:\s*none/.test(themeCss), "This Week does not paint drifting notes over the page");
 assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNotes no longer spawns floating notes");
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*163/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 163");
-assert(/2026-08-31T08:15:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T08:15:00-05:00");
+assert(/build:\s*164/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 164");
+assert(/2026-08-31T08:25:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-08-31T08:25:00-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1993,7 +2006,7 @@ assert(previewBananas < 50, "HUD bananas ignore preview awards");
 Game.setSiteView("bennett");
 assert(!Game.alreadyUnlockedCharacter("ace"), "kid view + preview-all must not treat Ace as earned");
 assert(!Game.alreadyUnlockedGear("angle-finder") && !Game.alreadyUnlockedGear("first-serve"), "kid view + preview-all must not treat gear as earned");
-assert(!Game.alreadyUnlockedContent("ace-frog") && !Game.alreadyUnlockedContent("riff-bird") && !Game.alreadyUnlockedContent("scorch-spider"), "kid view + preview-all must not treat fight clips as earned");
+assert(!Game.alreadyUnlockedContent("ace-frog") && !Game.alreadyUnlockedContent("riff-bird") && !Game.alreadyUnlockedContent("scorch-spider") && !Game.alreadyUnlockedContent("crew-six-as-run"), "kid view + preview-all must not treat fight clips as earned");
 assert(!Game.alreadyUnlockedCharacter("bennett") && !Game.alreadyUnlocked("signin-bennett"), "preview Bennett is not earned in kid view");
 assert.strictEqual(Game.getBananas(pack), previewBananas, "Mom/Dad HUD shows Bennett bananas, not a per-viewer dump");
 const kidFinds = Game.progressTrophyListHtml(pack.achievements);
@@ -2244,6 +2257,9 @@ const openIntent = Game.parseAwardIntent('Mark either "Done" or "I started this"
 assert.strictEqual(openIntent.type, "open_touched", "every open assignment started or done is not a 3-done count");
 const parentIntent = Game.parseAwardIntent("used flash cards for a test");
 assert.strictEqual(parentIntent.type, "parent_award");
+const nextLoginIntent = Game.parseAwardIntent("Bennett's next Jungle Jam login. Preview as Bennett does not count.");
+assert.strictEqual(nextLoginIntent.type, "bennett_login");
+assert(/Preview as Bennett does not count/i.test(nextLoginIntent.readout || nextLoginIntent.how || ""), "next-login readout says Preview does not count");
 ["bw-progress", "bw-unlocks", "bw-character-unlocks", "bw-family"].forEach((key) => localStorage.removeItem(key));
 const openWeek = {
   work: [
@@ -2299,6 +2315,28 @@ assert(!Game.alreadyUnlocked("test-scorch-recover"), "Bennett login does not awa
 Game.markCharacterSeen("scorch");
 const bennettScorchAgain = Game.maybeAwardScorch({ achievements: achievements.achievements }, bennettScorch.family);
 assert(!bennettScorchAgain.awarded && !bennettScorchAgain.celebrate, "seen Scorch does not re-celebrate every login");
+["bw-unlocks", "bw-character-unlocks", "bw-content-unlocks", "bw-content-seen", "bw-family"].forEach((key) => localStorage.removeItem(key));
+Game.setSessionUser("mom");
+const momSix = Game.maybeAwardSixAs({ achievements: achievements.achievements }, Game.emptyFamily());
+assert(!momSix.awarded && !momSix.celebrate, "Mom login does not grant Six A's rush");
+Game.setSessionUser("orin");
+Game.setSiteView("bennett");
+const previewSix = Game.maybeAwardSixAs({ achievements: achievements.achievements }, Game.emptyFamily());
+assert(!previewSix.awarded && !previewSix.celebrate, "Dad previewing Bennett does not grant Six A's rush");
+["bw-unlocks", "bw-character-unlocks", "bw-content-unlocks", "bw-content-seen", "bw-family"].forEach((key) => localStorage.removeItem(key));
+Game.setSessionUser("bennett");
+const bennettSix = Game.maybeAwardSixAs({ achievements: achievements.achievements }, Game.emptyFamily());
+assert(bennettSix.awarded && bennettSix.celebrate, "Bennett login grants Six A's rush");
+assert.strictEqual(bennettSix.achievement && bennettSix.achievement.title, "6 A's in your classes!", "Six A's celebration title");
+assert(Game.alreadyUnlocked("six-as-classes") && Game.alreadyUnlockedContent("crew-six-as-run"), "Bennett login unlocks Six A's rush");
+assert(Game.canPlayLibraryItem(Game.libraryItem(seededLib, "crew-six-as-run")), "Six A's rush plays after the login award");
+Game.markContentSeen("crew-six-as-run");
+const bennettSixAgain = Game.maybeAwardSixAs({ achievements: achievements.achievements }, bennettSix.family);
+assert(!bennettSixAgain.awarded && !bennettSixAgain.celebrate, "seen Six A's rush does not re-celebrate every login");
+["bw-unlocks", "bw-character-unlocks", "bw-content-unlocks", "bw-content-seen", "bw-family", "bw-character-seen"].forEach((key) => localStorage.removeItem(key));
+Game.setSessionUser("bennett");
+const sixLogin = Game.playBennettLoginAwards({ achievements: achievements.achievements }, Game.emptyFamily(), seededLib, {});
+assert(sixLogin.sixAs && sixLogin.sixAs.celebrate && sixLogin.sixAs.achievement && sixLogin.sixAs.achievement.title === "6 A's in your classes!", "playBennettLoginAwards prefers the Six A's popup over Scorch when both are fresh");
 Game.setSessionUser("orin");
 Game.setSiteView("me");
 ["bw-unlocks", "bw-character-unlocks", "bw-family", "bw-progress", "bw-character-seen"].forEach((key) => localStorage.removeItem(key));
