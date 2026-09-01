@@ -4796,7 +4796,7 @@
     {
       id: "progress",
       title: "Progress",
-      body: "Dash on a phone. Same Needs follow-up and Needs you, plus By class, grades the school posted, and check-ins. No made-up course grades. I started this and Done work here the same as This Week. Needs you has Done so finished work leaves that list. You can edit assignments. You cannot delete a class or undo a trophy."
+      body: "Dash on a phone. Same Needs follow-up and Needs you, plus By class, grades the school posted, and check-ins. By class starts collapsed so you can see every class and grade without scrolling. Tap a class to expand it. No made-up course grades. I started this and Done work here the same as This Week. Needs you has Done so finished work leaves that list. You can edit assignments. You cannot delete a class or undo a trophy."
     },
     {
       id: "crew",
@@ -4811,7 +4811,7 @@
     {
       id: "story",
       title: "Story",
-      body: "Shows on the bar after three teammates (not counting you). Short comic choices. Locked gear stays a silhouette."
+      body: "Shows on the bar after three teammates (not counting you). Coming soon. The comic is not ready yet."
     },
     {
       id: "messages",

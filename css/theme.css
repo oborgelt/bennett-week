@@ -5782,9 +5782,9 @@ body.basecamp-page::before {
 .story-gate h2 { margin: 0 0 8px; font-size: 1.25rem; }
 
 .story-text {
-  margin: 0 0 10px;
+  margin: 0;
   line-height: 1.45;
-  font-size: 0.98rem;
+  font-size: 1.05rem;
 }
 
 .story-extras p,

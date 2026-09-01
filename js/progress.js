@@ -7,6 +7,7 @@
   let library = null;
   let baseSeed = null;
   let seed = null;
+  const openClassIds = new Set();
 
   function classIdForTitle(title) {
     return Game.classIdForTitle(title) || null;
@@ -134,6 +135,23 @@
     } catch (_) {
       return "";
     }
+  }
+
+  function rememberOpenClasses() {
+    const host = document.getElementById("class-list");
+    if (!host || !host.querySelectorAll) return;
+    host.querySelectorAll(".class-card").forEach((el) => {
+      const id = el.getAttribute && el.getAttribute("data-class");
+      if (!id) return;
+      if (el.open) openClassIds.add(id);
+      else openClassIds.delete(id);
+    });
+  }
+
+  function classStartsOpen(clsId, want, workClass) {
+    if (want && clsId === want) return true;
+    if (workClass && clsId === workClass) return true;
+    return openClassIds.has(clsId);
   }
 
   function itemStatus(item) {
@@ -917,6 +935,7 @@
       btn.addEventListener("click", () => {
         const row = document.getElementById("work-" + btn.dataset.needsWork);
         const card = document.querySelector(`.class-card[data-class="${CSS.escape(btn.dataset.needsClass || "")}"]`);
+        if (btn.dataset.needsClass) openClassIds.add(btn.dataset.needsClass);
         if (card) card.open = true;
         if (row && row.scrollIntoView) row.scrollIntoView({ block: "nearest" });
       });
@@ -976,15 +995,13 @@
     renderFollowupPane(classes);
     renderNeedsYouPane();
     renderCheckinsPane();
+    rememberOpenClasses();
     const want = wantedClass();
     const workId = wantedWork();
     const workClass = workId ? Game.classIdForWork(workFromId(workId) || { id: workId }) : "";
     document.getElementById("class-list").innerHTML = classes.map((cls) => {
-      const hasNeed = (cls.items || []).some((item) => Game.workFeedStatus(feedOf(item)).needsYou);
-      const open = want
-        ? cls.id === want
-        : (workClass ? cls.id === workClass : hasNeed);
-      return renderClass(cls, open && (cls.items || []).length);
+      const open = classStartsOpen(cls.id, want, workClass);
+      return renderClass(cls, open);
     }).join("");
     renderGradesPane(classes);
     document.getElementById("stat-strip").innerHTML =
