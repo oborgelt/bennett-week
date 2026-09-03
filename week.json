@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-02T21:10:00",
+  "as_of": "2026-09-03T09:16:00",
   "parenting": [
     {
       "who": "Mom",
@@ -974,7 +974,7 @@
       "start": "2026-09-04",
       "kind": "calendar",
       "classId": "geometry",
-      "note": "From Bennett Gmail forward Wed 9/2 ~6:03pm CT (Geometry unit 2 schedule PNG). Fri Sept 4: Quiz 2.1–2.2 (open note); HW finish 2.1-2.2 if needed. Labor Day Mon Sep 7."
+      "note": "Foster. Fri Sep 4 Quiz 2.1–2.2 (open note); HW finish 2.1-2.2 if needed. Source: Bennett Gmail 9/2 and Canvas schedule image he sent Dad 9/3. All Unit 2 HW still collected Fri Sep 11."
     },
     {
       "id": "geo-unit2-test-0911",
@@ -982,7 +982,7 @@
       "start": "2026-09-11",
       "kind": "calendar",
       "classId": "geometry",
-      "note": "From Bennett Gmail forward Wed 9/2 ~6:03pm CT. Fri Sept 11: Unit 2 Test; All Unit 2 HW + Review Due (highlighted on schedule)."
+      "note": "Foster. Fri Sep 11 Unit 2 Test. Yellow highlight: All Unit 2 HW + Review Due. Source: Bennett Gmail 9/2 and Canvas schedule image 9/3."
     },
     {
       "id": "geo-unit2-review-0909",
@@ -990,7 +990,55 @@
       "start": "2026-09-09",
       "kind": "calendar",
       "classId": "geometry",
-      "note": "From Bennett Gmail forward Wed 9/2 ~6:03pm CT. Wed Sept 9–Thu Sept 10 Unit 2 Test Review (Thu is continuation)."
+      "note": "Foster. Wed Sep 9 Unit 2 Test Review; Thu Sep 10 continuation (arrow). Source: Bennett Gmail 9/2 and Canvas schedule image 9/3."
+    },
+    {
+      "id": "geo-21-d1-0831",
+      "title": "Geometry: Lesson 2.1 Day 1 Angle Bisectors",
+      "start": "2026-08-31",
+      "kind": "calendar",
+      "classId": "geometry",
+      "note": "Foster. Bennett schedule (Gmail 9/2 + Canvas image 9/3). HW: 2.1 Day 1. All Unit 2 HW collected Fri Sep 11."
+    },
+    {
+      "id": "geo-21-d2-0901",
+      "title": "Geometry: Lesson 2.1 Day 2 Angles w/ Congruence",
+      "start": "2026-09-01",
+      "kind": "calendar",
+      "classId": "geometry",
+      "note": "Foster. Bennett schedule (Gmail 9/2 + Canvas image 9/3). HW: 2.1 Day 2."
+    },
+    {
+      "id": "geo-22-0902",
+      "title": "Geometry: Lesson 2.2 Angle Relationships",
+      "start": "2026-09-02",
+      "kind": "calendar",
+      "classId": "geometry",
+      "note": "Foster. Bennett schedule. HW: All 2.2. Thu Sep 3 is continuation (arrow)."
+    },
+    {
+      "id": "geo-22-cont-0903",
+      "title": "Geometry: Lesson 2.2 continued",
+      "start": "2026-09-03",
+      "kind": "calendar",
+      "classId": "geometry",
+      "note": "Foster. Thursday arrow = continue Wednesday Lesson 2.2 Angle Relationships."
+    },
+    {
+      "id": "geo-23-0908",
+      "title": "Geometry: Lesson 2.3 2-D Figures",
+      "start": "2026-09-08",
+      "kind": "calendar",
+      "classId": "geometry",
+      "note": "Foster. Bennett schedule (Canvas image 9/3). HW: 2.3. Same morning as Web Design 2.3–2.6."
+    },
+    {
+      "id": "geo-unit2-review-0910",
+      "title": "Geometry: Unit 2 Test Review continued",
+      "start": "2026-09-10",
+      "kind": "calendar",
+      "classId": "geometry",
+      "note": "Foster. Thursday arrow = continue Wednesday Unit 2 Test Review."
     }
   ],
   "work": [
@@ -1783,7 +1831,7 @@
       "school_status": "open",
       "late": false,
       "submitted_at": null,
-      "source": "bennett-email",
+      "source": "bennett-canvas-schedule",
       "discrepancy": false,
       "student_status": null,
       "followup": {
@@ -1791,7 +1839,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Foster. From Bennett→Orin Gmail Wed 9/2 ~6:03pm CT Geometry unit 2 schedule. Wed Sept 2 lesson 2.2; Thu Sept 3 continuation. HW: All 2.2. Not a Canvas row (Geometry grades ParentVUE-only)."
+      "note": "Foster. Assigned Wed Sep 2 (Lesson 2.2 Angle Relationships); Thu Sep 3 continuation. HW: All 2.2. All Unit 2 HW collected Fri Sep 11. Source: Bennett Gmail 9/2 + Canvas image 9/3. Not a Canvas/ParentVUE row."
     },
     {
       "id": "geo-quiz-21-22",
@@ -1802,7 +1850,7 @@
       "school_status": "open",
       "late": false,
       "submitted_at": null,
-      "source": "bennett-email",
+      "source": "bennett-canvas-schedule",
       "discrepancy": false,
       "student_status": null,
       "followup": {
@@ -1810,7 +1858,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Foster. From Bennett Gmail Wed 9/2 ~6:03pm. Fri Sept 4 Quiz 2.1–2.2 (open note); HW finish 2.1-2.2 if needed. ParentVUE Geometry still A 97% last update 8/25 as of last live 5pm."
+      "note": "Foster. Fri Sep 4 Quiz 2.1–2.2 (open note). HW that day: finish 2.1-2.2 if needed. Source: Bennett Gmail 9/2 + Canvas image he sent Dad 9/3. ParentVUE Geometry still A 97% last live 8/25."
     },
     {
       "id": "geo-hw-23",
@@ -1821,7 +1869,7 @@
       "school_status": "open",
       "late": false,
       "submitted_at": null,
-      "source": "bennett-email",
+      "source": "bennett-canvas-schedule",
       "discrepancy": false,
       "student_status": null,
       "followup": {
@@ -1829,7 +1877,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Foster. From Bennett Gmail Wed 9/2 ~6:03pm. Tue Sept 8 Lesson 2.3 2-D Figures; HW: 2.3. Same morning as Web Design 76 pts due."
+      "note": "Foster. Tue Sep 8 Lesson 2.3 2-D Figures; HW 2.3. Same morning as Web Design 76 pts. Collected with all Unit 2 HW Fri Sep 11. Source: Bennett Gmail 9/2 + Canvas image 9/3."
     },
     {
       "id": "geo-unit2-test",
@@ -1840,7 +1888,7 @@
       "school_status": "open",
       "late": false,
       "submitted_at": null,
-      "source": "bennett-email",
+      "source": "bennett-canvas-schedule",
       "discrepancy": false,
       "student_status": null,
       "followup": {
@@ -1848,7 +1896,64 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Foster. From Bennett Gmail Wed 9/2 ~6:03pm. Fri Sept 11 Unit 2 Test; All Unit 2 HW + Review Due. Review Wed–Thu Sept 9–10."
+      "note": "Foster. Fri Sep 11 Unit 2 Test. Yellow highlight: All Unit 2 HW + Review Due. Review Wed–Thu Sep 9–10. Source: Bennett Gmail 9/2 + Canvas image 9/3."
+    },
+    {
+      "id": "geo-hw-21-d1",
+      "title": "Geometry: HW 2.1 Day 1 (Angle Bisectors)",
+      "classId": "geometry",
+      "due": "2026-08-31",
+      "status": "open",
+      "school_status": "open",
+      "late": false,
+      "submitted_at": null,
+      "source": "bennett-canvas-schedule",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Foster. Assigned Mon Aug 31. Collected with all Unit 2 HW Fri Sep 11. Not a Canvas/ParentVUE row."
+    },
+    {
+      "id": "geo-hw-21-d2",
+      "title": "Geometry: HW 2.1 Day 2 (Angles w/ Congruence)",
+      "classId": "geometry",
+      "due": "2026-09-01",
+      "status": "open",
+      "school_status": "open",
+      "late": false,
+      "submitted_at": null,
+      "source": "bennett-canvas-schedule",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Foster. Assigned Tue Sep 1. Collected with all Unit 2 HW Fri Sep 11. Not a Canvas/ParentVUE row."
+    },
+    {
+      "id": "geo-unit2-hw-packet",
+      "title": "Geometry: All Unit 2 HW + Review packet",
+      "classId": "geometry",
+      "due": "2026-09-11",
+      "status": "open",
+      "school_status": "open",
+      "late": false,
+      "submitted_at": null,
+      "source": "bennett-canvas-schedule",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Foster. Yellow highlight on the Unit 2 calendar: All Unit 2 HW + Review Due the same day as the Unit 2 Test (Fri Sep 11). Includes 2.1 Day 1, 2.1 Day 2, All 2.2, 2.3, and the review packet."
     }
   ],
   "notes": [
@@ -2101,6 +2206,11 @@
       "date": "2026-09-02",
       "title": "Bedtime check (~9:10pm CT)",
       "text": "Canvas UNCHANGED vs 2:50pm (session reused, Bennett confirmed). English 98.33% AAB RC1 submitted still –/10; Chem 98.75% Density 5 still –/1; Web 93.03% 2.3/2.4/2.5–2.6 still open due Sep 8 (76 pts). ParentVUE BLOCKED again (session expired; password Autofill empty) — grades/inbox frozen at ~5:00pm (Soc A+ 98%; Web A 93% last update 9/2; Chem B Density 5 Not Graded; Fillingham BSS 9/1). Gmail NEW after 2:50pm: Bennett → Orin ~6:03pm CT “Geometry unit 2 schedule” (PNG attachment only). Web graded notices + Jostens already known from after-school. No Plaud/chat Bennett-said-done; no new discrepancy. Dad night. Labor Day Mon Sep 7. Need Orin ParentVUE sign-in + Save password on box Chrome. Geometry Unit 2 schedule (image saved): Quiz 2.1–2.2 open note Fri Sep 4; HW 2.2 this week; Lesson 2.3 + HW Tue Sep 8; Unit 2 Test Fri Sep 11 (all Unit 2 HW+Review due)."
+    },
+    {
+      "date": "2026-09-03",
+      "title": "Geometry Unit 2 schedule (Bennett Canvas)",
+      "text": "Bennett sent Dad the Geometry Unit 2 September calendar (same grid as the Wed 9/2 Gmail PNG; he thinks from Canvas). Full window: Mon 8/31 Lesson 2.1 Day 1 Angle Bisectors + HW 2.1 Day 1; Tue 9/1 Lesson 2.1 Day 2 Angles w/ Congruence + HW 2.1 Day 2; Wed 9/2 Lesson 2.2 Angle Relationships + HW All 2.2; Thu 9/3 continuation arrow; Fri 9/4 Quiz 2.1–2.2 (open note) + finish 2.1-2.2 if needed; Mon 9/7 Labor Day no school; Tue 9/8 Lesson 2.3 2-D Figures + HW 2.3; Wed 9/9 Unit 2 Test Review; Thu 9/10 continuation arrow; Fri 9/11 Unit 2 Test and All Unit 2 HW + Review Due (yellow). Added missing daily lesson events and HW 2.1 / packet work rows. Quiz/test/2.2/2.3 were already on Jungle Jam from the 9/2 email."
     }
   ],
   "grades": [
