@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-03T09:16:00",
+  "as_of": "2026-09-03T14:55:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1039,6 +1039,46 @@
       "kind": "calendar",
       "classId": "geometry",
       "note": "Foster. Thursday arrow = continue Wednesday Unit 2 Test Review."
+    },
+    {
+      "id": "eng-dialogue-exit-0903",
+      "title": "English: Dialogue Exit Ticket due",
+      "start": "2026-09-03T23:59:00",
+      "end": "2026-09-03T23:59:00",
+      "kind": "calendar",
+      "classId": "english-10",
+      "place": "Olathe East",
+      "note": "Canvas 5 pts paper. NEW Thu 9/3. Mom handoff 4:30p."
+    },
+    {
+      "id": "eng-aab-rc2-0909",
+      "title": "English: AAB Reading Check #2 due",
+      "start": "2026-09-09T23:59:00",
+      "end": "2026-09-09T23:59:00",
+      "kind": "calendar",
+      "classId": "english-10",
+      "place": "Olathe East",
+      "note": "Canvas Coming Up. NEW Thu 9/3 pull."
+    },
+    {
+      "id": "eng-narrative-final-0911",
+      "title": "English: Narrative #1 Final Draft due",
+      "start": "2026-09-11T23:59:00",
+      "end": "2026-09-11T23:59:00",
+      "kind": "calendar",
+      "classId": "english-10",
+      "place": "Olathe East",
+      "note": "Canvas Coming Up. Aligns with agenda Typed draft #1 9/11."
+    },
+    {
+      "id": "eng-10-2-case-launch-0908",
+      "title": "English: 10.2 Case Launch",
+      "start": "2026-09-08",
+      "end": "2026-09-08",
+      "kind": "calendar",
+      "classId": "english-10",
+      "place": "Olathe East",
+      "note": "Daily Agendas banner NEW Thu 9/3."
     }
   ],
   "work": [
@@ -1630,18 +1670,20 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "discrepancy": false,
-      "student_status": null,
+      "discrepancy": true,
+      "student_status": "done",
       "followup": {
         "due_by": null,
         "email_draft": null,
-        "email_sent": false
+        "email_sent": true,
+        "email_sent_note": "Orin emailed Bennett 2026-09-03 ~9:15am CT (personal Gmail) recommending polite teacher check-in; Pfeiff not entered."
       },
-      "note": "Pfeiff. 1 pt. PAST DUE Thu 8/27 11:59pm. Live Canvas Wed 9/2 ~9:05pm still –/1 unsubmitted/ungraded (UNCHANGED vs 2:50pm). Course still 98.75%. ParentVUE BLOCKED at 9:08pm (password empty); last live Grade Book ~5:00pm Sep 2 still Not Graded. No Bennett-said-done.",
+      "note": "Pfeiff. 1 pt. PAST DUE Thu 8/27. Live Canvas Thu 9/3 ~2:50pm: still –/1 No Submission (UNCHANGED). Course still 98.75% (39.50/40). ParentVUE BLOCKED again (Autofill empty); last live Grade Book ~5:00pm Sep 2 still Not Graded. DISCREPANCY: Bennett told Dad 9/3 he already turned it in — treat as said-done vs school-not-logged, not missing work. Dad already emailed Bennett ~9:15am CT about it.",
       "canvas": {
         "status": "open",
         "points": 1,
-        "due": "2026-08-27T23:59:00"
+        "due": "2026-08-27T23:59:00",
+        "submission": "none"
       }
     },
     {
@@ -1690,7 +1732,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson/Carl. Canvas quiz 10 pts. Respondus. SUBMITTED Mon Aug 31 1:40pm CT. Live Canvas Wed 9/2 ~9:05pm still –/10 needs grading (pending_review) — UNCHANGED vs 2:50pm. English total still 98.33% (44.25/45). No Bennett-said-done.",
+      "note": "Goodson/Carl. Canvas quiz 10 pts. Respondus. SUBMITTED Mon Aug 31 1:40pm CT. Live Canvas Thu 9/3 ~2:50pm: submission detail renders Grade 0/10 but course total still 98.33% (44.25/45) — item not counted as posted grade; treat as pending/ungraded (UNCHANGED vs Wed bedtime).",
       "canvas": {
         "status": "submitted",
         "points": 10,
@@ -1716,7 +1758,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson Daily Agendas: 8/31 HW “Read to page 120 before next week”; 9/9–9/10 Pg. 83–120 due. Sheet Wed 9/2: 9/2–9/3 Friday Vocab; 9/4 newly filled AAB / Warm-up; Saturday vocab. Reading path unchanged."
+      "note": "Goodson Daily Agendas Thu 9/3: 9/4 final editing day for personal narratives (typing final draft Tuesday); 9/7 NO SCHOOL LABOR DAY; 9/8 10.2 Case Launch; 9/9–10 Pg. 83–120 due; 9/11 Typed draft #1 due; 9/14 Formative on-demand. Reading path unchanged."
     },
     {
       "id": "eng-formative-ondemand",
@@ -1765,7 +1807,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. 19 pts. Due Tue Sep 8 9:20am. Live Canvas Wed 9/2 ~9:05pm: still –/19 unsubmitted (UNCHANGED vs 2:50pm). Sibling 2.4 + 2.5/2.6 (44) also due Sep 8 (76 pts total).",
+      "note": "Derek Linn. Live Canvas Thu 9/3 ~2:50pm: still –/19 unsubmitted (UNCHANGED). Due Tue Sep 8 9:20am with siblings (76 pts total). Course still 93.03% (113.50/122).",
       "canvas": {
         "status": "open",
         "points": 19,
@@ -1790,7 +1832,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. 13 pts. Due Tue Sep 8 9:20am. Live Canvas Wed 9/2 ~9:05pm: still –/13 (UNCHANGED). Course still 93.03% (113.50/122).",
+      "note": "Derek Linn. Live Canvas Thu 9/3 ~2:50pm: still –/13 unsubmitted (UNCHANGED). Due Tue Sep 8 9:20am with siblings (76 pts total). Course still 93.03% (113.50/122).",
       "canvas": {
         "status": "open",
         "points": 13,
@@ -1815,7 +1857,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. 44 pts. Due Tue Sep 8 9:20am with 2.3 (19) and 2.4 (13) — 76 pts that day. Live Canvas Wed 9/2 ~9:05pm: still –/44 unsubmitted (UNCHANGED vs 2:50pm).",
+      "note": "Derek Linn. Live Canvas Thu 9/3 ~2:50pm: still –/44 unsubmitted (UNCHANGED). Due Tue Sep 8 9:20am with siblings (76 pts total). Course still 93.03% (113.50/122).",
       "canvas": {
         "status": "open",
         "points": 44,
@@ -1839,7 +1881,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Foster. Assigned Wed Sep 2 (Lesson 2.2 Angle Relationships); Thu Sep 3 continuation. HW: All 2.2. All Unit 2 HW collected Fri Sep 11. Source: Bennett Gmail 9/2 + Canvas image 9/3. Not a Canvas/ParentVUE row."
+      "note": "Foster. Assigned Wed Sep 2 (Lesson 2.2); Thu Sep 3 continuation. HW: All 2.2 — due today for Fri quiz prep. All Unit 2 HW collected Fri Sep 11. Source: Bennett Gmail 9/2 + Canvas. Not a Canvas/ParentVUE row. Tonight handoff to Mom 4:30p — quiz tomorrow Fri Sep 4."
     },
     {
       "id": "geo-quiz-21-22",
@@ -1954,6 +1996,98 @@
         "email_sent": false
       },
       "note": "Foster. Yellow highlight on the Unit 2 calendar: All Unit 2 HW + Review Due the same day as the Unit 2 Test (Fri Sep 11). Includes 2.1 Day 1, 2.1 Day 2, All 2.2, 2.3, and the review packet."
+    },
+    {
+      "id": "eng-dialogue-exit-0903",
+      "title": "English 10: Dialogue Exit Ticket",
+      "classId": "english-10",
+      "due": "2026-09-03T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "points": 5,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Goodson/Carl. NEW Thu 9/3 after-school Canvas. 5 pts. Due TONIGHT Thu Sep 3 11:59pm. Submitting on paper. No submission shown. Handoff night: Mom at 4:30p.",
+      "canvas": {
+        "status": "open",
+        "points": 5,
+        "due": "2026-09-03T23:59:00"
+      }
+    },
+    {
+      "id": "eng-aab-reading-check-2",
+      "title": "English 10: AAB Reading Check #2",
+      "classId": "english-10",
+      "due": "2026-09-09T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "points": null,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Goodson/Carl. NEW on Canvas Coming Up Thu 9/3. Due Wed Sep 9 11:59pm. Points not shown on dashboard capture.",
+      "canvas": {
+        "status": "open",
+        "due": "2026-09-09T23:59:00"
+      }
+    },
+    {
+      "id": "eng-narrative-final-0911",
+      "title": "English 10: Narrative #1 Final Draft",
+      "classId": "english-10",
+      "due": "2026-09-11T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "points": null,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Goodson/Carl. Canvas Coming Up Fri Sep 11 11:59pm Narrative #1 Final Draft. English Daily Agendas 9/3: 9/4 final editing day; 9/11 Typed draft #1 due. Treat as same workstream.",
+      "canvas": {
+        "status": "open",
+        "due": "2026-09-11T23:59:00"
+      }
+    },
+    {
+      "id": "eng-formative-ondemand-0914",
+      "title": "English 10: Formative on-demand (agenda)",
+      "classId": "english-10",
+      "due": "2026-09-14",
+      "status": "open",
+      "school_status": "open",
+      "late": false,
+      "submitted_at": null,
+      "source": "english-agenda",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Goodson Daily Agendas NEW Thu 9/3: 9/14 Formative on-demand. Not yet a Canvas assignment row."
     }
   ],
   "notes": [
@@ -2211,6 +2345,11 @@
       "date": "2026-09-03",
       "title": "Geometry Unit 2 schedule (Bennett Canvas)",
       "text": "Bennett sent Dad the Geometry Unit 2 September calendar (same grid as the Wed 9/2 Gmail PNG; he thinks from Canvas). Full window: Mon 8/31 Lesson 2.1 Day 1 Angle Bisectors + HW 2.1 Day 1; Tue 9/1 Lesson 2.1 Day 2 Angles w/ Congruence + HW 2.1 Day 2; Wed 9/2 Lesson 2.2 Angle Relationships + HW All 2.2; Thu 9/3 continuation arrow; Fri 9/4 Quiz 2.1–2.2 (open note) + finish 2.1-2.2 if needed; Mon 9/7 Labor Day no school; Tue 9/8 Lesson 2.3 2-D Figures + HW 2.3; Wed 9/9 Unit 2 Test Review; Thu 9/10 continuation arrow; Fri 9/11 Unit 2 Test and All Unit 2 HW + Review Due (yellow). Added missing daily lesson events and HW 2.1 / packet work rows. Quiz/test/2.2/2.3 were already on Jungle Jam from the 9/2 email."
+    },
+    {
+      "date": "2026-09-03",
+      "title": "After-school check (~2:55pm CT)",
+      "text": "Canvas live (session reused, Bennett): English 98.33% NEW Dialogue Exit Ticket –/5 due TONIGHT 11:59pm (paper); AAB RC2 due Sep 9; Narrative #1 Final Draft due Sep 11. Chem 98.75% Density 5 still –/1 No Submission — DISCREPANCY (Bennett said done 9/3; Dad emailed him ~9:15am). Web 93.03% 2.3/2.4/2.5–2.6 still open due Sep 8. ParentVUE BLOCKED (Autofill empty — 5th+ miss); grades/inbox frozen at Sep 2 ~5pm. Gmail: only new school-related was Dad→Bennett Density email; Lifetouch sale. oeband unchanged ($350). English sheet CHANGED: 9/4 editing day; 9/7 Labor Day; 9/8 10.2 Case Launch; 9/11 typed draft; 9/14 formative. Tonight Mom 4:30p→Fri 4p. Geometry quiz Fri Sep 4 — finish HW 2.2."
     }
   ],
   "grades": [
@@ -2221,8 +2360,8 @@
       "teacher": "Todd Keach",
       "letter": "A+",
       "percent": 98,
-      "detail": "Live ParentVUE ~5:00pm Wed Sep 2 CT A+ 98% last update 9/1 — UNCHANGED. 1.3 Reading 16/16; CSI 1.1 30/30. Missing 0. 9pm ParentVUE BLOCKED (session expired; Autofill empty) — not re-verified tonight.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE BLOCKED 9/3 after-school; last live ~5:00pm Sep 2 A+ 98%.",
+      "source": "ParentVUE (frozen)",
       "as_of": "2026-09-02",
       "missing": 0
     },
@@ -2233,9 +2372,9 @@
       "teacher": "Ann Goodson",
       "letter": "A+",
       "percent": 98.33,
-      "detail": "Live ParentVUE ~5:00pm Wed Sep 2 CT A+ 98.33% last update 8/30. No AAB Reading Check #1 row. Missing 0. 9pm ParentVUE BLOCKED (session expired; Autofill empty) — not re-verified tonight.",
-      "source": "ParentVUE",
-      "as_of": "2026-09-02",
+      "detail": "Live Canvas Thu 9/3 ~2:50pm 98.33% (44.25/45). AAB RC1 submitted still pending. NEW Dialogue Exit Ticket –/5 due tonight. ParentVUE BLOCKED.",
+      "source": "Canvas",
+      "as_of": "2026-09-03",
       "missing": 0
     },
     {
@@ -2243,11 +2382,11 @@
       "class": "Chemistry",
       "period": "P4",
       "teacher": "Justin Pfeiff",
-      "letter": "B",
-      "percent": 85.7,
-      "detail": "Live ParentVUE ~5:00pm Wed Sep 2 CT B 85.7% last update 8/28. Density Lesson 5 still Not Graded; lab sheet 0.5/1. Missing 0. 9pm ParentVUE BLOCKED (session expired; Autofill empty) — not re-verified tonight.",
-      "source": "ParentVUE",
-      "as_of": "2026-09-02",
+      "letter": null,
+      "percent": 98.75,
+      "detail": "Live Canvas Thu 9/3 98.75% (39.50/40). Density 5 still –/1 No Submission (Bennett says done — discrepancy). ParentVUE last live B 85.7% Sep 2 5pm.",
+      "source": "Canvas",
+      "as_of": "2026-09-03",
       "missing": 0
     },
     {
@@ -2256,21 +2395,21 @@
       "period": "P3",
       "teacher": "Derek Linn",
       "letter": "A",
-      "percent": 93,
-      "detail": "Live ParentVUE ~5:00pm Wed Sep 2 CT A 93% last update 9/2 (was A 96% 8/26). Rows: 1.1 20/20, 1.2 37.5/40, 1.3 10/10, 1.4 11/11, 1.5 9/13, 2.1&2.2 26/28. No 2.5/2.6 in ParentVUE. Matches Canvas 93.03% rounded. Missing 0. 9pm ParentVUE BLOCKED (session expired; Autofill empty) — not re-verified tonight.",
-      "source": "ParentVUE",
-      "as_of": "2026-09-02",
+      "percent": 93.03,
+      "detail": "Live Canvas Thu 9/3 93.03% (113.50/122). 2.3/2.4/2.5–2.6 still open due Sep 8 (76 pts). ParentVUE last live A 93% Sep 2.",
+      "source": "Canvas",
+      "as_of": "2026-09-03",
       "missing": 0
     },
     {
       "classId": "geometry",
       "class": "Geometry",
       "period": "P7",
-      "teacher": "Katelyn Foster",
+      "teacher": "Foster",
       "letter": "A",
       "percent": 97,
-      "detail": "Live ParentVUE ~5:00pm Wed Sep 2 CT A 97% last update 8/25. Missing 0. 9pm ParentVUE BLOCKED (session expired; Autofill empty) — not re-verified tonight.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE BLOCKED 9/3; last live A 97% 8/25. Unit 2 quiz Fri Sep 4 (Bennett schedule).",
+      "source": "ParentVUE (frozen)",
       "as_of": "2026-09-02",
       "missing": 0
     },
@@ -2278,11 +2417,11 @@
       "classId": "band",
       "class": "Marching Band",
       "period": "P1",
-      "teacher": "Rebecca Fillingham",
+      "teacher": "Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "Live ParentVUE ~5:00pm Wed Sep 2 CT A+ 100.0% last update 8/27 — UNCHANGED. Missing 0. 9pm ParentVUE BLOCKED (session expired; Autofill empty) — not re-verified tonight.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE BLOCKED 9/3; last live A+ 100% 8/27. Canvas no gradebook.",
+      "source": "ParentVUE (frozen)",
       "as_of": "2026-09-02",
       "missing": 0
     },
@@ -2290,11 +2429,11 @@
       "classId": "strength",
       "class": "Strength and Conditioning I",
       "period": "P5",
-      "teacher": "Rachelle Pauly",
+      "teacher": "Pauly",
       "letter": "A+",
       "percent": 100,
-      "detail": "Live ParentVUE ~5:00pm Wed Sep 2 CT A+ 100 last update 8/28. Missing 0. 9pm ParentVUE BLOCKED (session expired; Autofill empty) — not re-verified tonight.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE BLOCKED 9/3; last live A+ 100% 8/28. Canvas unpublished.",
+      "source": "ParentVUE (frozen)",
       "as_of": "2026-09-02",
       "missing": 0
     }
