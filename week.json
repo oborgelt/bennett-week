@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-06T14:15:00",
+  "as_of": "2026-09-07T14:15:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1051,24 +1051,24 @@
       "note": "Canvas 5 pts paper. NEW Thu 9/3. Mom handoff 4:30p."
     },
     {
-      "id": "eng-aab-rc2-0909",
+      "id": "eng-aab-rc2-0911",
       "title": "English: AAB Reading Check #2 due",
-      "start": "2026-09-09T23:59:00",
-      "end": "2026-09-09T23:59:00",
-      "kind": "calendar",
-      "classId": "english-10",
-      "place": "Olathe East",
-      "note": "Canvas Coming Up. NEW Thu 9/3 pull."
-    },
-    {
-      "id": "eng-narrative-final-0911",
-      "title": "English: Narrative #1 Final Draft due",
       "start": "2026-09-11T23:59:00",
       "end": "2026-09-11T23:59:00",
       "kind": "calendar",
       "classId": "english-10",
       "place": "Olathe East",
-      "note": "Canvas Coming Up. Aligns with agenda Typed draft #1 9/11."
+      "note": "Canvas due CHANGED 9/7: was Wed 9/9, now Fri 9/11 11:59pm. Respondus LockDown Browser."
+    },
+    {
+      "id": "eng-narrative-final-0909",
+      "title": "English: Narrative #1 Final Draft due",
+      "start": "2026-09-09T23:59:00",
+      "end": "2026-09-09T23:59:00",
+      "kind": "calendar",
+      "classId": "english-10",
+      "place": "Olathe East",
+      "note": "Canvas due CHANGED 9/7: was Fri 9/11, now Wed 9/9 11:59pm."
     },
     {
       "id": "eng-10-2-case-launch-0908",
@@ -1078,7 +1078,7 @@
       "kind": "calendar",
       "classId": "english-10",
       "place": "Olathe East",
-      "note": "Daily Agendas banner NEW Thu 9/3."
+      "note": "Prior agenda banner had 10.2 Case Launch on 9/8; sheet still blank for 9/7–9/8 as of Labor Day 9/7 pull."
     },
     {
       "id": "eng-typed-draft-0909",
@@ -1086,7 +1086,7 @@
       "start": "2026-09-09",
       "kind": "calendar",
       "classId": "english-10",
-      "note": "Daily Agenda 9/4: due on block day 9/9–9/10 (was 9/11)."
+      "note": "Daily Agenda: Typed draft #1 due block day 9/9–9/10; aligns with Canvas Narrative Final now due Wed 9/9."
     },
     {
       "id": "eng-act-practice-0916",
@@ -2050,7 +2050,7 @@
       "id": "eng-aab-reading-check-2",
       "title": "English 10: AAB Reading Check #2",
       "classId": "english-10",
-      "due": "2026-09-09T23:59:00",
+      "due": "2026-09-11T23:59:00",
       "status": "open",
       "school_status": "open",
       "points": 10,
@@ -2064,7 +2064,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas Coming Up Wed Sep 9 11:59pm, 10 pts, open. Agenda reading check Pg. 83–120 now listed on 9/11.",
+      "note": "Goodson. Canvas Coming Up Wed Sep 9 11:59pm, 10 pts, open. Agenda reading check Pg. 83–120 now listed on 9/11. Canvas due CHANGED Labor Day 9/7 pull: was Wed 9/9, now Fri 9/11 11:59pm (Respondus).",
       "canvas": {
         "status": "open",
         "points": 10,
@@ -2075,7 +2075,7 @@
       "id": "eng-narrative-final-0911",
       "title": "English 10: Narrative #1 Final Draft",
       "classId": "english-10",
-      "due": "2026-09-11T23:59:00",
+      "due": "2026-09-09T23:59:00",
       "status": "open",
       "school_status": "open",
       "points": 30,
@@ -2089,7 +2089,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas Coming Up Fri Sep 11 11:59pm Narrative #1 Final Draft 30 pts. Agenda typed draft #1 now 9/9–9/10; treat typed draft as interim toward this.",
+      "note": "Goodson. Canvas Coming Up Fri Sep 11 11:59pm Narrative #1 Final Draft 30 pts. Agenda typed draft #1 now 9/9–9/10; treat typed draft as interim toward this. Canvas due CHANGED Labor Day 9/7 pull: was Fri 9/11, now Wed 9/9 11:59pm.",
       "canvas": {
         "status": "open",
         "points": 30,
@@ -2151,7 +2151,7 @@
       "status": "open",
       "school_status": "open",
       "points": 1,
-      "late": false,
+      "late": true,
       "submitted_at": null,
       "source": "canvas",
       "discrepancy": false,
@@ -2211,6 +2211,26 @@
     }
   ],
   "notes": [
+    {
+      "date": "2026-09-07",
+      "title": "After-school check (~2:15pm Labor Day)",
+      "text": "Labor Day no school. Canvas UNCHANGED grades (Eng 98.75 / Chem 98.81 / Web 93.03) but English DUE DATES SWAPPED on Canvas: Narrative #1 Final Draft now Wed 9/9 11:59pm (was Fri 9/11); AAB Reading Check #2 now Fri 9/11 11:59pm (was Wed 9/9). Chem Names/Symbols Reading still –/1 paper (due 9/4). Web 2.3/2.4/2.5–2.6 still open due Tue 9/8 9:20am (76 pts). ParentVUE LIVE UNCHANGED grades (Chem A- 90.5; 0 missing); inbox still Fillingham BSS TENTATIVE 9/1. Gmail NEW: Hawk Weekly 9.7.26 noon; Jostens OEHS pics ready (event code FE208226) ~12:02pm; Lifetouch MCSITE9 promo ends tonight PST. English Daily Agendas CHANGED (9/9–9/24 class-work fills; 9/7–9/8 still blank). oeband/district UNCHANGED. Tonight: knock out Web 76 pts before Tue 9:20am. Dad through Thu Sep 10 4:30p."
+    },
+    {
+      "date": "2026-09-07",
+      "title": "English Canvas due-date swap",
+      "text": "Live Canvas Grades 9/7: Narrative #1 Final Draft due Wed Sep 9 11:59pm (30 pts); AAB Reading Check #2 (Respondus) due Fri Sep 11 11:59pm (10 pts). Prior pulls had those dates reversed."
+    },
+    {
+      "date": "2026-09-07",
+      "title": "Jostens school pics ready",
+      "text": "Gmail Mon 12:02pm CT jostenspixdonotreply@e.jostens.com: OEHS school pics ready to order for Bennett. Event code FE208226 if gallery does not auto-load."
+    },
+    {
+      "date": "2026-09-06",
+      "title": "Bedtime check (~9:20pm)",
+      "text": "Canvas+ParentVUE UNCHANGED vs 2:15pm (Eng 98.75 / Chem 98.81 / Web 93.03; PV Chem A- 90.5; 0 missing; inbox still Fillingham BSS TENTATIVE 9/1). No Gmail delta after 2:15. No Bennett-said-done; no new discrepancy. Weekend quiet criteria met. week.json local-only (no Jungle Jam push)."
+    },
     {
       "date": "2026-09-06",
       "title": "After-school check (~2:15pm weekend)",
@@ -2504,39 +2524,27 @@
   ],
   "grades": [
     {
+      "classId": "band",
+      "class": "Marching Band",
+      "period": "P1",
+      "teacher": "Rebecca Fillingham",
+      "letter": "A+",
+      "percent": 100.0,
+      "detail": "ParentVUE live Labor Day 9/7: A+ 100% (last update 8/27). Canvas no gradebook.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-07",
+      "missing": 0
+    },
+    {
       "classId": "sociology",
       "class": "Sociology",
       "period": "P2",
       "teacher": "Todd Keach",
       "letter": "A+",
       "percent": 98,
-      "detail": "ParentVUE live Sun 9/6: A+ 98% (last update 9/1). Canvas still unpublished.",
+      "detail": "ParentVUE live Labor Day 9/7: A+ 98% (last update 9/1). Canvas still unpublished.",
       "source": "ParentVUE",
-      "as_of": "2026-09-06",
-      "missing": 0
-    },
-    {
-      "classId": "english-10",
-      "class": "English 10",
-      "period": "P6",
-      "teacher": "Ann Goodson",
-      "letter": "A+",
-      "percent": 98.75,
-      "detail": "Canvas live 98.75%; ParentVUE A+ 98.64% (last update 9/3). Dialogue Exit Ticket still unscored on PV drilldown (Canvas graded 5/5 Fri). AAB RC2 due Sep 9; Narrative Final due Sep 11.",
-      "source": "Canvas+ParentVUE",
-      "as_of": "2026-09-06",
-      "missing": 0
-    },
-    {
-      "classId": "chemistry",
-      "class": "Chemistry",
-      "period": "P4",
-      "teacher": "Justin Pfeiff",
-      "letter": "A-",
-      "percent": 90.5,
-      "detail": "ParentVUE live Sun 9/6: A- 90.5% (last update 9/4). Canvas observer still 98.81%. Names/Symbols Reading still –/1 on Canvas (due Fri 9/4); PV calendar score not posted. Density 5 1/1; Names Lab 1/1.",
-      "source": "ParentVUE (Canvas 98.81%)",
-      "as_of": "2026-09-06",
+      "as_of": "2026-09-07",
       "missing": 0
     },
     {
@@ -2546,45 +2554,57 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 93.03,
-      "detail": "Canvas live 93.03%; ParentVUE A 93% (last update 9/2). 2.3/2.4/2.5–2.6 still open due Tue Sep 8 9:20am (76 pts).",
+      "detail": "Canvas 93.03% (113.50/122); ParentVUE A 93% (last update 9/2). 2.3/2.4/2.5–2.6 still open due Tue 9/8 9:20am (76 pts).",
       "source": "Canvas+ParentVUE",
-      "as_of": "2026-09-06",
+      "as_of": "2026-09-07",
+      "missing": 0
+    },
+    {
+      "classId": "chemistry",
+      "class": "Chemistry",
+      "period": "P4",
+      "teacher": "Justin Pfeiff",
+      "letter": "A-",
+      "percent": 90.5,
+      "detail": "ParentVUE A- 90.5% (last update 9/4); Canvas 98.81% (41.50/42). Names/Symbols Reading still –/1 paper (due 9/4).",
+      "source": "ParentVUE",
+      "as_of": "2026-09-07",
+      "missing": 0
+    },
+    {
+      "classId": "strength-conditioning",
+      "class": "Strength and Conditioning I",
+      "period": "P5",
+      "teacher": "Pauly",
+      "letter": "A+",
+      "percent": 100.0,
+      "detail": "ParentVUE live Labor Day 9/7: A+ 100% (last update 9/4). Canvas unpublished.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-07",
+      "missing": 0
+    },
+    {
+      "classId": "english-10",
+      "class": "English 10",
+      "period": "P6",
+      "teacher": "Ann Goodson",
+      "letter": "A+",
+      "percent": 98.75,
+      "detail": "Canvas 98.75%; ParentVUE A+ 98.64% (last update 9/3). NEW due-date swap on Canvas: Narrative Final → Wed 9/9; AAB RC2 → Fri 9/11.",
+      "source": "Canvas+ParentVUE",
+      "as_of": "2026-09-07",
       "missing": 0
     },
     {
       "classId": "geometry",
       "class": "Geometry",
       "period": "P7",
-      "teacher": "Foster",
+      "teacher": "K Foster",
       "letter": "A",
       "percent": 97,
-      "detail": "ParentVUE live Sun 9/6: A 97% (last update 8/25). Canvas grades disabled. Unit 2 test Fri Sep 11; HW 2.3 Tue Sep 8.",
+      "detail": "ParentVUE A 97% (last update 8/25). Canvas grades ParentVUE-only. Unit 2 Test Fri 9/11.",
       "source": "ParentVUE",
-      "as_of": "2026-09-06",
-      "missing": 0
-    },
-    {
-      "classId": "band",
-      "class": "Marching Band",
-      "period": "P1",
-      "teacher": "Fillingham",
-      "letter": "A+",
-      "percent": 100.0,
-      "detail": "ParentVUE live Sun 9/6: A+ 100.0% (last update 8/27). Canvas grades disabled.",
-      "source": "ParentVUE",
-      "as_of": "2026-09-06",
-      "missing": 0
-    },
-    {
-      "classId": "strength",
-      "class": "Strength and Conditioning I",
-      "period": "P5",
-      "teacher": "Pauly",
-      "letter": "A+",
-      "percent": 100.0,
-      "detail": "ParentVUE live Sun 9/6: A+ 100.0% (last update 9/4). Canvas unpublished.",
-      "source": "ParentVUE",
-      "as_of": "2026-09-06",
+      "as_of": "2026-09-07",
       "missing": 0
     }
   ]
