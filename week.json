@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-07T14:15:00",
+  "as_of": "2026-09-07T21:15:00",
   "parenting": [
     {
       "who": "Mom",
@@ -384,7 +384,7 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East High School",
-      "note": "Fillingham Band Update 8/23: Home Football call 5:00 PM. SHOW SHIRT."
+      "note": "Fillingham Band Update 9/7: Home Football call 5:00 PM; buses leave 5:30 for CBAC. SHOW SHIRT + long black socks; hair up/bun."
     },
     {
       "id": "band-loadout-parade-0912",
@@ -394,7 +394,7 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East High School",
-      "note": "Fillingham Band Update 8/23: Old Settlers call 8:00 AM; parade 10:00 AM; DRI-FIT."
+      "note": "Fillingham Band Update 9/7: Old Settlers call 8:00 AM; buses 8:30; parade 10:00 AM. DRI-FIT + black socks; hair up/bun. Near end of parade."
     },
     {
       "id": "band-am-0914",
@@ -542,13 +542,14 @@
       "place": "Olathe East"
     },
     {
-      "id": "band-fall-concert-0930",
+      "id": "band-fall-concert-1007",
       "title": "Fall Band Concert",
-      "start": "2026-09-30T19:00:00",
-      "end": "2026-09-30T20:00:00",
+      "start": "2026-10-07T19:00:00",
+      "end": "2026-10-07T20:00:00",
       "kind": "calendar",
       "classId": "band",
-      "place": "Olathe East High School"
+      "place": "Olathe East High School",
+      "note": "Fillingham Band Update 9/7: Fall OE Band Concert Oct 7 7:00 PM — ALL band students. (Was Sep 30 on older feed; corrected from 9/7 email.)"
     },
     {
       "id": "band-loadout-home-1001",
@@ -947,7 +948,7 @@
       "kind": "calendar",
       "classId": "band",
       "place": "CBAC",
-      "note": "oeband.com unchanged Tue 9/1: Sep 11 7pm Football @ CBAC."
+      "note": "Fillingham Band Update 9/7: Football @ CBAC; call 5:00 PM, buses 5:30. Show shirt."
     },
     {
       "id": "band-old-settlers-0912",
@@ -956,7 +957,7 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Downtown Olathe",
-      "note": "oeband.com: Old Settler's Day Parade Downtown Olathe (no time posted)."
+      "note": "Fillingham Band Update 9/7: call 8:00 AM, buses 8:30, parade 10:00 AM downtown Olathe. DRI-FIT."
     },
     {
       "id": "band-bss-south-0919",
@@ -966,7 +967,7 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Blue Springs South",
-      "note": "TENTATIVE. Fillingham ParentVUE mail Tue 9/1 2:27pm CT “Blue Springs South--TENTATIVE Itinerary” (no attachments). Performance 1:05pm. Load uniforms 9:00am, depart OE 9:30am, arrive/unload 10:30, awards 4:00pm, depart BSS 5:00pm, back OE ~6:00pm."
+      "note": "TENTATIVE. Fillingham ParentVUE mail Tue 9/1 2:27pm CT “Blue Springs South--TENTATIVE Itinerary” (no attachments). Performance 1:05pm. Load uniforms 9:00am, depart OE 9:30am, arrive/unload 10:30, awards 4:00pm, depart BSS 5:00pm, back OE ~6:00pm. Fillingham Band Update 9/7: call 9:00 AM in DRI-FIT; folder with itinerary/maps/fees linked in email."
     },
     {
       "id": "geo-quiz-21-22-0904",
@@ -1095,6 +1096,25 @@
       "kind": "calendar",
       "classId": "english-10",
       "note": "Agenda 9/4 NEW on 9/16–9/17 with Pg. 121–163 due and 3DE work time."
+    },
+    {
+      "id": "band-pep-0925",
+      "title": "Band: Pep Band @ CT Pep Assembly (optional)",
+      "start": "2026-09-25",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "CT",
+      "note": "Fillingham Band Update 9/7: Pep Band at CT Pep Assembly — not required; details coming."
+    },
+    {
+      "id": "band-mattress-1115",
+      "title": "Band: Mattress Sale Fundraiser",
+      "start": "2026-11-15T10:00:00",
+      "end": "2026-11-15T17:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "TBD",
+      "note": "Fillingham Band Update 9/7: Nov 15 10am–5pm. Credit toward Orlando trip or next-year band fees (individual). Flyer linked in email."
     }
   ],
   "work": [
@@ -1574,14 +1594,14 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Pfeiff. GRADED 0.5/1 Fri 8/28 ~4:48pm (Gmail + live Canvas 9:11pm). Due was Wed 8/26 11:59pm. Project group now 1.5/2 (75%). Canvas Chem 98.75% (39.5/40). ParentVUE 5:29pm also 0.5/1. Not flagged Missing.",
+      "note": "Pfeiff. RE-GRADED to 1/1 Mon Sep 7 bedtime (Canvas 100% 42/42; was 0.5/1 at 2:15 Labor Day pull). ParentVUE Chem now A+ 100% last update 9/7. Due was Wed 8/26.",
       "canvas": {
         "status": "graded",
         "points": 1,
-        "score": 0.5,
+        "score": 1,
         "due": "2026-08-26T23:59:00"
       },
-      "score": "0.5/1",
+      "score": "1/1",
       "graded_at": "2026-08-28T16:48:00"
     },
     {
@@ -1828,7 +1848,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. Live Canvas bedtime Fri 9:15pm UNCHANGED vs 2:10: still open/unsubmitted. Due Tue Sep 8 9:20am (76 pts total with siblings). Course 93.03%.",
+      "note": "Derek Linn. Live Canvas bedtime Mon 9:15pm UNCHANGED vs 2:15: still open/unsubmitted. Due Tue Sep 8 9:20am (76 pts total with siblings). Course 93.03%.",
       "canvas": {
         "status": "open",
         "points": 19,
@@ -1853,7 +1873,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. Live Canvas bedtime Fri 9:15pm UNCHANGED vs 2:10: still open/unsubmitted. Due Tue Sep 8 9:20am (76 pts total with siblings). Course 93.03%.",
+      "note": "Derek Linn. Live Canvas bedtime Mon 9:15pm UNCHANGED vs 2:15: still open/unsubmitted. Due Tue Sep 8 9:20am (76 pts total with siblings). Course 93.03%.",
       "canvas": {
         "status": "open",
         "points": 13,
@@ -1878,7 +1898,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Derek Linn. Live Canvas bedtime Fri 9:15pm UNCHANGED vs 2:10: still open/unsubmitted. Due Tue Sep 8 9:20am (76 pts total with siblings). Course 93.03%.",
+      "note": "Derek Linn. Live Canvas bedtime Mon 9:15pm UNCHANGED vs 2:15: still open/unsubmitted. Due Tue Sep 8 9:20am (76 pts total with siblings). Course 93.03%.",
       "canvas": {
         "status": "open",
         "points": 44,
@@ -2161,7 +2181,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas still –/1 Sat 9/5; ParentVUE calendar score not posted; Grade Book shows 0 missing. Due was Fri 9/4 11:59pm.",
+      "note": "Canvas still –/1 Mon 9/7 bedtime; ParentVUE assignment view has no score but course 0 missing. Due was Fri 9/4 11:59pm. No Bennett-said-done.",
       "canvas": {
         "status": "open",
         "points": 1,
@@ -2520,6 +2540,16 @@
       "date": "2026-09-05",
       "title": "After-school check (~2:30pm CT)",
       "text": "Weekend pull. ParentVUE LIVE again (session worked). Grades: Band A+ 100; Soc A+ 98; Web A 93; Chem A- 90.5 (PV; Canvas still 98.81%); S&C A+ 100; Eng A+ 98.75 Canvas / 98.64 PV; Geo A 97. 0 missing. Chem Names/Symbols Reading still –/1 Canvas (due Fri). Canvas UNCHANGED vs Fri bedtime. Gmail NEW: Canvas weekly digest (RC2/Narrative/etc already known) + Lifetouch sale. oeband/English agenda/district UNCHANGED. OE widget rolled. Labor Day Mon Sep 7. Dad through Thu Sep 10 4:30p. Next work: Web 76 pts Tue 9/8; Eng RC2 Wed 9/9; Narrative Fri 9/11; Geo Unit 2 test Fri 9/11."
+    },
+    {
+      "date": "2026-09-07",
+      "title": "Bedtime check (~9:20pm CT) — Labor Day",
+      "text": "NEW vs 2:15: Canvas Chem 98.81%→100% (Mass and Volume Lab Sheet 0.5→1/1); ParentVUE Chem A- 90.5%→A+ 100% (update 9/7). English 98.75% / Web 93.03% UNCHANGED; Web 2.3–2.6 still open due Tue 9:20am. Names/Symbols Reading still –/1. Gmail+ParentVUE NEW Fillingham Band Update 9/7 ~4:50pm (GAME WEEK; Sep 11/12 call times; Fall Concert Oct 7; mattress Nov 15). No Instructure mail. No Bennett-said-done; no new discrepancy."
+    },
+    {
+      "date": "2026-09-07",
+      "title": "Band Update 9/7 (Fillingham)",
+      "text": "Gmail+ParentVUE Mon ~4:50pm CT. GAME WEEK. Short on bus chaperones + snack donations (SignUpGenius). Sep 11 Home FB call 5pm / buses 5:30 CBAC (show shirt). Sep 12 Old Settlers call 8am / buses 8:30 / parade 10am (dri-fit). Sep 14 booster 6pm + rehearsal 6:30–8:30. Sep 19 BSS all day. Sep 25 Pep Band CT (optional). Oct 1 HOCO. Oct 5 Olathe Exhibition. Oct 7 Fall Concert 7pm ALL band. Oct 9 afternoon rehearsal 1–3:30. Oct 10 Olathe Invitational. Mattress sale Nov 15. All-District auditions Nov 7. Special arrangement travel form before departures. Fees via oeband.com / Boosters."
     }
   ],
   "grades": [
@@ -2564,10 +2594,10 @@
       "class": "Chemistry",
       "period": "P4",
       "teacher": "Justin Pfeiff",
-      "letter": "A-",
-      "percent": 90.5,
-      "detail": "ParentVUE A- 90.5% (last update 9/4); Canvas 98.81% (41.50/42). Names/Symbols Reading still –/1 paper (due 9/4).",
-      "source": "ParentVUE",
+      "letter": "A+",
+      "percent": 100.0,
+      "detail": "ParentVUE A+ 100.0% (last update 9/7); Canvas 100% (42/42). Mass and Volume Lab Sheet now 1/1 (was 0.5). Names/Symbols Reading still –/1 paper (due 9/4); 0 missing.",
+      "source": "Canvas+ParentVUE",
       "as_of": "2026-09-07",
       "missing": 0
     },
@@ -2590,7 +2620,7 @@
       "teacher": "Ann Goodson",
       "letter": "A+",
       "percent": 98.75,
-      "detail": "Canvas 98.75%; ParentVUE A+ 98.64% (last update 9/3). NEW due-date swap on Canvas: Narrative Final → Wed 9/9; AAB RC2 → Fri 9/11.",
+      "detail": "Canvas 98.75%; ParentVUE A+ 98.64% (last update 9/3). Narrative Final due Wed 9/9; AAB RC2 due Fri 9/11.",
       "source": "Canvas+ParentVUE",
       "as_of": "2026-09-07",
       "missing": 0
