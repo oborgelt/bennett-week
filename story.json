@@ -5,62 +5,53 @@
   "pages": [
     {
       "id": "pack",
-      "image": "crew-hero",
+      "src": "img/story/page-01.jpg",
       "kicker": "Page 1",
-      "title": "Pack the bags",
-      "text": "Dad helped me stuff the bags. Ace in tennis whites. Riff with the guitar. Scorch already wearing the banana hat. We were going in."
+      "caption": "Packed. Ready. Ace, Riff, and Scorch don't leave camp a mess."
     },
     {
       "id": "menace",
-      "image": "ace-frog",
-      "still": true,
+      "src": "img/story/page-02.jpg",
       "kicker": "Page 2",
-      "title": "Something in the trees",
-      "text": "Dad didn't make it a speech. He just said look. Horned frog. Huge. I saw it too."
+      "caption": "Then the jungle starts screaming. Something huge is crushing homes. Nobody can even see its face."
     },
     {
       "id": "chase",
-      "image": "crew-run",
+      "src": "img/story/page-03.jpg",
       "kicker": "Page 3",
-      "title": "Don't get eaten",
-      "text": "We ran. The road came apart. I kept up. Dad was behind me, not in my face."
+      "caption": "They take off after it. Gear hits the dirt. The plan falls apart."
     },
     {
-      "id": "gear",
-      "image": "crew-burst",
+      "id": "regroup",
+      "src": "img/story/page-04.jpg",
       "kicker": "Page 4",
-      "title": "Gear falling apart",
-      "text": "Riff's strap slipped. Scorch's jacket was already trash. Stuff falls off. Dad said hold what you can and keep moving."
+      "caption": "They try to get it together. Hard to fight when your stuff is everywhere."
     },
     {
-      "id": "hold",
-      "image": "crew-six-as",
+      "id": "face",
+      "src": "img/story/page-05.jpg",
       "kicker": "Page 5",
-      "title": "Hold the line",
-      "text": "We stopped running. Ace, Riff, Scorch, and me. Dad said hold the line — not because he was watching. Because we were still a crew."
+      "caption": "Ace holds the line. Riff and Scorch are with him. The monster is right there."
     },
     {
       "id": "split",
-      "image": "riff-bird",
-      "still": true,
+      "src": "img/story/page-06.jpg",
       "kicker": "Page 6",
-      "title": "The jungle splits us",
-      "text": "The trees pulled them sideways. I could not see everyone. Dad stayed where I could hear him."
-    },
-    {
-      "id": "knockout",
-      "image": "ace-poster",
-      "kicker": "Page 7",
-      "title": "Ace goes down",
-      "text": "Ace hit the dirt. One ball left. Dad said last point still counts. I already knew."
+      "caption": "Then the jungle splits them. Vines. Panic. Ace is on his own."
     },
     {
       "id": "fight",
-      "image": "ace-frog",
+      "src": "img/library/ace-frog.mp4",
+      "poster": "img/story/page-07.jpg",
       "video": true,
+      "kicker": "Page 7",
+      "caption": "Ace keeps his shots clean. One ball. Right down the throat."
+    },
+    {
+      "id": "win",
+      "src": "img/story/page-08.jpg",
       "kicker": "Page 8",
-      "title": "Ace vs the horned frog",
-      "text": "Ace got back up. Tennis balls versus the frog. I watched the whole fight. Dad sat with me. We did not skip to the end."
+      "caption": "Monster's out. Gear's packed. That's how you win."
     }
   ]
 }
