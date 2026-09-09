@@ -2572,6 +2572,7 @@
     } else if (!roster) {
       Game.maybePlayContentCelebration(library);
     }
+    if (Game.flushStoryPageCelebrate) void Game.flushStoryPageCelebrate();
     document.addEventListener("bw-followup-changed", () => {
       const latest = Game.getFamilyDraft();
       if (latest) family = latest;
@@ -2586,6 +2587,7 @@
       const shelf = document.getElementById("shelf");
       if (shelf && shelf.classList.contains("open")) renderShelf();
       runUnlocks();
+      if (Game.flushStoryPageCelebrate) void Game.flushStoryPageCelebrate();
     });
     async function pullFamilyLive() {
       if (!family) return;

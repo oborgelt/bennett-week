@@ -81,7 +81,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=178/.test(basecampHtml) && /basecamp\.js\?v=178/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=179/.test(basecampHtml) && /basecamp\.js\?v=179/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1697,7 +1697,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=178/.test(weekHtml) && /week\.js\?v=178/.test(weekHtml) && /game\.js\?v=178/.test(weekHtml) && /telemetry\.js\?v=178/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=179/.test(weekHtml) && /week\.js\?v=179/.test(weekHtml) && /game\.js\?v=179/.test(weekHtml) && /telemetry\.js\?v=179/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1746,7 +1746,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(!/\?v=174\b/.test(html), file + " should not still cache-bust as v=174");
-  assert(/\?v=178/.test(html), file + " should cache-bust v=178");
+  assert(/\?v=179/.test(html), file + " should cache-bust v=179");
   const bar = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
@@ -1762,7 +1762,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 });
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(/js\/update\.js\?v=178/.test(html), file + " loads the live-build checker");
+  assert(/js\/update\.js\?v=179/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
 ["favicon-16.png", "favicon-32.png", "favicon.ico", "apple-touch-icon.png", "favicon-192.png"].forEach((name) => {
@@ -1834,7 +1834,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=178/.test(progressHtml) && /theme\.css\?v=178/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=179/.test(progressHtml) && /theme\.css\?v=179/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1883,8 +1883,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*178/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 178");
-assert(/2026-09-09T09:55:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-09-09T09:55:00-05:00");
+assert(/build:\s*179/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 179");
+assert(/2026-09-09T10:25:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-09-09T10:25:00-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -2019,7 +2019,9 @@ assert(!storyJson.pages[7].video, "page 8 is the win still, not the fight video"
 });
 assert(!/crew-hero|ace-poster|crew-run|crew-burst|crew-six-as/.test(JSON.stringify(storyJson)), "strip does not substitute library stills");
 assert(/story-balloon/.test(storyJs), "fight video caption sits on the page");
-assert(Game.filterBennettHelp("story").some((row) => row.id === "story" && /one new page/i.test(row.body) && !/Coming soon/.test(row.body)), "Help says Story unlocks one page a day");
+assert(Game.filterBennettHelp("story").some((row) => row.id === "story" && /one new page/i.test(row.body) && /pops up like other rewards/i.test(row.body) && !/Coming soon/.test(row.body)), "Help says Story unlocks one page a day and celebrates it");
+assert(/flushStoryPageCelebrate/.test(weekJs) && /flushStoryPageCelebrate/.test(progressJs) && /flushStoryPageCelebrate/.test(crewJs), "This Week, Progress, and Crew flush a pending story-page reward");
+assert(/maybeCelebrateStoryPage/.test(storyJs) && /bw-open-story-page/.test(storyJs), "Story can show the new-page reward and open that page");
 assert(/locker-latch/.test(weekJs) && /DONTDOTHEVOICE/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "locker latch egg is wired to DONTDOTHEVOICE");
 assert(/horned-frog/.test(weekJs) && /hidden-frog/.test(fs.readFileSync(path.join(root, "index.html"), "utf8")), "horned frog egg lives on This Week");
 assert(fs.existsSync(path.join(root, "img/story/horned-frog-egg.png")), "horned frog egg art is on disk");
@@ -2056,6 +2058,45 @@ assert.strictEqual(Game.visibleStoryPages(storyJson).map((p) => p.id).join(","),
 assert.strictEqual(Game.visibleStoryPages(storyJson, { preview: true }).length, 8, "parent preview still sees the full strip");
 localStorage.setItem("bw-session", JSON.stringify({ user: "orin", at: "2026-09-09T13:00:00.000Z" }));
 assert.strictEqual(Game.recordStoryDay("2026-09-11").reached, 2, "a parent open does not advance Bennett's strip");
+assert.strictEqual(Game.recordStoryDay("2026-09-11").unlocked, false, "a parent open does not mark a story unlock");
+localStorage.setItem("bw-session", JSON.stringify({ user: "bennett", at: "2026-09-09T13:00:00.000Z" }));
+["bw-story-unlock"].forEach((key) => localStorage.removeItem(key));
+const storyBodyPrev = document.body;
+const storyGetPrev = document.getElementById;
+const storyCelebrateHost = { children: [], appendChild(child) { this.children.push(child); return child; } };
+document.body = storyCelebrateHost;
+document.getElementById = (id) => storyCelebrateHost.children.find((el) => el && el.id === id) || null;
+const day1Unlock = Game.recordStoryDay("2026-09-09");
+assert.strictEqual(day1Unlock.unlocked, true, "first Bennett visit records a new page");
+assert.strictEqual(day1Unlock.reached, 1);
+assert(Game.maybeCelebrateStoryPage(storyJson), "day 1 first visit celebrates page 1");
+const storyCeleb1 = storyCelebrateHost.children.find((el) => el.id === "char-celebrate") || storyCelebrateHost.children[storyCelebrateHost.children.length - 1];
+assert(storyCeleb1 && /You unlocked this/.test(storyCeleb1.innerHTML), "story reward uses the unlock kicker");
+assert(/page-01\.jpg/.test(storyCeleb1.innerHTML), "day 1 reward shows page 1 art");
+assert(/Packed\. Ready/.test(storyCeleb1.innerHTML), "day 1 reward shows the comic caption");
+assert(/Open Story/.test(storyCeleb1.innerHTML) && /char-celebrate-close/.test(storyCeleb1.innerHTML), "story reward has Close and Open Story");
+assert(!/ace-frog\.mp4/.test(storyCeleb1.innerHTML), "day 1 reward is not the fight video");
+assert.strictEqual(Game.recordStoryDay("2026-09-09").unlocked, false, "same Chicago day does not record another page");
+assert.strictEqual(Game.maybeCelebrateStoryPage(storyJson), false, "a same-day refresh does not celebrate again");
+assert.strictEqual(Game.recordStoryDay("2026-09-10").unlocked, true);
+assert(Game.maybeCelebrateStoryPage(storyJson), "the next Chicago day celebrates the new page");
+const storyCeleb2 = storyCelebrateHost.children[storyCelebrateHost.children.length - 1];
+assert(/page-02\.jpg/.test(storyCeleb2.innerHTML), "day 2 reward shows only the new page");
+assert(!/page-01\.jpg/.test(storyCeleb2.innerHTML), "day 2 reward does not replay page 1");
+assert(/jungle starts screaming/.test(storyCeleb2.innerHTML), "day 2 reward shows that page's caption");
+localStorage.setItem("bw-story-unlock", JSON.stringify({ startYmd: "2026-09-09", lastYmd: "2026-09-14", reached: 6 }));
+assert.strictEqual(Game.recordStoryDay("2026-09-15").reached, 7);
+assert(Game.maybeCelebrateStoryPage(storyJson), "day 7 celebrates the fight");
+const storyCeleb7 = storyCelebrateHost.children[storyCelebrateHost.children.length - 1];
+assert(/ace-frog\.mp4/.test(storyCeleb7.innerHTML), "page 7 reward plays the fight video");
+assert(/page-07\.jpg/.test(storyCeleb7.innerHTML), "page 7 reward uses the fight poster");
+assert(/Right down the throat/.test(storyCeleb7.innerHTML), "page 7 reward keeps the fight caption");
+localStorage.setItem("bw-story-unlock", JSON.stringify({ startYmd: "2026-09-09", lastYmd: "2026-09-15", reached: 7 }));
+assert.strictEqual(Game.recordStoryDay("2026-09-16").unlocked, true);
+assert.strictEqual(Game.maybeCelebrateStoryPage(storyJson, { preview: true }), false, "parent preview does not show the story reward");
+assert.strictEqual(Game.maybeCelebrateStoryPage(storyJson), false, "preview consumes a pending story reward");
+document.body = storyBodyPrev;
+document.getElementById = storyGetPrev;
 localStorage.removeItem("bw-session");
 localStorage.removeItem("bw-story-unlock");
 const undone = Game.revokeAchievement(pack, signFamily, "signin-bennett");

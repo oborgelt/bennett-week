@@ -4849,7 +4849,7 @@
     {
       id: "story",
       title: "Story",
-      body: "Shows on the bar after three teammates (not counting you). One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. Page 7 is Ace versus the horned frog. Page 8 is the win."
+      body: "Shows on the bar after three teammates (not counting you). One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. When a new page unlocks, it pops up like other rewards. Close it or open Story. Page 7 is Ace versus the horned frog. Page 8 is the win."
     },
     {
       id: "messages",
@@ -5705,19 +5705,27 @@
     return chicagoYmd(now instanceof Date ? now : undefined);
   }
 
+  let pendingStoryCelebrateReached = 0;
+  let storyCelebrateAfterClose = null;
+
   function recordStoryDay(now) {
     const cur = getStoryUnlock();
-    if (!shouldRecordBennettLogin()) return cur;
+    if (!shouldRecordBennettLogin()) return Object.assign({}, cur, { unlocked: false });
     const today = storyDayKey(now);
     if (!cur.startYmd) {
-      return saveStoryUnlock({ startYmd: today, lastYmd: today, reached: 1 });
+      const row = saveStoryUnlock({ startYmd: today, lastYmd: today, reached: 1 });
+      pendingStoryCelebrateReached = 1;
+      return Object.assign({}, row, { unlocked: true });
     }
-    if (cur.lastYmd === today) return cur;
-    return saveStoryUnlock({
+    if (cur.lastYmd === today) return Object.assign({}, cur, { unlocked: false });
+    const reached = Math.max(1, cur.reached) + 1;
+    const row = saveStoryUnlock({
       startYmd: cur.startYmd,
       lastYmd: today,
-      reached: Math.max(1, cur.reached) + 1
+      reached
     });
+    pendingStoryCelebrateReached = reached;
+    return Object.assign({}, row, { unlocked: true });
   }
 
   function storyPagesReached() {
@@ -5731,15 +5739,135 @@
     return pages.slice(0, Math.min(pages.length, reached));
   }
 
+  function celebrateLayerIsOpen() {
+    const layer = document.getElementById("char-celebrate");
+    return !!(layer && layer.classList && layer.classList.contains("open"));
+  }
+
   function closeCharacterCelebrate() {
     const layer = document.getElementById("char-celebrate");
-    if (!layer) return;
-    const video = layer.querySelector("video");
-    if (video) {
-      try { video.pause(); } catch (_) {}
+    if (layer) {
+      const video = layer.querySelector ? layer.querySelector("video") : null;
+      if (video) {
+        try { video.pause(); } catch (_) {}
+      }
+      layer.classList.remove("open");
+      layer.classList.remove("char-celebrate-full");
     }
-    layer.classList.remove("open");
-    layer.classList.remove("char-celebrate-full");
+    const queued = storyCelebrateAfterClose;
+    storyCelebrateAfterClose = null;
+    if (typeof queued === "function") queued();
+  }
+
+  function storyPageCaption(page) {
+    return String((page && (page.caption || page.text)) || "").trim();
+  }
+
+  function storyPageSrc(page) {
+    return String((page && (page.src || page.path)) || "").trim();
+  }
+
+  function storyCelebrateHref(page) {
+    const id = page && page.id ? String(page.id) : "";
+    return id ? "story.html?page=" + encodeURIComponent(id) : "story.html";
+  }
+
+  function openCelebratedStoryPage(page) {
+    const href = storyCelebrateHref(page);
+    const onStory = !!(document.body && document.body.classList && document.body.classList.contains("story-page"));
+    if (onStory && document.dispatchEvent) {
+      try {
+        document.dispatchEvent(new CustomEvent("bw-open-story-page", { detail: { id: page && page.id } }));
+      } catch (_) {}
+      return;
+    }
+    try {
+      if (global.location) global.location.href = href;
+    } catch (_) {}
+  }
+
+  function showStoryPageCelebrate(page) {
+    if (!page) return false;
+    const caption = storyPageCaption(page);
+    const src = storyPageSrc(page);
+    const isVideo = !!(page.video || /\.mp4(\?|$)/i.test(src));
+    const poster = String((page && page.poster) || "").trim();
+    const title = String((page && (page.kicker || page.title)) || "Story page");
+    const layer = celebrateLayer();
+    layer.classList.add("char-celebrate-full");
+    let media = "";
+    if (isVideo) {
+      const videoSrc = src || "img/library/ace-frog.mp4";
+      const posterSrc = poster || "img/story/page-07.jpg";
+      media = `<video src="${esc(videoSrc)}" poster="${esc(posterSrc)}" playsinline webkit-playsinline controls ${prefersReducedMotion() ? "" : "autoplay"}></video>`;
+    } else if (src) {
+      media = `<img src="${esc(src)}" alt="${esc(caption || title)}">`;
+    }
+    const balloon = caption ? `<p class="story-balloon">${esc(caption)}</p>` : "";
+    layer.innerHTML = `
+      <div class="char-celebrate-panel" role="dialog" aria-labelledby="char-celebrate-title">
+        <p class="char-celebrate-kicker">You unlocked this</p>
+        <h2 id="char-celebrate-title">${esc(title)}</h2>
+        <div class="char-celebrate-story${balloon ? " has-balloon" : ""}">
+          ${media}${balloon}
+        </div>
+        <button type="button" class="btn" id="char-celebrate-close">Close</button>
+        <button type="button" class="btn primary" id="char-celebrate-see" data-celebrate-see="1">Open Story</button>
+      </div>`;
+    layer.classList.add("open");
+    if (isVideo) {
+      stopLibraryAudio();
+      playCharacterVideo(layer.querySelector ? layer.querySelector("video") : null);
+    }
+    bindCelebrateClose(layer);
+    bindCelebrateSee(layer, () => {
+      stopLibraryAudio();
+      closeCharacterCelebrate();
+      openCelebratedStoryPage(page);
+    });
+    confetti({ burst: true });
+    return true;
+  }
+
+  function maybeCelebrateStoryPage(story, opts) {
+    if (opts && opts.preview) {
+      pendingStoryCelebrateReached = 0;
+      storyCelebrateAfterClose = null;
+      return false;
+    }
+    if (!shouldRecordBennettLogin()) {
+      pendingStoryCelebrateReached = 0;
+      storyCelebrateAfterClose = null;
+      return false;
+    }
+    const n = pendingStoryCelebrateReached;
+    if (!n) return false;
+    const pages = storyPages(story);
+    if (!pages.length) return false;
+    if (n > pages.length) {
+      pendingStoryCelebrateReached = 0;
+      return false;
+    }
+    const page = pages[n - 1];
+    if (!page) {
+      pendingStoryCelebrateReached = 0;
+      return false;
+    }
+    if (celebrateLayerIsOpen()) {
+      storyCelebrateAfterClose = () => {
+        pendingStoryCelebrateReached = 0;
+        showStoryPageCelebrate(page);
+      };
+      return false;
+    }
+    pendingStoryCelebrateReached = 0;
+    return showStoryPageCelebrate(page);
+  }
+
+  async function flushStoryPageCelebrate(story, opts) {
+    if (!pendingStoryCelebrateReached) return false;
+    const pack = story || await loadStory();
+    return maybeCelebrateStoryPage(pack, opts);
   }
 
   function celebrateLayer() {
@@ -6714,7 +6842,10 @@
     const pass = String(password || "").trim();
     if (sha256hex(pass) !== rec.hash) return null;
     setSessionUser(user);
-    if (user === "bennett") recordLoginDay();
+    if (user === "bennett") {
+      recordLoginDay();
+      void flushStoryPageCelebrate();
+    }
     if (global.Telemetry && typeof global.Telemetry.trackLogin === "function") {
       global.Telemetry.trackLogin();
     }
@@ -9854,6 +9985,8 @@
     storyPages,
     getStoryUnlock,
     recordStoryDay,
+    maybeCelebrateStoryPage,
+    flushStoryPageCelebrate,
     storyPagesReached,
     visibleStoryPages,
     characterMedia,
