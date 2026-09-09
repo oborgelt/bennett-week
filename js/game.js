@@ -18,6 +18,7 @@
     opened: "bw-opened",
     opens: "bw-opens",
     loginDays: "bw-login-days",
+    storyUnlock: "bw-story-unlock",
     previewAll: "bw-preview-all",
     previewIds: "bw-preview-ids",
     previewLocked: "bw-preview-locked",
@@ -103,8 +104,15 @@
   const EGG_NAMES = {
     "banner-monkey": "Garage-band grin",
     "hidden-ball": "Stray tennis ball",
-    "clarinet-honk": "Bass clarinet honk"
+    "clarinet-honk": "Bass clarinet honk",
+    "locker-latch": "Locker latch",
+    "horned-frog": "Horned frog croak"
   };
+  const EGG_SOUND_SEARCH = {
+    "locker-latch": ["DONTDOTHEVOICE", "Dontdothevoice", "dontdothevoice"],
+    "horned-frog": ["croak", "ribbit", "frog", "monster", "jungle", "Scared"]
+  };
+  const EGG_SOUND_SKIP = ["undo-click", "undo", "tablesloud", "tables", "table click"];
 
   const OPEN_DEBOUNCE_MS = 15 * 60 * 1000;
 
@@ -2713,6 +2721,36 @@
     }) || null;
   }
 
+  function eggSoundSkipIds(lib) {
+    const skip = {};
+    EGG_SOUND_SKIP.forEach((name) => {
+      const item = libraryItemNamed(lib, name);
+      if (item && item.id) skip[item.id] = true;
+    });
+    ["undo-click", "tablesloud"].forEach((id) => { skip[id] = true; });
+    const latch = libraryItemNamed(lib, "DONTDOTHEVOICE") || libraryItemNamed(lib, "Dontdothevoice");
+    if (latch && latch.id) skip[latch.id] = true;
+    return skip;
+  }
+
+  function eggLibraryItem(lib, egg) {
+    const names = EGG_SOUND_SEARCH[egg] || [];
+    const skip = egg === "horned-frog" ? eggSoundSkipIds(lib) : {};
+    for (let i = 0; i < names.length; i += 1) {
+      const item = libraryItemNamed(lib, names[i]);
+      if (item && !skip[item.id]) return item;
+    }
+    return null;
+  }
+
+  function playEggLibrarySound(lib, egg) {
+    const item = eggLibraryItem(lib, egg);
+    if (!item) return null;
+    if (playLibraryItem(item)) return item;
+    void playLibraryItemNow(item);
+    return item;
+  }
+
   function rewardClipIds(ach) {
     const ids = [];
     const seen = {};
@@ -4811,7 +4849,7 @@
     {
       id: "story",
       title: "Story",
-      body: "Shows on the bar after three teammates (not counting you). Coming soon. The comic is not ready yet."
+      body: "Shows on the bar after three teammates (not counting you). One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. The last page is Ace versus the horned frog."
     },
     {
       id: "messages",
@@ -5630,7 +5668,67 @@
 
   async function loadStory() {
     const seed = parseSeed("story-seed");
-    return fetchJson("story.json", seed || { title: "Story", start: "start", nodes: [] });
+    return fetchJson("story.json", seed || { title: "Story", start: "start", nodes: [], pages: [] });
+  }
+
+  function storyPages(story) {
+    if (story && Array.isArray(story.pages) && story.pages.length) return story.pages.filter((page) => page && page.id);
+    return ((story && story.nodes) || []).filter((node) => node && node.id);
+  }
+
+  function emptyStoryUnlock() {
+    return { startYmd: "", lastYmd: "", reached: 0 };
+  }
+
+  function normalizeStoryUnlock(raw) {
+    const o = raw && typeof raw === "object" ? raw : {};
+    const reached = Math.max(0, Number(o.reached) || 0);
+    return {
+      startYmd: String(o.startYmd || "").trim(),
+      lastYmd: String(o.lastYmd || "").trim(),
+      reached
+    };
+  }
+
+  function getStoryUnlock() {
+    return normalizeStoryUnlock(read(KEYS.storyUnlock, emptyStoryUnlock()));
+  }
+
+  function saveStoryUnlock(next) {
+    const row = normalizeStoryUnlock(next);
+    write(KEYS.storyUnlock, row);
+    return row;
+  }
+
+  function storyDayKey(now) {
+    if (typeof now === "string" && /^\d{4}-\d{2}-\d{2}$/.test(now)) return now;
+    return chicagoYmd(now instanceof Date ? now : undefined);
+  }
+
+  function recordStoryDay(now) {
+    const cur = getStoryUnlock();
+    if (!shouldRecordBennettLogin()) return cur;
+    const today = storyDayKey(now);
+    if (!cur.startYmd) {
+      return saveStoryUnlock({ startYmd: today, lastYmd: today, reached: 1 });
+    }
+    if (cur.lastYmd === today) return cur;
+    return saveStoryUnlock({
+      startYmd: cur.startYmd,
+      lastYmd: today,
+      reached: Math.max(1, cur.reached) + 1
+    });
+  }
+
+  function storyPagesReached() {
+    return Math.max(0, getStoryUnlock().reached);
+  }
+
+  function visibleStoryPages(story, opts) {
+    const pages = storyPages(story);
+    if (opts && opts.preview) return pages;
+    const reached = Math.max(1, storyPagesReached() || 1);
+    return pages.slice(0, Math.min(pages.length, reached));
   }
 
   function closeCharacterCelebrate() {
@@ -7192,6 +7290,7 @@
       write(KEYS.opens, opens);
     }
     recordLoginDay();
+    recordStoryDay();
     return opens;
   }
 
@@ -7225,6 +7324,7 @@
     next.overlay.updatedAt = nowIso();
     saveFamily(next);
     if (!overlaySyncing) queueOverlayPush(next);
+    recordStoryDay();
     return next;
   }
 
@@ -9323,6 +9423,11 @@
     progressCanMutate,
     progressTrophyListHtml,
     getEggs,
+    EGG_NAMES,
+    EGG_SOUND_SEARCH,
+    eggLibraryItem,
+    playEggLibrarySound,
+    libraryItemNamed,
     usingMomDraft,
     getMomDraft,
     saveMomDraft,
@@ -9746,6 +9851,11 @@
     khanShortLabel,
     KHAN,
     loadStory,
+    storyPages,
+    getStoryUnlock,
+    recordStoryDay,
+    storyPagesReached,
+    visibleStoryPages,
     characterMedia,
     paintStoryChip,
     paintBuild,

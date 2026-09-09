@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <script src="js/update.js?v=175"></script>
+  <script src="js/update.js?v=176"></script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#071618">
   <title>Jungle Jam · Story</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png?v=175">
-  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png?v=175">
-  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png?v=175">
-  <link rel="stylesheet" href="css/theme.css?v=175">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png?v=176">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png?v=176">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png?v=176">
+  <link rel="stylesheet" href="css/theme.css?v=176">
 </head>
 <body class="story-page">
   <header class="week-head">
@@ -36,7 +36,7 @@
       <img src="img/monkey-band-banner.png" alt="Monkey garage band on a tennis court">
       <a class="banner-title" href="index.html">
         <h1>Story</h1>
-        <p>Coming soon</p>
+        <p>Ace, Riff, Scorch · one page a day</p>
       </a>
       <div class="build-stamp" id="build-stamp">
         <span>Build 43</span>
@@ -46,15 +46,19 @@
   </header>
 
   <main class="story-wrap">
-    <p class="preview-flag" id="preview-flag" hidden>Parent preview — Bennett sees this after three teammates unlock.</p>
+    <p class="preview-flag" id="preview-flag" hidden>Parent preview — Bennett unlocks one page each Chicago day.</p>
     <section class="story-gate" id="story-gate" hidden>
       <h2>Story locked</h2>
       <p>Unlock three teammates first. Keep the streak going — no catalog spoilers.</p>
       <a class="btn" href="characters.html">Back to Characters</a>
     </section>
     <article class="story-panel" id="story-panel" hidden>
-      <h2 id="story-title">Coming soon</h2>
-      <p class="story-text" id="story-text">The comic is not ready yet. Check back later.</p>
+      <p class="story-kicker" id="story-kicker"></p>
+      <div class="story-art" id="story-art"></div>
+      <h2 id="story-title"></h2>
+      <p class="story-text" id="story-text"></p>
+      <div class="story-extras" id="story-extras"></div>
+      <div class="story-choices" id="story-choices"></div>
     </article>
   </main>
 
@@ -62,11 +66,11 @@
   <div class="confetti" id="confetti" aria-hidden="true"></div>
 
   <script id="story-seed" type="application/json">
-{"title": "Story", "start": "start", "nodes": []}
+{"title":"Horned Frog","kicker":"Daily strip","start":"pack","pages":[{"id":"pack","image":"crew-hero","kicker":"Page 1","title":"Pack the bags","text":"Dad helped me stuff the bags. Ace in tennis whites. Riff with the guitar. Scorch already wearing the banana hat. We were going in."},{"id":"menace","image":"ace-frog","still":true,"kicker":"Page 2","title":"Something in the trees","text":"Dad didn't make it a speech. He just said look. Horned frog. Huge. I saw it too."},{"id":"chase","image":"crew-run","kicker":"Page 3","title":"Don't get eaten","text":"We ran. The road came apart. I kept up. Dad was behind me, not in my face."},{"id":"gear","image":"crew-burst","kicker":"Page 4","title":"Gear falling apart","text":"Riff's strap slipped. Scorch's jacket was already trash. Stuff falls off. Dad said hold what you can and keep moving."},{"id":"hold","image":"crew-six-as","kicker":"Page 5","title":"Hold the line","text":"Dad said hold the line — not because he was watching. Because we were still a crew."},{"id":"split","image":"riff-bird","still":true,"kicker":"Page 6","title":"The jungle splits us","text":"The trees pulled them sideways. I could not see everyone. Dad stayed where I could hear him."},{"id":"knockout","image":"ace-poster","kicker":"Page 7","title":"Ace goes down","text":"Ace hit the dirt. One ball left. Dad said last point still counts. I already knew."},{"id":"fight","image":"ace-frog","video":true,"kicker":"Page 8","title":"Ace vs the horned frog","text":"Ace got back up. Tennis balls versus the frog. I watched the whole fight. Dad sat with me. We did not skip to the end."}]}
   </script>
-  <script src="js/build.js?v=175"></script>
-  <script src="js/game.js?v=175"></script>
-  <script src="js/telemetry.js?v=175"></script>
-  <script src="js/story.js?v=175"></script>
+  <script src="js/build.js?v=176"></script>
+  <script src="js/game.js?v=176"></script>
+  <script src="js/telemetry.js?v=176"></script>
+  <script src="js/story.js?v=176"></script>
 </body>
 </html>

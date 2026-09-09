@@ -81,7 +81,7 @@ assert(askFn.includes("functions/v1/ask"), "Tutor.ask posts to the live ask func
 assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor.ask must post to the ask function even when no family token");
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
-assert(/tutor\.js\?v=175/.test(basecampHtml) && /basecamp\.js\?v=175/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
+assert(/tutor\.js\?v=176/.test(basecampHtml) && /basecamp\.js\?v=176/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
 assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
@@ -1697,7 +1697,7 @@ assert(/help-dot-bounce/.test(themeCss), "thinking dots need a bounce animation"
 assert(!/id="shelf-title"/.test(weekHtml) && !/id="shelf-manage"/.test(weekHtml), "Bennett's treehouse should not have a Trophy room header or Manage");
 assert(!/id="trophy-rail"/.test(weekHtml) && !/id="trophy-manage"/.test(weekHtml), "Bennett's treehouse should not have a labeled rail or card grid");
 assert(/id="trophy-leave"/.test(weekHtml) && /id="trophy-look-wide"/.test(weekHtml), "treehouse needs a full-room look layer and a leave control");
-assert(/theme\.css\?v=175/.test(weekHtml) && /week\.js\?v=175/.test(weekHtml) && /game\.js\?v=175/.test(weekHtml) && /telemetry\.js\?v=175/.test(weekHtml), "index should cache-bust css/js");
+assert(/theme\.css\?v=176/.test(weekHtml) && /week\.js\?v=176/.test(weekHtml) && /game\.js\?v=176/.test(weekHtml) && /telemetry\.js\?v=176/.test(weekHtml), "index should cache-bust css/js");
 assert(/id="class-switcher"/.test(weekHtml) && /id="class-switcher-list"/.test(weekHtml), "class switcher exists");
 assert(!/id="standing-classes"/.test(weekHtml) && !/id="standing-class-list"/.test(weekHtml), "old Classes lobby dump is gone");
 ["band", "sociology", "web-design", "academic-intervention", "chemistry", "strength", "english-10", "geometry"].forEach((id) => {
@@ -1746,7 +1746,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(!/\?v=174\b/.test(html), file + " should not still cache-bust as v=174");
-  assert(/\?v=175/.test(html), file + " should cache-bust v=175");
+  assert(/\?v=176/.test(html), file + " should cache-bust v=176");
   const bar = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
   const hud = html.slice(html.indexOf('class="hud-nav"'), html.indexOf("</header>"));
   assert(/hud-bar progress-hud/.test(html), file + " uses the shared HUD bar");
@@ -1762,7 +1762,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 });
 ["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
-  assert(/js\/update\.js\?v=175/.test(html), file + " loads the live-build checker");
+  assert(/js\/update\.js\?v=176/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
 ["favicon-16.png", "favicon-32.png", "favicon.ico", "apple-touch-icon.png", "favicon-192.png"].forEach((name) => {
@@ -1834,7 +1834,7 @@ assert(/minmax\(360px,\s*2fr\)/.test(themeCss), "Grades pane is twice as tall");
 assert(/checkins-scroll/.test(progressJs) && /\.checkins-scroll[\s\S]{0,120}max-height:\s*13\.5rem/.test(themeCss), "Check-ins show about three then scroll");
 assert(/id="usage-queries"/.test(usageBlock) && />Queries</.test(usageBlock), "Usage tab hosts the Queries block");
 const progressHtml = fs.readFileSync(path.join(root, "progress.html"), "utf8");
-assert(/progress\.js\?v=175/.test(progressHtml) && /theme\.css\?v=175/.test(progressHtml), "Progress should cache-bust css/js");
+assert(/progress\.js\?v=176/.test(progressHtml) && /theme\.css\?v=176/.test(progressHtml), "Progress should cache-bust css/js");
 assert(/week-chip/.test(progressHtml) && /crew-chip/.test(progressHtml), "Progress keeps This Week / Characters");
 assert(/Ask AI/.test(progressJs), "Progress keeps Ask AI");
 assert(/id="followup-pane"/.test(progressHtml) && /id="needs-you"/.test(progressHtml) && /id="grades-pane"/.test(progressHtml) && /id="checkins-pane"/.test(progressHtml), "Progress has Needs follow-up, Needs you, Grades, Check-ins");
@@ -1883,8 +1883,8 @@ assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNo
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
-assert(/build:\s*173/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 173");
-assert(/2026-09-01T10:39:07-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-09-01T10:39:07-05:00");
+assert(/build:\s*176/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD should be 176");
+assert(/2026-09-09T08:40:00-05:00/.test(fs.readFileSync(path.join(root, "js/build.js"), "utf8")), "BW_BUILD modified is 2026-09-09T08:40:00-05:00");
 assert(/Back to the treehouse/.test(weekJs), "zoomed X should say Back to the treehouse");
 assert(/id="trophy-back"/.test(weekHtml) && /Back to treehouse/.test(weekHtml), "zoomed room needs a text Back to treehouse control");
 assert(/Tap a lantern/.test(weekHtml), "first enter should hint to tap a lantern");
@@ -1997,11 +1997,52 @@ assert(Game.comicUnlocked(roster), "three teammates still open Story even with B
 assert(!Game.comicUnlocked(roster), "Bennett alone does not count toward comicStartsAfter");
 const storyHtml = fs.readFileSync(path.join(root, "story.html"), "utf8");
 const storyJs = fs.readFileSync(path.join(root, "js/story.js"), "utf8");
-const storyJson = fs.readFileSync(path.join(root, "story.json"), "utf8");
-assert(/Coming soon/.test(storyHtml) && /The comic is not ready yet/.test(storyHtml), "Story page is coming soon");
-assert(!/Issue 1/.test(storyHtml) && !/Issue 1/.test(storyJs) && !/Issue 1/.test(storyJson), "Story does not show Issue 1");
-assert(/showComingSoon/.test(storyJs) && !/story-kicker/.test(storyJs), "Story paints coming soon instead of the unfinished issue");
-assert(Game.filterBennettHelp("story").some((row) => row.id === "story" && /Coming soon/.test(row.body)), "Help says Story is coming soon");
+const storyJson = JSON.parse(fs.readFileSync(path.join(root, "story.json"), "utf8"));
+assert(!/Coming soon/.test(storyHtml) && !/The comic is not ready yet/.test(storyHtml), "Story page is the daily strip, not coming soon");
+assert(!/showComingSoon/.test(storyJs), "Story no longer paints coming soon");
+assert(/story-kicker/.test(storyJs) && /visibleStoryPages/.test(storyJs), "Story paints daily pages");
+assert(!/Issue 1/.test(storyHtml) && !/Issue 1/.test(storyJs) && !/Issue 1/.test(JSON.stringify(storyJson)), "Story does not revive Issue 1");
+assert.strictEqual((storyJson.pages || []).length, 8, "Horned Frog strip is eight daily pages");
+assert.strictEqual(storyJson.pages[0].id, "pack");
+assert.strictEqual(storyJson.pages[storyJson.pages.length - 1].id, "fight");
+assert.strictEqual(storyJson.pages[storyJson.pages.length - 1].image, "ace-frog");
+assert.strictEqual(storyJson.pages[storyJson.pages.length - 1].video, true, "last page plays the Ace vs frog fight video");
+assert(storyJson.pages[1].still && storyJson.pages[1].image === "ace-frog", "menace page uses the fight poster, not the video");
+assert(Game.filterBennettHelp("story").some((row) => row.id === "story" && /one new page/i.test(row.body) && !/Coming soon/.test(row.body)), "Help says Story unlocks one page a day");
+assert(/locker-latch/.test(weekJs) && /DONTDOTHEVOICE/.test(fs.readFileSync(path.join(root, "js/game.js"), "utf8")), "locker latch egg is wired to DONTDOTHEVOICE");
+assert(/horned-frog/.test(weekJs) && /hidden-frog/.test(fs.readFileSync(path.join(root, "index.html"), "utf8")), "horned frog egg lives on This Week");
+assert.strictEqual(Game.EGG_NAMES["locker-latch"], "Locker latch");
+assert.strictEqual(Game.EGG_NAMES["horned-frog"], "Horned frog croak");
+const eggLib = Game.normalizeLibrary({
+  items: [
+    { id: "lib-msuqk6ch-lz7l", label: "Dontdothevoice", kind: "audio", character: "fun", filename: "dontdothevoice.mp3", url: "https://example.com/dontdothevoice.mp3" },
+    { id: "lib-msuqltpq-jmja", label: "Scared", kind: "audio", character: "fun", filename: "scared.mp3", url: "https://example.com/scared.mp3" },
+    { id: "undo-click", label: "Undo", kind: "audio", path: "audio/undo.wav", character: "fun" },
+    { id: "tablesloud", label: "Table click", kind: "audio", path: "audio/tablesloud.mp3", character: "fun" }
+  ]
+});
+assert.strictEqual(Game.libraryItemNamed(eggLib, "DONTDOTHEVOICE").id, "lib-msuqk6ch-lz7l", "DONTDOTHEVOICE matches the family-board label");
+assert.strictEqual(Game.eggLibraryItem(eggLib, "locker-latch").id, "lib-msuqk6ch-lz7l");
+assert.strictEqual(Game.eggLibraryItem(eggLib, "horned-frog").id, "lib-msuqltpq-jmja", "frog egg uses Scared when no croak clip exists");
+assert.notStrictEqual(Game.eggLibraryItem(eggLib, "horned-frog").id, Game.eggLibraryItem(eggLib, "locker-latch").id);
+const croakLib = Game.normalizeLibrary({
+  items: eggLib.items.concat([{ id: "frog-croak", label: "Frog croak", kind: "audio", character: "fun", filename: "croak.mp3", url: "https://example.com/croak.mp3" }])
+});
+assert.strictEqual(Game.eggLibraryItem(croakLib, "horned-frog").id, "frog-croak", "a real croak clip wins over Scared");
+["bw-story-unlock", "bw-session", "bw-login-days"].forEach((key) => localStorage.removeItem(key));
+localStorage.setItem("bw-session", JSON.stringify({ user: "bennett", at: "2026-09-09T13:00:00.000Z" }));
+localStorage.setItem("bw-login-days", JSON.stringify(["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05"]));
+const storyDay1 = Game.recordStoryDay("2026-09-09");
+assert.strictEqual(storyDay1.reached, 1, "first visit after ship is page 1 even if loginDays already exist");
+assert.strictEqual(Game.recordStoryDay("2026-09-09").reached, 1, "same Chicago day does not unlock the next page");
+assert.strictEqual(Game.visibleStoryPages(storyJson).map((p) => p.id).join(","), "pack");
+assert.strictEqual(Game.recordStoryDay("2026-09-10").reached, 2, "the next Chicago day unlocks exactly one more page");
+assert.strictEqual(Game.visibleStoryPages(storyJson).map((p) => p.id).join(","), "pack,menace");
+assert.strictEqual(Game.visibleStoryPages(storyJson, { preview: true }).length, 8, "parent preview still sees the full strip");
+localStorage.setItem("bw-session", JSON.stringify({ user: "orin", at: "2026-09-09T13:00:00.000Z" }));
+assert.strictEqual(Game.recordStoryDay("2026-09-11").reached, 2, "a parent open does not advance Bennett's strip");
+localStorage.removeItem("bw-session");
+localStorage.removeItem("bw-story-unlock");
 const undone = Game.revokeAchievement(pack, signFamily, "signin-bennett");
 assert(undone.revokedCharacter && !Game.alreadyUnlockedCharacter("bennett"), "parent undo should lock Bennett");
 const afterUndo = Game.maybeAwardSignIn(pack, undone.family);
