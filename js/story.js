@@ -2,7 +2,6 @@
   let pack = null;
   let roster = null;
   let family = null;
-  let library = null;
   let story = null;
   let preview = false;
   let pageId = "";
@@ -19,16 +18,6 @@
     return Game.visibleStoryPages(story, { preview: preview });
   }
 
-  function attachedItem(page) {
-    return Game.attachedLibraryItem(family, library, page && page.id);
-  }
-
-  function pageArtItem(page) {
-    const attach = attachedItem(page);
-    if (attach && (attach.kind === "image" || attach.kind === "video")) return attach;
-    return Game.libraryItem(library, (page && page.image) || "");
-  }
-
   function extrasHtml() {
     const bits = [];
     const ingredients = ((family.story && family.story.ingredients) || []).filter((row) => row && row.text);
@@ -42,30 +31,35 @@
     return bits.join("");
   }
 
+  function pageSrc(page) {
+    return String((page && (page.src || page.path)) || "").trim();
+  }
+
+  function pageCaption(page) {
+    return String((page && (page.caption || page.text)) || "").trim();
+  }
+
   function renderArt(page) {
     const host = document.getElementById("story-art");
     if (!host) return;
-    const item = pageArtItem(page);
+    const src = pageSrc(page);
+    const caption = pageCaption(page);
     const forceVideo = !!(page && page.video);
-    const forceStill = !!(page && page.still) && !forceVideo;
-    let art = "";
-    if (!item) {
-      art = `<div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>Art coming</p></div>`;
-    } else if (item.kind === "video" && !forceStill) {
-      const src = Game.librarySrc(item);
-      const poster = item.poster || "";
-      art = `<video src="${Game.esc(src)}" poster="${Game.esc(poster)}" controls playsinline ${Game.prefersReducedMotion() ? "" : "autoplay"} muted></video>`;
-    } else if (item.kind === "video" && forceStill) {
-      const poster = item.poster || Game.librarySrc(item);
-      art = poster
-        ? `<img src="${Game.esc(poster)}" alt="${Game.esc(item.label || page.title || "")}">`
-        : `<div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>Art coming</p></div>`;
-    } else if (item.kind === "image") {
-      art = `<img src="${Game.esc(Game.librarySrc(item))}" alt="${Game.esc(item.label || page.title || "")}">`;
+    let media = "";
+    if (forceVideo) {
+      const videoSrc = src || "img/library/ace-frog.mp4";
+      const poster = String((page && page.poster) || "img/story/page-07.jpg").trim();
+      media = `<video src="${Game.esc(videoSrc)}" poster="${Game.esc(poster)}" controls playsinline ${Game.prefersReducedMotion() ? "" : "autoplay"} muted></video>`;
+    } else if (src) {
+      media = `<img src="${Game.esc(src)}" alt="${Game.esc(caption || page.kicker || "Story page")}">`;
     } else {
-      art = Game.libraryThumbHtml(item, "lib-play");
+      media = `<div class="char-empty-slot"><span class="char-ghost" aria-hidden="true"></span><p>Art coming</p></div>`;
     }
-    host.innerHTML = art;
+    const balloon = (forceVideo && caption)
+      ? `<p class="story-balloon">${Game.esc(caption)}</p>`
+      : "";
+    host.classList.toggle("has-balloon", !!balloon);
+    host.innerHTML = media + balloon;
   }
 
   function renderPager(page) {
@@ -107,9 +101,15 @@
     const text = document.getElementById("story-text");
     const extras = document.getElementById("story-extras");
     if (kicker) kicker.textContent = page.kicker || story.kicker || "Story";
-    if (title) title.textContent = page.title || "";
-    if (text) text.textContent = page.text || "";
-    if (extras) extras.innerHTML = (page.id === (story.start || list[0] && list[0].id) || page.video) ? extrasHtml() : "";
+    if (title) {
+      title.textContent = "";
+      title.hidden = true;
+    }
+    if (text) {
+      text.textContent = "";
+      text.hidden = true;
+    }
+    if (extras) extras.innerHTML = (page.id === (story.start || (list[0] && list[0].id)) || page.video) ? extrasHtml() : "";
     renderArt(page);
     renderPager(page);
   }
@@ -136,7 +136,6 @@
     family = await Game.loadFamily();
     family = Game.maybeAutoPreviewAll(pack, family).family;
     if (!preview) family = Game.recordLoginDay(family) || family;
-    library = await Game.loadLibrary();
     story = await Game.loadStory();
     const bananas = document.getElementById("bananas");
     if (bananas) bananas.textContent = `${Game.currency(pack).emoji} ${Game.getBananas()}`;

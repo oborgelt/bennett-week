@@ -4849,7 +4849,7 @@
     {
       id: "story",
       title: "Story",
-      body: "Shows on the bar after three teammates (not counting you). One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. The last page is Ace versus the horned frog."
+      body: "Shows on the bar after three teammates (not counting you). One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. Page 7 is Ace versus the horned frog. Page 8 is the win."
     },
     {
       id: "messages",
