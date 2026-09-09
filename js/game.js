@@ -1778,7 +1778,10 @@
 
   function comicUnlocked(roster) {
     const need = (roster && roster.comicStartsAfter) || 3;
-    return unlockedTeammates(roster).length >= need;
+    if (roster && Array.isArray(roster.characters) && roster.characters.length) {
+      return unlockedTeammates(roster).length >= need;
+    }
+    return TEAMMATE_IDS.filter((id) => alreadyUnlockedCharacter(id)).length >= need;
   }
 
   function getCharacterSeen() {
@@ -4849,7 +4852,7 @@
     {
       id: "story",
       title: "Story",
-      body: "Shows on the bar after three teammates (not counting you). One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. When a new page unlocks, it pops up like other rewards. Close it or open Story. Page 7 is Ace versus the horned frog. Page 8 is the win."
+      body: "Shows on the bar after three teammates (not counting you). One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. When a new page unlocks, it pops up on This Week like other rewards. Close it or open Story. Page 7 is Ace versus the horned frog. Page 8 is the win."
     },
     {
       id: "messages",
@@ -5677,16 +5680,21 @@
   }
 
   function emptyStoryUnlock() {
-    return { startYmd: "", lastYmd: "", reached: 0 };
+    return { startYmd: "", lastYmd: "", reached: 0, pendingCelebrate: 0, celebratedReached: 0 };
   }
 
   function normalizeStoryUnlock(raw) {
     const o = raw && typeof raw === "object" ? raw : {};
     const reached = Math.max(0, Number(o.reached) || 0);
+    const celebratedReached = Math.max(0, Number(o.celebratedReached) || 0);
+    let pendingCelebrate = Math.max(0, Number(o.pendingCelebrate) || 0);
+    if (!pendingCelebrate && reached > celebratedReached) pendingCelebrate = reached;
     return {
       startYmd: String(o.startYmd || "").trim(),
       lastYmd: String(o.lastYmd || "").trim(),
-      reached
+      reached,
+      pendingCelebrate,
+      celebratedReached
     };
   }
 
@@ -5705,16 +5713,37 @@
     return chicagoYmd(now instanceof Date ? now : undefined);
   }
 
-  let pendingStoryCelebrateReached = 0;
   let storyCelebrateAfterClose = null;
+
+  function pendingStoryCelebratePage() {
+    const cur = getStoryUnlock();
+    if (cur.pendingCelebrate > 0) return cur.pendingCelebrate;
+    if (cur.reached > cur.celebratedReached) return cur.reached;
+    return 0;
+  }
+
+  function markStoryCelebrateDismissed(reached) {
+    storyCelebrateAfterClose = null;
+    const cur = getStoryUnlock();
+    const n = Math.max(0, Number(reached) || cur.pendingCelebrate || cur.reached || 0);
+    return saveStoryUnlock(Object.assign({}, cur, {
+      pendingCelebrate: 0,
+      celebratedReached: Math.max(cur.celebratedReached, n)
+    }));
+  }
 
   function recordStoryDay(now) {
     const cur = getStoryUnlock();
     if (!shouldRecordBennettLogin()) return Object.assign({}, cur, { unlocked: false });
     const today = storyDayKey(now);
     if (!cur.startYmd) {
-      const row = saveStoryUnlock({ startYmd: today, lastYmd: today, reached: 1 });
-      pendingStoryCelebrateReached = 1;
+      const row = saveStoryUnlock({
+        startYmd: today,
+        lastYmd: today,
+        reached: 1,
+        pendingCelebrate: 1,
+        celebratedReached: cur.celebratedReached
+      });
       return Object.assign({}, row, { unlocked: true });
     }
     if (cur.lastYmd === today) return Object.assign({}, cur, { unlocked: false });
@@ -5722,9 +5751,10 @@
     const row = saveStoryUnlock({
       startYmd: cur.startYmd,
       lastYmd: today,
-      reached
+      reached,
+      pendingCelebrate: reached,
+      celebratedReached: cur.celebratedReached
     });
-    pendingStoryCelebrateReached = reached;
     return Object.assign({}, row, { unlocked: true });
   }
 
@@ -5786,13 +5816,14 @@
     } catch (_) {}
   }
 
-  function showStoryPageCelebrate(page) {
+  function showStoryPageCelebrate(page, reached) {
     if (!page) return false;
     const caption = storyPageCaption(page);
     const src = storyPageSrc(page);
     const isVideo = !!(page.video || /\.mp4(\?|$)/i.test(src));
     const poster = String((page && page.poster) || "").trim();
     const title = String((page && (page.kicker || page.title)) || "Story page");
+    const n = Math.max(0, Number(reached) || pendingStoryCelebratePage() || 0);
     const layer = celebrateLayer();
     layer.classList.add("char-celebrate-full");
     let media = "";
@@ -5819,8 +5850,9 @@
       stopLibraryAudio();
       playCharacterVideo(layer.querySelector ? layer.querySelector("video") : null);
     }
-    bindCelebrateClose(layer);
+    bindCelebrateClose(layer, () => markStoryCelebrateDismissed(n));
     bindCelebrateSee(layer, () => {
+      markStoryCelebrateDismissed(n);
       stopLibraryAudio();
       closeCharacterCelebrate();
       openCelebratedStoryPage(page);
@@ -5829,43 +5861,35 @@
     return true;
   }
 
+  function storyCelebrateIsOpen() {
+    const layer = document.getElementById("char-celebrate");
+    if (!layer || !layer.classList || !layer.classList.contains("open")) return false;
+    const html = String(layer.innerHTML || "");
+    return html.indexOf("char-celebrate-story") >= 0 || html.indexOf("Open Story") >= 0;
+  }
+
   function maybeCelebrateStoryPage(story, opts) {
-    if (opts && opts.preview) {
-      pendingStoryCelebrateReached = 0;
-      storyCelebrateAfterClose = null;
-      return false;
-    }
-    if (!shouldRecordBennettLogin()) {
-      pendingStoryCelebrateReached = 0;
-      storyCelebrateAfterClose = null;
-      return false;
-    }
-    const n = pendingStoryCelebrateReached;
+    if (opts && opts.preview) return false;
+    if (!shouldRecordBennettLogin()) return false;
+    const n = pendingStoryCelebratePage();
     if (!n) return false;
     const pages = storyPages(story);
     if (!pages.length) return false;
-    if (n > pages.length) {
-      pendingStoryCelebrateReached = 0;
-      return false;
-    }
+    if (n > pages.length) return false;
     const page = pages[n - 1];
-    if (!page) {
-      pendingStoryCelebrateReached = 0;
-      return false;
-    }
+    if (!page) return false;
+    if (storyCelebrateIsOpen()) return true;
     if (celebrateLayerIsOpen()) {
       storyCelebrateAfterClose = () => {
-        pendingStoryCelebrateReached = 0;
-        showStoryPageCelebrate(page);
+        showStoryPageCelebrate(page, n);
       };
       return false;
     }
-    pendingStoryCelebrateReached = 0;
-    return showStoryPageCelebrate(page);
+    return showStoryPageCelebrate(page, n);
   }
 
   async function flushStoryPageCelebrate(story, opts) {
-    if (!pendingStoryCelebrateReached) return false;
+    if (!pendingStoryCelebratePage()) return false;
     const pack = story || await loadStory();
     return maybeCelebrateStoryPage(pack, opts);
   }
@@ -7071,8 +7095,9 @@
     });
     const story = document.getElementById ? document.getElementById("story-chip") : null;
     const egg = document.getElementById ? document.getElementById("egg-chip") : null;
-    if (story) story.hidden = !storyOpen;
+    if (story) story.hidden = !(storyOpen || comicUnlocked());
     if (egg) egg.hidden = !funPlayAllowed() || !eggOpen;
+    paintStoryChip();
     return navs[0];
   }
 
@@ -9985,6 +10010,8 @@
     storyPages,
     getStoryUnlock,
     recordStoryDay,
+    pendingStoryCelebratePage,
+    markStoryCelebrateDismissed,
     maybeCelebrateStoryPage,
     flushStoryPageCelebrate,
     storyPagesReached,
@@ -10016,10 +10043,13 @@
   };
 
   function paintStoryChip(roster, force) {
-    const el = document.getElementById("story-chip");
-    if (!el) return;
     const open = !!force || comicUnlocked(roster);
-    el.hidden = !open;
+    const nodes = document.querySelectorAll
+      ? document.querySelectorAll("#story-chip, .story-chip")
+      : (document.getElementById("story-chip") ? [document.getElementById("story-chip")] : []);
+    Array.from(nodes || []).forEach((el) => {
+      if (el) el.hidden = !open;
+    });
   }
 
   function paintBuild() {

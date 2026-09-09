@@ -2544,6 +2544,7 @@
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
     family = Game.recordLoginDay(family) || family;
+    if (Game.flushStoryPageCelebrate) void Game.flushStoryPageCelebrate();
     family = Game.ensureReflectionPool(family);
     library = await Game.loadLibrary();
     await Game.hydrateLibraryBlobs(library);
