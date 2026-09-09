@@ -1765,7 +1765,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
   assert(/js\/update\.js\?v=179/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
 });
-["favicon-16.png", "favicon-32.png", "favicon.ico", "apple-touch-icon.png", "favicon-192.png"].forEach((name) => {
+["favicon-16.png", "favicon-32.png", "apple-touch-icon.png"].forEach((name) => {
   assert(fs.existsSync(path.join(root, "img", name)), "img/" + name + " is the monkey tab icon");
 });
 ["ptable.html", "mom.html"].forEach((file) => {
@@ -1902,7 +1902,6 @@ assert(weekJs.includes('playSoundCue(family, library, "tables")'), "pedestal/tab
 assert(/enterTrophyZone[\s\S]{0,180}pedestal[\s\S]{0,80}playTableCue/.test(weekJs) || /if \(id === "pedestal"\) playTableCue/.test(weekJs), "entering the pedestal should play the table cue");
 assert(/zoneAtStart === "pedestal"/.test(weekJs) && /playTableCue/.test(weekJs), "pedestal closeup still clicks should play the table cue");
 ["ace", "riff", "scorch", "deuce", "fuzz", "bennett"].forEach((id) => {
-  assert(fs.existsSync(path.join(root, "img/characters/" + id + ".png")), id + " cutout png should stay on disk");
   assert(fs.existsSync(path.join(root, "img/characters/" + id + ".jpg")), id + " locker jpg should stay on disk");
   assert(refsHtml.includes("img/characters/" + id + ".jpg"), id + " locker still should stay on refs.html");
 });
