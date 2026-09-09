@@ -72,21 +72,6 @@
     el.innerHTML = line ? `<a href="progress.html#needs-you">${Game.esc(line)}</a>` : "";
   }
 
-  function paintBoardSync(sync) {
-    let el = document.getElementById("board-sync");
-    if (!el) {
-      const flag = document.getElementById("draft-flag");
-      if (!flag || !flag.parentNode) return;
-      el = document.createElement("p");
-      el.id = "board-sync";
-      el.className = "draft-flag";
-      flag.parentNode.insertBefore(el, flag.nextSibling);
-    }
-    const text = Game.boardSyncNotice(sync);
-    el.hidden = !text;
-    el.textContent = text;
-  }
-
   function paintCrewLibCats() {
     const current = CREW_LIB_CATS.indexOf(selectedCharId) >= 0 ? selectedCharId : (selectedCharId === "fun" ? "" : "all");
     document.querySelectorAll("[data-crew-lib]").forEach((tab) => {
@@ -1748,7 +1733,6 @@
       try {
         const synced = await Game.syncFamilyBoard(family);
         family = synced.family;
-        paintBoardSync(synced);
         week = Game.applyWeekOverlay(baseWeek, family);
         const livePack = Game.getMomDraft();
         if (livePack && Array.isArray(livePack.achievements) && livePack.achievements.length) {

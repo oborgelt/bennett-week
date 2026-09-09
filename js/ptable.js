@@ -286,12 +286,8 @@
     paintStamp();
     paintLegend();
     buildFullGrid();
-    const first = findBySymbol("H");
     const host = document.getElementById("pt-detail");
     if (host) host.innerHTML = "Tap an element.";
-    if (first) {
-      /* keep the prompt until he taps */
-    }
   }
 
   global.BW_PTABLE = PTABLE;

@@ -1826,10 +1826,6 @@
     };
   }
 
-  function aceMedia(roster) {
-    return characterMedia(roster, ((roster && roster.characters) || []).find((ch) => ch.id === "ace"));
-  }
-
   function defaultLibrary() {
     return {
       items: [
@@ -7292,8 +7288,6 @@
     mountMessagesChip();
     mountBaseCampChip();
     hideAdultShortcuts(hideAdult);
-    hideMessagesChip(view);
-    bounceMessagesIfKid();
     gateAdultPage();
     paintMessagesChip();
     notifySiteView(view);
@@ -8751,10 +8745,6 @@
     };
   }
 
-  function boardSyncNotice(sync) {
-    return "";
-  }
-
   function familySnapshot(family) {
     const next = normalizeFamily(family);
     return JSON.stringify({
@@ -9117,30 +9107,6 @@
       }
     });
     return n;
-  }
-
-  function hideMessagesChip() {
-    if (!document.querySelectorAll) return;
-    const nodes = document.querySelectorAll(".messages-chip, a[href='messages.html']");
-    Array.from(nodes || []).forEach((el) => {
-      if (!el) return;
-      if (el.closest && el.closest(".site-view-gate")) return;
-      el.hidden = false;
-    });
-  }
-
-  function shouldBounceMessagesPage() {
-    return false;
-  }
-
-  function bounceMessagesIfKid() {
-    if (!shouldBounceMessagesPage()) return false;
-    try {
-      if (global.location && typeof global.location.replace === "function") {
-        global.location.replace("index.html");
-      }
-    } catch (_) {}
-    return true;
   }
 
   function exportPack(pack, family, roster, library) {
@@ -9740,7 +9706,6 @@
     familyDeletedToast,
     familyConnected,
     familySnapshot,
-    boardSyncNotice,
     stampLegacyProgress,
     mergeProgressByUpdatedAt,
     localWorkSyncRows,
@@ -9759,9 +9724,6 @@
     paintHudCurrent,
     hudCurrent,
     wantsTrophyRoom,
-    hideMessagesChip,
-    shouldBounceMessagesPage,
-    bounceMessagesIfKid,
     noteTargetLabel,
     exportPack,
     importPack,
@@ -9781,7 +9743,6 @@
     pendingCharacterCelebrations,
     markCharacterSeen,
     unmarkCharacterSeen,
-    aceMedia,
     playUnlockClip,
     playTrophyVideo,
     rewardClipItems,

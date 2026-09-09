@@ -252,21 +252,6 @@
     return week;
   }
 
-  function paintBoardSync(sync) {
-    let el = document.getElementById("board-sync");
-    if (!el) {
-      const flag = document.getElementById("draft-flag");
-      if (!flag || !flag.parentNode) return;
-      el = document.createElement("p");
-      el.id = "board-sync";
-      el.className = "draft-flag";
-      flag.parentNode.insertBefore(el, flag.nextSibling);
-    }
-    const text = Game.boardSyncNotice(sync);
-    el.hidden = !text;
-    el.textContent = text;
-  }
-
   function standingClasses() {
     return ((seed && seed.classes) || []).filter((cls) => cls && cls.id);
   }
@@ -2259,11 +2244,6 @@
     loadHelp(work, "nudge");
   }
 
-  function driftNotes() {
-    const field = document.getElementById("notes");
-    if (field) field.innerHTML = "";
-  }
-
   function playFoundEggSound(egg) {
     const item = Game.playEggLibrarySound ? Game.playEggLibrarySound(library, egg) : null;
     return item;
@@ -2563,7 +2543,6 @@
     bindTrack();
     bindEggs();
     bindShelf();
-    driftNotes();
     hud();
     goTo(0, true);
     runUnlocks();
@@ -2600,7 +2579,6 @@
         family = Game.promoteAskThreadToInbox(family, week);
         family = Game.ensureReflectionPool(family);
         if (Game.flushFamilyNotes) family = await Game.flushFamilyNotes(family);
-        paintBoardSync(synced);
         const after = Game.familySnapshot ? Game.familySnapshot(family) : "";
         const afterProgress = JSON.stringify(Game.getProgress ? Game.getProgress() : {});
         if (synced.changed || (before && after && before !== after) || beforeProgress !== afterProgress) {
