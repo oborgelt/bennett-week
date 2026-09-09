@@ -172,15 +172,11 @@
     const base = cardsFrom(payload.title, payload.note);
     const mode = payload.mode || "nudge";
     const out = { live: false, source: "offline", mode };
-    if (mode === "explain") out.explain = base.explain;
-    else if (mode === "quiz") out.quiz = base.quiz;
-    else if (mode === "proofread") {
+    if (mode === "proofread") {
       out.feedback = [
         "Read the draft out loud. Fix names, dates, and anything you would not say.",
         "Do not let a helper write the assignment for you."
       ];
-    } else if (mode === "notecards") {
-      out.cards = base.cards;
     } else {
       out.explain = base.explain;
       out.start = base.start;
@@ -204,12 +200,6 @@
     const out = { live: true, source: data.source || "live", mode };
     if (mode === "proofread") {
       out.feedback = [data.reply];
-    } else if (mode === "quiz") {
-      out.quiz = [{ q: data.reply, a: "Your move — say it out loud." }];
-    } else if (mode === "notecards") {
-      out.cards = [{ front: "A first question", back: data.reply }];
-    } else if (mode === "explain") {
-      out.explain = data.reply;
     } else {
       out.explain = "The mentor looked at this card. One question — not the finished work.";
       out.start = data.reply;

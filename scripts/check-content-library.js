@@ -82,7 +82,7 @@ assert(!/if\s*\(\s*token\s*\)\s*\{[\s\S]*functions\/v1\/ask/.test(askFn), "Tutor
 const requestFn = tutorJs.slice(tutorJs.indexOf("async function request"), tutorJs.indexOf("function testAsk"));
 assert(!/if\s*\(\s*token\s*\)/.test(requestFn), "A little help live path must not require a family token");
 assert(/tutor\.js\?v=179/.test(basecampHtml) && /basecamp\.js\?v=179/.test(basecampHtml), "Base Camp should cache-bust tutor/basecamp");
-assert(/basecamp\.html/.test(askHtml) && /\?class=/.test(askHtml) && /\?title=/.test(askHtml), "ask.html hands off to Base Camp and keeps class/title query");
+assert(/basecamp\.html/.test(askHtml) && /location\.search/.test(askHtml) && /location\.replace/.test(askHtml), "ask.html hands off to Base Camp and keeps the query");
 assert(fs.existsSync(path.join(root, "basecamp.html")), "Base Camp page exists");
 assert(fs.existsSync(path.join(root, "js/basecamp.js")), "Base Camp script exists");
 assert(/Jungle Jam · Base Camp/.test(basecampHtml), "Base Camp page title");
@@ -96,7 +96,7 @@ assert(/MAX_EDGE = 1200/.test(basecampJs) && /image\/jpeg/.test(basecampJs), "cl
 assert(/Jungle Jam Tutor/.test(tutorJs) && /Jungle Jam Tutor/.test(basecampJs) && /Jungle Jam Tutor/.test(basecampHtml), "Base Camp copy/identity is Jungle Jam Tutor");
 assert(tutorJs.includes("https://www.khanacademy.org/math/geometry"), "Geometry Khan handoff URL present");
 assert(!/here is the answer to #4/i.test(tutorJs) && !/here is the answer to #4/i.test(basecampJs), "no here-is-the-answer-to-#4 style fallback");
-["index.html", "progress.html", "characters.html", "ask.html", "messages.html", "admin.html", "parent.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
+["index.html", "progress.html", "characters.html", "messages.html", "admin.html", "parent.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(/basecamp-chip/.test(html) && /basecamp\.html/.test(html), file + " HUD includes Base Camp");
 });
@@ -1208,7 +1208,7 @@ assert(localStorage.getItem("bw-telemetry"), "clean-slate must not wipe telemetr
 assert.strictEqual(localStorage.getItem("bw-device-id"), "dev-keep");
 assert(localStorage.getItem("bw-session-at"), "clean-slate must not wipe session stamp");
 
-["index.html", "progress.html", "parent.html", "admin.html", "ask.html", "basecamp.html", "egg.html", "story.html", "characters.html", "refs.html", "messages.html", "help.html"].forEach((file) => {
+["index.html", "progress.html", "parent.html", "admin.html", "basecamp.html", "egg.html", "story.html", "characters.html", "refs.html", "messages.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(/class="banner-title"[^>]*href="index.html"|href="index.html"[^>]*class="banner-title"/.test(html), file + " banner should link home");
   assert(html.indexOf("hud-nav") < 0 || /hud-nav[\s\S]{0,80}week-chip/.test(html), file + " should keep This week first in the HUD");
@@ -1663,9 +1663,9 @@ assert(helpBubbleFn.includes("ask-bubble") && !/Edit/.test(helpBubbleFn) && !/De
 assert(/help-thinking/.test(weekJs) && /Looking at the assignment/.test(weekJs) && /Pulling a hint/.test(weekJs) && /Mentor is thinking/.test(weekJs), "A little help should show a changing thinking status before the reply");
 assert(/HELP_THINK_MS = 700/.test(weekJs) && /help-dots/.test(weekJs), "A little help should hold thinking for at least 700ms with dots");
 assert(/Couldn’t reach the mentor/.test(weekJs), "A little help should say so when the mentor is offline");
-const askJs = fs.readFileSync(path.join(root, "js/ask.js"), "utf8");
-assert(/ask-bubble mentor thinking/.test(askJs) && /Thinking…/.test(askJs), "Ask AI should paint a thinking bubble before the reply");
-assert(/700/.test(askJs) && /ask-send/.test(askJs) && /disabled = true/.test(askJs), "Ask AI should disable send and hold thinking if the fallback is instant");
+assert(!fs.existsSync(path.join(root, "js/ask.js")), "dead Ask page script is gone");
+assert(/ask-bubble mentor thinking/.test(basecampJs) && /Thinking…/.test(basecampJs), "Ask AI should paint a thinking bubble before the reply");
+assert(/700/.test(basecampJs) && /bc-send/.test(basecampJs) && /disabled = true/.test(basecampJs), "Ask AI should disable send and hold thinking if the fallback is instant");
 assert(/do not do the assignment/i.test(tutorJs), "live A little help should use a Socratic first-move prompt");
 const crewJs = fs.readFileSync(path.join(root, "js/characters.js"), "utf8");
 const parentJs = fs.readFileSync(path.join(root, "js/parent.js"), "utf8");
@@ -1740,10 +1740,10 @@ assert(!/progress-tagline/.test(messagesHud), "messages.html has no progress-tag
 ["parent.html", "progress.html", "admin.html", "characters.html", "basecamp.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   const hud = html.slice(html.indexOf('class="hud-bar'), html.indexOf("</header>"));
-  assert(!/progress-tagline/.test(hud) || /\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), file + " HUD tagline is gone or hidden");
+  assert(!/progress-tagline/.test(hud), file + " HUD has no progress-tagline");
 });
-assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss), "HUD taglines cannot squeeze into a one-word column");
-["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
+assert(!/progress-tagline/.test(themeCss), "HUD tagline leftover styles are gone");
+["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "basecamp.html", "story.html", "egg.html", "refs.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(!/\?v=174\b/.test(html), file + " should not still cache-bust as v=174");
   assert(/\?v=179/.test(html), file + " should cache-bust v=179");
@@ -1760,7 +1760,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
   assert(!/class="refs-chip"/.test(hud), file + " family bar does not include Locker refs");
   assert(/favicon-32\.png/.test(html) && /apple-touch-icon\.png/.test(html), file + " declares the monkey tab icon for Chrome and Safari");
 });
-["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "ask.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
+["index.html", "progress.html", "parent.html", "messages.html", "admin.html", "characters.html", "basecamp.html", "story.html", "egg.html", "refs.html", "ptable.html", "help.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(/js\/update\.js\?v=179/.test(html), file + " loads the live-build checker");
   assert(/Cache-Control/.test(html) && /no-store/.test(html), file + " tells the browser not to keep a stale shell");
@@ -1768,7 +1768,7 @@ assert(/\.hud-bar \.progress-tagline[\s\S]{0,80}display:\s*none/.test(themeCss),
 ["favicon-16.png", "favicon-32.png", "favicon.ico", "apple-touch-icon.png", "favicon-192.png"].forEach((name) => {
   assert(fs.existsSync(path.join(root, "img", name)), "img/" + name + " is the monkey tab icon");
 });
-["ptable.html", "mom.html"].forEach((file) => {
+["ptable.html", "mom.html", "ask.html"].forEach((file) => {
   const html = fs.readFileSync(path.join(root, file), "utf8");
   assert(/favicon-32\.png/.test(html) && /apple-touch-icon\.png/.test(html), file + " declares the monkey tab icon");
 });
@@ -1878,8 +1878,9 @@ const trophyVidTpl = gameJs.slice(gameJs.indexOf("function playTrophyVideo"), ga
 assert(/<video[^>]*>/.test(trophyVidTpl) && !/\smuted/.test(trophyVidTpl.match(/<video[^>]*>/)[0]), "Six A's rush clip is not muted");
 assert(/playCharacterVideo/.test(trophyVidTpl), "award clip unmutes like Riff");
 assert(/SIX_AS_LIVE_ACHIEVEMENT/.test(weekJs) && /data-watch-clip/.test(weekJs) && /playTrophyVideo/.test(weekJs), "pedestal Watch replays both Six A's clips");
-assert(/\.note-field[\s\S]{0,120}display:\s*none/.test(themeCss), "This Week does not paint drifting notes over the page");
-assert(/field\.innerHTML = ""/.test(weekJs) && !/\["♪"/.test(weekJs), "driftNotes no longer spawns floating notes");
+assert(!/note-field/.test(weekHtml) && !/function driftNotes/.test(weekJs) && !/\["♪"/.test(weekJs), "drifting-notes leftovers are gone");
+assert(!/@keyframes note-drift/.test(themeCss) && !/\.note-field/.test(themeCss), "drifting-notes leftover styles are gone");
+assert(/section class="note"/.test(weekJs) && !/\.note\s*\{[\s\S]{0,80}display:\s*none/.test(themeCss), "live week notes are rendered and not hidden");
 assert(/overscroll-behavior-y:\s*none/.test(themeCss), "This Week does not keep scrolling after the finger lifts");
 assert(/markClassVisit\(selectedClassId\)/.test(weekJs), "the already-selected class counts toward the Riff tour");
 assert(/parent-needs/.test(parentHtml) && /parentNeedsLine/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Parent desk has the missing/late/due today line");
@@ -2238,7 +2239,7 @@ assert(/body\.progress-page \.progress-hud \.hud-nav/.test(themeCss), "Progress 
 assert(fs.existsSync(path.join(root, "messages.html")), "messages.html exists");
 assert(fs.existsSync(path.join(root, "js/messages.js")), "messages.js exists");
 assert(!Game.shouldGateAdultPage("messages.html", "mom") && !Game.shouldGateAdultPage("messages.html", "bennett") && !Game.shouldGateAdultPage("messages.html", "me"), "Mom view does not gate Messages");
-assert(!Game.shouldBounceMessagesPage("messages.html", "bennett") && !Game.shouldBounceMessagesPage("messages.html", "mom") && !Game.shouldBounceMessagesPage("messages.html", "me"), "Bennett can open Messages");
+assert(typeof Game.shouldBounceMessagesPage !== "function" && typeof Game.bounceMessagesIfKid !== "function", "Messages page is not bounced");
 assert(!/html\[data-site-view="bennett"\] \.messages-chip/.test(themeCss), "Bennett CSS must not hide the Messages chip");
 assert(!/html\[data-site-view="bennett"\] a\[href="messages\.html"\]/.test(themeCss), "Bennett CSS must not hide messages.html");
 assert(!/html\[data-site-view="mom"\] a\[href="messages\.html"\]/.test(themeCss), "Mom CSS must not hide messages.html");
@@ -2275,7 +2276,7 @@ assert(/syncFamilyProgress\(\)/.test(fs.readFileSync(path.join(root, "js/game.js
 assert(/fetchOverlay/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")) && /upsertOverlay/.test(fs.readFileSync(path.join(root, "js/telemetry.js"), "utf8")), "telemetry talks to family_overlay");
 assert(!/Cloud notes table/.test(fs.readFileSync(path.join(root, "js/messages.js"), "utf8")), "Messages does not nag about a missing notes table");
 assert(/family_notes/.test(familySyncFn) && /deleteNoteIds/.test(familySyncFn), "family-sync pulls and writes notes");
-assert(/boardSyncNotice/.test(weekJs) && /boardSyncNotice/.test(parentJs), "This Week and Parent desk still have a sync notice hook");
+assert(!/boardSyncNotice/.test(gameSrc) && !/paintBoardSync/.test(weekJs) && !/paintBoardSync/.test(parentJs), "empty board-sync notice leftover is gone");
 const laterDays = Array.from({ length: 7 }, (_, i) => new Date(2026, 7, 18 + i));
 const laterWork = { id: "book-report", title: "English 10: Book report", due: "2026-09-15", classId: "english-10" };
 assert(Game.workIsLater(laterWork, laterDays), "a September book report is Later, not This Week");
@@ -2332,9 +2333,7 @@ Game.setSiteView("me");
 assert.strictEqual(Game.getBananas(), 4, "Me HUD shows Bennett bananas");
 Game.setSiteView("bennett");
 assert.strictEqual(Game.getBananas(), 4, "Bennett HUD matches Mom/Dad");
-assert.strictEqual(Game.boardSyncNotice({ missing: true }), "", "family pages do not nag about telemetry.sql");
-assert.strictEqual(Game.boardSyncNotice({ offline: true }), "", "family pages do not nag that Connect is off");
-assert.strictEqual(Game.boardSyncNotice({}), "");
+assert(typeof Game.boardSyncNotice !== "function", "family pages do not nag about telemetry.sql or Connect");
 localStorage.setItem("bw-progress", JSON.stringify({ old1: { done: 1 } }));
 const stampedLegacy = Game.stampLegacyProgress();
 assert(stampedLegacy.old1 && stampedLegacy.old1.updatedAt, "legacy Done gets a timestamp so it can sync without a re-click");
@@ -2753,9 +2752,8 @@ assert(/Live for Bennett/.test(fs.readFileSync(path.join(root, "js/parent.js"), 
 assert(/stampAchievementsOnFamily/.test(fs.readFileSync(path.join(root, "js/parent.js"), "utf8")), "Save pushes the streak catalog");
 assert(/bw-messages-seen-/.test(gameSrc), "inbox last-seen is per-role localStorage");
 assert(!/family\.inboxSeen/.test(gameSrc) && !/inboxSeen:\s*\{/.test(gameSrc), "do not store inboxSeen on the family pack");
-const hideFn = gameSrc.slice(gameSrc.indexOf("function hideMessagesChip"), gameSrc.indexOf("function shouldBounceMessagesPage"));
-assert(/hidden\s*=\s*false/.test(hideFn) && !/===\s*["']bennett["']/.test(hideFn), "hideMessagesChip does not hide for Bennett");
-const paintFn = gameSrc.slice(gameSrc.indexOf("function paintMessagesChip"), gameSrc.indexOf("function hideMessagesChip"));
+assert(!/function hideMessagesChip/.test(gameSrc), "hideMessagesChip leftover is gone");
+const paintFn = gameSrc.slice(gameSrc.indexOf("function paintMessagesChip"), gameSrc.indexOf("function exportPack"));
 assert(/inboxUnreadCount/.test(paintFn), "paintMessagesChip uses per-view unread");
 assert(!/unansweredAskCount/.test(paintFn), "paintMessagesChip is not only unansweredAskCount");
 assert(typeof Game.noteAuthorLabel === "function" && typeof Game.parentNoteFrom === "function" && typeof Game.inboxUnreadCount === "function", "named-sender helpers exist");

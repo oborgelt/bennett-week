@@ -52,16 +52,6 @@ def tutor_payload(body: dict) -> dict:
             "Proofread the student's draft. Do not rewrite it. "
             f"Give 2-4 short, kind notes. Shape: {shape}\n\nDraft:\n{draft or '(empty)'}"
         )
-    elif mode in ("notecards", "quiz", "explain"):
-        if mode == "explain":
-            shape = '{"explain":"3-6 short sentences"}'
-            ask = f"Give a short tutor explanation of the concept / task. Shape: {shape}"
-        elif mode == "quiz":
-            shape = '{"quiz":[{"q":"...","a":"..."},{"q":"...","a":"..."},{"q":"...","a":"..."}]}'
-            ask = f"Ask 3 short check-for-understanding questions (not the homework itself). Shape: {shape}"
-        else:
-            shape = '{"cards":[{"front":"...","back":"..."},{"front":"...","back":"..."},{"front":"...","back":"..."}]}'
-            ask = f"Make 3 or 4 flip notecards on the topic. Shape: {shape}"
     else:
         shape = '{"explain":"3-5 short sentences","start":"one first move tonight"}'
         ask = (

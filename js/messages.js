@@ -86,13 +86,6 @@
     Game.paintMessagesChip(family);
   }
 
-  function paintSync() {
-    const el = document.getElementById("messages-sync");
-    if (!el) return;
-    el.hidden = true;
-    el.textContent = "";
-  }
-
   function render(sync) {
     const box = document.getElementById("messages-inbox");
     if (!box) return;
@@ -116,7 +109,6 @@
         render();
       }
     });
-    paintSync(sync);
   }
 
   function markThisViewerSeen() {
@@ -125,10 +117,6 @@
   }
 
   async function boot() {
-    if (Game.shouldBounceMessagesPage()) {
-      Game.bounceMessagesIfKid();
-      return;
-    }
     msgFilter = readMsgFilter();
     bindTabs();
     paintTabs();

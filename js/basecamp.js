@@ -38,16 +38,6 @@
     ]
   };
   const TUTOR_LINE = "Upload a picture or file, or just chat with me. I can't give you answers but I can help you get to the answer.";
-  const COACH = {
-    geometry: TUTOR_LINE,
-    chemistry: TUTOR_LINE,
-    "english-10": TUTOR_LINE,
-    sociology: TUTOR_LINE,
-    "web-design": TUTOR_LINE,
-    band: TUTOR_LINE,
-    strength: TUTOR_LINE,
-    "academic-intervention": TUTOR_LINE
-  };
   const PTABLE = window.BW_PTABLE || [];
   const RAIL_KEY = "bw-bc-rail";
   const PDF_MAX_PAGES = 4;
@@ -277,11 +267,10 @@
     const chips = examplesForClass().map((q) => {
       return `<button type="button" class="bc-ex" data-example="${Game.esc(q)}">${Game.esc(q)}</button>`;
     }).join("");
-    const line = COACH[classId] || TUTOR_LINE;
     return `
       <div class="bc-welcome">
         <p class="ask-who">${Game.esc(Tutor.IDENTITY)}</p>
-        <p class="bc-coach">${Game.esc(line)}</p>
+        <p class="bc-coach">${Game.esc(TUTOR_LINE)}</p>
         <div class="bc-ex-list">${chips}</div>
       </div>`;
   }
