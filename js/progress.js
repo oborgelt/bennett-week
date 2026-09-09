@@ -1048,6 +1048,7 @@
     if (!(loginAwards.sixAs && loginAwards.sixAs.celebrate) && !(loginAwards.scorch && loginAwards.scorch.celebrate)) {
       live.fresh.forEach((ach) => Game.celebrate(ach, pack, library, { roster, family }));
     }
+    if (Game.flushStoryPageCelebrate) void Game.flushStoryPageCelebrate();
     document.getElementById("close-sheet").addEventListener("click", closeSheet);
     document.getElementById("sheet").addEventListener("click", (e) => {
       if (e.target.id === "sheet") closeSheet();
@@ -1084,6 +1085,7 @@
       const next = Game.playBennettLoginAwards(pack, family, null, { roster });
       family = next.family;
       render();
+      if (Game.flushStoryPageCelebrate) void Game.flushStoryPageCelebrate();
     });
     render();
     try {

@@ -5161,6 +5161,23 @@ body.crew-page {
   background: #071618;
 }
 
+.char-celebrate-story {
+  position: relative;
+  width: min(100%, 560px);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #071618;
+}
+
+.char-celebrate-story img,
+.char-celebrate-story video {
+  display: block;
+  width: 100%;
+  max-height: 58dvh;
+  object-fit: contain;
+  background: #071618;
+}
+
 .award-unlock-clip {
   max-height: min(42dvh, 320px);
   border: 2px solid #f3c34a;

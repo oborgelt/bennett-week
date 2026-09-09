@@ -143,6 +143,11 @@
     if (eggChip) Game.paintEggChip(pack);
     const flag = document.getElementById("preview-flag");
     if (flag) flag.hidden = !preview;
+    document.addEventListener("bw-open-story-page", (e) => {
+      const id = e && e.detail && e.detail.id;
+      if (id) go(id);
+    });
+    if (!preview && Game.maybeCelebrateStoryPage) Game.maybeCelebrateStoryPage(story, { preview: preview });
     if (!preview && !Game.comicUnlocked(roster)) {
       showGate();
       return;

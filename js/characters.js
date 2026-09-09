@@ -175,6 +175,7 @@
     if (!Game.maybePlayUnlockCelebration(roster, pack, family, library)) {
       Game.maybePlayContentCelebration(library);
     }
+    if (Game.flushStoryPageCelebrate) void Game.flushStoryPageCelebrate();
     document.addEventListener("bw-site-view", () => {
       if (!pack) return;
       const next = Game.playBennettLoginAwards(pack, family, library, { roster });
@@ -182,6 +183,7 @@
       hud();
       render();
       if (roster) Game.maybePlayUnlockCelebration(roster, pack, family, library);
+      if (Game.flushStoryPageCelebrate) void Game.flushStoryPageCelebrate();
     });
   }
 
