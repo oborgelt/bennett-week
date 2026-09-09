@@ -1042,8 +1042,8 @@
     if (comic) comic.hidden = false;
     if (copy) {
       copy.textContent = Game.comicUnlocked(roster)
-        ? "Bennett earned three teammates. Story is on his HUD now. You can still preview."
-        : "Parents can always preview. Bennett’s HUD shows Story after three teammates unlock.";
+        ? "Bennett earned three teammates. Story is on his HUD now. He unlocks one page a day. You can still preview the whole strip."
+        : "Parents can always preview the whole strip. Bennett’s HUD shows Story after three teammates unlock, one page a day.";
     }
   }
 

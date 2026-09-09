@@ -1392,6 +1392,10 @@
         <img src="${Game.esc(trophyArt(ach))}" alt="">
       </article>`;
     }).join("");
+    if (trophyZone === "lockers") {
+      const latchFound = Game.getEggs()["locker-latch"] ? " found" : "";
+      slots.insertAdjacentHTML("beforeend", `<button type="button" class="trophy-egg locker-latch${latchFound}" id="locker-latch" data-egg="locker-latch" style="${boxStyle({ l: "62%", t: "70%", w: "28%", h: "24%" })}" aria-label="Locker latch"></button>`);
+    }
     slots.querySelectorAll(".trophy-object").forEach((el) => {
       el.addEventListener("click", (e) => {
         if (skipTrophyClick) return;
@@ -2260,6 +2264,34 @@
     if (field) field.innerHTML = "";
   }
 
+  function playFoundEggSound(egg) {
+    const item = Game.playEggLibrarySound ? Game.playEggLibrarySound(library, egg) : null;
+    return item;
+  }
+
+  function markEggButton(id, found) {
+    const byId = document.getElementById(id);
+    if (byId) byId.classList.toggle("found", !!found);
+    document.querySelectorAll("[data-egg]").forEach((el) => {
+      if (el.getAttribute("data-egg") === id) el.classList.toggle("found", !!found);
+    });
+  }
+
+  function findSoundEgg(egg, firstToast, againToast) {
+    const item = playFoundEggSound(egg);
+    if (!item) {
+      Game.toast("That clip is still loading.");
+    }
+    if (Game.recordEgg(egg)) {
+      markEggButton(egg, true);
+      Game.toast(firstToast);
+      hud();
+      return true;
+    }
+    Game.toast(againToast);
+    return false;
+  }
+
   function bindEggs() {
     document.getElementById("banner-monkey").addEventListener("click", () => {
       const n = Game.bumpEggCount("banner-monkey");
@@ -2286,9 +2318,30 @@
       Game.recordEgg("clarinet-honk");
     });
 
+    const frog = document.getElementById("hidden-frog");
+    if (frog) {
+      frog.addEventListener("click", () => {
+        findSoundEgg("horned-frog", "A horned frog croak!", "That frog already croaked.");
+      });
+    }
+
+    const room = document.getElementById("trophy-room");
+    if (room && !room.dataset.eggBound) {
+      room.dataset.eggBound = "1";
+      room.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest && e.target.closest("[data-egg=\"locker-latch\"]");
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        findSoundEgg("locker-latch", "The locker latch clicked.", "That latch already popped.");
+      });
+    }
+
     if (Game.getEggs()["hidden-ball"]) {
       document.getElementById("hidden-ball").classList.add("found");
     }
+    if (Game.getEggs()["horned-frog"]) markEggButton("horned-frog", true);
+    if (Game.getEggs()["locker-latch"]) markEggButton("locker-latch", true);
   }
 
   function bindShelf() {
@@ -2392,7 +2445,7 @@
       walkup.addEventListener("click", walkUpFromControl);
     }
     stage.addEventListener("pointerdown", (e) => {
-      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque") || e.target.closest(".trophy-walkup") || e.target.closest(".trophy-back-row") || e.target.closest(".trophy-lantern-hint") || e.target.closest(".trophy-portrait-rail")) {
+      if (e.target.closest(".trophy-leave") || e.target.closest(".trophy-plaque") || e.target.closest(".trophy-walkup") || e.target.closest(".trophy-back-row") || e.target.closest(".trophy-lantern-hint") || e.target.closest(".trophy-portrait-rail") || e.target.closest(".trophy-egg")) {
         skipTrophyClick = false;
         return;
       }
@@ -2429,7 +2482,7 @@
       stage.classList.remove("is-dragging");
       if (drag.moved) return;
       const hit = e && e.target && e.target.closest ? e.target : null;
-      if (hit && (hit.closest(".trophy-object") || hit.closest(".trophy-plaque") || hit.closest(".trophy-leave") || hit.closest(".trophy-walkup") || hit.closest(".trophy-back-row") || hit.closest(".trophy-portrait-rail"))) {
+      if (hit && (hit.closest(".trophy-object") || hit.closest(".trophy-plaque") || hit.closest(".trophy-leave") || hit.closest(".trophy-walkup") || hit.closest(".trophy-back-row") || hit.closest(".trophy-portrait-rail") || hit.closest(".trophy-egg"))) {
         return;
       }
       if (drag.zoneAtStart) {
