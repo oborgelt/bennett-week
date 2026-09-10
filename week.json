@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-09T14:30:00",
+  "as_of": "2026-09-10T08:30:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1969,11 +1969,11 @@
       "title": "Geometry: Quiz 2.1–2.2 (open note)",
       "classId": "geometry",
       "due": "2026-09-04",
-      "status": "open",
-      "school_status": "open",
+      "status": "graded",
+      "school_status": "graded",
       "late": false,
       "submitted_at": null,
-      "source": "bennett-canvas-schedule",
+      "source": "ParentVUE",
       "discrepancy": false,
       "student_status": null,
       "followup": {
@@ -1981,7 +1981,9 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Foster. Fri Sep 4 Quiz 2.1–2.2 (open note). HW that day: finish 2.1-2.2 if needed. Source: Bennett Gmail 9/2 + Canvas image he sent Dad 9/3. ParentVUE Geometry still A 97% last live 8/25."
+      "note": "Foster. Fri Sep 4 Quiz 2.1–2.2 (open note). ParentVUE morning 9/10 ~8:30am: scored 15.5/18; Geometry now A 94% last update 9/10 (was A 97%). Unit 2 Test Fri 9/11.",
+      "score": "15.5/18",
+      "graded_at": "2026-09-10"
     },
     {
       "id": "geo-hw-23",
@@ -2322,6 +2324,11 @@
     }
   ],
   "notes": [
+    {
+      "date": "2026-09-10",
+      "title": "ParentVUE Grade Book (~8:30am CT)",
+      "text": "Live ParentVUE morning pull ~8:30am CT (after 9/9 after-school BLOCKED). All 7 classes 0 Missing. Band A+ 100.0% update 9/9; Soc A+ 98% update 9/10; Web A 95% update 9/9 (was 93; Canvas had 94.70 with 2.3/2.4/2.5–2.6 graded); Chem A+ 100% update 9/7; S&C A+ 100% update 9/4; Eng A+ 98.75% update 9/8; Geo A 94% update 9/10 (was 97) — Quiz 2.1–2.2 15.5/18. No Narrative/AAB RC2 rows in ParentVUE (do not invent submission). Inbox: Parade Order Correction already known from 9/9 Gmail (OE FIRST Sat 9/12, call 10:00 AM). Web 2.3/2.4/2.5–2.6 already marked graded in work[]. Next: Geo Unit 2 Test Fri 9/11; Web 2.7 + 2.8/2.9 due Mon 9/14."
+    },
     {
       "date": "2026-09-09",
       "title": "After-school check (~2:30pm)",
@@ -2666,9 +2673,9 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE last live bedtime 9/7 A+ 100% (update 8/27). Canvas no gradebook. ParentVUE BLOCKED 9/9 after-school (password empty).",
+      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A+ 100.0% last update 9/9. 0 missing. Canvas no gradebook.",
       "source": "ParentVUE",
-      "as_of": "2026-09-07",
+      "as_of": "2026-09-10",
       "missing": 0
     },
     {
@@ -2678,9 +2685,9 @@
       "teacher": "Todd Keach",
       "letter": "A+",
       "percent": 98,
-      "detail": "ParentVUE last live bedtime 9/7 A+ 98% (update 9/1). Canvas unpublished. ParentVUE BLOCKED 9/9 after-school (password empty).",
+      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A+ 98% last update 9/10. 0 missing. Canvas unpublished.",
       "source": "ParentVUE",
-      "as_of": "2026-09-07",
+      "as_of": "2026-09-10",
       "missing": 0
     },
     {
@@ -2689,11 +2696,11 @@
       "period": "P3",
       "teacher": "Derek Linn",
       "letter": "A",
-      "percent": 94.7,
-      "detail": "Canvas live 9/9 ~2:14pm 94.70%. 2.3=19/19, 2.4=13/13, 2.5–2.6=44/44 graded ~11:11–11:16am (Gmail Instructure); submission detail still No Submission. NEW 2.8/2.9 (29 pts) + 2.7 (18 pts) due Mon Sep 14 9:20am. ParentVUE BLOCKED after-school 9/9 (password empty); last A 93% update 9/2.",
-      "source": "Canvas",
-      "as_of": "2026-09-09",
-      "missing": null
+      "percent": 95,
+      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A 95% last update 9/9 (was A 93% update 9/2). 0 missing. Canvas after-school 9/9 was 94.70% with 2.3/2.4/2.5–2.6 full credit.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-10",
+      "missing": 0
     },
     {
       "classId": "chemistry",
@@ -2702,10 +2709,10 @@
       "teacher": "Justin Pfeiff",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "Canvas live 9/9 ~2:14pm 100% UNCHANGED (42/42). Names/Symbols Reading still –/1 open paper late. ParentVUE BLOCKED after-school 9/9; last A+ 100% update 9/7.",
-      "source": "Canvas",
-      "as_of": "2026-09-09",
-      "missing": null
+      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A+ 100% last update 9/7. 0 missing. Canvas still 100% as of 9/9.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-10",
+      "missing": 0
     },
     {
       "classId": "strength-conditioning",
@@ -2714,9 +2721,9 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE last live bedtime 9/7 A+ 100% (update 9/4). Canvas unpublished. ParentVUE BLOCKED 9/9 after-school (password empty).",
+      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A+ 100% last update 9/4. 0 missing. Canvas unpublished.",
       "source": "ParentVUE",
-      "as_of": "2026-09-07",
+      "as_of": "2026-09-10",
       "missing": 0
     },
     {
@@ -2726,10 +2733,10 @@
       "teacher": "Ann Goodson",
       "letter": "A+",
       "percent": 98.75,
-      "detail": "Canvas live 9/9 ~2:14pm 98.75% UNCHANGED. Narrative #1 Final Draft due TONIGHT Wed 9/9 11:59pm — still No Submission as of 2:14pm. AAB RC2 Fri 9/11. ParentVUE BLOCKED after-school 9/9; last A+ 98.64% update 9/3.",
-      "source": "Canvas",
-      "as_of": "2026-09-09",
-      "missing": null
+      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A+ 98.75% last update 9/8 (was PV 98.64% update 9/3; matches Canvas). 0 missing. No Narrative/AAB RC2 rows in ParentVUE.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-10",
+      "missing": 0
     },
     {
       "classId": "geometry",
@@ -2737,10 +2744,10 @@
       "period": "P7",
       "teacher": "K Foster",
       "letter": "A",
-      "percent": 97,
-      "detail": "ParentVUE last live A 97% update 8/25. Canvas grades disabled. Unit 2 Test Fri 9/11. ParentVUE BLOCKED 9/9 after-school (password empty); last live Sep 7.",
+      "percent": 94,
+      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A 94% last update 9/10 (was A 97% update 8/25). Quiz 2.1–2.2 15.5/18. 0 missing. Canvas grades disabled. Unit 2 Test Fri 9/11.",
       "source": "ParentVUE",
-      "as_of": "2026-09-07",
+      "as_of": "2026-09-10",
       "missing": 0
     }
   ]
