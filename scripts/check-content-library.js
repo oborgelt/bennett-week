@@ -671,7 +671,7 @@ const byId = Object.fromEntries(progress.classes.map((cls) => [cls.id, cls]));
   assert(!byId[id].grade, id + " must not invent a grade");
 });
 assert(Array.isArray(byId.sociology.items) && byId.sociology.items.length === 0, "sociology has no assignments");
-assert(byId.sociology.grade && /A-\s*91%/.test(byId.sociology.grade.display), "sociology keeps the ParentVUE A- 91% on Grades");
+assert(!byId.sociology.grade, "sociology course grade comes from week.grades, not progress.json");
 assert(!byId["web-design"].grade, "web-design must not invent a grade");
 assert.strictEqual((byId["web-design"].items || []).length, 1, "Web Design has 1.1 What is the Web");
 assert.strictEqual(byId["web-design"].items[0].id, "web-11");
@@ -2704,7 +2704,7 @@ assert(/data-hold-prompt/.test(fs.readFileSync(path.join(root, "js/parent.js"), 
 assert(/data-msg-filter="daily"/.test(messagesHtml) && /data-msg-filter="class"/.test(messagesHtml), "Messages has Daily questions and Class messages tabs");
 assert(/No assignment scores posted/.test(progressJs), "Grades pane says no assignment scores posted when empty");
 const sociology = progress.classes.find((cls) => cls.id === "sociology");
-assert(sociology && sociology.grade && /91%/.test(sociology.grade.display), "Sociology course grade from ParentVUE is structured on Progress");
+assert(sociology && !sociology.grade, "Sociology course grade comes from week.grades, not progress.json");
 assert(/gradeForClass/.test(progressJs) && /gradePillModel/.test(progressJs), "Progress By class grades come from week.grades via Game helpers");
 assert(/gradePillHtml/.test(weekJs) && /class-pane-head/.test(weekJs), "This Week class pane paints Game.gradePillHtml");
 assert(!/if\s*\(\s*id\s*===\s*["']sociology["']\s*\)/.test(progressJs), "Progress does not special-case Sociology for grades");
