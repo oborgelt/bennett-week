@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-12T14:35:00",
+  "as_of": "2026-09-12T21:15:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1274,7 +1274,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. 1 pt assignment row still ABSENT from live Chem gradebook (Canvas 39.5/40 = 98.75% as of 9:05pm). Last known: comment-only Google Slides link 8/20 4:57pm. ParentVUE blocked this 9pm pass (password empty); last live Grade Book 5:00pm had no About Me row either.",
+      "note": "Pfeiff. 1 pt assignment row still ABSENT from live Chem gradebook (Canvas 42/42 = 100% graded as of bedtime 9/12). Last known: comment-only Google Slides link 8/20 4:57pm. ParentVUE LIVE bedtime 9/12 also has no About Me row.",
       "canvas": {
         "status": "open",
         "points": 1
@@ -2070,7 +2070,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Foster. Fri Sep 11 Unit 2 Test. Yellow highlight: All Unit 2 HW + Review Due. Review Wed–Thu Sep 9–10. Source: Bennett Gmail 9/2 + Canvas image 9/3."
+      "note": "Foster. Fri Sep 11 Unit 2 Test. ParentVUE LIVE bedtime Sat 9/12: B 83% overall last update 9/10; Unit 2 Test item/grade still NOT present in Grade Book. Quiz 2.1–2.2 still 15.5/18. Canvas grades disabled."
     },
     {
       "id": "geo-hw-21-d1",
@@ -2175,7 +2175,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas Sat 9/12: still submitted Fri 1:30pm CT (Respondus); still ungraded /10.",
+      "note": "Goodson. Canvas bedtime Sat 9/12: still submitted Fri 1:30pm CT (Respondus); still ungraded /10.",
       "canvas": {
         "status": "submitted",
         "points": 10,
@@ -2202,7 +2202,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas Sat 9/12: still late-submitted Thu Sep 10 2:13pm, still ungraded /30. Due date still shows Sep 9 11:59pm.",
+      "note": "Goodson. Canvas bedtime Sat 9/12: still late-submitted Thu Sep 10 2:13pm, still ungraded /30. Due date still shows Sep 9 11:59pm.",
       "canvas": {
         "status": "submitted_late",
         "points": 30,
@@ -2275,7 +2275,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Pfeiff. Canvas Sat 9/12: still –/1 open overdue (due Fri Sep 4). Chem course 100% on graded 42/42. No Bennett-said-done.",
+      "note": "Pfeiff. Canvas bedtime Sat 9/12: still –/1 open overdue (due Fri Sep 4). Chem course 100% on graded 42/42. ParentVUE LIVE: no score shown for Names/Symbols Reading. No Bennett-said-done.",
       "canvas": {
         "status": "open",
         "points": 1,
@@ -2341,7 +2341,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Canvas Sat 9/12: still –/18 No Submission due Mon Sep 14 9:20am. Course 94.7%.",
+      "note": "Linn. Canvas bedtime Sat 9/12: still –/18 No Submission due Mon Sep 14 9:20am. Course 94.7%.",
       "canvas": {
         "status": "open",
         "points": 18,
@@ -2366,7 +2366,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Canvas Sat 9/12: still –/29 No Submission due Mon Sep 14 9:20am. Course 94.7%.",
+      "note": "Linn. Canvas bedtime Sat 9/12: still –/29 No Submission due Mon Sep 14 9:20am. Course 94.7%.",
       "canvas": {
         "status": "open",
         "points": 29,
@@ -2391,7 +2391,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas after-school Sat 9/12 ~2:32pm CT: marked MISSING / Overdue. Due Fri Sep 11 11:59pm. No submission. No Bennett-said-done. Mom weekend through Sun 9/13 6p.",
+      "note": "Goodson. Canvas bedtime Sat 9/12 UNCHANGED: still MISSING / Overdue. Due Fri Sep 11 11:59pm. No submission. ParentVUE English shows 0 missing (not synced). No Bennett-said-done. Mom weekend through Sun 9/13 6p.",
       "canvas": {
         "status": "missing",
         "points": 10,
@@ -2537,6 +2537,10 @@
     {
       "as_of": "2026-09-11T14:30:00",
       "text": "After-school 9/11: Canvas LIVE — AAB RC2 SUBMITTED 1:30pm ungraded; Initial Research still open due TONIGHT 11:59pm; 3DE Advisory Board meeting Mon 9/14 during Advisory (Canvas+Gmail). Web/Chem totals UNCHANGED. ParentVUE BLOCKED (autofill empty both fields). Gmail NEW: 3DE Advisory notice + Lifetouch promo. oeband UNCHANGED; English agenda UNCHANGED (today RC2/3DE/Vocab). OE widget NEW Kay Club 10:15–10:55; Band load-out 4–9p + Football Staley 7p tonight. Mom night through Sun 6p. No Bennett-said-done / no Plaud school notes. Discrepancy: chem-about-me still true; chem-names no said-done; AAB/Initial Research no said-done conflict."
+    },
+    {
+      "as_of": "2026-09-12T21:15:00",
+      "text": "Bedtime Sat 9/12 ~9:15pm: Canvas UNCHANGED vs 2:32pm (Eng 98.75 10.2 still MISSING; AAB RC2 + Narrative ungraded; Chem 100 Names/Symbols –/1; Web 94.7 2.7–2.9 due Mon). ParentVUE LIVE (first since morning 9/10): Soc A+98→A-91 (Ch1 Test 78); Geo A94→B83 (Unit 2 Test still not posted); inbox NEW Parade Order Correction + Band Update 9/7. Gmail no new after 2:35. No Bennett-said-done / no new discrepancy. Mom through Sun 6p."
     }
   ],
   "grades": [
@@ -2547,9 +2551,9 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A+ 100.0% last update 9/9. 0 missing. Canvas no gradebook. After-school+bedtime ParentVUE BLOCKED 9/10. ParentVUE after-school 9/11 also BLOCKED. Bedtime 9/11 ParentVUE still BLOCKED (autofill empty); Canvas bedtime UNCHANGED.",
-      "source": "ParentVUE-stale",
-      "as_of": "2026-09-10",
+      "detail": "ParentVUE LIVE bedtime Sat 9/12 ~9:15pm CT: A+ 100.0% last update 9/9. 0 missing. Canvas no gradebook.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-12",
       "missing": 0
     },
     {
@@ -2557,11 +2561,11 @@
       "class": "Sociology",
       "period": "P2",
       "teacher": "Todd Keach",
-      "letter": "A+",
-      "percent": 98,
-      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A+ 98% last update 9/10. 0 missing. Canvas unpublished. After-school+bedtime ParentVUE BLOCKED 9/10. ParentVUE after-school 9/11 also BLOCKED. Bedtime 9/11 ParentVUE still BLOCKED (autofill empty); Canvas bedtime UNCHANGED.",
-      "source": "ParentVUE-stale",
-      "as_of": "2026-09-10",
+      "letter": "A-",
+      "percent": 91,
+      "detail": "ParentVUE LIVE bedtime Sat 9/12 ~9:15pm: A- 91% last update 9/11 (was A+ 98% morning 9/10). Chapter 1 Test 78/100 (78%). Chapter 1 Study Guide 100%; CSI 2 (1.3) 100%. 0 missing. Canvas unpublished.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-12",
       "missing": 0
     },
     {
@@ -2569,10 +2573,10 @@
       "class": "Web Design I",
       "period": "P3",
       "teacher": "Derek Linn",
-      "letter": null,
+      "letter": "A",
       "percent": 94.7,
-      "detail": "Canvas Sat 9/12: 94.7% (187.50/198). 2.7 + 2.8/2.9 still open due Mon 9/14 9:20am.",
-      "source": "canvas",
+      "detail": "Canvas bedtime Sat 9/12 UNCHANGED 94.7% (187.50/198). ParentVUE LIVE A 95% last update 9/9; 0 missing. 2.7 + 2.8/2.9 still open due Mon 9/14 9:20am.",
+      "source": "canvas+ParentVUE",
       "as_of": "2026-09-12",
       "missing": 0
     },
@@ -2581,10 +2585,10 @@
       "class": "Chemistry",
       "period": "P4",
       "teacher": "Justin Pfeiff",
-      "letter": null,
+      "letter": "A+",
       "percent": 100.0,
-      "detail": "Canvas Sat 9/12: 100% (42/42 graded). Names/Symbols Reading still –/1 open late (not in graded %).",
-      "source": "canvas",
+      "detail": "Canvas bedtime Sat 9/12 UNCHANGED 100% (42/42 graded); Names/Symbols Reading still –/1 open late. ParentVUE LIVE A+ 100% last update 9/7; Density Lesson 5 1/1; Names/Symbols Reading still no score in PV. 0 missing on PV.",
+      "source": "canvas+ParentVUE",
       "as_of": "2026-09-12",
       "missing": 0
     },
@@ -2595,9 +2599,9 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE live morning 9/10 ~8:30am CT: A+ 100% last update 9/4. 0 missing. Canvas unpublished. After-school+bedtime ParentVUE BLOCKED 9/10. ParentVUE after-school 9/11 also BLOCKED. Bedtime 9/11 ParentVUE still BLOCKED (autofill empty); Canvas bedtime UNCHANGED.",
-      "source": "ParentVUE-stale",
-      "as_of": "2026-09-10",
+      "detail": "ParentVUE LIVE bedtime Sat 9/12: A+ 100% last update 9/4. 0 missing. Canvas unpublished.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-12",
       "missing": 0
     },
     {
@@ -2605,10 +2609,10 @@
       "class": "English 10",
       "period": "P6",
       "teacher": "Amanda Goodson / Carl",
-      "letter": null,
+      "letter": "A+",
       "percent": 98.75,
-      "detail": "Canvas Sat 9/12 ~2:32pm: 98.75% (59.25/60). 10.2 Initial Research MISSING; AAB RC2 submitted ungraded; Narrative Final late-submitted ungraded.",
-      "source": "canvas",
+      "detail": "Canvas bedtime Sat 9/12 UNCHANGED 98.75% (59.25/60). 10.2 Initial Research still MISSING; AAB RC2 submitted ungraded; Narrative Final late-submitted ungraded. ParentVUE LIVE A+ 98.75% last update 9/8 shows 0 missing (Canvas missing not synced to PV yet).",
+      "source": "canvas+ParentVUE",
       "as_of": "2026-09-12",
       "missing": 1
     },
@@ -2617,11 +2621,11 @@
       "class": "Geometry",
       "period": "P7",
       "teacher": "K Foster",
-      "letter": "A",
-      "percent": 94,
-      "detail": "ParentVUE BLOCKED after-school 9/11 (and since after-school 9/10). Last live morning 9/10 ~8:30am: A 94% Quiz 2.1–2.2 15.5/18. Unit 2 Test was Fri 9/11 — grade not confirmed. Canvas grades disabled. Bedtime 9/11 ParentVUE still BLOCKED (autofill empty); Canvas bedtime UNCHANGED.",
-      "source": "ParentVUE-stale",
-      "as_of": "2026-09-10",
+      "letter": "B",
+      "percent": 83,
+      "detail": "ParentVUE LIVE bedtime Sat 9/12 ~9:15pm: B 83% last update 9/10 (was A 94% morning 9/10). Quiz 2.1–2.2 15.5/18 (86%). Unit 2 Test (Fri 9/11) NOT posted. Unit 1 Test also displayed without a score. Canvas grades disabled. 0 missing.",
+      "source": "ParentVUE",
+      "as_of": "2026-09-12",
       "missing": 0
     }
   ]
