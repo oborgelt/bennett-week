@@ -148,7 +148,7 @@
       if (id) go(id);
     });
     if (!preview && Game.maybeCelebrateStoryPage) Game.maybeCelebrateStoryPage(story, { preview: preview });
-    if (!preview && !Game.comicUnlocked(roster)) {
+    if (!preview && !Game.storyAvailable(roster, { preview: preview })) {
       showGate();
       return;
     }

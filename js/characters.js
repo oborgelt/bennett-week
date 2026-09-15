@@ -58,7 +58,7 @@
       return Game.alreadyUnlockedCharacter(ch.id) ? unlockedCard(ch) : lockedCard(ch, i);
     }).join("") || `<p class="empty">No teammates on the roster yet.</p>`;
     const comic = document.getElementById("comic-soon");
-    if (comic) comic.hidden = !Game.comicUnlocked(roster);
+    if (comic) comic.hidden = !Game.storyAvailable(roster);
     Game.paintStoryChip(roster);
     renderLoadout();
     renderSounds();
