@@ -1784,6 +1784,14 @@
     return TEAMMATE_IDS.filter((id) => alreadyUnlockedCharacter(id)).length >= need;
   }
 
+  function storyAvailable(roster, opts) {
+    if (opts && (opts.preview || opts.force)) return true;
+    if (sessionUser() === "bennett") return true;
+    if (siteView() === "bennett") return true;
+    if (!sessionUser() && telemetryDeviceRole() === "bennett") return true;
+    return comicUnlocked(roster);
+  }
+
   function getCharacterSeen() {
     return asUnlockMap(read(KEYS.characterSeen, {}));
   }
@@ -4852,7 +4860,7 @@
     {
       id: "story",
       title: "Story",
-      body: "Shows on the bar after three teammates (not counting you). One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. When a new page unlocks, it pops up on This Week like other rewards. Close it or open Story. Page 7 is Ace versus the horned frog. Page 8 is the win."
+      body: "Story is on the bar when you are signed in. Open it from This Week or any HUD. One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. When a new page unlocks, it pops up on This Week like other rewards. Close it or open Story. Page 7 is Ace versus the horned frog. Page 8 is the win."
     },
     {
       id: "messages",
@@ -7095,7 +7103,7 @@
     });
     const story = document.getElementById ? document.getElementById("story-chip") : null;
     const egg = document.getElementById ? document.getElementById("egg-chip") : null;
-    if (story) story.hidden = !(storyOpen || comicUnlocked());
+    if (story) story.hidden = !(storyOpen || storyAvailable());
     if (egg) egg.hidden = !funPlayAllowed() || !eggOpen;
     paintStoryChip();
     return navs[0];
@@ -7461,7 +7469,8 @@
 
   function shouldRecordBennettLogin() {
     if (sessionUser() === "bennett") return true;
-    return telemetryDeviceRole() === "bennett" && siteView() === "bennett";
+    if (sessionUser()) return false;
+    return telemetryDeviceRole() === "bennett";
   }
 
   function recordLoginDay(family) {
@@ -9803,6 +9812,8 @@
     unlockedTeammates,
     isTeammate,
     comicUnlocked,
+    storyAvailable,
+    shouldRecordBennettLogin,
     pendingCharacterCelebrations,
     markCharacterSeen,
     unmarkCharacterSeen,
@@ -10043,7 +10054,7 @@
   };
 
   function paintStoryChip(roster, force) {
-    const open = !!force || comicUnlocked(roster);
+    const open = !!force || storyAvailable(roster);
     const nodes = document.querySelectorAll
       ? document.querySelectorAll("#story-chip, .story-chip")
       : (document.getElementById("story-chip") ? [document.getElementById("story-chip")] : []);
