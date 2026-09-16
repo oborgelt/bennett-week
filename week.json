@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-16T14:50:00",
+  "as_of": "2026-09-16T16:00:00",
   "parenting": [
     {
       "who": "Mom",
@@ -2954,6 +2954,10 @@
     {
       "as_of": "2026-09-16T09:20:00",
       "text": "ParentVUE LIVE Wed 9/16 ~9:20am (Orin sign-in). Grades UNCHANGED vs Tue after-school except Soc last-update stamp 9/16 still A-92. Inbox known (Band Update 9/14 + Booster cancel). Eng 10.2 still Canvas MISSING; Web 2.7–2.9 still unscored."
+    },
+    {
+      "as_of": "2026-09-16T16:00:00",
+      "text": "ParentVUE LIVE Wed ~4pm after Orin sign-in. Web PV 95→93. Inbox NEW Midweek Band Update 9/16. Eng 10.2 submitted late Canvas score pending."
     }
   ],
   "grades": [
@@ -2964,8 +2968,8 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE BLOCKED after-school (login wall). Last LIVE morning Wed 9/16 ~9:20am: A+100. Canvas Band grades page disabled.",
-      "source": "ParentVUE morning + Canvas blocked",
+      "detail": "ParentVUE LIVE Wed 9/16 ~4:00pm (Orin sign-in): A+100, missing 0. Canvas Band grades page disabled.",
+      "source": "ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
     },
@@ -2976,8 +2980,8 @@
       "teacher": "Todd Keach",
       "letter": "A-",
       "percent": 92,
-      "detail": "ParentVUE BLOCKED after-school. Last LIVE morning Wed 9/16: A-92. Canvas Sociology unpublished.",
-      "source": "ParentVUE morning",
+      "detail": "ParentVUE LIVE Wed 9/16 ~4:00pm (Orin sign-in): A-92 (update 9/16), missing 0. Canvas Sociology unpublished.",
+      "source": "ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
     },
@@ -2988,8 +2992,8 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 92.86,
-      "detail": "Canvas LIVE Wed 9/16 ~2:30pm: 92.86% (227.50/245). 2.7=14/18; 2.8/2.9=26/29 (newly graded today). 2.10+2.11 due Mon 9/21 still open. ParentVUE morning A95 not rechecked (login wall).",
-      "source": "canvas",
+      "detail": "Canvas 92.86% (227.50/245) preferred; ParentVUE LIVE Wed ~4pm A 93% (was 95) after 2.7=14/18 and 2.8/2.9=26/29. 2.10+2.11 due Mon 9/21 still open. missing 0.",
+      "source": "canvas+ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
     },
@@ -3000,8 +3004,8 @@
       "teacher": "Justin Pfeiff",
       "letter": "A+",
       "percent": 97.92,
-      "detail": "Canvas LIVE Wed 9/16 ~2:30pm: 97.92% (47/48). Names/Symbols Reading 0/1. Copper Cycle Reading due Thu 9/17 still –/3. ParentVUE morning A+98.7 not rechecked.",
-      "source": "canvas",
+      "detail": "Canvas 97.92% (47/48) / ParentVUE LIVE Wed ~4pm A+98.7. Names/Symbols Reading 0/1; Copper Observations 1/1. Copper Cycle Reading due Thu 9/17 still –/3.",
+      "source": "canvas+ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
     },
@@ -3012,8 +3016,8 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE BLOCKED after-school. Last LIVE morning Wed 9/16: A+100. Canvas unpublished.",
-      "source": "ParentVUE morning",
+      "detail": "ParentVUE LIVE Wed 9/16 ~4:00pm (Orin sign-in): A+100. Canvas unpublished.",
+      "source": "ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
     },
@@ -3024,8 +3028,8 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.75,
-      "detail": "Canvas LIVE Wed 9/16 ~2:30pm: 96.75%. 10.2 Initial Research SUBMITTED late Wed 9:30am (score blank pending). Idea Rough Draft due Thu 9/17. Narrative #2 Formative –/10. ParentVUE morning A96.75 / 0 missing not rechecked.",
-      "source": "canvas",
+      "detail": "ParentVUE LIVE Wed ~4pm A 96.75, missing 0. Canvas 96.75%; 10.2 Initial Research submitted late (Canvas score pending). Idea Rough Draft due Thu 9/17. Narrative #2 Formative –/10.",
+      "source": "canvas+ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
     },
@@ -3036,8 +3040,8 @@
       "teacher": "K Foster",
       "letter": "B+",
       "percent": 89,
-      "detail": "ParentVUE BLOCKED after-school. Last LIVE morning Wed 9/16: B+89 Unit1 Test 94/100; Unit2 not posted. Canvas Geometry grades page disabled.",
-      "source": "ParentVUE morning",
+      "detail": "ParentVUE LIVE Wed 9/16 ~4:00pm (Orin sign-in): B+89; Unit1 Test 94; Unit2 not posted. Canvas Geometry grades page disabled.",
+      "source": "ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
     }
