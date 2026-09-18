@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-17T21:20:00",
+  "as_of": "2026-09-18T14:40:00",
   "parenting": [
     {
       "who": "Mom",
@@ -450,8 +450,8 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East High School",
-      "note": "Fillingham Midweek Band Update Gmail Wed 9/16 ~12:03pm CT: nutritious breakfast before Saturday report; lunch provided after performance. Show shirts still need pickup ($10 cash/check with student). Parents SHOULD attend contests (General Effect). oeband still lists Blue Springs South Mar Festival Sep 19.",
-      "as_of": "2026-09-16T14:50:00"
+      "note": "OE homepage widget Fri 9/18: Band Load Out / In Sat Sep 19 7:00 AM–4:00 PM. oeband unchanged ($350; Blue Springs Sep 19); Saturday Blue Springs band day.",
+      "as_of": "2026-09-18T14:40:00"
     },
     {
       "id": "band-am-0921",
@@ -2526,14 +2526,14 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas LIVE Thu 9/17 ~9:16pm: submitted Wed Sep 16 9:30am LATE; score still blank (/10) pending — UNCHANGED.",
+      "note": "Goodson. Canvas LIVE Fri 9/18 ~2:40pm: submitted Wed Sep 16 9:30am LATE; score still blank (/10) pending.",
       "canvas": {
         "status": "submitted_late_ungraded",
         "points": 10,
         "submitted_at": "2026-09-16T09:30:00",
-        "as_of": "2026-09-17T21:20:00"
+        "as_of": "2026-09-18T14:40:00"
       },
-      "as_of": "2026-09-17T21:20:00",
+      "as_of": "2026-09-18T14:40:00",
       "notes": "Submitted late Wed morning; awaiting teacher score.",
       "score": null
     },
@@ -2608,49 +2608,49 @@
       "late": false,
       "submitted_at": "2026-09-17T20:22:00",
       "source": "canvas",
-      "note": "Goodson. Canvas LIVE Thu 9/17 ~9:16pm: Idea Rough Draft submitted Thu Sep 17 8:22pm; score still blank (/10) pending. Was No Submission at after-school 2:40pm.",
+      "note": "Goodson. Canvas LIVE Fri 9/18 ~2:40pm: Idea Rough Draft submitted Thu Sep 17 8:22pm; score still blank (/10) pending.",
       "canvas": {
         "status": "submitted_ungraded",
         "points": 10,
         "due": "2026-09-17T23:59:00",
         "submitted_at": "2026-09-17T20:22:00",
         "submission": "Submitted",
-        "as_of": "2026-09-17T21:20:00"
+        "as_of": "2026-09-18T14:40:00"
       },
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-09-17T21:20:00"
+      "as_of": "2026-09-18T14:40:00"
     },
     {
       "id": "chem-copper-cycle-reading-0917",
       "title": "Chemistry: Copper Cycle Reading",
       "due": "2026-09-17T23:59:00",
       "status": "open",
-      "school_status": "open",
+      "school_status": "missing",
       "student_status": null,
       "discrepancy": false,
       "score": null,
       "points": 3,
-      "late": false,
+      "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. Canvas LIVE Thu 9/17 ~9:16pm: Copper Cycle Reading due tonight 11:59pm –/3 No Submission UNCHANGED vs after-school. No Bennett-said-done.",
+      "note": "Pfeiff. Canvas LIVE Fri 9/18 ~2:40pm: Copper Cycle Reading due Thu Sep 17 11:59pm remains overdue, –/3, No Submission. No Bennett-said-done; discrepancy=false.",
       "canvas": {
-        "status": "open",
+        "status": "missing",
         "points": 3,
         "due": "2026-09-17T23:59:00",
         "submission": "No Submission",
-        "as_of": "2026-09-17T21:20:00"
+        "as_of": "2026-09-18T14:40:00"
       },
       "followup": {
         "due_by": "2026-09-17T23:59:00",
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-09-17T21:20:00"
+      "as_of": "2026-09-18T14:40:00"
     },
     {
       "id": "geo-unit1-test",
@@ -2694,14 +2694,15 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Canvas LIVE Thu 9/17 ~9:16pm: due Mon Sep 21 9:20am –/20 still open. Course 92.86%.",
+      "note": "Linn. Canvas LIVE Fri 9/18 ~2:40pm: Web 2.10 HTML Colors remains open –/20, due Mon Sep 21 9:20am.",
       "canvas": {
         "status": "open",
         "points": 20,
         "due": "2026-09-21T09:20:00",
-        "as_of": "2026-09-17T21:20:00"
+        "as_of": "2026-09-18T14:40:00"
       },
-      "as_of": "2026-09-17T21:20:00"
+      "as_of": "2026-09-18T14:40:00",
+      "score": null
     },
     {
       "id": "web-211-structuring-quiz-0921",
@@ -2721,14 +2722,15 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Canvas LIVE Thu 9/17 ~9:16pm: due Mon Sep 21 9:20am –/10 still open.",
+      "note": "Linn. Canvas LIVE Fri 9/18 ~2:40pm: Web 2.11 HTML–Structuring Websites Quiz remains open –/10, due Mon Sep 21 9:20am.",
       "canvas": {
         "status": "open",
         "points": 10,
         "due": "2026-09-21T09:20:00",
-        "as_of": "2026-09-17T21:20:00"
+        "as_of": "2026-09-18T14:40:00"
       },
-      "as_of": "2026-09-17T21:20:00"
+      "as_of": "2026-09-18T14:40:00",
+      "score": null
     },
     {
       "id": "eng-narrative-2-formative",
@@ -2748,15 +2750,15 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas LIVE Thu 9/17 ~9:16pm: Narrative #2 Formative On-Demand –/10 MISSING/overdue (due Sep 14). Was unscored/open without due on Wed list — MISSED flip tonight.",
+      "note": "Goodson. Canvas LIVE Fri 9/18 ~2:40pm: Narrative #2 Formative On-Demand remains –/10 MISSING/overdue due Sep 14; submission page says No Preview Available and notes say submit on paper.",
       "canvas": {
         "status": "missing",
         "points": 10,
         "due": "2026-09-14T23:59:00",
         "submission": "No Submission",
-        "as_of": "2026-09-17T21:20:00"
+        "as_of": "2026-09-18T14:40:00"
       },
-      "as_of": "2026-09-17T21:20:00",
+      "as_of": "2026-09-18T14:40:00",
       "score": null
     },
     {
@@ -2780,6 +2782,36 @@
       "note": "Goodson Daily Agendas was 2:10 source. Canvas bedtime: AAB Reading Check #3 not present in current English assignments/grades list. Agenda row left open; not a Canvas MISSED.",
       "canvas": null,
       "as_of": "2026-09-17T21:20:00"
+    },
+    {
+      "id": "chem-quiz1-reflection-0918",
+      "title": "Chemistry: Quiz 1 Reflection",
+      "classId": "chemistry",
+      "status": "graded",
+      "school_status": "graded",
+      "points": 0,
+      "score": "0/0",
+      "late": false,
+      "submitted_at": "2026-09-18T11:39:00",
+      "graded_at": "2026-09-18T11:39:00",
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Pfeiff. Canvas LIVE Fri 9/18: submitted 11:39am; graded 0/0. Does not count toward the final grade; dashboard shows Graded.",
+      "canvas": {
+        "status": "graded",
+        "points": 0,
+        "score": 0,
+        "submitted_at": "2026-09-18T11:39:00",
+        "as_of": "2026-09-18T14:40:00",
+        "note": "Does not count toward the final grade."
+      },
+      "as_of": "2026-09-18T14:40:00"
     }
   ],
   "notes": [
@@ -2977,6 +3009,11 @@
       "id": "bedtime-20260917",
       "as_of": "2026-09-17T21:20:00",
       "text": "Bedtime Thu 9/17 ~9:20pm NARROW. Canvas LIVE CHANGED vs 2:40pm: Idea Rough Draft SUBMITTED 8:22pm score pending; Copper Cycle Reading still No Submission due tonight; Narrative #2 Formative On-Demand now MISSING overdue due 9/14 (MISSED flip). Grades Eng 96.75 / Chem 97.92 / Web 92.86 UNCHANGED; 10.2 still late-submitted ungraded; Web 2.10+2.11 still open Mon. ParentVUE LOGIN_WALL (password autofill empty) — grades frozen Wed 9/16 ~4pm. Gmail: no new Instructure after afternoon; early-pickup emoji reaction + known Jostens only. No Bennett-said-done (Plaud = work meetings). chem-about-me legacy discrepancy=true. Mom night."
+    },
+    {
+      "id": "after-school-20260918",
+      "as_of": "2026-09-18T14:40:00",
+      "text": "After-school Fri 9/18 ~2:40pm FULL pull: Canvas LIVE — Eng 96.75 unchanged (Idea Rough Draft submitted 9/17 8:22pm score pending; 10.2 submitted late 9/16 9:30am score pending; Narrative #2 still MISSING/overdue); Chem 97.92 (47/48) unchanged (Copper Cycle Reading overdue No Submission –/3; NEW Quiz 1 Reflection graded 0/0 at 11:39am, no final-grade impact); Web 92.86 unchanged (2.10 –/20 + 2.11 –/10 open due Mon 9/21 9:20am). ParentVUE LOGIN_WALL — grades frozen at Wed 9/16 ~4pm. English sheet changed: 9/21 Coaching reflection; Pass back narratives; Narrative mini-lesson; 9/22 Reading time; 3DE work time; Practice ACT Fri 9/25. OE homepage widget now shows Band Load Out / In Sat 9/19 7:00am–4:00pm; oeband $350 and Blue Springs unchanged; Career Pathways @ OE Mon 9/21 6:30–7:30pm; half day Oct 14. Gmail no new Instructure; early-pickup + Jostens threads known. Mom→Dad handoff Fri 4:30pm; Dad weekend includes Sat Blue Springs band day."
     }
   ],
   "grades": [
@@ -2987,7 +3024,7 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LOGIN_WALL Thu bedtime (autofill empty) — grade frozen at Wed 9/16 ~4pm live A+100.0.",
+      "detail": "ParentVUE LOGIN_WALL Fri 9/18 after-school (no current ParentVUE report; autofill empty) — grade frozen at Wed 9/16 ~4pm live A+ 100.0%.",
       "source": "ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
@@ -2999,7 +3036,7 @@
       "teacher": "Todd Keach",
       "letter": "A-",
       "percent": 92,
-      "detail": "ParentVUE LOGIN_WALL Thu bedtime (autofill empty) — grade frozen at Wed 9/16 ~4pm live A-92.",
+      "detail": "ParentVUE LOGIN_WALL Fri 9/18 after-school (no current ParentVUE report; autofill empty) — grade frozen at Wed 9/16 ~4pm live A- 92%.",
       "source": "ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
@@ -3011,9 +3048,9 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 92.86,
-      "detail": "Canvas LIVE Thu 9/17 ~9:16pm 92.86%; ParentVUE LOGIN_WALL — last live PV Wed 9/16 ~4pm A93. 2.7=14/18, 2.8/2.9=26/29 graded; 2.10+2.11 due Mon 9/21 still open. missing 0.",
+      "detail": "Canvas LIVE Fri 9/18 ~2:40pm 92.86% UNCHANGED; 2.10 –/20 and 2.11 –/10 remain open due Mon 9/21 9:20am. ParentVUE LOGIN_WALL — last live PV Wed 9/16 ~4pm A93.",
       "source": "Canvas",
-      "as_of": "2026-09-17",
+      "as_of": "2026-09-18",
       "missing": 0
     },
     {
@@ -3023,9 +3060,9 @@
       "teacher": "Justin Pfeiff",
       "letter": "A+",
       "percent": 97.92,
-      "detail": "Canvas LIVE Thu 9/17 ~9:16pm 97.92% (47/48); ParentVUE LOGIN_WALL — last live PV Wed 9/16 ~4pm A+98.7. Copper Cycle Reading due tonight still No Submission.",
+      "detail": "Canvas LIVE Fri 9/18 ~2:40pm 97.92% (47/48) UNCHANGED; Copper Cycle Reading remains overdue No Submission –/3; NEW Quiz 1 Reflection submitted Fri 9/18 11:39am, graded 0/0 and does not count toward the final grade. ParentVUE LOGIN_WALL — last live PV Wed 9/16 ~4pm A+98.7.",
       "source": "Canvas",
-      "as_of": "2026-09-17",
+      "as_of": "2026-09-18",
       "missing": 0
     },
     {
@@ -3035,7 +3072,7 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LOGIN_WALL Thu bedtime (autofill empty) — grade frozen at Wed 9/16 ~4pm live A+100.0.",
+      "detail": "ParentVUE LOGIN_WALL Fri 9/18 after-school (no current ParentVUE report; autofill empty) — grade frozen at Wed 9/16 ~4pm live A+ 100.0%.",
       "source": "ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
@@ -3047,9 +3084,9 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.75,
-      "detail": "Canvas LIVE Thu 9/17 ~9:16pm 96.75%; ParentVUE LOGIN_WALL — last live PV Wed 9/16 ~4pm A96.75. Idea Rough Draft submitted 8:22pm score pending; 10.2 late-submitted score pending; Narrative #2 Formative On-Demand MISSING overdue due 9/14.",
+      "detail": "Canvas LIVE Fri 9/18 ~2:40pm 96.75% UNCHANGED; Idea Rough Draft submitted Thu 9/17 8:22pm score pending, 10.2 Initial Research submitted late Wed 9/16 9:30am score pending, and Narrative #2 Formative On-Demand still –/10 MISSING/overdue due Sep 14 (No Preview Available; paper-submit note). ParentVUE LOGIN_WALL — last live PV Wed 9/16 ~4pm A96.75.",
       "source": "Canvas",
-      "as_of": "2026-09-17",
+      "as_of": "2026-09-18",
       "missing": 0
     },
     {
@@ -3059,7 +3096,7 @@
       "teacher": "K Foster",
       "letter": "B+",
       "percent": 89,
-      "detail": "ParentVUE LOGIN_WALL Thu bedtime (autofill empty) — grade frozen at Wed 9/16 ~4pm live B+89.",
+      "detail": "ParentVUE LOGIN_WALL Fri 9/18 after-school (no current ParentVUE report; autofill empty) — grade frozen at Wed 9/16 ~4pm live B+ 89%.",
       "source": "ParentVUE",
       "as_of": "2026-09-16",
       "missing": 0
