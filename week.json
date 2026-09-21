@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-21T14:35:00",
+  "as_of": "2026-09-21T18:51:14",
   "parenting": [
     {
       "who": "Mom",
@@ -3216,7 +3216,7 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE morning Mon 9/21 7:52am CDT — A+ 100.0% (last updated 9/14). Afternoon ParentVUE LOGIN_WALL (autofill empty); morning figure kept. Canvas grades disabled.",
+      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A+ 100.0% (last updated 9/14).",
       "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
@@ -3227,8 +3227,8 @@
       "period": "P2",
       "teacher": "Todd Keach",
       "letter": "A-",
-      "percent": 92,
-      "detail": "ParentVUE morning Mon 9/21 7:52am CDT — A- 92% (last updated 9/17). Afternoon ParentVUE LOGIN_WALL (autofill empty); morning figure kept. Unpublished on Canvas.",
+      "percent": 92.0,
+      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A- 92% (last updated 9/21).",
       "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
@@ -3239,9 +3239,9 @@
       "period": "P3",
       "teacher": "Derek Linn",
       "letter": "A",
-      "percent": 92.86,
-      "detail": "Canvas 92.86% (227.50/245) missing 2. 2.10 HTML Colors –/20 and 2.11 Structuring Quiz –/10 overdue unsubmitted. ParentVUE morning 7:52am A 93. Afternoon ParentVUE LOGIN_WALL (autofill empty). Web Design tardy unexcused Fri 9/18.",
-      "source": "Canvas",
+      "percent": 93.0,
+      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A 93% (last updated 9/16). Canvas context still relevant: 2.10 HTML Colors and 2.11 Structuring Quiz remain missing/overdue.",
+      "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 2
     },
@@ -3251,9 +3251,9 @@
       "period": "P4",
       "teacher": "Justin Pfeiff",
       "letter": "A",
-      "percent": 97.92,
-      "detail": "Canvas LIVE Mon 9/21 ~2:35pm 97.92% (47/48), missing 1. Copper Cycle Reading still missing –/3 (due 9/17). ParentVUE morning Chem A 95.9. Afternoon ParentVUE LOGIN_WALL (autofill empty).",
-      "source": "Canvas",
+      "percent": 95.2,
+      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A 95.2% (last updated 9/21). Canvas context still relevant: Copper Cycle Reading remains missing/overdue.",
+      "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 1
     },
@@ -3264,7 +3264,7 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE morning Mon 9/21 7:52am CDT — A+ 100.00% (last updated 9/18). Afternoon ParentVUE LOGIN_WALL (autofill empty); morning figure kept.",
+      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A+ 100.00% (last updated 9/18).",
       "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
@@ -3276,8 +3276,8 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.25,
-      "detail": "Canvas LIVE Mon 9/21 ~2:35pm 96.25% (134.75/140), missing 0. Narrative #2 Formative On-Demand NOW graded 10/10 (was missing). Idea Rough Draft 10/10. 10.2 Initial Research 10/10. Midterm Check-In submitted today 1:29pm text-entry, ungraded /5, due tonight 11:59pm. ParentVUE morning Eng A 95.96. Afternoon ParentVUE LOGIN_WALL (autofill empty).",
-      "source": "Canvas",
+      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A 96.25% (last updated 9/21). Canvas context: Narrative #2 Formative On-Demand graded 10/10; Midterm Check-In submitted, ungraded; no Canvas missing work currently noted.",
+      "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
     },
@@ -3286,9 +3286,9 @@
       "class": "Geometry",
       "period": "P7",
       "teacher": "K Foster",
-      "letter": "B+",
-      "percent": 89,
-      "detail": "ParentVUE morning Mon 9/21 7:52am CDT — B+ 89% (last updated 9/17). Afternoon ParentVUE LOGIN_WALL (autofill empty); morning figure kept. Canvas grades disabled.",
+      "letter": "B",
+      "percent": 87.0,
+      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — B 87% (last updated 9/21).",
       "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
