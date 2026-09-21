@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-20T21:20:00",
+  "as_of": "2026-09-21T07:52:00",
   "parenting": [
     {
       "who": "Mom",
@@ -2963,6 +2963,9 @@
   ],
   "notes": [
     {
+      "text": "Mon 9/21 ~7:52am CDT LIVE ParentVUE restored: Band A+ 100, Sociology A- 92, Web A 93 (Canvas 92.86), Chemistry A 95.9 (Canvas 97.92; Copper Cycle still missing), S&C A+ 100, English A 95.96, Geometry B+ 89. New Web Design I unexcused tardy Fri 9/18 9:20–10:05am. No inbox newer than Fillingham Band Update 9/20."
+    },
+    {
       "id": "after-school-20260920",
       "as_of": "2026-09-20T14:30:00",
       "text": "After-school Sun 9/20 ~2:30pm CT FULL. Canvas LIVE UNCHANGED Eng 95.23 / Chem 97.92 / Web 92.86 — still MISSING Narrative #2 (due 9/14) + Copper Cycle Reading (due 9/17); Idea Rough + 10.2 score pending; Web 2.10+2.11 due Mon 9/21 9:20am (tonight priority). Geometry still ParentVUE-only. ParentVUE LOGIN_WALL (password autofill empty) — grades frozen Wed 9/16. Gmail NEW: Fillingham Band Update 9/20 — Blue Springs 2nd overall; Mon 9/21 rehearsal 6:30–8:30; Sat 9/26 field rehearsal REQUIRED 8am–12; HOCO Oct 1 call 5pm; mattress sale Nov 15. English sheet/oeband/district UNCHANGED; OE widget rolled to Sep 21 athletics. Career Pathways @ OE Mon 9/21 6:30–7:30p. No Bennett-said-done (Plaud = household rules only). chem-about-me legacy discrepancy true. Dad tonight through Thu 9/24 4:30p."
@@ -3196,9 +3199,9 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LOGIN_WALL Sun 9/20 bedtime (password autofill empty) — grade frozen Wed 9/16 A+ 100. Band Canvas: no grades.",
+      "detail": "ParentVUE LIVE Mon 9/21 7:52am CDT — A+ 100.0% (last updated 9/14). Band Canvas: no grades.",
       "source": "ParentVUE",
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-21",
       "missing": 0
     },
     {
@@ -3208,9 +3211,9 @@
       "teacher": "Todd Keach",
       "letter": "A-",
       "percent": 92,
-      "detail": "ParentVUE LOGIN_WALL Sun 9/20 bedtime (password autofill empty) — grade frozen Wed 9/16 A- 92.",
+      "detail": "ParentVUE LIVE Mon 9/21 7:52am CDT — A- 92% (last updated 9/17).",
       "source": "ParentVUE",
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-21",
       "missing": 0
     },
     {
@@ -3220,9 +3223,9 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 92.86,
-      "detail": "Canvas LIVE Sun 9/20 ~9:15pm 92.86% (227.50/245) UNCHANGED. 2.10 –/20 and 2.11 –/10 still open due Mon 9/21 9:20am. ParentVUE LOGIN_WALL — PV Web frozen Wed 9/16 A 93.",
+      "detail": "Canvas LIVE Sun 9/20 ~9:15pm 92.86% (227.50/245) UNCHANGED. 2.10 –/20 and 2.11 –/10 still open due Mon 9/21 9:20am. ParentVUE LIVE Mon 9/21 A 93% (last updated 9/16).",
       "source": "Canvas",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-21",
       "missing": 0
     },
     {
@@ -3230,11 +3233,11 @@
       "class": "Chemistry",
       "period": "P4",
       "teacher": "Justin Pfeiff",
-      "letter": "A+",
-      "percent": 97.92,
-      "detail": "Canvas LIVE Sun 9/20 ~9:15pm 97.92% (47/48) UNCHANGED. Copper Cycle Reading still overdue No Submission –/3 (due 9/17). Quiz 1 Reflection 0/0 no impact. ParentVUE LOGIN_WALL — PV Chem frozen Wed 9/16 A+98.7.",
-      "source": "Canvas",
-      "as_of": "2026-09-20",
+      "letter": "A",
+      "percent": 95.9,
+      "detail": "Canvas LIVE Sun 9/20 ~9:15pm 97.92% (47/48) UNCHANGED. Copper Cycle Reading still overdue No Submission –/3 (due 9/17). Quiz 1 Reflection 0/0 no impact. ParentVUE LIVE Mon 9/21 A 95.9% (last updated 9/18).",
+      "source": "ParentVUE",
+      "as_of": "2026-09-21",
       "missing": 1
     },
     {
@@ -3244,9 +3247,9 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LOGIN_WALL Sun 9/20 bedtime (password autofill empty) — grade frozen Wed 9/16 A+ 100.",
+      "detail": "ParentVUE LIVE Mon 9/21 7:52am CDT — A+ 100.00% (last updated 9/18).",
       "source": "ParentVUE",
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-21",
       "missing": 0
     },
     {
@@ -3256,9 +3259,9 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 95.96,
-      "detail": "Canvas LIVE Sun 9/20 ~9:15pm 95.96% (124.75/130) UP from afternoon 95.23. Idea Rough Draft 10/10 + 10.2 Initial Research 10/10 graded ~7–7:24pm CT. Narrative #2 Formative On-Demand still overdue No Submission –/10 (due 9/14). NEW Midterm Check-In due Mon 9/21 11:59pm –/5. AAB RC3 still 8/10. ParentVUE LOGIN_WALL (autofill empty).",
+      "detail": "Canvas LIVE Sun 9/20 ~9:15pm 95.96% (124.75/130) UP from afternoon 95.23. Idea Rough Draft 10/10 + 10.2 Initial Research 10/10 graded ~7–7:24pm CT. Narrative #2 Formative On-Demand still overdue No Submission –/10 (due 9/14). NEW Midterm Check-In due Mon 9/21 11:59pm –/5. AAB RC3 still 8/10. ParentVUE LIVE Mon 9/21 A 95.96% confirmed.",
       "source": "Canvas",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-21",
       "missing": 1
     },
     {
@@ -3268,9 +3271,9 @@
       "teacher": "K Foster",
       "letter": "B+",
       "percent": 89,
-      "detail": "Canvas Sun 9/20 bedtime: still no Canvas grades (home says use ParentVUE/StudentVUE). ParentVUE LOGIN_WALL — last live Geo B+ 89 (Wed 9/16).",
+      "detail": "ParentVUE LIVE Mon 9/21 7:52am CDT — B+ 89% (last updated 9/17). Canvas has no grades (home says use ParentVUE/StudentVUE).",
       "source": "ParentVUE",
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-21",
       "missing": 0
     }
   ]
