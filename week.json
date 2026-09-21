@@ -1203,7 +1203,7 @@
       "kind": "school",
       "classId": null,
       "place": "Olathe East Auditorium",
-      "note": "Tonight 6:30–7:30 still on. District calendar + Gmail NEW communications@olatheschools.org Mon 9/21 ~9:57am Career Pathway Information Presentation (also noted Mon 9/14). Parents & students grades 8–11. Same content at other HS nights."
+      "note": "Gmail NEW communications@olatheschools.org Career Pathway Information Presentation Mon 9/21 ~9:57am aligns with tonight 6:30–7:30. District calendar also noted Mon 9/14. Parents & students grades 8–11. Same content at other HS nights."
     },
     {
       "id": "band-rehearsal-0921",
@@ -1366,7 +1366,7 @@
       "end": "2026-09-21T19:30:00",
       "kind": "school",
       "place": "Olathe East",
-      "note": "OE homepage widget Mon 9/21 ~2:35pm: CANCELLED FAFSA/Scholarship Night 5:30–7:30.",
+      "note": "OE homepage widget Mon 9/21: CANCELLED FAFSA/Scholarship Night 5:30–7:30.",
       "cancelled": true
     },
     {
@@ -1394,7 +1394,7 @@
       "start": "2026-09-21T23:59:00",
       "kind": "assignment",
       "classId": "english-10",
-      "note": "Submitted Mon 9/21 1:29pm text-entry; still ungraded /5. Due tonight 11:59pm. First seen bedtime Sun 9/20."
+      "note": "SUBMITTED Mon 9/21 1:29pm CT text-entry; still ungraded /5; due tonight 11:59pm."
     }
   ],
   "work": [
@@ -1499,7 +1499,7 @@
         "email_sent": false
       },
       "discrepancy_reason": "Posted Chem total is 36/36 and 0 missing in ParentVUE. This assignment row is still not among the three graded items. Last known: comment-only 8/20 4:57pm. followup.email_sent stays false.",
-      "as_of": "2026-09-20T21:20:00"
+      "as_of": "2026-09-21T14:35:00"
     },
     {
       "id": "chem-aboutme-disc",
@@ -2738,7 +2738,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. Canvas LIVE Mon 9/21 ~2:35pm: still missing –/3 (due Thu 9/17). Not in 97.92% (47/48).",
+      "note": "Pfeiff. Still missing after-school Mon 9/21 ~2:35pm CT –/3 (due Thu 9/17). Not in 97.92% (47/48).",
       "canvas": {
         "status": "missing",
         "points": 3,
@@ -2795,7 +2795,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Canvas LIVE Mon 9/21 ~2:35pm: still unsubmitted/overdue –/20 (due today 9:20am). Missing.",
+      "note": "Linn. Overdue unsubmitted after 9:20am due –/20.",
       "canvas": {
         "status": "missing",
         "points": 20,
@@ -2823,7 +2823,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Canvas LIVE Mon 9/21 ~2:35pm: still unsubmitted/overdue –/10 (due today 9:20am). Missing.",
+      "note": "Linn. Overdue unsubmitted after 9:20am due –/10.",
       "canvas": {
         "status": "missing",
         "points": 10,
@@ -2851,7 +2851,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas LIVE Mon 9/21 ~2:35pm: GRADED 10/10 (was missing/overdue due Mon 9/14). Paper-submit note on assignment. English course 96.25% (134.75/140).",
+      "note": "Goodson. AFTER-SCHOOL Mon 9/21 ~2:35pm CT NOW GRADED 10/10 (was missing); Eng course 96.25% (134.75/140) missing 0.",
       "canvas": {
         "status": "graded",
         "points": 10,
@@ -2962,7 +2962,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas LIVE Mon 9/21 ~2:35pm: submitted today 1:29pm text-entry, still ungraded /5. Due tonight 11:59pm.",
+      "note": "Goodson. Text-entry submitted Mon 9/21 1:29pm CT; still ungraded /5; due tonight 11:59pm.",
       "canvas": {
         "status": "submitted",
         "points": 5,
@@ -2977,7 +2977,7 @@
     {
       "id": "after-school-20260921",
       "as_of": "2026-09-21T14:35:00",
-      "text": "After-school Mon 9/21 ~2:35pm CT. Canvas LIVE: Eng 95.96→96.25 (134.75/140) missing 0 — Narrative #2 Formative On-Demand NOW graded 10/10 (was missing); Idea Rough Draft 10/10; 10.2 Initial Research 10/10; Midterm Check-In submitted today 1:29pm text-entry, ungraded /5, due tonight 11:59pm. Web 92.86 (227.50/245) UNCHANGED missing 2 — 2.10 HTML Colors –/20 and 2.11 Structuring Quiz –/10 still unsubmitted/overdue (due 9:20am today). Chem 97.92 (47/48) UNCHANGED missing 1 — Copper Cycle Reading still missing –/3 (due 9/17). ParentVUE LOGIN_WALL (autofill empty) — keep morning 7:52am: Band A+100 (Canvas grades disabled), Sociology A-92 (unpublished on Canvas), S&C A+100, Geometry B+89 (Canvas grades disabled), Web A93, Chem A95.9, Eng A95.96. AI unpublished. Web Design tardy unexcused Fri 9/18. OE widget: CANCELLED FAFSA/Scholarship Night 5:30–7:30. Band rehearsal tonight 6:30–8:30 still on. Career Pathways @ OE tonight 6:30–7:30 (Gmail NEW communications@olatheschools.org Career Pathway Information Presentation Mon 9/21 ~9:57am). oeband: Blue Springs rolled off; Oct football/marching; calendar Under Construction; payments UNCHANGED $350 first child. English sheet UNCHANGED. No new inbox vs Fillingham Band Update 9/20. No Bennett-said-done; chem-about-me legacy discrepancy true. Dad tonight through Thu 9/24 4:30p."
+      "text": "After-school Mon 9/21 ~2:35pm CT FULL. Canvas LIVE: Eng 96.25% (134.75/140) missing 0 — Narrative #2 Formative On-Demand NOW graded 10/10 (was missing); Idea Rough + 10.2 still 10/10; Midterm Check-In SUBMITTED today 1:29pm text-entry ungraded /5 due tonight 11:59pm. Web 92.86% (227.50/245) missing 2 — 2.10 HTML Colors –/20 + 2.11 Structuring Quiz –/10 still unsubmitted/OVERDUE (due 9:20am). Chem 97.92% (47/48) missing 1 — Copper Cycle Reading still MISSING –/3 (due 9/17). Band/Geo Canvas grades disabled; Soc/S&C/AI unpublished. ParentVUE LOGIN_WALL (autofill empty) — use morning 7:52am: Band A+100, Soc A-92, Web A93, Chem A95.9, S&C A+100, Eng A95.96, Geo B+89; Web Design tardy unexcused Fri 9/18; no new inbox vs Fillingham Band Update 9/20. Gmail NEW: communications@olatheschools.org Career Pathway Information Presentation (~9:57am) — aligns Career Pathways @ OE tonight 6:30–7:30. Hawk Weekly + Instructure already known. Public extras: English sheet UNCHANGED; oeband homepage CHANGED (Blue Springs rolled off; Oct football/marching; calendar Under Construction); payments UNCHANGED $350; OE widget CHANGED Sep 21 athletics + CANCELLED FAFSA/Scholarship Night 5:30–7:30; district UNCHANGED Career Pathways tonight. Dad tonight through Thu 9/24 4:30p. Band rehearsal tonight 6:30–8:30. No Bennett-said-done. chem-about-me legacy discrepancy true."
     },
     {
       "text": "Mon 9/21 ~7:52am CDT LIVE ParentVUE restored: Band A+ 100, Sociology A- 92, Web A 93 (Canvas 92.86), Chemistry A 95.9 (Canvas 97.92; Copper Cycle still missing), S&C A+ 100, English A 95.96, Geometry B+ 89. New Web Design I unexcused tardy Fri 9/18 9:20–10:05am. No inbox newer than Fillingham Band Update 9/20."
@@ -3240,7 +3240,7 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 92.86,
-      "detail": "Canvas LIVE Mon 9/21 ~2:35pm 92.86% (227.50/245), missing 2. 2.10 HTML Colors –/20 and 2.11 Structuring Quiz –/10 still unsubmitted/overdue (due 9:20am today). ParentVUE morning Web A 93. Web Design tardy unexcused Fri 9/18.",
+      "detail": "Canvas 92.86% (227.50/245) missing 2. 2.10 HTML Colors –/20 and 2.11 Structuring Quiz –/10 overdue unsubmitted. ParentVUE morning 7:52am A 93. Afternoon ParentVUE LOGIN_WALL (autofill empty). Web Design tardy unexcused Fri 9/18.",
       "source": "Canvas",
       "as_of": "2026-09-21",
       "missing": 2
