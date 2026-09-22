@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-21T21:10:00",
+  "as_of": "2026-09-22T14:40:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1104,12 +1104,13 @@
     },
     {
       "id": "band-pep-0925",
-      "title": "Band: Pep Band @ CT Pep Assembly (optional)",
+      "title": "Band: Pep Band @ California Trail Pep Assembly (optional)",
       "start": "2026-09-25",
-      "kind": "calendar",
+      "kind": "band",
       "classId": "band",
-      "place": "CT",
-      "note": "Fillingham 9/20/26: Pep Band @ CT Pep Assembly — NOT required; details coming."
+      "place": "California Trail Middle School",
+      "note": "Fillingham NEW Gmail Tue 9/22 ~12:35pm CT: voluntary pep band Fri at CT pep assembly (football stand tunes). Students drive/ride with friends (buses unavailable) — only if transportation forms allow. Parent permission form required (PDF attached; electronic ok to Fillingham). Dismissed from 7th hour; return OE ~3:00 PM. Hard copies in band room.",
+      "end": "2026-09-25T15:00:00"
     },
     {
       "id": "band-mattress-1115",
@@ -1395,6 +1396,94 @@
       "kind": "assignment",
       "classId": "english-10",
       "note": "SUBMITTED Mon 9/21 1:29pm CT text-entry; still ungraded /5; due tonight 11:59pm."
+    },
+    {
+      "id": "district-board-1001",
+      "title": "District: Board of Education Meeting",
+      "start": "2026-10-01T17:45:00",
+      "end": "2026-10-01T21:00:00",
+      "kind": "calendar",
+      "place": "Olathe Public Schools",
+      "note": "District calendar page Tue 9/22 pull — newly visible Board of Education Meeting Oct 1 5:45–9:00 PM."
+    },
+    {
+      "id": "district-public-hearing-0922",
+      "title": "District: Public Hearing @ Olathe South",
+      "start": "2026-09-22T17:30:00",
+      "end": "2026-09-22T18:30:00",
+      "kind": "calendar",
+      "place": "Olathe South High School",
+      "note": "OE homepage widget Tue 9/22 — Public Hearing 5:30 p.m. at Olathe South. Also on district calendar."
+    },
+    {
+      "id": "web-31-due-0928",
+      "title": "Web Design: 3.1 Introduction to CSS due",
+      "start": "2026-09-28T09:20:00",
+      "kind": "assignment",
+      "classId": "web-design",
+      "note": "Canvas Coming Up Tue 9/22 — 19 pts due Mon Sep 28 9:20am."
+    },
+    {
+      "id": "eng-infographic-due-0929",
+      "title": "English: 3DE Infographic due (end of hour)",
+      "start": "2026-09-29T14:40:00",
+      "kind": "assignment",
+      "classId": "english-10",
+      "note": "English Daily Agendas sheet Tue 9/22 — Infographic due at end of hour Sep 29."
+    },
+    {
+      "id": "oe-golf-0922",
+      "title": "Girls Golf: ON JV Golf Tournament",
+      "start": "2026-09-22T08:00:00",
+      "end": "2026-09-22T17:00:00",
+      "kind": "athletics",
+      "place": "Olathe East",
+      "note": "OE homepage widget Tue 9/22 pull."
+    },
+    {
+      "id": "oe-tennis-0922",
+      "title": "Girls Tennis: Olathe East vs Lawrence (JV)",
+      "start": "2026-09-22T15:00:00",
+      "end": "2026-09-22T20:00:00",
+      "kind": "athletics",
+      "place": "Olathe East",
+      "note": "OE homepage widget Tue 9/22 pull."
+    },
+    {
+      "id": "oe-soccer-jv-0922",
+      "title": "Boys Soccer: Olathe East vs Gardner Edgerton (JV)",
+      "start": "2026-09-22T17:00:00",
+      "end": "2026-09-22T18:00:00",
+      "kind": "athletics",
+      "place": "Olathe East",
+      "note": "OE homepage widget Tue 9/22 pull."
+    },
+    {
+      "id": "oe-vb-jv-0922",
+      "title": "Volleyball: Olathe East vs Olathe Northwest (JV/D)",
+      "start": "2026-09-22T17:30:00",
+      "end": "2026-09-22T19:00:00",
+      "kind": "athletics",
+      "place": "Olathe East",
+      "note": "OE homepage widget Tue 9/22 pull."
+    },
+    {
+      "id": "oe-vb-var-0922",
+      "title": "Volleyball: Olathe East vs Olathe Northwest (Varsity/C)",
+      "start": "2026-09-22T18:30:00",
+      "end": "2026-09-22T20:00:00",
+      "kind": "athletics",
+      "place": "Olathe East",
+      "note": "OE homepage widget Tue 9/22 pull."
+    },
+    {
+      "id": "oe-soccer-var-0922",
+      "title": "Boys Soccer: Olathe East vs Gardner Edgerton (Varsity)",
+      "start": "2026-09-22T19:00:00",
+      "end": "2026-09-22T21:00:00",
+      "kind": "athletics",
+      "place": "Olathe East",
+      "note": "OE homepage widget Tue 9/22 pull."
     }
   ],
   "work": [
@@ -2729,29 +2818,32 @@
       "id": "chem-copper-cycle-reading-0917",
       "title": "Chemistry: Copper Cycle Reading",
       "due": "2026-09-17T23:59:00",
-      "status": "missing",
-      "school_status": "missing",
+      "status": "graded",
+      "school_status": "graded",
       "student_status": null,
       "discrepancy": false,
-      "score": null,
+      "score": "0/3",
       "points": 3,
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Bedtime Canvas LIVE: still No Submission –/3 (due 9/17). Chem Canvas overall 98.48%.",
+      "note": "Canvas LIVE Tue 9/22 after-school: graded 0/3 (Gmail graded Sep 21 9:50pm). Was No Submission at bedtime. Chem Canvas overall 96.43% (was 98.48%).",
       "canvas": {
-        "status": "missing",
+        "status": "graded",
         "points": 3,
+        "score": 0,
         "due": "2026-09-17T23:59:00",
-        "as_of": "2026-09-21T14:35:00"
+        "graded_at": "2026-09-21T21:50:00",
+        "as_of": "2026-09-22T14:40:00"
       },
       "followup": {
-        "due_by": "2026-09-22",
+        "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-09-21T14:35:00",
-      "classId": "chemistry"
+      "as_of": "2026-09-22T14:40:00",
+      "classId": "chemistry",
+      "graded_at": "2026-09-21T21:50:00"
     },
     {
       "id": "geo-unit1-test",
@@ -2791,18 +2883,18 @@
       "discrepancy": false,
       "student_status": null,
       "followup": {
-        "due_by": "2026-09-22",
+        "due_by": "2026-09-23",
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Bedtime Canvas LIVE: still No Submission –/20, overdue since 9:20am 9/21.",
+      "note": "Canvas LIVE Tue 9/22 after-school: still No Submission –/20, overdue since Mon 9/21 9:20am. Web course 92.86%.",
       "canvas": {
         "status": "missing",
         "points": 20,
         "due": "2026-09-21T09:20:00",
-        "as_of": "2026-09-21T14:35:00"
+        "as_of": "2026-09-22T14:40:00"
       },
-      "as_of": "2026-09-21T14:35:00",
+      "as_of": "2026-09-22T14:40:00",
       "score": null
     },
     {
@@ -2819,18 +2911,18 @@
       "discrepancy": false,
       "student_status": null,
       "followup": {
-        "due_by": "2026-09-22",
+        "due_by": "2026-09-23",
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Bedtime Canvas LIVE: still No Submission –/10, overdue since 9:20am 9/21.",
+      "note": "Canvas LIVE Tue 9/22 after-school: still No Submission –/10, overdue since Mon 9/21 9:20am. Web course 92.86%.",
       "canvas": {
         "status": "missing",
         "points": 10,
         "due": "2026-09-21T09:20:00",
-        "as_of": "2026-09-21T14:35:00"
+        "as_of": "2026-09-22T14:40:00"
       },
-      "as_of": "2026-09-21T14:35:00",
+      "as_of": "2026-09-22T14:40:00",
       "score": null
     },
     {
@@ -2962,18 +3054,73 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Bedtime Canvas LIVE: graded 5/5 (Gmail graded 4:17pm CT). Was submitted/ungraded at after-school.",
+      "note": "Canvas LIVE Tue 9/22: still graded 5/5 (submitted Mon 1:29pm). Eng course 96.38%.",
       "canvas": {
         "status": "graded",
         "points": 5,
         "score": 5,
         "submitted_at": "2026-09-21T13:29:00"
       },
-      "as_of": "2026-09-21T14:35:00",
+      "as_of": "2026-09-22T14:40:00",
       "graded_at": "2026-09-21T16:17:00"
+    },
+    {
+      "id": "web-31-intro-css-0928",
+      "title": "Web Design: 3.1 Introduction to CSS",
+      "classId": "web-design",
+      "due": "2026-09-28T09:20:00",
+      "status": "open",
+      "school_status": "open",
+      "points": 19,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "score": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Canvas LIVE Tue 9/22 dashboard Coming Up: due Mon Sep 28 9:20am (19 pts). Not due tonight.",
+      "canvas": {
+        "status": "open",
+        "points": 19,
+        "due": "2026-09-28T09:20:00",
+        "as_of": "2026-09-22T14:40:00"
+      },
+      "as_of": "2026-09-22T14:40:00"
+    },
+    {
+      "id": "eng-infographic-0929",
+      "title": "English 10: 3DE Infographic",
+      "classId": "english-10",
+      "due": "2026-09-29T14:40:00",
+      "status": "open",
+      "school_status": "open",
+      "points": null,
+      "late": false,
+      "submitted_at": null,
+      "source": "english-agenda-sheet",
+      "discrepancy": false,
+      "student_status": null,
+      "score": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "English Daily Agendas sheet Tue 9/22: Infographic due at end of hour Sep 29. Class today: Aaron Douglas discussion + Infographic work; HW read through p.203 by block day.",
+      "as_of": "2026-09-22T14:40:00"
     }
   ],
   "notes": [
+    {
+      "id": "after-school-20260922",
+      "as_of": "2026-09-22T14:40:00",
+      "text": "After-school Tue 9/22 ~2:40pm CT FULL. Canvas LIVE: Eng 96.38% Midterm still 5/5 missing 0; Web 92.86% still MISSING 2.10+2.11 overdue; Chem 98.48→96.43 Copper Cycle Reading NOW graded 0/3 (Gmail graded 9:50pm Mon); Names/Symbols 1/1; Coming Up Web 3.1 CSS due Mon 9/28 9:20am. Nothing due tonight/tomorrow on Canvas. ParentVUE LOGIN_WALL (autofill empty) — grades STALE Mon 9/21 9:09pm (Band A+100 Soc A-92 Web A93 Chem A95.2 S&C A+100 Eng A96.25 Geo B87); inbox/attendance not refreshed (known Web Design tardy 9/18). Gmail NEW: Fillingham California Trail pep band Fri (permission form; dismiss 7th; return ~3pm); Instructure Copper Cycle graded + Names/Symbols regrade. Public: English sheet CHANGED (Aaron Douglas/Infographic; read p.203; Infographic due end of hour 9/29); oeband UNCHANGED $350 / Oct football-marching / calendar Under Construction; OE widget rolled Sep 22 athletics + Public Hearing 5:30p @ South; district NEW Board of Ed Oct 1 5:45–9:00p; half day still Oct 14. Dad tonight through Thu 9/24 4:30p. No Bennett-said-done. chem-about-me legacy discrepancy true."
+    },
     {
       "id": "bedtime-20260921",
       "as_of": "2026-09-21T21:10:00",
@@ -3221,9 +3368,9 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A+ 100.0% (last updated 9/14).",
-      "source": "ParentVUE",
-      "as_of": "2026-09-21",
+      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — A+ 100% STALE from Mon 9/21 9:09pm. Canvas grades disabled. Gmail NEW Fillingham California Trail pep band Fri (permission form).",
+      "source": "ParentVUE(stale)",
+      "as_of": "2026-09-22",
       "missing": 0
     },
     {
@@ -3233,9 +3380,9 @@
       "teacher": "Todd Keach",
       "letter": "A-",
       "percent": 92.0,
-      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A- 92% (last updated 9/21).",
-      "source": "ParentVUE",
-      "as_of": "2026-09-21",
+      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — A- 92% STALE from Mon 9/21 9:09pm. Canvas unpublished.",
+      "source": "ParentVUE(stale)",
+      "as_of": "2026-09-22",
       "missing": 0
     },
     {
@@ -3245,9 +3392,9 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 93.0,
-      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A 93% (last updated 9/16). Canvas still 92.86% with 2.10 HTML Colors and 2.11 Structuring Quiz MISSING/overdue (due 9:20am).",
-      "source": "ParentVUE+Canvas",
-      "as_of": "2026-09-21",
+      "detail": "ParentVUE LOGIN_WALL Tue 9/22 after-school — PV A 93% STALE from Mon 9/21 9:09pm. Canvas LIVE 92.86% (227.50/245); 2.10 HTML Colors –/20 + 2.11 Structuring Quiz –/10 still MISSING/overdue since Mon 9:20am. NEW Coming Up: 3.1 Introduction to CSS due Mon Sep 28 9:20am (19 pts).",
+      "source": "ParentVUE(stale)+Canvas",
+      "as_of": "2026-09-22",
       "missing": 2
     },
     {
@@ -3257,10 +3404,10 @@
       "teacher": "Justin Pfeiff",
       "letter": "A",
       "percent": 95.2,
-      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A 95.2% (last updated 9/21). Canvas LIVE 98.48% (was 97.92% after-school); Copper Cycle Reading still MISSING –/3.",
-      "source": "ParentVUE+Canvas",
-      "as_of": "2026-09-21",
-      "missing": 1
+      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — PV A 95.2% STALE from Mon 9/21 9:09pm. Canvas LIVE 96.43% (was 98.48% bedtime); Copper Cycle Reading NOW graded 0/3 (was No Submission). Chemical Names and Symbols Reading 1/1. No Canvas missing.",
+      "source": "ParentVUE(stale)+Canvas",
+      "as_of": "2026-09-22",
+      "missing": 0
     },
     {
       "classId": "strength-conditioning",
@@ -3269,9 +3416,9 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A+ 100.00% (last updated 9/18).",
-      "source": "ParentVUE",
-      "as_of": "2026-09-21",
+      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — A+ 100% STALE from Mon 9/21 9:09pm. Canvas unpublished.",
+      "source": "ParentVUE(stale)",
+      "as_of": "2026-09-22",
       "missing": 0
     },
     {
@@ -3281,9 +3428,9 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.25,
-      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A 96.25% (last updated 9/21). Canvas LIVE 96.38%: Midterm Check-In NOW graded 5/5 (was submitted/ungraded at 2:35); Narrative #2 Formative On-Demand 10/10; no Canvas missing.",
-      "source": "ParentVUE+Canvas",
-      "as_of": "2026-09-21",
+      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — PV A 96.25% STALE from Mon 9/21 9:09pm. Canvas LIVE 96.38% (139.75/145); Midterm Check-In still 5/5; no Canvas missing. English sheet: Infographic due end of hour Sep 29; read through p.203 by block day.",
+      "source": "ParentVUE(stale)+Canvas",
+      "as_of": "2026-09-22",
       "missing": 0
     },
     {
@@ -3293,9 +3440,9 @@
       "teacher": "K Foster",
       "letter": "B",
       "percent": 87.0,
-      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — B 87% (last updated 9/21).",
-      "source": "ParentVUE",
-      "as_of": "2026-09-21",
+      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — B 87% STALE from Mon 9/21 9:09pm. Canvas grades disabled.",
+      "source": "ParentVUE(stale)",
+      "as_of": "2026-09-22",
       "missing": 0
     }
   ]
