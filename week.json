@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-21T18:51:14",
+  "as_of": "2026-09-21T21:10:00",
   "parenting": [
     {
       "who": "Mom",
@@ -2738,7 +2738,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Pfeiff. Still missing after-school Mon 9/21 ~2:35pm CT –/3 (due Thu 9/17). Not in 97.92% (47/48).",
+      "note": "Bedtime Canvas LIVE: still No Submission –/3 (due 9/17). Chem Canvas overall 98.48%.",
       "canvas": {
         "status": "missing",
         "points": 3,
@@ -2795,7 +2795,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Overdue unsubmitted after 9:20am due –/20.",
+      "note": "Bedtime Canvas LIVE: still No Submission –/20, overdue since 9:20am 9/21.",
       "canvas": {
         "status": "missing",
         "points": 20,
@@ -2823,7 +2823,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Overdue unsubmitted after 9:20am due –/10.",
+      "note": "Bedtime Canvas LIVE: still No Submission –/10, overdue since 9:20am 9/21.",
       "canvas": {
         "status": "missing",
         "points": 10,
@@ -2948,32 +2948,37 @@
       "title": "English 10: Midterm Check-In",
       "classId": "english-10",
       "due": "2026-09-21T23:59:00",
-      "status": "submitted",
-      "school_status": "submitted",
+      "status": "graded",
+      "school_status": "graded",
       "points": 5,
       "late": false,
       "submitted_at": "2026-09-21T13:29:00",
       "source": "canvas",
       "discrepancy": false,
       "student_status": null,
-      "score": null,
+      "score": "5/5",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Text-entry submitted Mon 9/21 1:29pm CT; still ungraded /5; due tonight 11:59pm.",
+      "note": "Bedtime Canvas LIVE: graded 5/5 (Gmail graded 4:17pm CT). Was submitted/ungraded at after-school.",
       "canvas": {
-        "status": "submitted",
+        "status": "graded",
         "points": 5,
-        "due": "2026-09-21T23:59:00",
-        "submitted_at": "2026-09-21T13:29:00",
-        "as_of": "2026-09-21T14:35:00"
+        "score": 5,
+        "submitted_at": "2026-09-21T13:29:00"
       },
-      "as_of": "2026-09-21T14:35:00"
+      "as_of": "2026-09-21T14:35:00",
+      "graded_at": "2026-09-21T16:17:00"
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-20260921",
+      "as_of": "2026-09-21T21:10:00",
+      "text": "Bedtime Mon 9/21 ~9:10pm CT NARROW. Canvas LIVE: Eng 96.38% — Midterm Check-In NOW graded 5/5 (submitted 1:29pm; Gmail graded 4:17pm); Narrative #2 still 10/10; missing 0. Web 92.86% missing 2 — 2.10 HTML Colors + 2.11 Structuring Quiz still No Submission/overdue. Chem 98.48% (was 97.92% after-school) missing 1 — Copper Cycle Reading still No Submission –/3. ParentVUE LIVE session OK: Band A+100, Soc A-92, Web A93, Chem A95.2, S&C A+100, Eng A96.25, Geo B87 — unchanged vs 6:51pm; inbox newest still Fillingham Band Update 9/20; attendance known Web Design tardy 9/18 + Eng tardy 9/15 (no 8/14 Chem flag). Gmail NEW Midterm graded email. No Bennett-said-done (Plaud transcripts empty). chem-about-me legacy discrepancy true."
+    },
     {
       "id": "after-school-20260921",
       "as_of": "2026-09-21T14:35:00",
@@ -3216,7 +3221,7 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A+ 100.0% (last updated 9/14).",
+      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A+ 100.0% (last updated 9/14).",
       "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
@@ -3228,7 +3233,7 @@
       "teacher": "Todd Keach",
       "letter": "A-",
       "percent": 92.0,
-      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A- 92% (last updated 9/21).",
+      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A- 92% (last updated 9/21).",
       "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
@@ -3240,8 +3245,8 @@
       "teacher": "Derek Linn",
       "letter": "A",
       "percent": 93.0,
-      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A 93% (last updated 9/16). Canvas context still relevant: 2.10 HTML Colors and 2.11 Structuring Quiz remain missing/overdue.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A 93% (last updated 9/16). Canvas still 92.86% with 2.10 HTML Colors and 2.11 Structuring Quiz MISSING/overdue (due 9:20am).",
+      "source": "ParentVUE+Canvas",
       "as_of": "2026-09-21",
       "missing": 2
     },
@@ -3252,8 +3257,8 @@
       "teacher": "Justin Pfeiff",
       "letter": "A",
       "percent": 95.2,
-      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A 95.2% (last updated 9/21). Canvas context still relevant: Copper Cycle Reading remains missing/overdue.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A 95.2% (last updated 9/21). Canvas LIVE 98.48% (was 97.92% after-school); Copper Cycle Reading still MISSING –/3.",
+      "source": "ParentVUE+Canvas",
       "as_of": "2026-09-21",
       "missing": 1
     },
@@ -3264,7 +3269,7 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A+ 100.00% (last updated 9/18).",
+      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A+ 100.00% (last updated 9/18).",
       "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
@@ -3276,8 +3281,8 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.25,
-      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — A 96.25% (last updated 9/21). Canvas context: Narrative #2 Formative On-Demand graded 10/10; Midterm Check-In submitted, ungraded; no Canvas missing work currently noted.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — A 96.25% (last updated 9/21). Canvas LIVE 96.38%: Midterm Check-In NOW graded 5/5 (was submitted/ungraded at 2:35); Narrative #2 Formative On-Demand 10/10; no Canvas missing.",
+      "source": "ParentVUE+Canvas",
       "as_of": "2026-09-21",
       "missing": 0
     },
@@ -3288,7 +3293,7 @@
       "teacher": "K Foster",
       "letter": "B",
       "percent": 87.0,
-      "detail": "ParentVUE LIVE Mon 9/21 6:51 PM CDT — B 87% (last updated 9/21).",
+      "detail": "ParentVUE LIVE Mon 9/21 9:09 PM CDT — B 87% (last updated 9/21).",
       "source": "ParentVUE",
       "as_of": "2026-09-21",
       "missing": 0
