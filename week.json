@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-22T14:40:00",
+  "as_of": "2026-09-23T14:40:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1238,13 +1238,13 @@
     },
     {
       "id": "band-hoco-1001",
-      "title": "Band: Homecoming Football (halftime BEFORE game)",
+      "title": "Band: Homecoming Football (field show AFTER game)",
       "start": "2026-10-01T17:00:00",
       "end": "2026-10-01T21:00:00",
       "kind": "band",
       "classId": "band",
       "place": "CBAC",
-      "note": "Fillingham 9/20/26: HOCO — perform halftime BEFORE game; call 5:00 PM; DRIFIT + long black socks; hair up; buses 5:20 to CBAC."
+      "note": "Fillingham Gmail NEW Wed 9/23 ~2:01pm CT: HOCO field show moved to AFTER the game Oct 1 (was halftime BEFORE). Call/DRIFIT details from 9/20 may still apply for load-in; confirm with band if call time changes. Sat rehearsal 8:00–12:00 still on."
     },
     {
       "id": "band-exhibition-1005",
@@ -1421,7 +1421,7 @@
       "start": "2026-09-28T09:20:00",
       "kind": "assignment",
       "classId": "web-design",
-      "note": "Canvas Coming Up Tue 9/22 — 19 pts due Mon Sep 28 9:20am."
+      "note": "Canvas Coming Up Wed 9/23 — 19 pts due Mon Sep 28 9:20am (with NEW 3.2)."
     },
     {
       "id": "eng-infographic-due-0929",
@@ -1484,6 +1484,22 @@
       "kind": "athletics",
       "place": "Olathe East",
       "note": "OE homepage widget Tue 9/22 pull."
+    },
+    {
+      "id": "web-32-css-select-due-0928",
+      "title": "Web Design: 3.2 CSS Select by Tag due",
+      "start": "2026-09-28T09:20:00",
+      "kind": "assignment",
+      "classId": "web-design",
+      "note": "Canvas Coming Up Wed 9/23 — due with 3.1 Mon Sep 28 9:20am."
+    },
+    {
+      "id": "eng-aab-164-203-0924",
+      "title": "English: AAB Pg. 164–203 due (block)",
+      "start": "2026-09-24",
+      "kind": "assignment",
+      "classId": "english-10",
+      "note": "English Daily Agendas sheet Wed 9/23 — Pg. 164–203 due on block 9/23–9/24."
     }
   ],
   "work": [
@@ -1588,7 +1604,7 @@
         "email_sent": false
       },
       "discrepancy_reason": "Posted Chem total is 36/36 and 0 missing in ParentVUE. This assignment row is still not among the three graded items. Last known: comment-only 8/20 4:57pm. followup.email_sent stays false.",
-      "as_of": "2026-09-21T14:35:00"
+      "as_of": "2026-09-22T21:16:00"
     },
     {
       "id": "chem-aboutme-disc",
@@ -2827,21 +2843,21 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Canvas LIVE Tue 9/22 after-school: graded 0/3 (Gmail graded Sep 21 9:50pm). Was No Submission at bedtime. Chem Canvas overall 96.43% (was 98.48%).",
+      "note": "Canvas LIVE Wed 9/23 after-school UNCHANGED: graded 0/3 (Gmail Sep 21 9:50pm). No submission status shown. Chem 96.43%.",
       "canvas": {
         "status": "graded",
         "points": 3,
         "score": 0,
         "due": "2026-09-17T23:59:00",
         "graded_at": "2026-09-21T21:50:00",
-        "as_of": "2026-09-22T14:40:00"
+        "as_of": "2026-09-23T14:40:00"
       },
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-09-22T14:40:00",
+      "as_of": "2026-09-23T14:40:00",
       "classId": "chemistry",
       "graded_at": "2026-09-21T21:50:00"
     },
@@ -2874,8 +2890,8 @@
       "title": "Web Design: 2.10 HTML Colors",
       "classId": "web-design",
       "due": "2026-09-21T09:20:00",
-      "status": "missing",
-      "school_status": "missing",
+      "status": "graded",
+      "school_status": "graded",
       "points": 20,
       "late": true,
       "submitted_at": null,
@@ -2883,27 +2899,29 @@
       "discrepancy": false,
       "student_status": null,
       "followup": {
-        "due_by": "2026-09-23",
+        "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/22 after-school: still No Submission –/20, overdue since Mon 9/21 9:20am. Web course 92.86%.",
+      "note": "Canvas LIVE Wed 9/23 after-school: graded 18/20 (Gmail Instructure graded ~10:00am CT). Was MISSING. Web course now 91.82%.",
       "canvas": {
-        "status": "missing",
+        "status": "graded",
         "points": 20,
+        "score": 18,
         "due": "2026-09-21T09:20:00",
-        "as_of": "2026-09-22T14:40:00"
+        "graded_at": "2026-09-23T10:00:00",
+        "as_of": "2026-09-23T14:40:00"
       },
-      "as_of": "2026-09-22T14:40:00",
-      "score": null
+      "as_of": "2026-09-23T14:40:00",
+      "score": "18/20"
     },
     {
       "id": "web-211-structuring-quiz-0921",
       "title": "Web Design: 2.11 HTML–Structuring Websites Quiz",
       "classId": "web-design",
       "due": "2026-09-21T09:20:00",
-      "status": "missing",
-      "school_status": "missing",
+      "status": "graded",
+      "school_status": "graded",
       "points": 10,
       "late": true,
       "submitted_at": null,
@@ -2911,19 +2929,21 @@
       "discrepancy": false,
       "student_status": null,
       "followup": {
-        "due_by": "2026-09-23",
+        "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/22 after-school: still No Submission –/10, overdue since Mon 9/21 9:20am. Web course 92.86%.",
+      "note": "Canvas LIVE Wed 9/23 after-school: graded 7/10 (Gmail Instructure graded ~10:01am CT). Was MISSING. Web course now 91.82%.",
       "canvas": {
-        "status": "missing",
+        "status": "graded",
         "points": 10,
+        "score": 7,
         "due": "2026-09-21T09:20:00",
-        "as_of": "2026-09-22T14:40:00"
+        "graded_at": "2026-09-23T10:01:00",
+        "as_of": "2026-09-23T14:40:00"
       },
-      "as_of": "2026-09-22T14:40:00",
-      "score": null
+      "as_of": "2026-09-23T14:40:00",
+      "score": "7/10"
     },
     {
       "id": "eng-narrative-2-formative",
@@ -3083,14 +3103,14 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/22 dashboard Coming Up: due Mon Sep 28 9:20am (19 pts). Not due tonight.",
+      "note": "Canvas LIVE Wed 9/23 after-school: still open due Mon Sep 28 9:20am (19 pts). Companion NEW 3.2 also due same time.",
       "canvas": {
         "status": "open",
         "points": 19,
         "due": "2026-09-28T09:20:00",
-        "as_of": "2026-09-22T14:40:00"
+        "as_of": "2026-09-23T14:40:00"
       },
-      "as_of": "2026-09-22T14:40:00"
+      "as_of": "2026-09-23T14:40:00"
     },
     {
       "id": "eng-infographic-0929",
@@ -3111,11 +3131,70 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "English Daily Agendas sheet Tue 9/22: Infographic due at end of hour Sep 29. Class today: Aaron Douglas discussion + Infographic work; HW read through p.203 by block day.",
-      "as_of": "2026-09-22T14:40:00"
+      "note": "English sheet Wed 9/23: Infographic still due end of hour Sep 29. Block 9/23–9/24: Pg. 164–203 due; descriptive writing stations; pass back narratives.",
+      "as_of": "2026-09-23T14:40:00"
+    },
+    {
+      "id": "web-32-css-select-by-tag-0928",
+      "title": "Web Design: 3.2 CSS Select by Tag",
+      "classId": "web-design",
+      "due": "2026-09-28T09:20:00",
+      "status": "open",
+      "school_status": "open",
+      "points": null,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "score": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Canvas LIVE Wed 9/23 after-school NEW Coming Up: due Mon Sep 28 9:20am with 3.1. Points not shown on overview.",
+      "canvas": {
+        "status": "open",
+        "due": "2026-09-28T09:20:00",
+        "as_of": "2026-09-23T14:40:00"
+      },
+      "as_of": "2026-09-23T14:40:00"
+    },
+    {
+      "id": "eng-aab-pages-164-203-0924",
+      "title": "English 10: AAB read Pg. 164–203 (block day)",
+      "classId": "english-10",
+      "due": "2026-09-24",
+      "status": "open",
+      "school_status": "open",
+      "points": null,
+      "late": false,
+      "submitted_at": null,
+      "source": "english-agenda-sheet",
+      "discrepancy": false,
+      "student_status": null,
+      "score": null,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "English Daily Agendas sheet Wed 9/23: Class work 9/23–9/24 lists Pg. 164–203 due; HW from 9/22 was read to page 203 by block day. Dad night through Thu 4:30p.",
+      "as_of": "2026-09-23T14:40:00"
     }
   ],
   "notes": [
+    {
+      "id": "after-school-20260923",
+      "as_of": "2026-09-23T14:40:00",
+      "text": "After-school Wed 9/23 ~2:40pm FULL. Canvas LIVE: Web 91.82% (was 92.86%) — 2.10 NOW 18/20 + 2.11 NOW 7/10 (cleared missing); NEW 3.2 CSS Select by Tag due Mon 9/28 9:20am with 3.1. Chem 96.43% Copper Cycle Reading still 0/3. Eng 96.38% Midterm 5/5 Narrative #2 10/10. Nothing due Canvas tonight/tomorrow. ParentVUE LOGIN_WALL (autofill password empty) — grades STALE Mon 9/21. Gmail NEW: Fillingham HOCO field show AFTER game Oct 1 + Sat 8–12 rehearsal; Goodson ELA redo-by-Oct-5 + choice book Nov; Instructure 2.10/2.11 graded ~10am. English sheet: block Pg.164–203 due; Infographic 9/29; ACT 9/25. oeband $350 unchanged; Oct football/exhibition dates listed. Dad through Thu 9/24 4:30p handoff."
+    },
+    {
+      "id": "bedtime-20260922",
+      "as_of": "2026-09-22T21:16:00",
+      "text": "Bedtime Tue 9/22 ~9:16pm CT NARROW. Canvas LIVE UNCHANGED vs 2:40pm: Eng 96.38% (139.75/145) Midterm 5/5 missing 0; Web 92.86% (227.50/245) still MISSING 2.10 HTML Colors –/20 + 2.11 Structuring Quiz –/10 overdue; 3.1 CSS due Mon 9/28 9:20am; Chem 96.43% Copper Cycle Reading still 0/3 No Submission; Names/Symbols 1/1. Band/Geo grades disabled; Soc/S&C unpublished. ParentVUE LOGIN_WALL (username filled, password empty) — grades STALE Mon 9/21 9:09pm (Band A+100 Soc A-92 Web A93 Chem A95.2 S&C A+100 Eng A96.25 Geo B87); inbox/attendance not refreshed. Gmail: no NEW school/Instructure mail after after-school (Fillingham California Trail + Copper Cycle graded already known). No Bennett-said-done (Plaud today = work meetings only). chem-about-me legacy discrepancy true. Dad through Thu 9/24 4:30p."
+    },
     {
       "id": "after-school-20260922",
       "as_of": "2026-09-22T14:40:00",
@@ -3368,9 +3447,9 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — A+ 100% STALE from Mon 9/21 9:09pm. Canvas grades disabled. Gmail NEW Fillingham California Trail pep band Fri (permission form).",
+      "detail": "ParentVUE LOGIN_WALL Wed 9/23 after-school (username filled, password empty) — A+ 100% STALE from Mon 9/21. Canvas grades disabled. Gmail NEW Fillingham HOCO after-game Oct 1 + Sat rehearsal reminder.",
       "source": "ParentVUE(stale)",
-      "as_of": "2026-09-22",
+      "as_of": "2026-09-23",
       "missing": 0
     },
     {
@@ -3380,9 +3459,9 @@
       "teacher": "Todd Keach",
       "letter": "A-",
       "percent": 92.0,
-      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — A- 92% STALE from Mon 9/21 9:09pm. Canvas unpublished.",
+      "detail": "ParentVUE LOGIN_WALL Wed 9/23 — A- 92% STALE from Mon 9/21. Canvas unpublished.",
       "source": "ParentVUE(stale)",
-      "as_of": "2026-09-22",
+      "as_of": "2026-09-23",
       "missing": 0
     },
     {
@@ -3391,11 +3470,11 @@
       "period": "P3",
       "teacher": "Derek Linn",
       "letter": "A",
-      "percent": 93.0,
-      "detail": "ParentVUE LOGIN_WALL Tue 9/22 after-school — PV A 93% STALE from Mon 9/21 9:09pm. Canvas LIVE 92.86% (227.50/245); 2.10 HTML Colors –/20 + 2.11 Structuring Quiz –/10 still MISSING/overdue since Mon 9:20am. NEW Coming Up: 3.1 Introduction to CSS due Mon Sep 28 9:20am (19 pts).",
+      "percent": 91.82,
+      "detail": "ParentVUE LOGIN_WALL Wed 9/23 — PV A 93% STALE Mon 9/21. Canvas LIVE 91.82% (was 92.86%); 2.10 HTML Colors NOW 18/20 + 2.11 Structuring Quiz NOW 7/10 (cleared missing). 3.1 + NEW 3.2 CSS due Mon Sep 28 9:20am.",
       "source": "ParentVUE(stale)+Canvas",
-      "as_of": "2026-09-22",
-      "missing": 2
+      "as_of": "2026-09-23",
+      "missing": 0
     },
     {
       "classId": "chemistry",
@@ -3404,9 +3483,9 @@
       "teacher": "Justin Pfeiff",
       "letter": "A",
       "percent": 95.2,
-      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — PV A 95.2% STALE from Mon 9/21 9:09pm. Canvas LIVE 96.43% (was 98.48% bedtime); Copper Cycle Reading NOW graded 0/3 (was No Submission). Chemical Names and Symbols Reading 1/1. No Canvas missing.",
+      "detail": "ParentVUE LOGIN_WALL Wed 9/23 — PV A 95.2% STALE Mon 9/21. Canvas LIVE UNCHANGED 96.43%; Copper Cycle Reading still 0/3.",
       "source": "ParentVUE(stale)+Canvas",
-      "as_of": "2026-09-22",
+      "as_of": "2026-09-23",
       "missing": 0
     },
     {
@@ -3416,9 +3495,9 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — A+ 100% STALE from Mon 9/21 9:09pm. Canvas unpublished.",
+      "detail": "ParentVUE LOGIN_WALL Wed 9/23 — A+ 100% STALE Mon 9/21. Canvas unpublished.",
       "source": "ParentVUE(stale)",
-      "as_of": "2026-09-22",
+      "as_of": "2026-09-23",
       "missing": 0
     },
     {
@@ -3428,9 +3507,9 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.25,
-      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — PV A 96.25% STALE from Mon 9/21 9:09pm. Canvas LIVE 96.38% (139.75/145); Midterm Check-In still 5/5; no Canvas missing. English sheet: Infographic due end of hour Sep 29; read through p.203 by block day.",
+      "detail": "ParentVUE LOGIN_WALL Wed 9/23 — PV A 96.25% STALE Mon 9/21. Canvas LIVE UNCHANGED 96.38%; Midterm 5/5; Narrative #2 10/10. Sheet: Pg.164–203 due block; Infographic due 9/29; Practice ACT 9/25. Gmail Goodson ELA: redo until Oct 5; choice book Nov.",
       "source": "ParentVUE(stale)+Canvas",
-      "as_of": "2026-09-22",
+      "as_of": "2026-09-23",
       "missing": 0
     },
     {
@@ -3440,9 +3519,9 @@
       "teacher": "K Foster",
       "letter": "B",
       "percent": 87.0,
-      "detail": "ParentVUE LOGIN_WALL Tue 9/22 — B 87% STALE from Mon 9/21 9:09pm. Canvas grades disabled.",
+      "detail": "ParentVUE LOGIN_WALL Wed 9/23 — B 87% STALE Mon 9/21. Canvas grades disabled.",
       "source": "ParentVUE(stale)",
-      "as_of": "2026-09-22",
+      "as_of": "2026-09-23",
       "missing": 0
     }
   ]
