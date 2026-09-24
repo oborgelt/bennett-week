@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-24T11:14:00",
+  "as_of": "2026-09-24T14:25:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1500,6 +1500,25 @@
       "kind": "assignment",
       "classId": "english-10",
       "note": "English Daily Agendas sheet Wed 9/23 — Pg. 164–203 due on block 9/23–9/24."
+    },
+    {
+      "title": "Career Pathways Presentation @ Olathe Northwest",
+      "start": "2026-09-24T18:30:00",
+      "end": "2026-09-24T19:30:00",
+      "source": "district-calendar",
+      "note": "Parents/students grades 8–11. District calendar. Not OE campus."
+    },
+    {
+      "title": "OE Homecoming 2026 advisory lesson (sophomores)",
+      "start": "2026-09-25",
+      "source": "gmail-francis",
+      "note": "Breanna Francis: Under the Sea week details in advisory Fri 9/25. Guest form for non-OE attendees due Wed 9/30 3pm to Delgado."
+    },
+    {
+      "title": "Homecoming guest form due (non-OE attendees)",
+      "start": "2026-09-30T15:00:00",
+      "source": "gmail-francis",
+      "note": "Submit to Mrs. Delgado counseling by 3pm."
     }
   ],
   "work": [
@@ -2843,14 +2862,14 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Canvas LIVE Wed 9/23 bedtime UNCHANGED vs after-school: graded 0/3 (Gmail Sep 21 9:50pm). Chem 96.43%.",
+      "note": "Canvas LIVE Thu 9/24 after-school UNCHANGED: graded 0/3. Chem 96.43%. ParentVUE afternoon LOGIN_WALL.",
       "canvas": {
         "status": "graded",
         "points": 3,
         "score": 0,
         "due": "2026-09-17T23:59:00",
         "graded_at": "2026-09-21T21:50:00",
-        "as_of": "2026-09-23T21:05:00"
+        "as_of": "2026-09-24T14:25:00"
       },
       "followup": {
         "due_by": null,
@@ -3103,12 +3122,12 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Wed 9/23 bedtime UNCHANGED: still open due Mon Sep 28 9:20am (19 pts).",
+      "note": "Canvas LIVE Thu 9/24 after-school: still open due Mon Sep 28 9:20am (19 pts). Handoff to Mom tonight through Sun — weekend work window.",
       "canvas": {
         "status": "open",
         "points": 19,
         "due": "2026-09-28T09:20:00",
-        "as_of": "2026-09-23T21:05:00"
+        "as_of": "2026-09-24T14:25:00"
       },
       "as_of": "2026-09-23T21:05:00"
     },
@@ -3131,7 +3150,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "English sheet Wed 9/23: Infographic still due end of hour Sep 29. Block 9/23–9/24: Pg. 164–203 due; descriptive writing stations; pass back narratives.",
+      "note": "English sheet Thu 9/24 UNCHANGED: Infographic due end of hour Sep 29. Block 9/23–9/24 Pg.164–203; ACT 9/25; reading check 9/28.",
       "as_of": "2026-09-23T21:05:00"
     },
     {
@@ -3153,11 +3172,11 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Wed 9/23 bedtime UNCHANGED: open due Mon Sep 28 9:20am, 19 pts (To Do + grades page).",
+      "note": "Canvas LIVE Thu 9/24 after-school: still open due Mon Sep 28 9:20am (19 pts).",
       "canvas": {
         "status": "open",
         "due": "2026-09-28T09:20:00",
-        "as_of": "2026-09-23T21:05:00",
+        "as_of": "2026-09-24T14:25:00",
         "points": 19
       },
       "as_of": "2026-09-23T21:05:00"
@@ -3186,6 +3205,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "after-school-20260924",
+      "as_of": "2026-09-24T14:25:00",
+      "text": "After-school Thu 9/24 ~2:25pm FULL. Canvas LIVE UNCHANGED vs Wed bedtime: Eng 96.38 Midterm 5/5; Web 91.82 (2.10=18/20 2.11=7/10) To Do 3.1+3.2 due Mon 9/28 9:20am; Chem 96.43 Copper Cycle Reading still 0/3. Nothing due Canvas tonight/tomorrow. ParentVUE LOGIN_WALL after-school (autofill password empty) — keep AM LIVE grades (Band A+99 Soc A93 Web A-92 Chem A96.4 S&C A+100 Eng A96.25 Geo B87; 9/22 Eng tardy). Gmail NEW: Francis Homecoming 2026 — advisory Fri 9/25; guest form for non-OE due Wed 9/30 3pm Delgado. English sheet/oeband/$350/district UNCHANGED (Infographic 9/29; ACT 9/25; Oct football/exhibition dates). Dad→Mom handoff tonight 4:30p (Mom thru Sun 9/27 6p)."
+    },
     {
       "id": "parentvue-live-20260924",
       "as_of": "2026-09-24T11:14:00",
@@ -3382,67 +3406,6 @@
     {
       "as_of": "2026-09-10T21:20:00",
       "text": "Bedtime 9/10: Canvas UNCHANGED vs 2:13pm. ParentVUE BLOCKED (password empty) — morning ~8:30am still latest PV. Gmail NEW: Jostens class-ring how-to ~4:02pm; Lifetouch ends-tonight reminder ~7:14pm. No Instructure notices. No Bennett-said-done / no new discrepancy."
-    },
-    {
-      "as_of": "2026-09-11T14:30:00",
-      "text": "After-school 9/11: Canvas LIVE — AAB RC2 SUBMITTED 1:30pm ungraded; Initial Research still open due TONIGHT 11:59pm; 3DE Advisory Board meeting Mon 9/14 during Advisory (Canvas+Gmail). Web/Chem totals UNCHANGED. ParentVUE BLOCKED (autofill empty both fields). Gmail NEW: 3DE Advisory notice + Lifetouch promo. oeband UNCHANGED; English agenda UNCHANGED (today RC2/3DE/Vocab). OE widget NEW Kay Club 10:15–10:55; Band load-out 4–9p + Football Staley 7p tonight. Mom night through Sun 6p. No Bennett-said-done / no Plaud school notes. Discrepancy: chem-about-me still true; chem-names no said-done; AAB/Initial Research no said-done conflict."
-    },
-    {
-      "as_of": "2026-09-12T21:15:00",
-      "text": "Bedtime Sat 9/12 ~9:15pm: Canvas UNCHANGED vs 2:32pm (Eng 98.75 10.2 still MISSING; AAB RC2 + Narrative ungraded; Chem 100 Names/Symbols –/1; Web 94.7 2.7–2.9 due Mon). ParentVUE LIVE (first since morning 9/10): Soc A+98→A-91 (Ch1 Test 78); Geo A94→B83 (Unit 2 Test still not posted); inbox NEW Parade Order Correction + Band Update 9/7. Gmail no new after 2:35. No Bennett-said-done / no new discrepancy. Mom through Sun 6p."
-    },
-    {
-      "as_of": "2026-09-13T14:25:00",
-      "text": "Canvas LIVE UNCHANGED vs bedtime Sat 9/12: Eng 98.75 (10.2 still MISSING; AAB RC2 + Narrative ungraded); Chem 100 Names/Symbols –/1; Web 94.7 2.7+2.8/2.9 due Mon 9/14 9:20am. ParentVUE LIVE UNCHANGED (Soc A-91; Geo B83; Eng PV 0 missing vs Canvas missing). Inbox no new. Gmail NEW: Lightspeed Filter Portal weekly browsing report ~9:22am; Lifetouch promo. No new Instructure notices. English CLASS WORK/HOMEWORK UNCHANGED (UNIT banners filled). oeband/district UNCHANGED. OE widget rolled to Mon Sep 14 sports + Band Booster 6–8p (already on ICS). Mom until Sun 6p then Dad. GitHub week.json push may still fail (gh token)."
-    },
-    {
-      "as_of": "2026-09-15T08:25:00",
-      "text": "Manual JJ refresh Tue 9/15 ~8:25am CT: ParentVUE+Canvas LIVE. Geometry B 83→B+ 89 (Unit 2 Test still not posted). All other grades UNCHANGED vs Mon bedtime. Eng 10.2 still MISSING on Canvas; Web 2.7+2.8/2.9 still unscored."
-    },
-    {
-      "as_of": "2026-09-15T14:50:00",
-      "text": "After-school Tue 9/15 ~2:50pm FULL pull. Canvas grades UNCHANGED vs bedtime (Eng 96.75 / Chem 97.92 / Web 94.7); 10.2 Initial Research still MISSING after agenda said finish in class today; Web 2.7+2.8/2.9 still unscored. NEW Canvas dues: Eng Idea Rough Draft Thu 9/17; Chem Copper Cycle Reading Thu 9/17. ParentVUE LIVE: Soc A-91→92 (update 9/15); Geo B+89 with Unit 1 Test 94/100 (matches Bennett Gmail 9:24am); Eng tardy 9/15 P6; inbox UNCHANGED. English sheet CHANGED (10.2 finish today; Idea Rough Draft 9/16–17; ACT→9/25). oeband UNCHANGED ($350; Sep 19 Blue Springs). District Career Pathways @ OE Mon Sep 21 6:30–7:30. Rivalry Week Gmail from Lane. Dad night through Thu 9/17 4:30p."
-    },
-    {
-      "as_of": "2026-09-15T21:20:00",
-      "text": "Bedtime Tue 9/15 ~9:20pm NARROW pull. Canvas+ParentVUE LIVE UNCHANGED vs 2:50pm: Eng 96.75 (10.2 still MISSING); Chem Canvas 97.92 / PV 98.7 (PV last update now 9/15, grade same); Web 94.7 with 2.7+2.8/2.9 still unscored; Soc A-92; Geo B+89; Band/S&C A+100. Idea Rough Draft + Copper Cycle Reading still due Thu 9/17. Copper Cycle To Do checkbox checked but no verified submission. ParentVUE inbox UNCHANGED (newest still Sep 14 Fillingham). Gmail: no new Instructure/Canvas mail after 2:50; Rivalry Week reminder was 1:30pm CT (afternoon window). No Bennett-said-done (Plaud/chat). Discrepancies: chem-about-me legacy true; open MISSING items discrepancy=false."
-    },
-    {
-      "as_of": "2026-09-16T09:20:00",
-      "text": "ParentVUE LIVE Wed 9/16 ~9:20am (Orin sign-in). Grades UNCHANGED vs Tue after-school except Soc last-update stamp 9/16 still A-92. Inbox known (Band Update 9/14 + Booster cancel). Eng 10.2 still Canvas MISSING; Web 2.7–2.9 still unscored."
-    },
-    {
-      "as_of": "2026-09-16T16:00:00",
-      "text": "ParentVUE LIVE Wed ~4pm after Orin sign-in. Web PV 95→93. Inbox NEW Midweek Band Update 9/16. Eng 10.2 submitted late Canvas score pending."
-    },
-    {
-      "as_of": "2026-09-16T21:15:00",
-      "text": "Bedtime Wed 9/16 ~9:15pm NARROW: Canvas LIVE UNCHANGED vs ~2:50/4pm (Eng 96.75 10.2 late-submitted ungraded; Chem 97.92 Copper Cycle Reading still No Submission despite To Do checked; Web 92.86 2.10+2.11 open due Mon). ParentVUE LOGIN_WALL (password autofill empty) — grades frozen at Wed ~4pm live. Gmail NEW Jostens class-ring orders due tomorrow ~7:15pm. No Bennett-said-done; chem-about-me legacy discrepancy=true; no new discrepancy."
-    },
-    {
-      "id": "after-school-20260917",
-      "as_of": "2026-09-17T14:40:00",
-      "text": "After-school Thu 9/17 ~2:40pm FULL pull. Canvas LIVE UNCHANGED grades (Eng 96.75 / Chem 97.92 / Web 92.86). Tonight OPEN: Idea Rough Draft + Copper Cycle Reading (No Submission) — Mom handoff 4:30p. Eng 10.2 still late-submitted ungraded. Web 2.10+2.11 due Mon 9/21. Gmail NEW: early pickup 2:15 for 2:30 DMV; Jostens class-ring due today. ParentVUE LOGIN_WALL (autofill empty). English sheet/oeband/district UNCHANGED (Blue Springs Sat 9/19; Career Pathways Mon 9/21)."
-    },
-    {
-      "id": "bedtime-20260917",
-      "as_of": "2026-09-17T21:20:00",
-      "text": "Bedtime Thu 9/17 ~9:20pm NARROW. Canvas LIVE CHANGED vs 2:40pm: Idea Rough Draft SUBMITTED 8:22pm score pending; Copper Cycle Reading still No Submission due tonight; Narrative #2 Formative On-Demand now MISSING overdue due 9/14 (MISSED flip). Grades Eng 96.75 / Chem 97.92 / Web 92.86 UNCHANGED; 10.2 still late-submitted ungraded; Web 2.10+2.11 still open Mon. ParentVUE LOGIN_WALL (password autofill empty) — grades frozen Wed 9/16 ~4pm. Gmail: no new Instructure after afternoon; early-pickup emoji reaction + known Jostens only. No Bennett-said-done (Plaud = work meetings). chem-about-me legacy discrepancy=true. Mom night."
-    },
-    {
-      "id": "after-school-20260918",
-      "as_of": "2026-09-18T14:40:00",
-      "text": "After-school Fri 9/18 ~2:40pm FULL pull: Canvas LIVE — Eng 96.75 unchanged (Idea Rough Draft submitted 9/17 8:22pm score pending; 10.2 submitted late 9/16 9:30am score pending; Narrative #2 still MISSING/overdue); Chem 97.92 (47/48) unchanged (Copper Cycle Reading overdue No Submission –/3; NEW Quiz 1 Reflection graded 0/0 at 11:39am, no final-grade impact); Web 92.86 unchanged (2.10 –/20 + 2.11 –/10 open due Mon 9/21 9:20am). ParentVUE LOGIN_WALL — grades frozen at Wed 9/16 ~4pm. English sheet changed: 9/21 Coaching reflection; Pass back narratives; Narrative mini-lesson; 9/22 Reading time; 3DE work time; Practice ACT Fri 9/25. OE homepage widget now shows Band Load Out / In Sat 9/19 7:00am–4:00pm; oeband $350 and Blue Springs unchanged; Career Pathways @ OE Mon 9/21 6:30–7:30pm; half day Oct 14. Gmail no new Instructure; early-pickup + Jostens threads known. Mom→Dad handoff Fri 4:30pm; Dad weekend includes Sat Blue Springs band day."
-    },
-    {
-      "id": "note-bedtime-2026-09-18",
-      "as_of": "2026-09-18T21:15:00",
-      "text": "Bedtime Fri 9/18 ~9:15pm NARROW: Canvas LIVE UNCHANGED vs 2:40pm (Eng 96.75 / Chem 97.92 / Web 92.86). Still MISSING: Narrative #2 Formative On-Demand (due 9/14); Copper Cycle Reading No Submission (due 9/17; planner checkmark false positive). Idea Rough Draft + 10.2 still submitted score pending. Web 2.10+2.11 open due Mon 9/21. Quiz 1 Reflection graded 0/0 no impact (submitted 11:39am). ParentVUE LOGIN_WALL (username autofilled; password empty) — grades frozen Wed 9/16 ~4pm. Gmail NEW ~3:18pm CT Fillingham IMPORTANT Blue Springs South uniform: heat alt — long black socks, dri-fit, BLACK SHORTS (not tight/biker; modest athletic). No new Instructure. No Bennett-said-done; chem-about-me legacy discrepancy true. Dad tonight through Thu 9/24 4:30p. Local week.json only (no Jungle Jam push — class/grade/discrepancy unchanged vs afternoon)."
-    },
-    {
-      "id": "note-bedtime-2026-09-20",
-      "as_of": "2026-09-20T21:20:00",
-      "text": "Bedtime Sun 9/20 ~9:20pm NARROW. Canvas CHANGED: Eng 95.23→95.96 (Idea Rough Draft 10/10 + 10.2 Initial Research 10/10 graded ~7–7:24pm CT). Chem 97.92 / Web 92.86 UNCHANGED. Still MISSING: Narrative #2 Formative On-Demand –/10 (due 9/14); Copper Cycle Reading –/3 (due 9/17). NEW: Midterm Check-In due Mon 9/21 11:59pm –/5. Web 2.10+2.11 still open due Mon 9/21 9:20am. ParentVUE LOGIN_WALL (username autofilled; password empty) — grades frozen Wed 9/16 ~4pm. Gmail NEW: Instructure graded Idea Rough Draft + 10.2; Hawk Weekly 9.20.26. Fillingham Band Update already in after-school. No Bennett-said-done (Plaud empty today). chem-about-me legacy discrepancy=true. Dad through Thu 9/24 4:30p."
     }
   ],
   "grades": [
@@ -3453,7 +3416,7 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 99.0,
-      "detail": "LIVE ParentVUE 9/24: A+ 99.0%, down from 100% Mon 9/21.",
+      "detail": "ParentVUE AM 9/24 LIVE A+ 99.0%. After-school ParentVUE LOGIN_WALL — grades not rechecked. Canvas Band grades disabled.",
       "source": "ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3465,7 +3428,7 @@
       "teacher": "Todd Keach",
       "letter": "A",
       "percent": 93.0,
-      "detail": "LIVE ParentVUE 9/24: A 93%, up from A- 92% Mon 9/21.",
+      "detail": "ParentVUE AM 9/24 LIVE A 93%. After-school ParentVUE LOGIN_WALL. Canvas Sociology unpublished.",
       "source": "ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3477,8 +3440,8 @@
       "teacher": "Derek Linn",
       "letter": "A-",
       "percent": 92.0,
-      "detail": "LIVE ParentVUE 9/24: A- 92%, down from A 93% Mon 9/21. Canvas ~91.82% with 2.10/2.11 graded.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE AM 9/24 LIVE A- 92%. Canvas LIVE after-school 91.82% (2.10=18/20, 2.11=7/10); 3.1+3.2 open due Mon 9/28. After-school ParentVUE LOGIN_WALL.",
+      "source": "Canvas+ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
     },
@@ -3489,8 +3452,8 @@
       "teacher": "Justin Pfeiff",
       "letter": "A",
       "percent": 96.4,
-      "detail": "LIVE ParentVUE 9/24: A 96.4%, up from 95.2% Mon 9/21. Canvas ~96.43%; Copper Cycle still 0/3.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE AM 9/24 LIVE A 96.4%. Canvas LIVE 96.43%; Copper Cycle Reading still graded 0/3. After-school ParentVUE LOGIN_WALL.",
+      "source": "Canvas+ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
     },
@@ -3501,7 +3464,7 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "LIVE ParentVUE 9/24: A+ 100%, unchanged from Mon 9/21.",
+      "detail": "ParentVUE AM 9/24 LIVE A+ 100%. After-school ParentVUE LOGIN_WALL. Canvas unpublished.",
       "source": "ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3513,8 +3476,8 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.25,
-      "detail": "LIVE ParentVUE 9/24: A 96.25%, unchanged from Mon 9/21. Canvas ~96.38%; Midterm 5/5. New 9/22 period 6 English 10 tardy.",
-      "source": "ParentVUE",
+      "detail": "ParentVUE AM 9/24 LIVE A 96.25% (Canvas 96.38%). Midterm 5/5. New 9/22 P6 English tardy (AM PV). After-school ParentVUE LOGIN_WALL.",
+      "source": "Canvas+ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
     },
@@ -3525,7 +3488,7 @@
       "teacher": "K Foster",
       "letter": "B",
       "percent": 87.0,
-      "detail": "LIVE ParentVUE 9/24: B 87%, unchanged from Mon 9/21.",
+      "detail": "ParentVUE AM 9/24 LIVE B 87%. Canvas: no grades in Canvas (use ParentVUE). After-school ParentVUE LOGIN_WALL.",
       "source": "ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
