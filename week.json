@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-24T14:25:00",
+  "as_of": "2026-09-24T21:05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -2615,16 +2615,16 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Pfeiff. Canvas bedtime Mon 9/14: graded 0/1 (Instructure graded ~3:56pm CT). No Bennett-said-done → discrepancy=false.",
+      "note": "Pfeiff. Canvas LIVE bedtime Thu 9/24 ~9pm: graded 1/1 (was stale 0/1 in week.json since 9/14). Chem course still 96.43%; Assignment group 11/14 with Copper Cycle Reading 0/3. No Bennett-said-done.",
       "canvas": {
         "status": "graded",
         "points": 1,
-        "score": 0,
+        "score": 1,
         "due": "2026-09-04T23:59:00",
-        "as_of": "2026-09-14T21:15:00"
+        "as_of": "2026-09-24T21:05:00"
       },
-      "score": "0/1",
-      "as_of": "2026-09-14T21:15:00"
+      "score": "1/1",
+      "as_of": "2026-09-24T21:05:00"
     },
     {
       "id": "eng-typed-draft-0909",
@@ -2862,21 +2862,21 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Canvas LIVE Thu 9/24 after-school UNCHANGED: graded 0/3. Chem 96.43%. ParentVUE afternoon LOGIN_WALL.",
+      "note": "Canvas LIVE Thu 9/24 bedtime UNCHANGED vs after-school: graded 0/3. Chem 96.43%. ParentVUE bedtime LOGIN_WALL. No Bennett-said-done → discrepancy=false.",
       "canvas": {
         "status": "graded",
         "points": 3,
         "score": 0,
         "due": "2026-09-17T23:59:00",
         "graded_at": "2026-09-21T21:50:00",
-        "as_of": "2026-09-24T14:25:00"
+        "as_of": "2026-09-24T21:05:00"
       },
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-09-23T21:05:00",
+      "as_of": "2026-09-24T21:05:00",
       "classId": "chemistry",
       "graded_at": "2026-09-21T21:50:00"
     },
@@ -3122,14 +3122,14 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Thu 9/24 after-school: still open due Mon Sep 28 9:20am (19 pts). Handoff to Mom tonight through Sun — weekend work window.",
+      "note": "Canvas LIVE Thu 9/24 bedtime: still open due Mon Sep 28 9:20am (19 pts). Bennett with Mom thru Sun 9/27 6p — weekend work window.",
       "canvas": {
         "status": "open",
         "points": 19,
         "due": "2026-09-28T09:20:00",
-        "as_of": "2026-09-24T14:25:00"
+        "as_of": "2026-09-24T21:05:00"
       },
-      "as_of": "2026-09-23T21:05:00"
+      "as_of": "2026-09-24T21:05:00"
     },
     {
       "id": "eng-infographic-0929",
@@ -3172,14 +3172,14 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Thu 9/24 after-school: still open due Mon Sep 28 9:20am (19 pts).",
+      "note": "Canvas LIVE Thu 9/24 bedtime: still open due Mon Sep 28 9:20am (19 pts).",
       "canvas": {
         "status": "open",
         "due": "2026-09-28T09:20:00",
-        "as_of": "2026-09-24T14:25:00",
+        "as_of": "2026-09-24T21:05:00",
         "points": 19
       },
-      "as_of": "2026-09-23T21:05:00"
+      "as_of": "2026-09-24T21:05:00"
     },
     {
       "id": "eng-aab-pages-164-203-0924",
@@ -3205,6 +3205,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-20260924",
+      "as_of": "2026-09-24T21:05:00",
+      "text": "Bedtime Thu 9/24 ~9:05pm CT NARROW. Canvas LIVE UNCHANGED vs 2:25pm: Eng 96.38 Midterm 5/5; Web 91.82 (2.10=18/20 2.11=7/10) To Do 3.1+3.2 due Mon 9/28 9:20am; Chem 96.43 Copper Cycle Reading still 0/3. Corrected week.json: Chemical Names and Symbols Reading now 1/1 on live Canvas (was stale 0/1). Nothing due Canvas tonight/tomorrow. ParentVUE LOGIN_WALL (autofill password empty) — keep AM LIVE grades (Band A+99 Soc A93 Web A-92 Chem A96.4 S&C A+100 Eng A96.25 Geo B87; 9/22 Eng tardy). Gmail NEW after after-school: Fillingham Dri-Fit shirts for CT tomorrow (Fri 9/25). No Bennett-said-done (Plaud = work meetings only). Mom thru Sun 9/27 6p."
+    },
     {
       "id": "after-school-20260924",
       "as_of": "2026-09-24T14:25:00",
@@ -3416,7 +3421,7 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 99.0,
-      "detail": "ParentVUE AM 9/24 LIVE A+ 99.0%. After-school ParentVUE LOGIN_WALL — grades not rechecked. Canvas Band grades disabled.",
+      "detail": "ParentVUE AM 9/24 LIVE A+ 99.0%. Bedtime ParentVUE LOGIN_WALL — grades not rechecked. Canvas Band grades disabled.",
       "source": "ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3428,7 +3433,7 @@
       "teacher": "Todd Keach",
       "letter": "A",
       "percent": 93.0,
-      "detail": "ParentVUE AM 9/24 LIVE A 93%. After-school ParentVUE LOGIN_WALL. Canvas Sociology unpublished.",
+      "detail": "ParentVUE AM 9/24 LIVE A 93%. Bedtime ParentVUE LOGIN_WALL. Canvas Sociology unpublished.",
       "source": "ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3440,7 +3445,7 @@
       "teacher": "Derek Linn",
       "letter": "A-",
       "percent": 92.0,
-      "detail": "ParentVUE AM 9/24 LIVE A- 92%. Canvas LIVE after-school 91.82% (2.10=18/20, 2.11=7/10); 3.1+3.2 open due Mon 9/28. After-school ParentVUE LOGIN_WALL.",
+      "detail": "ParentVUE AM 9/24 LIVE A- 92%. Canvas LIVE bedtime 91.82% (2.10=18/20, 2.11=7/10); 3.1+3.2 open due Mon 9/28. Bedtime ParentVUE LOGIN_WALL.",
       "source": "Canvas+ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3452,7 +3457,7 @@
       "teacher": "Justin Pfeiff",
       "letter": "A",
       "percent": 96.4,
-      "detail": "ParentVUE AM 9/24 LIVE A 96.4%. Canvas LIVE 96.43%; Copper Cycle Reading still graded 0/3. After-school ParentVUE LOGIN_WALL.",
+      "detail": "ParentVUE AM 9/24 LIVE A 96.4%. Canvas LIVE bedtime 96.43%; Copper Cycle Reading still graded 0/3; Names/Symbols Reading corrected to 1/1. Bedtime ParentVUE LOGIN_WALL.",
       "source": "Canvas+ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3464,7 +3469,7 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE AM 9/24 LIVE A+ 100%. After-school ParentVUE LOGIN_WALL. Canvas unpublished.",
+      "detail": "ParentVUE AM 9/24 LIVE A+ 100%. Bedtime ParentVUE LOGIN_WALL. Canvas unpublished.",
       "source": "ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3476,7 +3481,7 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.25,
-      "detail": "ParentVUE AM 9/24 LIVE A 96.25% (Canvas 96.38%). Midterm 5/5. New 9/22 P6 English tardy (AM PV). After-school ParentVUE LOGIN_WALL.",
+      "detail": "ParentVUE AM 9/24 LIVE A 96.25% (Canvas 96.38%). Midterm 5/5. New 9/22 P6 English tardy (AM PV). Bedtime ParentVUE LOGIN_WALL.",
       "source": "Canvas+ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
@@ -3488,7 +3493,7 @@
       "teacher": "K Foster",
       "letter": "B",
       "percent": 87.0,
-      "detail": "ParentVUE AM 9/24 LIVE B 87%. Canvas: no grades in Canvas (use ParentVUE). After-school ParentVUE LOGIN_WALL.",
+      "detail": "ParentVUE AM 9/24 LIVE B 87%. Canvas: no grades in Canvas (use ParentVUE). Bedtime ParentVUE LOGIN_WALL.",
       "source": "ParentVUE",
       "as_of": "2026-09-24",
       "missing": 0
