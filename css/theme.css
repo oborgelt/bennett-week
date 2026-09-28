@@ -2410,7 +2410,12 @@ nav.week-nav button:disabled { opacity: 0.35; }
 
 .story-new-banner {
   display: block;
-  margin: 10px 12px 4px;
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  top: var(--story-banner-top, 64px);
+  z-index: 100;
+  margin: 0;
   padding: 14px 16px;
   border-radius: 16px;
   background: linear-gradient(180deg, #ffe08a, #f3c34a);
@@ -2421,11 +2426,20 @@ nav.week-nav button:disabled { opacity: 0.35; }
   text-align: center;
   text-decoration: none;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-  position: relative;
-  z-index: 6;
+  pointer-events: auto;
 }
 
 .story-new-banner[hidden] {
+  display: none;
+}
+
+.story-new-banner-spacer {
+  display: block;
+  height: var(--story-banner-space, 0px);
+  pointer-events: none;
+}
+
+.story-new-banner-spacer[hidden] {
   display: none;
 }
 

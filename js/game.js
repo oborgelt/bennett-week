@@ -4858,7 +4858,7 @@
     {
       id: "story",
       title: "Story",
-      body: "Story shows on the bar once the strip has started. Page 1 opens Monday, September 28. A new page opens each day at midnight Central. If you skip a day, every page up to today is still there. When a new page is out, Jungle Jam says a new part of the story is available. Click that message to open the new page. After you have seen today's page, the message stays quiet until the next one. Page 7 is Ace versus the horned frog. Page 8 is the win."
+      body: "Story shows on the bar once the strip has started. Page 1 opens Monday, September 28. A new page opens each day at midnight Central. If you skip a day, every page up to today is still there. When a new page is out, Jungle Jam pins a message at the top: a new part of the story is available. That message stays up even while a celebration or the Trophy Room is open. Click it to open the new page. After you have seen today's page, the message stays quiet until the next one. Page 7 is Ace versus the horned frog. Page 8 is the win."
     },
     {
       id: "messages",
@@ -5781,24 +5781,84 @@
     return true;
   }
 
-  function mountStoryBannerEl() {
+  function mountStoryBannerSpacer() {
     if (!document || !document.getElementById || !document.createElement) return null;
-    let el = document.getElementById("story-new-banner");
+    let el = document.getElementById("story-new-banner-spacer");
     if (el) return el;
-    el = document.createElement("a");
-    el.id = "story-new-banner";
-    el.className = "story-new-banner";
+    el = document.createElement("div");
+    el.id = "story-new-banner-spacer";
+    el.className = "story-new-banner-spacer";
     el.hidden = true;
-    if (el.setAttribute) el.setAttribute("hidden", "");
+    if (el.setAttribute) {
+      el.setAttribute("hidden", "");
+      el.setAttribute("aria-hidden", "true");
+    }
     const hud = document.querySelector ? document.querySelector(".hud-bar") : null;
     if (hud && hud.parentNode && hud.parentNode.insertBefore) {
       hud.parentNode.insertBefore(el, hud.nextSibling);
     } else if (document.body && document.body.insertBefore) {
       document.body.insertBefore(el, document.body.firstChild || null);
-    } else if (document.body && document.body.appendChild) {
-      document.body.appendChild(el);
     }
     return el;
+  }
+
+  function mountStoryBannerEl() {
+    if (!document || !document.getElementById || !document.createElement) return null;
+    let el = document.getElementById("story-new-banner");
+    if (!el) {
+      el = document.createElement("a");
+      el.id = "story-new-banner";
+      el.className = "story-new-banner";
+      el.hidden = true;
+      if (el.setAttribute) el.setAttribute("hidden", "");
+    }
+    if (document.body && el.parentNode !== document.body && document.body.appendChild) {
+      document.body.appendChild(el);
+    }
+    mountStoryBannerSpacer();
+    return el;
+  }
+
+  let storyBannerPinBound = false;
+
+  function placeStoryBanner(el) {
+    if (!el || !document || !document.documentElement) return;
+    const rootStyle = document.documentElement.style;
+    if (!rootStyle || !rootStyle.setProperty) return;
+    const gap = 8;
+    let top = gap;
+    const hud = document.querySelector ? document.querySelector(".hud-bar") : null;
+    if (hud && hud.getBoundingClientRect) {
+      const rect = hud.getBoundingClientRect();
+      if (rect && rect.height) top = Math.max(gap, Math.round(rect.bottom) + gap);
+    }
+    rootStyle.setProperty("--story-banner-top", top + "px");
+    const spacer = document.getElementById("story-new-banner-spacer");
+    if (el.hidden) {
+      rootStyle.setProperty("--story-banner-space", "0px");
+      if (spacer) {
+        spacer.hidden = true;
+        if (spacer.setAttribute) spacer.setAttribute("hidden", "");
+      }
+      return;
+    }
+    const height = el.offsetHeight || 0;
+    rootStyle.setProperty("--story-banner-space", (height ? height + gap + 6 : 0) + "px");
+    if (spacer) {
+      spacer.hidden = false;
+      if (spacer.removeAttribute) spacer.removeAttribute("hidden");
+    }
+  }
+
+  function bindStoryBannerPin() {
+    if (storyBannerPinBound || !global || !global.addEventListener) return;
+    storyBannerPinBound = true;
+    const run = () => {
+      const el = document.getElementById("story-new-banner");
+      if (el) placeStoryBanner(el);
+    };
+    global.addEventListener("resize", run);
+    global.addEventListener("orientationchange", run);
   }
 
   function paintStoryNewBanner(story, opts) {
@@ -5806,15 +5866,19 @@
       const model = storyNewBanner(story, opts);
       const el = mountStoryBannerEl();
       if (!el) return false;
+      bindStoryBannerPin();
       if (!model) {
         el.hidden = true;
         if (el.setAttribute) el.setAttribute("hidden", "");
+        placeStoryBanner(el);
         return false;
       }
       el.hidden = false;
       if (el.removeAttribute) el.removeAttribute("hidden");
       el.href = model.href;
       el.innerHTML = 'Hey, a new part of the story is available. <span class="story-new-banner-go">Click here.</span>';
+      placeStoryBanner(el);
+      if (global.requestAnimationFrame) global.requestAnimationFrame(() => placeStoryBanner(el));
       return true;
     } catch (_) {
       return false;
@@ -5914,6 +5978,8 @@
     const queued = storyCelebrateAfterClose;
     storyCelebrateAfterClose = null;
     if (typeof queued === "function") queued();
+    const banner = document.getElementById("story-new-banner");
+    if (banner) placeStoryBanner(banner);
   }
 
   function storyPageCaption(page) {
@@ -6020,6 +6086,8 @@
       layer.className = "char-celebrate";
       document.body.appendChild(layer);
     }
+    const banner = document.getElementById("story-new-banner");
+    if (banner && global.requestAnimationFrame) global.requestAnimationFrame(() => placeStoryBanner(banner));
     return layer;
   }
 
