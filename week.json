@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-28T14:25:00",
+  "as_of": "2026-09-28T15:20:00",
   "parenting": [
     {
       "who": "Mom",
@@ -3339,6 +3339,11 @@
   ],
   "notes": [
     {
+      "id": "parentvue-live-20260928",
+      "as_of": "2026-09-28T15:20:00",
+      "text": "LIVE ParentVUE refresh 9/28 ~3:20 PM CDT after Orin's sign-in: Marching Band A+ 99.0% unchanged; Sociology A 94% (up from A 93%); Web Design I A- 92% unchanged; Chemistry A 96.4% unchanged; Strength and Conditioning I A+ 100% unchanged; English 10 A 96.61% (up from 96.25%); Geometry A- 90% (up from B 87%). No Missing flags in ParentVUE; Web 3.1/3.2/3.3 not listed there, so Canvas entries remain unchanged. New attendance: English 10 P6 tardy unexcused on 9/28; 9/22 P6 tardy remains recorded."
+    },
+    {
       "id": "after-school-20260928",
       "as_of": "2026-09-28T14:25:00",
       "text": "After-school Mon 9/28 ~2:10pm CT FULL. Canvas LIVE UNCHANGED grades: Eng 96.61; Web 91.82; Chem 96.43. Web 3.1+3.2 No Submission due 9:20am (Missing count still 0) → school_status open, late true; NEW Web 3.3 due Oct 5 9:20am (18 pts). Chem Copper Cycle Reading still 0/3. English sheet CHANGED (9/28 reading/plot/vocab/3DE; Pg.204–246 due; 9/29 reading+3DE before Infographic EOH). ParentVUE LOGIN_WALL (autofill empty) — keep AM 9/24 LIVE for PV-only classes. Gmail NEW: cashless athletic tickets (informational); early leave 2:30p confirmed today. No new Instructure. oeband/$350 UNCHANGED; Mon band 6:30–8:30p. District PDF confirms Oct 9 no students, conferences Oct 12–14, Oct 14 half day, Oct 15 no students, Oct 16 no school. No Bennett-said-done (Plaud). Dad since Sun 6p through Thu 10/1 4:30p — Web 3.1/3.2 overdue + Infographic Tue."
@@ -3584,9 +3589,9 @@
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
       "percent": 99.0,
-      "detail": "ParentVUE AM 9/24 LIVE Band A+ 99.0%. After-school Mon 9/28 ParentVUE LOGIN_WALL (autofill empty) — grades not rechecked. Canvas Band grades disabled.",
-      "source": "ParentVUE STALE AM 9/24",
-      "as_of": "2026-09-28T14:25:00",
+      "detail": "ParentVUE LIVE 9/28 A+ 99.0% (unchanged from AM 9/24). Canvas Band grades disabled.",
+      "source": "ParentVUE LIVE",
+      "as_of": "2026-09-28T15:20:00",
       "missing": 0
     },
     {
@@ -3595,10 +3600,10 @@
       "period": "P2",
       "teacher": "Todd Keach",
       "letter": "A",
-      "percent": 93.0,
-      "detail": "ParentVUE AM 9/24 LIVE Soc A 93%. After-school Mon 9/28 ParentVUE LOGIN_WALL (autofill empty) — grades not rechecked. Canvas Sociology unpublished.",
-      "source": "ParentVUE STALE AM 9/24",
-      "as_of": "2026-09-28T14:25:00",
+      "percent": 94.0,
+      "detail": "ParentVUE LIVE 9/28 A 94% (up from A 93% on AM 9/24). Canvas Sociology unpublished.",
+      "source": "ParentVUE LIVE",
+      "as_of": "2026-09-28T15:20:00",
       "missing": 0
     },
     {
@@ -3608,9 +3613,9 @@
       "teacher": "Derek Linn",
       "letter": "A-",
       "percent": 91.82,
-      "detail": "ParentVUE STALE AM 9/24 A- 92%. Canvas LIVE after-school Mon 9/28 91.82% UNCHANGED; 3.1+3.2 No Submission due 9:20am (Missing count still 0); NEW 3.3 due Oct 5 9:20am. ParentVUE LOGIN_WALL (autofill empty).",
-      "source": "Canvas LIVE after-school; ParentVUE STALE AM 9/24",
-      "as_of": "2026-09-28T14:25:00",
+      "detail": "ParentVUE LIVE 9/28 A- 92% (unchanged). Canvas LIVE after-school Mon 9/28 91.82% UNCHANGED; 3.1+3.2 No Submission due 9:20am (Missing count still 0); NEW 3.3 due Oct 5 9:20am. Web 3.1/3.2/3.3 not listed in ParentVUE.",
+      "source": "Canvas LIVE after-school; ParentVUE LIVE 9/28",
+      "as_of": "2026-09-28T15:20:00",
       "missing": 0
     },
     {
@@ -3620,9 +3625,9 @@
       "teacher": "Justin Pfeiff",
       "letter": "A",
       "percent": 96.43,
-      "detail": "ParentVUE STALE AM 9/24 A 96.4%. Canvas LIVE after-school Mon 9/28 96.43% UNCHANGED; Copper Cycle Reading still 0/3. ParentVUE LOGIN_WALL (autofill empty).",
-      "source": "Canvas LIVE after-school; ParentVUE STALE AM 9/24",
-      "as_of": "2026-09-28T14:25:00",
+      "detail": "ParentVUE LIVE 9/28 A 96.4% (unchanged). Canvas LIVE after-school Mon 9/28 96.43% UNCHANGED; Copper Cycle Reading still 0/3. No Missing flags in ParentVUE.",
+      "source": "Canvas LIVE after-school; ParentVUE LIVE 9/28",
+      "as_of": "2026-09-28T15:20:00",
       "missing": 0
     },
     {
@@ -3632,9 +3637,9 @@
       "teacher": "Pauly",
       "letter": "A+",
       "percent": 100.0,
-      "detail": "ParentVUE AM 9/24 LIVE S&C A+ 100%. After-school Mon 9/28 ParentVUE LOGIN_WALL (autofill empty) — grades not rechecked. Canvas unpublished.",
-      "source": "ParentVUE STALE AM 9/24",
-      "as_of": "2026-09-28T14:25:00",
+      "detail": "ParentVUE LIVE 9/28 A+ 100.0% (unchanged from AM 9/24). Canvas unpublished.",
+      "source": "ParentVUE LIVE",
+      "as_of": "2026-09-28T15:20:00",
       "missing": 0
     },
     {
@@ -3644,9 +3649,9 @@
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
       "percent": 96.61,
-      "detail": "ParentVUE STALE AM 9/24 A 96.25%. Canvas LIVE after-school Mon 9/28 96.61% UNCHANGED (AAB RC#4 10/10). ParentVUE LOGIN_WALL (autofill empty).",
-      "source": "Canvas LIVE after-school; ParentVUE STALE AM 9/24",
-      "as_of": "2026-09-28T14:25:00",
+      "detail": "ParentVUE LIVE 9/28 A 96.61% (up from 96.25%; matches Canvas LIVE after-school Mon 9/28 96.61%, AAB RC#4 10/10).",
+      "source": "Canvas LIVE after-school; ParentVUE LIVE 9/28",
+      "as_of": "2026-09-28T15:20:00",
       "missing": 0
     },
     {
@@ -3654,11 +3659,11 @@
       "class": "Geometry",
       "period": "P7",
       "teacher": "K Foster",
-      "letter": "B",
-      "percent": 87.0,
-      "detail": "ParentVUE AM 9/24 LIVE Geo B 87%. After-school Mon 9/28 ParentVUE LOGIN_WALL (autofill empty) — grades not rechecked. Canvas: no grades in Canvas (use ParentVUE).",
-      "source": "ParentVUE STALE AM 9/24",
-      "as_of": "2026-09-28T14:25:00",
+      "letter": "A-",
+      "percent": 90.0,
+      "detail": "ParentVUE LIVE 9/28 A- 90% (up from B 87%). Canvas: no grades in Canvas (use ParentVUE).",
+      "source": "ParentVUE LIVE",
+      "as_of": "2026-09-28T15:20:00",
       "missing": 0
     }
   ]
