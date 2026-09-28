@@ -2408,6 +2408,32 @@ nav.week-nav button:disabled { opacity: 0.35; }
   font-size: 0.88rem;
 }
 
+.story-new-banner {
+  display: block;
+  margin: 10px 12px 4px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffe08a, #f3c34a);
+  color: #2a1d08;
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  position: relative;
+  z-index: 6;
+}
+
+.story-new-banner[hidden] {
+  display: none;
+}
+
+.story-new-banner-go {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .clarinet {
   position: fixed;
   left: 10px;
