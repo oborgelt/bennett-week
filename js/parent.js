@@ -1041,7 +1041,7 @@
     const copy = document.getElementById("parent-story-copy");
     if (comic) comic.hidden = false;
     if (copy) {
-      copy.textContent = "Story is on Bennett's HUD when he is signed in, or on his phone. He unlocks one page each Chicago day. You can always preview the whole strip.";
+      copy.textContent = "A new page opens each Chicago day starting Monday, September 28. Missed days stay open so he can catch up. Login, teammates, and this phone do not gate it. You can always preview the whole strip.";
     }
   }
 

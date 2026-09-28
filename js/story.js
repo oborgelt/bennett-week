@@ -74,7 +74,7 @@
     const bits = [];
     if (prev) bits.push(`<button type="button" class="btn story-choice" data-to="${Game.esc(prev.id)}">Previous page</button>`);
     if (next) bits.push(`<button type="button" class="btn primary story-choice" data-to="${Game.esc(next.id)}">Next page</button>`);
-    if (more) bits.push(`<p class="story-more">More tomorrow. One new page each day you open Jungle Jam.</p>`);
+    if (more) bits.push(`<p class="story-more">Next page opens at midnight Central. Pages you already have stay open.</p>`);
     if (page.end || (!next && !more && idx === list.length - 1 && list.length === all.length)) {
       bits.push(`<a class="btn" href="characters.html">Back to the crew</a>`);
     }
@@ -112,6 +112,8 @@
     if (extras) extras.innerHTML = (page.id === (story.start || (list[0] && list[0].id)) || page.video) ? extrasHtml() : "";
     renderArt(page);
     renderPager(page);
+    if (!preview && Game.markStoryBannerSeen) Game.markStoryBannerSeen(story, page, { preview: preview });
+    if (Game.paintStoryNewBanner) Game.paintStoryNewBanner(story);
   }
 
   function showGate() {
@@ -131,6 +133,7 @@
     const params = new URLSearchParams(location.search);
     preview = params.get("preview") === "1" || params.get("from") === "parent";
     pageId = params.get("page") || params.get("node") || "";
+    const openNewest = params.get("new") === "1";
     pack = await Game.loadAchievements();
     roster = await Game.loadCharacters();
     family = await Game.loadFamily();
@@ -147,12 +150,17 @@
       const id = e && e.detail && e.detail.id;
       if (id) go(id);
     });
-    if (!preview && Game.maybeCelebrateStoryPage) Game.maybeCelebrateStoryPage(story, { preview: preview });
-    if (!preview && !Game.storyAvailable(roster, { preview: preview })) {
+    if (!preview && !Game.storyAvailable(roster, { story: story })) {
       showGate();
+      if (Game.paintStoryNewBanner) Game.paintStoryNewBanner(story);
       return;
     }
+    if (openNewest) {
+      const list = visible();
+      pageId = (list.length && list[list.length - 1].id) || pageId;
+    }
     showStory();
+    if (Game.paintStoryNewBanner) Game.paintStoryNewBanner(story);
   }
 
   boot();

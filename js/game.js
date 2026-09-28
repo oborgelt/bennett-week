@@ -19,6 +19,7 @@
     opens: "bw-opens",
     loginDays: "bw-login-days",
     storyUnlock: "bw-story-unlock",
+    storyBannerSeen: "bw-story-banner-seen",
     previewAll: "bw-preview-all",
     previewIds: "bw-preview-ids",
     previewLocked: "bw-preview-locked",
@@ -1786,10 +1787,7 @@
 
   function storyAvailable(roster, opts) {
     if (opts && (opts.preview || opts.force)) return true;
-    if (sessionUser() === "bennett") return true;
-    if (siteView() === "bennett") return true;
-    if (!sessionUser() && telemetryDeviceRole() === "bennett") return true;
-    return comicUnlocked(roster);
+    return storyPagesUnlockedCount(opts && opts.story, opts && opts.now) > 0;
   }
 
   function getCharacterSeen() {
@@ -4860,7 +4858,7 @@
     {
       id: "story",
       title: "Story",
-      body: "Story is on the bar when you are signed in. Open it from This Week or any HUD. One new page each Chicago day you open Jungle Jam. Yesterday’s pages stay. When a new page unlocks, it pops up on This Week like other rewards. Close it or open Story. Page 7 is Ace versus the horned frog. Page 8 is the win."
+      body: "Story shows on the bar once the strip has started. Page 1 opens Monday, September 28. A new page opens each day at midnight Central. If you skip a day, every page up to today is still there. When a new page is out, Jungle Jam pins a message at the top: a new part of the story is available. That message stays up even while a celebration or the Trophy Room is open. Click it to open the new page. After you have seen today's page, the message stays quiet until the next one. Page 7 is Ace versus the horned frog. Page 8 is the win."
     },
     {
       id: "messages",
@@ -5687,6 +5685,206 @@
     return ((story && story.nodes) || []).filter((node) => node && node.id);
   }
 
+  // Horned-frog strip. Page 1 unlocks on this America/Chicago date, then one
+  // page per calendar day. Missed days stay open. This is the only schedule knob.
+  const STORY_UNLOCK_START = "2026-09-28";
+
+  function storyUnlockStartYmd() {
+    return STORY_UNLOCK_START;
+  }
+
+  function storyPageTotal(story) {
+    const pages = storyPages(story);
+    if (pages.length) return pages.length;
+    if (story && (Array.isArray(story.pages) || Array.isArray(story.nodes))) return 0;
+    return 8;
+  }
+
+  function ymdDelta(startYmd, endYmd) {
+    const parse = (ymd) => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || ""));
+      if (!m) return NaN;
+      return Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    };
+    const a = parse(startYmd);
+    const b = parse(endYmd);
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
+    return Math.round((b - a) / 86400000);
+  }
+
+  function storyDateOverride() {
+    try {
+      const search = String((global.location && global.location.search) || "");
+      const m = /(?:^|[?&])date=(\d{4}-\d{2}-\d{2})(?:&|$)/.exec(search);
+      return m ? m[1] : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function resolveStoryToday(now) {
+    if (typeof now === "string" && /^\d{4}-\d{2}-\d{2}$/.test(now)) return now;
+    if (now instanceof Date) return chicagoYmd(now);
+    return storyDateOverride() || storyDayKey(now);
+  }
+
+  function storyPagesUnlockedCount(story, now) {
+    const delta = ymdDelta(storyUnlockStartYmd(), resolveStoryToday(now));
+    if (!Number.isFinite(delta) || delta < 0) return 0;
+    return Math.min(storyPageTotal(story), delta + 1);
+  }
+
+  function storyBannerSeenYmd() {
+    const raw = read(KEYS.storyBannerSeen, "");
+    return typeof raw === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : "";
+  }
+
+  function storyNewPageHref(pageId) {
+    const id = String(pageId || "");
+    const bits = [];
+    if (id) bits.push("page=" + encodeURIComponent(id));
+    else bits.push("new=1");
+    const date = storyDateOverride();
+    if (date) bits.push("date=" + date);
+    return "story.html?" + bits.join("&");
+  }
+
+  function storyNewBanner(story, opts) {
+    const now = opts && opts.now;
+    const pages = storyPages(story);
+    const total = storyPageTotal(story);
+    const today = resolveStoryToday(now);
+    const delta = ymdDelta(storyUnlockStartYmd(), today);
+    if (!Number.isFinite(delta) || delta < 0 || delta >= total) return null;
+    if (!(opts && opts.ignoreSeen) && storyBannerSeenYmd() === today) return null;
+    const page = pages[delta] || null;
+    if (pages.length && !page) return null;
+    return {
+      page: page,
+      index: delta + 1,
+      today: today,
+      href: storyNewPageHref(page && page.id)
+    };
+  }
+
+  function markStoryBannerSeen(story, page, opts) {
+    if (opts && opts.preview) return false;
+    const now = opts && opts.now;
+    const today = resolveStoryToday(now);
+    const total = storyPageTotal(story);
+    const delta = ymdDelta(storyUnlockStartYmd(), today);
+    if (!Number.isFinite(delta) || delta < 0 || delta >= total) return false;
+    const pages = storyPages(story);
+    const newest = pages[delta] || null;
+    if (!newest || !page || page.id !== newest.id) return false;
+    write(KEYS.storyBannerSeen, today);
+    return true;
+  }
+
+  function mountStoryBannerSpacer() {
+    if (!document || !document.getElementById || !document.createElement) return null;
+    let el = document.getElementById("story-new-banner-spacer");
+    if (el) return el;
+    el = document.createElement("div");
+    el.id = "story-new-banner-spacer";
+    el.className = "story-new-banner-spacer";
+    el.hidden = true;
+    if (el.setAttribute) {
+      el.setAttribute("hidden", "");
+      el.setAttribute("aria-hidden", "true");
+    }
+    const hud = document.querySelector ? document.querySelector(".hud-bar") : null;
+    if (hud && hud.parentNode && hud.parentNode.insertBefore) {
+      hud.parentNode.insertBefore(el, hud.nextSibling);
+    } else if (document.body && document.body.insertBefore) {
+      document.body.insertBefore(el, document.body.firstChild || null);
+    }
+    return el;
+  }
+
+  function mountStoryBannerEl() {
+    if (!document || !document.getElementById || !document.createElement) return null;
+    let el = document.getElementById("story-new-banner");
+    if (!el) {
+      el = document.createElement("a");
+      el.id = "story-new-banner";
+      el.className = "story-new-banner";
+      el.hidden = true;
+      if (el.setAttribute) el.setAttribute("hidden", "");
+    }
+    if (document.body && el.parentNode !== document.body && document.body.appendChild) {
+      document.body.appendChild(el);
+    }
+    mountStoryBannerSpacer();
+    return el;
+  }
+
+  let storyBannerPinBound = false;
+
+  function placeStoryBanner(el) {
+    if (!el || !document || !document.documentElement) return;
+    const rootStyle = document.documentElement.style;
+    if (!rootStyle || !rootStyle.setProperty) return;
+    const gap = 8;
+    let top = gap;
+    const hud = document.querySelector ? document.querySelector(".hud-bar") : null;
+    if (hud && hud.getBoundingClientRect) {
+      const rect = hud.getBoundingClientRect();
+      if (rect && rect.height) top = Math.max(gap, Math.round(rect.bottom) + gap);
+    }
+    rootStyle.setProperty("--story-banner-top", top + "px");
+    const spacer = document.getElementById("story-new-banner-spacer");
+    if (el.hidden) {
+      rootStyle.setProperty("--story-banner-space", "0px");
+      if (spacer) {
+        spacer.hidden = true;
+        if (spacer.setAttribute) spacer.setAttribute("hidden", "");
+      }
+      return;
+    }
+    const height = el.offsetHeight || 0;
+    rootStyle.setProperty("--story-banner-space", (height ? height + gap + 6 : 0) + "px");
+    if (spacer) {
+      spacer.hidden = false;
+      if (spacer.removeAttribute) spacer.removeAttribute("hidden");
+    }
+  }
+
+  function bindStoryBannerPin() {
+    if (storyBannerPinBound || !global || !global.addEventListener) return;
+    storyBannerPinBound = true;
+    const run = () => {
+      const el = document.getElementById("story-new-banner");
+      if (el) placeStoryBanner(el);
+    };
+    global.addEventListener("resize", run);
+    global.addEventListener("orientationchange", run);
+  }
+
+  function paintStoryNewBanner(story, opts) {
+    try {
+      const model = storyNewBanner(story, opts);
+      const el = mountStoryBannerEl();
+      if (!el) return false;
+      bindStoryBannerPin();
+      if (!model) {
+        el.hidden = true;
+        if (el.setAttribute) el.setAttribute("hidden", "");
+        placeStoryBanner(el);
+        return false;
+      }
+      el.hidden = false;
+      if (el.removeAttribute) el.removeAttribute("hidden");
+      el.href = model.href;
+      el.innerHTML = 'Hey, a new part of the story is available. <span class="story-new-banner-go">Click here.</span>';
+      placeStoryBanner(el);
+      if (global.requestAnimationFrame) global.requestAnimationFrame(() => placeStoryBanner(el));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   function emptyStoryUnlock() {
     return { startYmd: "", lastYmd: "", reached: 0, pendingCelebrate: 0, celebratedReached: 0 };
   }
@@ -5741,40 +5939,25 @@
   }
 
   function recordStoryDay(now) {
-    const cur = getStoryUnlock();
-    if (!shouldRecordBennettLogin()) return Object.assign({}, cur, { unlocked: false });
-    const today = storyDayKey(now);
-    if (!cur.startYmd) {
-      const row = saveStoryUnlock({
-        startYmd: today,
-        lastYmd: today,
-        reached: 1,
-        pendingCelebrate: 1,
-        celebratedReached: cur.celebratedReached
-      });
-      return Object.assign({}, row, { unlocked: true });
-    }
-    if (cur.lastYmd === today) return Object.assign({}, cur, { unlocked: false });
-    const reached = Math.max(1, cur.reached) + 1;
-    const row = saveStoryUnlock({
-      startYmd: cur.startYmd,
+    const today = resolveStoryToday(now);
+    return {
+      startYmd: STORY_UNLOCK_START,
       lastYmd: today,
-      reached,
-      pendingCelebrate: reached,
-      celebratedReached: cur.celebratedReached
-    });
-    return Object.assign({}, row, { unlocked: true });
+      reached: storyPagesUnlockedCount(null, today),
+      unlocked: false,
+      pendingCelebrate: 0,
+      celebratedReached: 0
+    };
   }
 
-  function storyPagesReached() {
-    return Math.max(0, getStoryUnlock().reached);
+  function storyPagesReached(now) {
+    return storyPagesUnlockedCount(null, now);
   }
 
   function visibleStoryPages(story, opts) {
     const pages = storyPages(story);
     if (opts && opts.preview) return pages;
-    const reached = Math.max(1, storyPagesReached() || 1);
-    return pages.slice(0, Math.min(pages.length, reached));
+    return pages.slice(0, storyPagesUnlockedCount(story, opts && opts.now));
   }
 
   function celebrateLayerIsOpen() {
@@ -5795,6 +5978,8 @@
     const queued = storyCelebrateAfterClose;
     storyCelebrateAfterClose = null;
     if (typeof queued === "function") queued();
+    const banner = document.getElementById("story-new-banner");
+    if (banner) placeStoryBanner(banner);
   }
 
   function storyPageCaption(page) {
@@ -5876,30 +6061,17 @@
     return html.indexOf("char-celebrate-story") >= 0 || html.indexOf("Open Story") >= 0;
   }
 
-  function maybeCelebrateStoryPage(story, opts) {
-    if (opts && opts.preview) return false;
-    if (!shouldRecordBennettLogin()) return false;
-    const n = pendingStoryCelebratePage();
-    if (!n) return false;
-    const pages = storyPages(story);
-    if (!pages.length) return false;
-    if (n > pages.length) return false;
-    const page = pages[n - 1];
-    if (!page) return false;
-    if (storyCelebrateIsOpen()) return true;
-    if (celebrateLayerIsOpen()) {
-      storyCelebrateAfterClose = () => {
-        showStoryPageCelebrate(page, n);
-      };
-      return false;
-    }
-    return showStoryPageCelebrate(page, n);
+  function maybeCelebrateStoryPage() {
+    return false;
   }
 
   async function flushStoryPageCelebrate(story, opts) {
-    if (!pendingStoryCelebratePage()) return false;
-    const pack = story || await loadStory();
-    return maybeCelebrateStoryPage(pack, opts);
+    try {
+      const pack = story || await loadStory();
+      return paintStoryNewBanner(pack, opts);
+    } catch (_) {
+      return false;
+    }
   }
 
   function celebrateLayer() {
@@ -5914,6 +6086,8 @@
       layer.className = "char-celebrate";
       document.body.appendChild(layer);
     }
+    const banner = document.getElementById("story-new-banner");
+    if (banner && global.requestAnimationFrame) global.requestAnimationFrame(() => placeStoryBanner(banner));
     return layer;
   }
 
@@ -7330,6 +7504,7 @@
     gateAdultPage();
     paintMessagesChip();
     notifySiteView(view);
+    void flushStoryPageCelebrate();
     return view;
   }
 
@@ -7454,7 +7629,6 @@
       write(KEYS.opens, opens);
     }
     recordLoginDay();
-    recordStoryDay();
     return opens;
   }
 
@@ -7489,7 +7663,6 @@
     next.overlay.updatedAt = nowIso();
     saveFamily(next);
     if (!overlaySyncing) queueOverlayPush(next);
-    recordStoryDay();
     return next;
   }
 
@@ -10019,6 +10192,11 @@
     KHAN,
     loadStory,
     storyPages,
+    STORY_UNLOCK_START,
+    storyPagesUnlockedCount,
+    storyNewBanner,
+    markStoryBannerSeen,
+    paintStoryNewBanner,
     getStoryUnlock,
     recordStoryDay,
     pendingStoryCelebratePage,
@@ -10054,7 +10232,8 @@
   };
 
   function paintStoryChip(roster, force) {
-    const open = !!force || storyAvailable(roster);
+    const opts = force && typeof force === "object" ? force : null;
+    const open = force === true || storyAvailable(roster, opts || undefined);
     const nodes = document.querySelectorAll
       ? document.querySelectorAll("#story-chip, .story-chip")
       : (document.getElementById("story-chip") ? [document.getElementById("story-chip")] : []);
