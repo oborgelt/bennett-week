@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-09-29T14:25:00",
+  "as_of": "2026-09-30T14:26:00",
   "parenting": [
     {
       "who": "Mom",
@@ -571,7 +571,8 @@
       "end": "2026-10-02T08:40:00",
       "kind": "calendar",
       "classId": "band",
-      "place": "Olathe East"
+      "place": "Olathe East",
+      "note": "Fillingham 9/30: NO 6:50 early Fri; winds 7:40 on field; percussion normal 2nd hour."
     },
     {
       "id": "band-am-1005",
@@ -1260,7 +1261,7 @@
       "kind": "band",
       "classId": "band",
       "place": "CBAC",
-      "note": "Fillingham Band Update 9/27: HOCO field show AFTER the game Oct 1. Call time 5:00 PM; Dri-Fit + long black socks; hair up/bun; buses leave 5:30 for CBAC. (Earlier 9/23 note already had AFTER-game move.)"
+      "note": "Fillingham Band Update 9/27: HOCO field show AFTER the game Oct 1. Call time 5:00 PM; Dri-Fit + long black socks; hair up/bun; buses leave 5:30 for CBAC. (Earlier 9/23 note already had AFTER-game move.) Fillingham 9/30 Rain Contingencies: bring jeans + rain jacket; may skip uniforms; early pickup plan; no field show if raining at pregame/halftime/postgame."
     },
     {
       "id": "band-exhibition-1005",
@@ -1600,6 +1601,76 @@
       "start": "2026-10-12",
       "kind": "calendar",
       "note": "English Daily Agendas sheet 9/29 export — Homework cell for 10/12 and 10/13 says Conferences in PM (no clock times). District PDF: conferences Oct 12–14; Oct 15 conferences no students; Oct 16 no school."
+    },
+    {
+      "id": "eng-infographic-due-1001",
+      "title": "English: 10.2 Infographic due (Canvas)",
+      "start": "2026-10-01T23:59:00",
+      "end": null,
+      "kind": "assignment",
+      "classId": "english-10",
+      "place": null,
+      "note": "Canvas LIVE Wed 9/30 — 20 pts, Not submitted. Mom handoff 4:30p same day."
+    },
+    {
+      "id": "eng-internal-judging-due-1001",
+      "title": "English: 10.2 Internal Judging due (Canvas)",
+      "start": "2026-10-01T23:59:00",
+      "end": null,
+      "kind": "assignment",
+      "classId": "english-10",
+      "place": null,
+      "note": "Canvas LIVE Wed 9/30 — 25 pts, Not submitted."
+    },
+    {
+      "id": "eng-team-resp-due-1001",
+      "title": "English: Individual Team Responsibilities due (Canvas)",
+      "start": "2026-10-01T23:59:00",
+      "end": null,
+      "kind": "assignment",
+      "classId": "english-10",
+      "place": null,
+      "note": "Canvas LIVE Wed 9/30 NEW — 10 pts, Not submitted."
+    },
+    {
+      "id": "hoco-powder-puff-0930",
+      "title": "OE: Homecoming Powder Puff (rain plan)",
+      "start": "2026-09-30T18:00:00",
+      "end": "2026-09-30T19:00:00",
+      "kind": "school",
+      "classId": null,
+      "place": "OE turf",
+      "note": "Gmail kjlane 1:44pm: still on turf 6–7pm pending lightning. Bonfire NOT lit; free food for East students; leave campus by 7:30pm. Fillingham 9/30 Rain Contingencies: jeans + rain jacket; may skip uniforms; early pickup contingency."
+    },
+    {
+      "id": "career-pathways-0930-ow",
+      "title": "Career Pathways Presentation @ Olathe West",
+      "start": "2026-09-30T18:30:00",
+      "end": "2026-09-30T19:30:00",
+      "kind": "school",
+      "classId": null,
+      "place": "Olathe West Auditorium",
+      "note": "District + Gmail communications 9/30. Grades 8–11. Also Oct 5 6:30pm OPSIC."
+    },
+    {
+      "id": "career-pathways-1005-opsic",
+      "title": "Career Pathways Presentation @ OPSIC",
+      "start": "2026-10-05T18:30:00",
+      "end": "2026-10-05T19:30:00",
+      "kind": "school",
+      "classId": null,
+      "place": "OPSIC Restaurant Area",
+      "note": "Gmail communications 9/30. Grades 8–11."
+    },
+    {
+      "id": "band-no-early-fri-1002",
+      "title": "Band: No 6:50 early rehearsal (Fri)",
+      "start": "2026-10-02T07:40:00",
+      "end": "2026-10-02T08:40:00",
+      "kind": "band",
+      "classId": "band",
+      "place": "field",
+      "note": "Fillingham Gmail/PV 9/30: NO usual 6:50 start Fri Oct 2 after late HOCO Thu; first hour winds 7:40 on field; percussion normal 2nd hour."
     }
   ],
   "work": [
@@ -2944,21 +3015,20 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Canvas LIVE Tue 9/29 after-school: still graded 0/3. Chem overall now 96.12% (quiz entered). No Bennett-said-done → discrepancy=false.",
+      "note": "Canvas LIVE after-school Wed 9/30 ~2:26pm: still graded 0/3. Chem overall 96.12% UNCHANGED. No Bennett-said-done → discrepancy=false.",
       "canvas": {
         "status": "graded",
         "points": 3,
         "score": 0,
         "due": "2026-09-17T23:59:00",
-        "graded_at": "2026-09-21T21:50:00",
-        "as_of": "2026-09-29T14:25:00"
+        "as_of": "2026-09-30T14:26:00"
       },
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-09-29T14:25:00",
+      "as_of": "2026-09-30T14:26:00",
       "classId": "chemistry",
       "graded_at": "2026-09-21T21:50:00"
     },
@@ -3190,29 +3260,29 @@
       "title": "Web Design: 3.1 Introduction to CSS",
       "classId": "web-design",
       "due": "2026-09-28T09:20:00",
-      "status": "open",
-      "school_status": "open",
+      "status": "graded",
+      "school_status": "graded",
       "points": 19,
       "late": true,
       "submitted_at": null,
       "source": "canvas",
       "discrepancy": false,
       "student_status": null,
-      "score": null,
+      "score": "18/19",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/29 after-school: still No Submission, 19 pts, due Mon Sep 28 9:20am. Dashboard Missing still 0. No Bennett-said-done → discrepancy=false. Dad night.",
+      "note": "Canvas LIVE after-school Wed 9/30 ~2:26pm: graded 18/19 (Gmail Instructure graded ~10:30am). Was No Submission at bedtime 9/29. Missing still 0.",
       "canvas": {
-        "status": "no_submission",
+        "status": "graded",
         "points": 19,
-        "score": null,
+        "score": 18,
         "due": "2026-09-28T09:20:00",
-        "as_of": "2026-09-29T14:25:00"
+        "as_of": "2026-09-30T14:26:00"
       },
-      "as_of": "2026-09-29T14:25:00"
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "id": "eng-infographic-0929",
@@ -3229,18 +3299,18 @@
       "student_status": null,
       "score": null,
       "followup": {
-        "due_by": null,
+        "due_by": "2026-10-01T16:30:00",
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/29 after-school: now a Canvas Grades/To Do row — 10.2 Infographic 20 pts, Not submitted, due Thu Oct 1 11:59pm. English Daily Agendas sheet still lists Infographic due end of hour Tue 9/29 (class deadline). No Bennett-said-done.",
-      "as_of": "2026-09-29T14:25:00",
+      "note": "Canvas LIVE after-school Wed 9/30 ~2:26pm: still Not submitted, 20 pts, due Thu Oct 1 11:59pm. Sheet 9/29 listed Infographic due EOH. Dad through Thu 4:30p Mom handoff — evening due risk.",
+      "as_of": "2026-09-30T14:26:00",
       "canvas": {
         "status": "not_submitted",
         "points": 20,
         "score": null,
         "due": "2026-10-01T23:59:00",
-        "as_of": "2026-09-29T14:25:00"
+        "as_of": "2026-09-30T14:26:00"
       }
     },
     {
@@ -3248,29 +3318,29 @@
       "title": "Web Design: 3.2 CSS Select by Tag",
       "classId": "web-design",
       "due": "2026-09-28T09:20:00",
-      "status": "open",
-      "school_status": "open",
+      "status": "graded",
+      "school_status": "graded",
       "points": 19,
       "late": true,
       "submitted_at": null,
       "source": "canvas",
       "discrepancy": false,
       "student_status": null,
-      "score": null,
+      "score": "19/19",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/29 after-school: still No Submission, 19 pts, due Mon Sep 28 9:20am. Dashboard Missing still 0. No Bennett-said-done → discrepancy=false. Dad night.",
+      "note": "Canvas LIVE after-school Wed 9/30 ~2:26pm: graded 19/19 (Gmail Instructure graded ~10:31am). Was No Submission at bedtime 9/29.",
       "canvas": {
-        "status": "no_submission",
+        "status": "graded",
         "points": 19,
-        "score": null,
+        "score": 19,
         "due": "2026-09-28T09:20:00",
-        "as_of": "2026-09-29T14:25:00"
+        "as_of": "2026-09-30T14:26:00"
       },
-      "as_of": "2026-09-29T14:25:00"
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "id": "web-33-css-select-by-class-1005",
@@ -3291,15 +3361,15 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/29 after-school: not submitted, due Mon Oct 5 9:20am (18 pts). Dashboard Due list with 3.4.",
+      "note": "Canvas LIVE after-school Wed 9/30 ~2:26pm: still not submitted, due Mon Oct 5 9:20am.",
       "canvas": {
-        "status": "not_submitted_upcoming",
+        "status": "not_submitted",
         "points": 18,
         "score": null,
         "due": "2026-10-05T09:20:00",
-        "as_of": "2026-09-29T14:25:00"
+        "as_of": "2026-09-30T14:26:00"
       },
-      "as_of": "2026-09-29T14:25:00"
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "id": "eng-aab-pages-164-203-0924",
@@ -3395,15 +3465,15 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/29 after-school NEW: not submitted, due Mon Oct 5 9:20am (19 pts). Dashboard Due with 3.3.",
+      "note": "Canvas LIVE after-school Wed 9/30 ~2:26pm: still not submitted, due Mon Oct 5 9:20am.",
       "canvas": {
-        "status": "not_submitted_upcoming",
+        "status": "not_submitted",
         "points": 19,
         "score": null,
         "due": "2026-10-05T09:20:00",
-        "as_of": "2026-09-29T14:25:00"
+        "as_of": "2026-09-30T14:26:00"
       },
-      "as_of": "2026-09-29T14:25:00"
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "id": "eng-internal-judging-1001",
@@ -3420,19 +3490,19 @@
       "student_status": null,
       "score": null,
       "followup": {
-        "due_by": null,
+        "due_by": "2026-10-01T16:30:00",
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE Tue 9/29 after-school NEW: 25 pts, Not submitted, due Thu Oct 1 11:59pm. Sheet 9/30–10/1 Internal Judging (winners via Canvas PM). Dad through Thu 10/1 4:30p handoff.",
+      "note": "Canvas LIVE after-school Wed 9/30 ~2:26pm: still Not submitted, 25 pts, due Thu Oct 1 11:59pm. Sheet 9/30–10/1 Internal Judging. Dad through Thu 4:30p Mom handoff.",
       "canvas": {
         "status": "not_submitted",
         "points": 25,
         "score": null,
         "due": "2026-10-01T23:59:00",
-        "as_of": "2026-09-29T14:25:00"
+        "as_of": "2026-09-30T14:26:00"
       },
-      "as_of": "2026-09-29T14:25:00"
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "id": "chem-unit1-section1-quiz-0919",
@@ -3464,9 +3534,43 @@
       },
       "as_of": "2026-09-29T14:25:00",
       "graded_at": "2026-09-28T21:30:00"
+    },
+    {
+      "id": "eng-individual-team-responsibilities-1001",
+      "title": "English 10: Individual Team Responsibilities",
+      "classId": "english-10",
+      "due": "2026-10-01T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "points": 10,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "discrepancy": false,
+      "student_status": null,
+      "score": null,
+      "followup": {
+        "due_by": "2026-10-01T16:30:00",
+        "email_draft": null,
+        "email_sent": false
+      },
+      "note": "Canvas LIVE after-school Wed 9/30 ~2:26pm NEW on Due list: 10 pts, Not submitted, due Thu Oct 1 11:59pm with Infographic + Internal Judging. Dad through Thu 4:30p Mom handoff.",
+      "canvas": {
+        "status": "not_submitted",
+        "points": 10,
+        "score": null,
+        "due": "2026-10-01T23:59:00",
+        "as_of": "2026-09-30T14:26:00"
+      },
+      "as_of": "2026-09-30T14:26:00"
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-2026-09-29",
+      "as_of": "2026-09-29T21:00:00",
+      "text": "Bedtime 9/29 ~9pm CT: Canvas LIVE UNCHANGED vs after-school (Eng 96.61; Web 91.82 3.1+3.2 No Submission past due Missing still 0; 3.3+3.4 due Oct 5; Chem 96.12 Copper Cycle still 0/3; Eng Infographic+Internal Judging due Oct 1). ParentVUE LOGIN_WALL (autofill empty) — kept PV LIVE 9/28 3:20pm grades. Gmail NEW after after-school: Pfeiff Chem Unit 1 Study Guide Key + online textbook (ParentVUE msg ~8:13pm + Canvas Instructure ~8:03pm); Fillingham OMI itinerary Sat Oct 10 (~3:02pm). No Bennett-said-done (Plaud: mediation + short morning only). Dad night through Thu 10/1 4:30p."
+    },
     {
       "id": "parentvue-stale-20260929",
       "as_of": "2026-09-29T14:25:00",
@@ -3723,6 +3827,11 @@
       "id": "bedtime-2026-09-28T21:00:00",
       "as_of": "2026-09-28T21:00:00",
       "text": "Bedtime Mon 9/28 ~9:00pm CT: Canvas LIVE UNCHANGED vs after-school (Eng 96.61; Web 91.82 3.1+3.2 No Submission past due Missing still 0; NEW 3.3 due Oct 5; Chem 96.43 Copper Cycle still 0/3). ParentVUE LOGIN_WALL (autofill empty) — kept PV LIVE 3:20pm grades. Gmail no NEW school/Instructure after after-school (cashless tickets + early leave already known). No Bennett-said-done. week.json as_of 2026-09-28T21:00:00 local only (no Jungle Jam push; class/grade/discrepancy unchanged)."
+    },
+    {
+      "id": "after-school-2026-09-30T14:26:00",
+      "as_of": "2026-09-30T14:26:00",
+      "text": "After-school Wed 9/30 ~2:26pm CT FULL: Canvas LIVE Eng 96.61; Web UP 92.49 (3.1=18/19 + 3.2=19/19 graded ~10:30am; was No Submission bedtime); Chem 96.12 Copper Cycle still 0/3. NEW Eng Individual Team Responsibilities 10pts + Infographic 20 + Internal Judging 25 all Not submitted due Thu Oct 1 11:59pm; Web 3.3+3.4 due Mon Oct 5. ParentVUE LIVE: Geo back A- 90% 0 missing (AM 88%/5 miss cleared); Soc UP 95%; Web PV 92% updated today. Gmail/PV NEW: Fillingham rain contingencies Thu HOCO game + no early Fri 6:50; kjlane HoCo rain tonight (Powder Puff yes, bonfire no, leave 7:30); Career Pathways tonight 6:30 OW. English sheet near-term UNCHANGED; oeband UNCHANGED $350. Dad through Thu 10/1 4:30p Mom handoff (Eng due that night)."
     }
   ],
   "grades": [
@@ -3734,9 +3843,9 @@
       "letter": "A+",
       "percent": 99.0,
       "missing": 0,
-      "detail": "ParentVUE last LIVE 9/28 ~3:20pm A+ 99.0%. Canvas Band no grade. ParentVUE LOGIN_WALL after-school 9/29 (autofill empty).",
-      "source": "ParentVUE LIVE 9/28 3:20pm (LOGIN_WALL 9/29 after-school)",
-      "as_of": "2026-09-28T15:20:00"
+      "detail": "ParentVUE LIVE after-school Wed 9/30 ~2:26pm A+ 99.0%. Canvas N/A.",
+      "source": "ParentVUE LIVE 9/30 2:26pm",
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "classId": "sociology",
@@ -3744,11 +3853,11 @@
       "period": "P2",
       "teacher": "Todd Keach",
       "letter": "A",
-      "percent": 94.0,
+      "percent": 95.0,
       "missing": 0,
-      "detail": "ParentVUE last LIVE 9/28 ~3:20pm A 94%. Canvas unpublished. ParentVUE LOGIN_WALL 9/29 after-school.",
-      "source": "ParentVUE LIVE 9/28 3:20pm (LOGIN_WALL 9/29 after-school)",
-      "as_of": "2026-09-28T15:20:00"
+      "detail": "ParentVUE LIVE after-school Wed 9/30 ~2:26pm A 95% (was 94%). Canvas N/A.",
+      "source": "ParentVUE LIVE 9/30 2:26pm",
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "classId": "web-design",
@@ -3756,11 +3865,11 @@
       "period": "P3",
       "teacher": "Derek Linn",
       "letter": "A-",
-      "percent": 91.82,
+      "percent": 92.49,
       "missing": 0,
-      "detail": "Canvas LIVE after-school Tue 9/29 91.82% UNCHANGED (3.1+3.2 still No Submission past due Missing still 0; NEW 3.4 due Oct 5 with 3.3). ParentVUE LOGIN_WALL; last PV LIVE 9/28 ~3:20pm A- 92%.",
-      "source": "Canvas LIVE after-school 9/29; ParentVUE LIVE 9/28 3:20pm (LOGIN_WALL today)",
-      "as_of": "2026-09-29T14:25:00"
+      "detail": "Canvas LIVE after-school Wed 9/30 ~2:26pm 92.49% UP (was 91.82). 3.1=18/19 + 3.2=19/19 graded today; 3.3+3.4 still open due Oct 5. ParentVUE LIVE A- 92% updated 9/30.",
+      "source": "Canvas LIVE 9/30 2:26pm; ParentVUE LIVE 9/30 2:26pm",
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "classId": "chemistry",
@@ -3770,9 +3879,9 @@
       "letter": "A",
       "percent": 96.12,
       "missing": 0,
-      "detail": "Canvas LIVE after-school Tue 9/29 96.12% DOWN from 96.43 (Unit 1 Section 1 Quiz graded 19.5/20 Mon ~9:30pm Gmail). Copper Cycle Reading still 0/3. ParentVUE LOGIN_WALL; last PV LIVE 9/28 ~3:20pm A 96.4%.",
-      "source": "Canvas LIVE after-school 9/29; ParentVUE LIVE 9/28 3:20pm (LOGIN_WALL today)",
-      "as_of": "2026-09-29T14:25:00"
+      "detail": "Canvas LIVE after-school Wed 9/30 ~2:26pm 96.12% UNCHANGED. Unit 1 Sec 1 Quiz 19.5/20; Copper Cycle Reading still 0/3. ParentVUE LIVE A 96.1%.",
+      "source": "Canvas LIVE 9/30 2:26pm; ParentVUE LIVE 9/30 2:26pm",
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "classId": "strength-conditioning",
@@ -3782,9 +3891,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "ParentVUE last LIVE 9/28 ~3:20pm A+ 100%. Canvas unpublished. ParentVUE LOGIN_WALL 9/29 after-school.",
-      "source": "ParentVUE LIVE 9/28 3:20pm (LOGIN_WALL 9/29 after-school)",
-      "as_of": "2026-09-28T15:20:00"
+      "detail": "ParentVUE LIVE after-school Wed 9/30 ~2:26pm A+ 100%. Canvas N/A.",
+      "source": "ParentVUE LIVE 9/30 2:26pm",
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "classId": "english-10",
@@ -3794,9 +3903,9 @@
       "letter": "A",
       "percent": 96.61,
       "missing": 0,
-      "detail": "Canvas LIVE after-school Tue 9/29 96.61% UNCHANGED. Infographic now Canvas row 20pts due Thu Oct 1 11:59pm (sheet still said due EOH Tue 9/29). NEW Internal Judging 25pts due Oct 1 11:59pm. ParentVUE LOGIN_WALL; last PV LIVE 9/28 ~3:20pm A 96.61%.",
-      "source": "Canvas LIVE after-school 9/29; ParentVUE LIVE 9/28 3:20pm (LOGIN_WALL today)",
-      "as_of": "2026-09-29T14:25:00"
+      "detail": "Canvas LIVE after-school Wed 9/30 ~2:26pm 96.61% UNCHANGED. Infographic 20 + Internal Judging 25 + NEW Individual Team Responsibilities 10 all Not submitted due Thu Oct 1 11:59pm. ParentVUE LIVE A 96.61%.",
+      "source": "Canvas LIVE 9/30 2:26pm; ParentVUE LIVE 9/30 2:26pm",
+      "as_of": "2026-09-30T14:26:00"
     },
     {
       "classId": "geometry",
@@ -3806,9 +3915,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "ParentVUE last LIVE 9/28 ~3:20pm A- 90%. Canvas no grades. ParentVUE LOGIN_WALL 9/29 after-school.",
-      "source": "ParentVUE LIVE 9/28 3:20pm (LOGIN_WALL 9/29 after-school)",
-      "as_of": "2026-09-28T15:20:00"
+      "detail": "ParentVUE LIVE after-school Wed 9/30 ~2:26pm A- 90% with 0 missing (AM 7:55 was B+ 88% / 5 missing dated 9/25 Absent — cleared by afternoon). Canvas grades disabled.",
+      "source": "ParentVUE LIVE 9/30 2:26pm",
+      "as_of": "2026-09-30T14:26:00"
     }
   ]
 }
