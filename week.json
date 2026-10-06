@@ -1,6 +1,6 @@
 {
  "timezone": "America/Chicago",
- "as_of": "2026-10-05T14:30:00",
+ "as_of": "2026-10-05T21:00:00",
  "parenting": [
   {
    "who": "Mom",
@@ -3500,13 +3500,13 @@
     "email_draft": null,
     "email_sent": false
    },
-   "note": "Canvas LIVE after-school Mon 10/5 ~2:25pm: still -/18, no submitted time, no late/missing label; due was TODAY 9:20am. Appears NOT submitted.",
+   "note": "Canvas LIVE after-school Mon 10/5 ~2:25pm: still -/18, no submitted time, no late/missing label; due was TODAY 9:20am. Appears NOT submitted. | Bedtime 10/5 ~9pm: still no submission (past due 9:20am), not yet labeled late/missing.",
    "canvas": {
     "status": "open",
     "points": 18,
     "score": null,
     "due": "2026-10-05T09:20:00",
-    "as_of": "2026-10-05T14:30:00"
+    "as_of": "2026-10-05T21:00:00"
    },
    "as_of": "2026-10-05T14:30:00"
   },
@@ -3604,13 +3604,13 @@
     "email_draft": null,
     "email_sent": false
    },
-   "note": "Canvas LIVE after-school Mon 10/5 ~2:25pm: still -/19, no submitted time, no late/missing label; due was TODAY 9:20am. Appears NOT submitted.",
+   "note": "Canvas LIVE after-school Mon 10/5 ~2:25pm: still -/19, no submitted time, no late/missing label; due was TODAY 9:20am. Appears NOT submitted. | Bedtime 10/5 ~9pm: still no submission (past due 9:20am), not yet labeled late/missing.",
    "canvas": {
     "status": "open",
     "points": 19,
     "score": null,
     "due": "2026-10-05T09:20:00",
-    "as_of": "2026-10-05T14:30:00"
+    "as_of": "2026-10-05T21:00:00"
    },
    "as_of": "2026-10-05T14:30:00"
   },
@@ -3722,14 +3722,14 @@
     "email_draft": null,
     "email_sent": false
    },
-   "note": "Canvas LIVE after-school Mon 10/5 ~2:25pm: still -/16, no submitted time, no late/missing label; due was TODAY 9:20am. Appears NOT submitted.",
+   "note": "Canvas LIVE after-school Mon 10/5 ~2:25pm: still -/16, no submitted time, no late/missing label; due was TODAY 9:20am. Appears NOT submitted. | Bedtime 10/5 ~9pm: still no submission (past due 9:20am), not yet labeled late/missing.",
    "as_of": "2026-10-05T14:30:00",
    "canvas": {
     "status": "open",
     "points": 16,
     "score": null,
     "due": "2026-10-05T09:20:00",
-    "as_of": "2026-10-05T14:30:00"
+    "as_of": "2026-10-05T21:00:00"
    }
   },
   {
@@ -3751,14 +3751,14 @@
     "email_draft": null,
     "email_sent": false
    },
-   "note": "Canvas LIVE after-school Mon 10/5 ~2:25pm: still -/8, no submitted time, no late/missing label; due was TODAY 9:20am. Appears NOT submitted.",
+   "note": "Canvas LIVE after-school Mon 10/5 ~2:25pm: still -/8, no submitted time, no late/missing label; due was TODAY 9:20am. Appears NOT submitted. | Bedtime 10/5 ~9pm: still no submission (past due 9:20am), not yet labeled late/missing.",
    "as_of": "2026-10-05T14:30:00",
    "canvas": {
     "status": "open",
     "points": 8,
     "score": null,
     "due": "2026-10-05T09:20:00",
-    "as_of": "2026-10-05T14:30:00"
+    "as_of": "2026-10-05T21:00:00"
    }
   },
   {
@@ -3795,11 +3795,11 @@
    "title": "English 10: Narrative #2 Final Draft",
    "classId": "english-10",
    "due": "2026-10-05T23:59:00",
-   "status": "open",
-   "school_status": "open",
+   "status": "submitted",
+   "school_status": "submitted",
    "points": 30,
    "late": false,
-   "submitted_at": null,
+   "submitted_at": "2026-10-05T16:07:00",
    "source": "canvas",
    "discrepancy": false,
    "student_status": null,
@@ -3809,14 +3809,15 @@
     "email_draft": null,
     "email_sent": false
    },
-   "note": "Canvas LIVE after-school Mon 10/5: due date MOVED to Mon Oct 5 11:59pm; no longer flagged missing; still -/30 no submission. Agenda 10/5: finish editing narrative if needed. DUE TONIGHT (Dad night; band exhibition call 4:45pm).",
+   "note": "Canvas LIVE after-school Mon 10/5: due date MOVED to Mon Oct 5 11:59pm; no longer flagged missing; still -/30 no submission. Agenda 10/5: finish editing narrative if needed. DUE TONIGHT (Dad night; band exhibition call 4:45pm). | Bedtime 10/5 ~9pm: Canvas shows SUBMITTED Oct 5 4:07pm (file upload), not late, ungraded -/30.",
    "as_of": "2026-10-05T14:30:00",
    "canvas": {
-    "status": "open",
+    "status": "submitted",
     "points": 30,
     "score": null,
     "due": "2026-10-05T23:59:00",
-    "as_of": "2026-10-05T14:30:00"
+    "as_of": "2026-10-05T21:00:00",
+    "submitted_at": "2026-10-05T16:07:00"
    }
   },
   {
@@ -3838,14 +3839,14 @@
     "email_draft": null,
     "email_sent": false
    },
-   "note": "Canvas LIVE after-school Mon 10/5: -/2 open, DUE TONIGHT 11:59pm.",
+   "note": "Canvas LIVE after-school Mon 10/5: -/2 open, DUE TONIGHT 11:59pm. | Bedtime 10/5 ~9pm: still not submitted, due 11:59pm tonight.",
    "as_of": "2026-10-05T14:30:00",
    "canvas": {
     "status": "open",
     "points": 2,
     "score": null,
     "due": "2026-10-05T23:59:00",
-    "as_of": "2026-10-05T14:30:00"
+    "as_of": "2026-10-05T21:00:00"
    }
   },
   {
@@ -3908,6 +3909,11 @@
   }
  ],
  "notes": [
+  {
+   "id": "bedtime-2026-10-05",
+   "as_of": "2026-10-05T21:00:00",
+   "text": "Bedtime Mon 10/5 ~9pm CT NARROW. Canvas LIVE totals UNCHANGED (Eng 95.12 / Web 92.49 / Chem 96.12). CHANGED: English Narrative #2 Final Draft SUBMITTED Oct 5 4:07pm (not late, ungraded -/30). Still open: Web 3.3-3.6 (61 pts) past due 9:20am today, no submission, no late/missing label yet; Chem Electron Dot -/2 due 11:59pm not submitted; Chem Unit 1 Test -/35 still open past Fri; Copper 0/3. Upcoming: Web 4.1 -/4 Tue 9:20am; Eng Q1 Journal -/50 Thu. No new announcements after 2:30pm. ParentVUE LOGIN WALL again (Chrome fills username only, no saved password); PV grades/inbox/alerts/attendance NOT pulled, latest PV data Sun 10/4 9pm. Gmail: only Canvas Infographic graded notice (already reflected). Plaud: work meetings only, no Bennett said-done. No discrepancy. Dad through Thu 10/8 4:30p."
+  },
   {
    "id": "after-school-20261005",
    "as_of": "2026-10-05T14:30:00",
@@ -4235,7 +4241,7 @@
    "letter": "A+",
    "percent": 99.0,
    "missing": 0,
-   "detail": "ParentVUE LIVE after-school Sun 10/4 ~2:16pm A+ 99.0% UNCHANGED. STALE: ParentVUE login wall Mon 10/5 after-school (no saved password autofill); values from Sun 10/4 9pm.",
+   "detail": "ParentVUE LIVE after-school Sun 10/4 ~2:16pm A+ 99.0% UNCHANGED. STALE: ParentVUE login wall Mon 10/5 after-school (no saved password autofill); values from Sun 10/4 9pm. Bedtime 10/5: ParentVUE still login wall.",
    "source": "ParentVUE STALE (last LIVE 10/4 9pm)",
    "as_of": "2026-10-04T21:00:00"
   },
@@ -4247,7 +4253,7 @@
    "letter": "A",
    "percent": 95.0,
    "missing": 0,
-   "detail": "ParentVUE LIVE after-school Sun 10/4 ~2:16pm A 95% UNCHANGED (last update 10/4). Fri 10/2 P2 Tardy Unexcused still present. STALE: ParentVUE login wall Mon 10/5 after-school (no saved password autofill); values from Sun 10/4 9pm.",
+   "detail": "ParentVUE LIVE after-school Sun 10/4 ~2:16pm A 95% UNCHANGED (last update 10/4). Fri 10/2 P2 Tardy Unexcused still present. STALE: ParentVUE login wall Mon 10/5 after-school (no saved password autofill); values from Sun 10/4 9pm. Bedtime 10/5: ParentVUE still login wall.",
    "source": "ParentVUE STALE (last LIVE 10/4 9pm)",
    "as_of": "2026-10-04T21:00:00"
   },
@@ -4259,9 +4265,9 @@
    "letter": "A-",
    "percent": 92.49,
    "missing": 0,
-   "detail": "Canvas LIVE Mon 10/5 ~2:25pm 92.49% UNCHANGED. 3.3-3.6 (61 pts) due today 9:20am show no submission. NEW 4.1 -/4 due Tue 9:20am. ParentVUE NOT pulled (login wall).",
+   "detail": "Canvas LIVE Mon 10/5 ~2:25pm 92.49% UNCHANGED. 3.3-3.6 (61 pts) due today 9:20am show no submission. NEW 4.1 -/4 due Tue 9:20am. ParentVUE NOT pulled (login wall). Bedtime 10/5 ~9pm Canvas LIVE: total UNCHANGED.",
    "source": "Canvas LIVE 10/5 after-school",
-   "as_of": "2026-10-05T14:30:00"
+   "as_of": "2026-10-05T21:00:00"
   },
   {
    "classId": "chemistry",
@@ -4271,9 +4277,9 @@
    "letter": "A",
    "percent": 96.12,
    "missing": 0,
-   "detail": "Canvas LIVE Mon 10/5 ~2:25pm 96.12% UNCHANGED. Copper 0/3; Unit 1 Test still open -/35; Electron Dot -/2 due tonight. ParentVUE NOT pulled (login wall).",
+   "detail": "Canvas LIVE Mon 10/5 ~2:25pm 96.12% UNCHANGED. Copper 0/3; Unit 1 Test still open -/35; Electron Dot -/2 due tonight. ParentVUE NOT pulled (login wall). Bedtime 10/5 ~9pm Canvas LIVE: total UNCHANGED.",
    "source": "Canvas LIVE 10/5 after-school",
-   "as_of": "2026-10-05T14:30:00"
+   "as_of": "2026-10-05T21:00:00"
   },
   {
    "classId": "strength-conditioning",
@@ -4283,7 +4289,7 @@
    "letter": "A+",
    "percent": 100.0,
    "missing": 0,
-   "detail": "ParentVUE LIVE after-school Sun 10/4 ~2:16pm A+ 100% UNCHANGED. STALE: ParentVUE login wall Mon 10/5 after-school (no saved password autofill); values from Sun 10/4 9pm.",
+   "detail": "ParentVUE LIVE after-school Sun 10/4 ~2:16pm A+ 100% UNCHANGED. STALE: ParentVUE login wall Mon 10/5 after-school (no saved password autofill); values from Sun 10/4 9pm. Bedtime 10/5: ParentVUE still login wall.",
    "source": "ParentVUE STALE (last LIVE 10/4 9pm)",
    "as_of": "2026-10-04T21:00:00"
   },
@@ -4295,9 +4301,9 @@
    "letter": "A",
    "percent": 95.12,
    "missing": 0,
-   "detail": "Canvas LIVE Mon 10/5 ~2:25pm 95.12% (DOWN from 95.69): Infographic graded 17.5/20; Team Resp 10/10; Narrative #2 due moved to tonight 11:59pm (no longer missing); NEW Q1 Journal -/50 due Thu 10/8. ParentVUE NOT pulled (login wall).",
+   "detail": "Canvas LIVE Mon 10/5 ~2:25pm 95.12% (DOWN from 95.69): Infographic graded 17.5/20; Team Resp 10/10; Narrative #2 due moved to tonight 11:59pm (no longer missing); NEW Q1 Journal -/50 due Thu 10/8. ParentVUE NOT pulled (login wall). Bedtime 10/5 ~9pm Canvas LIVE: total UNCHANGED. Narrative #2 submitted 4:07pm, ungraded.",
    "source": "Canvas LIVE 10/5 after-school; ParentVUE login wall",
-   "as_of": "2026-10-05T14:30:00"
+   "as_of": "2026-10-05T21:00:00"
   },
   {
    "classId": "geometry",
@@ -4307,7 +4313,7 @@
    "letter": "B+",
    "percent": 89.0,
    "missing": 0,
-   "detail": "ParentVUE LIVE after-school Sun 10/4 ~2:16pm B+ 89% UNCHANGED. Canvas grades disabled for Geometry. STALE: ParentVUE login wall Mon 10/5 after-school (no saved password autofill); values from Sun 10/4 9pm.",
+   "detail": "ParentVUE LIVE after-school Sun 10/4 ~2:16pm B+ 89% UNCHANGED. Canvas grades disabled for Geometry. STALE: ParentVUE login wall Mon 10/5 after-school (no saved password autofill); values from Sun 10/4 9pm. Bedtime 10/5: ParentVUE still login wall.",
    "source": "ParentVUE STALE (last LIVE 10/4 9pm)",
    "as_of": "2026-10-04T21:00:00"
   }
