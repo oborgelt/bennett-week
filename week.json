@@ -1,6 +1,6 @@
 {
  "timezone": "America/Chicago",
- "as_of": "2026-10-08T14:22:00",
+ "as_of": "2026-10-08T15:25:00",
  "parenting": [
   {
    "who": "Mom",
@@ -3984,6 +3984,11 @@
  ],
  "notes": [
   {
+   "id": "parentvue-live-20261008",
+   "as_of": "2026-10-08T15:25:00",
+   "text": "LIVE ParentVUE Grade Book QT1 Thu 10/8 ~3:25pm CT (Orin signed in; read by Orin). Band A+ 99.0% (last update 9/23), Sociology A 95% (10/4), S&C A+ 100.00% (10/8, 1 upcoming assignment), Geometry B+ 89% (10/8): all UNCHANGED vs PV Sun 10/4. Cards for Eng/Web/Chem stay on Canvas (fresher): PV Web A 93% (10/7) agrees with Canvas 93.45; PV Chem A+ 100.0% (10/6) agrees with Canvas 99.96; PV English A 95.12% (10/5) has NOT synced Narrative #2 (Canvas 94.17). 0 Missing Assignments in every class in PV (Canvas still shows Web 4.1, Web 4.2, Chem Electron Dot unsubmitted, not labeled missing). Attendance 10/1-10/8: only 10/2 P1 Tardy Unexcused (earlier PV notes had said P2). Inbox: Fillingham 10/7 concert reminders; Keach 10/7 conference options (in-person Mon/Tue via PV slot, or emailed Q1 report on request). ParentVUE login wall cleared."
+  },
+  {
    "id": "bedtime-2026-10-07",
    "as_of": "2026-10-07T21:00:00",
    "text": "Bedtime Wed 10/7 ~9pm CT NARROW. Canvas LIVE UNCHANGED vs after-school (Eng 95.12 / Web 93.45 / Chem 99.96). Still NO submission, no late/missing labels: Web 4.1 -/4 (due Tue), Web 4.2 -/19 (due today 9:20am), Chem Electron Dot -/2 (due Mon); Copper 0/3. Eng Narrative #2 still ungraded; Q1 Journal -/50 due Thu 11:59pm (Mom 4:30p Thu, Q1 ends Thu); Socratic Seminar Prep -/20 due Mon 10/12. No new assignments, no Oct 7 announcements. ParentVUE LOGIN WALL (both boxes empty, no login attempted); latest PV Sun 10/4 9pm. Gmail: nothing new after 2:20pm except Jostens promo. Plaud: work meetings only, no Bennett said-done. No discrepancy."
@@ -4340,9 +4345,9 @@
    "letter": "A+",
    "percent": 99.0,
    "missing": 0,
-   "detail": "Refresh pending",
+   "detail": "Checked live 3:25pm, no change",
    "source": "ParentVUE",
-   "as_of": "2026-10-04T21:00:00"
+   "as_of": "2026-10-08T15:25:00"
   },
   {
    "classId": "sociology",
@@ -4352,9 +4357,9 @@
    "letter": "A",
    "percent": 95.0,
    "missing": 0,
-   "detail": "Refresh pending",
+   "detail": "Checked live 3:25pm, no change",
    "source": "ParentVUE",
-   "as_of": "2026-10-04T21:00:00"
+   "as_of": "2026-10-08T15:25:00"
   },
   {
    "classId": "web-design",
@@ -4388,9 +4393,9 @@
    "letter": "A+",
    "percent": 100.0,
    "missing": 0,
-   "detail": "Refresh pending",
+   "detail": "No change; 1 upcoming assignment",
    "source": "ParentVUE",
-   "as_of": "2026-10-04T21:00:00"
+   "as_of": "2026-10-08T15:25:00"
   },
   {
    "classId": "english-10",
@@ -4412,9 +4417,9 @@
    "letter": "B+",
    "percent": 89.0,
    "missing": 0,
-   "detail": "Refresh pending",
+   "detail": "Checked live 3:25pm, no change",
    "source": "ParentVUE",
-   "as_of": "2026-10-04T21:00:00"
+   "as_of": "2026-10-08T15:25:00"
   }
  ],
  "grade_history": [
