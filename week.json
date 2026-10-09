@@ -3986,7 +3986,7 @@
   "notes": [
     {
       "as_of": "2026-10-09T14:25:00",
-      "text": "After-school Fri 10/9 ~2:25pm CT FULL (Professional Day / No School). Canvas LIVE: Eng UP 94.17->95.17 (276/290) — Q1 Journal GRADED 50/50 (Instructure email graded 11:40am CT; Canvas confirmed). Web 93.45, Chem 99.96 UNCHANGED. Still no submission: Web 4.1 -/4 (due 10/6), Web 4.2 -/19 (due 10/7), Chem Electron Dot -/2 (due 10/5); Copper 0/3. Socratic Prep -/20 due Mon 10/12 11:59pm. No new Canvas announcements. Gmail NEW: Q1 Journal graded notice only (Lifetouch promo ignored). Public: oeband/payments UNCHANGED (still $350 marching; Oct 10 invitational; Oct 16/23 football; Oct 31 KBA). English sheet UNCHANGED (10/12 Socratic Seminar; 10/13 Conferences PM; 10/14 Testing Day). OE homepage: Oct 9 No School / Professional Day confirmed. District: half day Wed 10/14 HS 7:40-11:05; conferences/no school Thu-Fri 10/15-16. Parenting: Mom through Sun 10/11 6p. Plaud: work meetings only, no Bennett said-done. No discrepancy."
+      "text": "After-school Fri 10/9 ~2:25pm CT FULL (Professional Day / No School). Canvas LIVE: Eng UP 94.17->95.17 (276/290) — Q1 Journal GRADED 50/50 (Instructure email graded 11:40am CT; Canvas confirmed). Web 93.45, Chem 99.96 UNCHANGED. Still no submission: Web 4.1 -/4 (due 10/6), Web 4.2 -/19 (due 10/7), Chem Electron Dot -/2 (due 10/5); Copper 0/3. Socratic Prep -/20 due Mon 10/12 11:59pm. No new Canvas announcements. Gmail NEW: Q1 Journal graded notice only (Lifetouch promo ignored). Public: oeband/payments UNCHANGED (still $350 marching; Oct 10 invitational; Oct 16/23 football; Oct 31 KBA). English sheet UNCHANGED (10/12 Socratic Seminar; 10/13 Conferences PM; 10/14 Testing Day). OE homepage: Oct 9 No School / Professional Day confirmed. District: half day Wed 10/14 HS 7:40-11:05; conferences/no school Thu-Fri 10/15-16. Parenting: Mom through Sun 10/11 6p. Plaud: work meetings only, no Bennett said-done. No discrepancy. ParentVUE LOGIN_WALL (username filled, password box empty, no login attempted); PV grades/attendance/inbox/calendar NOT pulled; latest PV live Thu 10/8 ~3:25pm."
     },
     {
       "id": "parentvue-live-20261008",
@@ -4433,6 +4433,10 @@
     }
   ],
   "grade_history": [
+    {
+      "as_of": "2026-10-09T14:25:00",
+      "note": "ParentVUE LOGIN_WALL (password empty); Band/Soc/S&C/Geo cards still from PV 10/8 3:25pm"
+    },
     {
       "as_of": "2026-10-09T14:25:00",
       "classId": "english-10",
