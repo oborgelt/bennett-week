@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-11T21:10:00",
+  "as_of": "2026-10-12T14:28:00",
   "parenting": [
     {
       "who": "Mom",
@@ -688,7 +688,10 @@
       "end": "2026-10-13T08:40:00",
       "kind": "calendar",
       "classId": "band",
-      "place": "Olathe East"
+      "place": "Olathe East",
+      "note": "CANCELLED early rehearsal per Fillingham Band Update 10/12 (no early Tue/Wed).",
+      "status": "cancelled",
+      "as_of": "2026-10-12T14:28:00"
     },
     {
       "id": "oe-early-dismiss-1014",
@@ -728,10 +731,12 @@
       "id": "band-sat-1016",
       "title": "Saturday Marching Band Rehearsal",
       "start": "2026-10-16T13:00:00",
-      "end": "2026-10-16T15:00:00",
+      "end": "2026-10-16T15:30:00",
       "kind": "calendar",
       "classId": "band",
-      "place": "Olathe East High School"
+      "place": "Olathe East High School",
+      "note": "Fillingham Band Update 10/12: Afternoon Marching Rehearsal 1:00-3:30 PM (was listed 1-3).",
+      "as_of": "2026-10-12T14:28:00"
     },
     {
       "id": "band-loadout-home-1016",
@@ -794,7 +799,9 @@
       "end": "2026-10-23T21:00:00",
       "kind": "calendar",
       "classId": "band",
-      "place": "Olathe East High School"
+      "place": "Olathe East High School",
+      "note": " Fillingham 10/12: Home game Middle School Night + Senior Night + Glow Show; call 5:00 leave 5:30; BRING GLOW GEAR; two flashlights for ankles.",
+      "as_of": "2026-10-12T14:28:00"
     },
     {
       "id": "band-am-1026",
@@ -844,11 +851,13 @@
     {
       "id": "band-loadout-kba-1031",
       "title": "Band: Load Out / In for KBA Marching Invitational",
-      "start": "2026-10-31T07:00:00",
+      "start": "2026-10-31T06:30:00",
       "end": "2026-10-31T23:00:00",
       "kind": "calendar",
       "classId": "band",
-      "place": "Olathe East High School"
+      "place": "ANT-DAC (Blue Valley District Activities Complex)",
+      "note": "Fillingham Band Update 10/12: call 6:30 AM; prelims performance 9:30 AM at ANT-DAC. Folder linked in email.",
+      "as_of": "2026-10-12T14:28:00"
     },
     {
       "id": "picture-0827",
@@ -1321,8 +1330,8 @@
       "kind": "band",
       "classId": "band",
       "place": "OE commons then CBAC",
-      "note": "Fillingham 10/4: students 4:45 commons mattress meeting; pizza 5:00 (family RSVP form — free, not including student); marchers change 5:15; buses 5:25; parents stay for 10-min mattress meeting. Football @ CBAC same night.",
-      "as_of": "2026-10-04T14:16:00",
+      "note": "Fillingham 10/12: 4:45 students commons (mattress sale), 5:00 pizza FREE (signup form), 5:15 uniforms, 5:25 buses to CBAC; parents stay for 10-min mattress meeting. Pizza signup: https://docs.google.com/forms/d/e/1FAIpQLSc7OxfRMYFrDvat6ZwqZJ2mJZJuJisgm2CU6fCYynYCPKUg3Q/viewform?usp=publish-editor",
+      "as_of": "2026-10-12T14:28:00",
       "source": "gmail-fillingham-2026-10-04"
     },
     {
@@ -1813,6 +1822,25 @@
       "source": "gmail+parentvue",
       "note": "Todd Keach Wed 10/7 8:02am: in-person slots Mon/Tue via ParentVUE sign-up, or email him for a written Q1 report; he will also be at Wed conferences in the gym. No virtual or phone conferences.",
       "as_of": "2026-10-07T14:20:00"
+    },
+    {
+      "id": "band-mattress-1115",
+      "title": "Band: Mattress Sale Fundraiser",
+      "start": "2026-11-15T10:00:00",
+      "end": "2026-11-15T17:00:00",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham 10/12: proceeds to individual students (Orlando trip or next-year fees). Flyer linked in Band Update.",
+      "as_of": "2026-10-12T14:28:00"
+    },
+    {
+      "id": "band-orlando-autopay-1015",
+      "title": "Band Orlando AutoPay charge $400",
+      "start": "2026-10-15",
+      "kind": "band",
+      "classId": "band",
+      "note": "GroupCollect Bob Rogers Travel email 10/12 ~10:06am CT: AutoPay deposit $400 due Oct 15 for Bennett Orlando trip. Manage: https://bobrogerstravel.groupcollect.com/v2/user/49023/trips/22768",
+      "as_of": "2026-10-12T14:28:00"
     }
   ],
   "work": [
@@ -3176,7 +3204,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-10-11T14:15:00",
+      "as_of": "2026-10-12T14:28:00",
       "classId": "chemistry",
       "graded_at": "2026-09-21T21:50:00"
     },
@@ -3855,8 +3883,8 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Canvas LIVE after-school Mon 10/5: -/2 open, DUE TONIGHT 11:59pm. | Bedtime 10/5 ~9pm: still not submitted, due 11:59pm tonight. | After-school Tue 10/6: STILL no submission (due Mon 10/5 11:59pm), no label. | Bedtime Tue 10/6: STILL -/2, no submission, no late/missing label. | After-school Wed 10/7 Canvas LIVE: still NO submission, past due, no Missing label yet. Q1 ends Thu 10/8. | Bedtime Wed 10/7 Canvas LIVE: still -/2, NO submission, no label. Q1 ends Thu 10/8. | After-school Thu 10/8: still no submission on Canvas, not labeled Missing/Late. | Bedtime Thu 10/8: still NO submission -/2. | After-school Fri 10/9 Canvas LIVE: still NO submission -/2, overdue. | Bedtime Sat 10/10 ~9pm: Canvas LIVE UNCHANGED; still open/unsubmitted. | Canvas LIVE Sun 10/11 after-school: still -/2 unsubmitted, no late/missing label.",
-      "as_of": "2026-10-11T14:15:00",
+      "note": "Pfeiff. Canvas LIVE 10/12: still -/2, no submission (due 10/5).",
+      "as_of": "2026-10-12T14:28:00",
       "canvas": {
         "status": "open",
         "points": 2,
@@ -3878,14 +3906,14 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "NEW on Canvas Mon 10/5 after-school: -/4 due Tue Oct 6 9:20am. | After-school Tue 10/6: due 9:20am today PASSED, not submitted, no label. | Bedtime Tue 10/6: STILL no submission, no late/missing label. | After-school Wed 10/7 Canvas LIVE: still NO submission, past due, no Missing label yet. Q1 ends Thu 10/8. | Bedtime Wed 10/7 Canvas LIVE: still -/4, NO submission, no late/missing label. Q1 ends Thu 10/8. | After-school Thu 10/8: still no submission on Canvas, not labeled Missing/Late. | Bedtime Thu 10/8: still NO submission -/4. | After-school Fri 10/9 Canvas LIVE: still NO submission -/4, overdue. | Bedtime Sat 10/10 ~9pm: Canvas LIVE UNCHANGED; still open/unsubmitted. | Canvas LIVE Sun 10/11 after-school: still -/4 unsubmitted, no late/missing label.",
+      "note": "Linn. Canvas LIVE 10/12: still -/4, no submission (due 10/6 9:20).",
       "late": true,
       "submitted_at": null,
       "source": "canvas",
       "discrepancy": false,
       "student_status": null,
       "score": null,
-      "as_of": "2026-10-11T14:15:00",
+      "as_of": "2026-10-12T14:28:00",
       "canvas": {
         "status": "open",
         "points": 4,
@@ -3943,8 +3971,8 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "NEW on Canvas Tue 10/6 after-school: -/19 due Wed Oct 7 9:20am (Dad night tonight; band concert Wed 7pm, call 6:30pm). | Bedtime Tue 10/6: not yet due (Wed 9:20am). | After-school Wed 10/7 Canvas LIVE: still NO submission, past due, no Missing label yet. Q1 ends Thu 10/8. | Bedtime Wed 10/7 Canvas LIVE: still -/19, NO submission, no late/missing label. Q1 ends Thu 10/8. | After-school Thu 10/8: still no submission on Canvas, not labeled Missing/Late. | Bedtime Thu 10/8: still NO submission -/19. | After-school Fri 10/9 Canvas LIVE: still NO submission -/19, overdue. | Bedtime Sat 10/10 ~9pm: Canvas LIVE UNCHANGED; still open/unsubmitted. | Canvas LIVE Sun 10/11 after-school: still -/19 unsubmitted, no late/missing label.",
-      "as_of": "2026-10-11T14:15:00",
+      "note": "Linn. Canvas LIVE 10/12: still -/19, no submission (due 10/7 9:20).",
+      "as_of": "2026-10-12T14:28:00",
       "canvas": {
         "status": "open",
         "points": 19,
@@ -3972,8 +4000,8 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "NEW on Canvas seen Wed 10/7 after-school (not on 10/6 bedtime list): -/20 due Mon Oct 12 11:59pm. English sheet 10/7-10/8 Socratic Prep rotations; 10/12 Socratic Seminar. Dad from Sun 10/11 6p. | Bedtime Wed 10/7: still -/20 not submitted, due Mon 10/12 11:59pm. | After-school Thu 10/8: still -/20 open, due Mon 10/12 11:59pm (Socratic Seminar Mon per sheet). | Bedtime Thu 10/8: still -/20 open due Mon 10/12. | After-school Fri 10/9 Canvas LIVE: still -/20 open, due Mon 10/12 11:59pm. | Bedtime Sat 10/10 ~9pm: still -/20 open due Mon 10/12. | Canvas LIVE Sun 10/11 after-school: still -/20 open, due Mon 10/12 11:59pm. English sheet Mon: Socratic Seminar. Dad after Mom handoff Sun 6p.",
-      "as_of": "2026-10-11T14:15:00",
+      "note": "Goodson. Canvas LIVE 10/12 2:28pm: still -/20, no submission. DUE TONIGHT 11:59pm. Dad night.",
+      "as_of": "2026-10-12T14:28:00",
       "canvas": {
         "status": "open",
         "points": 20,
@@ -3981,6 +4009,23 @@
         "due": "2026-10-12T23:59:00",
         "as_of": "2026-10-11T14:15:00"
       }
+    },
+    {
+      "id": "web-43-embedding-iframes-1019",
+      "title": "Web Design: 4.3 Embedding iframes",
+      "classId": "web-design",
+      "due": "2026-10-19T09:20:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 20,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-12T14:28:00",
+      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission."
     }
   ],
   "notes": [
@@ -4374,6 +4419,11 @@
       "id": "bedtime-2026-10-10T21:00:00",
       "as_of": "2026-10-10T21:00:00",
       "text": "Bedtime Sat 10/10 ~9:00pm CT: Canvas LIVE UNCHANGED vs after-school (Eng 95.17, Web 93.45, Chem 99.96). Still unsubmitted: Web 4.1 -/4, Web 4.2 -/19, Chem Electron Dot -/2; Copper 0/3; Socratic Prep -/20 due Mon 10/12. ParentVUE LOGIN_WALL (both boxes empty, no autofill). Last live PV Fri 10/9 3:55pm. Gmail: weekly Canvas digest only (already-tracked at 2:10). No said-done (Plaud work-only). Mom through Sun 10/11 6p."
+    },
+    {
+      "id": "after-school-2026-10-12T14:28:00",
+      "as_of": "2026-10-12T14:28:00",
+      "text": "After-school Mon 10/12 ~2:28pm CT FULL: Canvas LIVE UNCHANGED (Eng 95.17, Web 93.45, Chem 99.96). NEW Web 4.3 Embedding iframes due Mon 10/19 9:20 -/20. Still unsubmitted: Web 4.1 -/4, Web 4.2 -/19, Chem Electron Dot -/2; Copper 0/3. Socratic Prep -/20 DUE TONIGHT 11:59pm (Dad night; Bennett also left school ~2:30 for Mateo). No Canvas Instructure grade mail since 10/11. Gmail NEW: Fillingham Band Update 10/12 (NO early rehearse Tue/Wed 10/13-14; Fri 10/16 rehearse 1:00-3:30; Family Night pizza signup; KBA 10/31 call 6:30am perform 9:30 ANT-DAC; mattress sale 11/15); GroupCollect AutoPay $400 Orlando due Thu 10/15; district Class of 2028+ PSA/grad requirements; attendance confirmed 2:30p leave today. Hawk Weekly 10.11 already tracked. oeband/payments UNCHANGED ($350). English sheet: Conferences in PM 10/12-13; 10/14 half day. OE homepage: Q2 begins, conferences, Band Booster 6p + marching rehearse 6:30-8:30 tonight. ParentVUE LOGIN_WALL (both boxes empty, no Chrome autofill/saved password). Last live PV Fri 10/9 3:55pm. No Plaud said-done."
     }
   ],
   "grades": [
@@ -4409,9 +4459,9 @@
       "letter": "A",
       "percent": 93.45,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "NEW 4.3 iframes due 10/19",
       "source": "Canvas",
-      "as_of": "2026-10-11T21:10:00"
+      "as_of": "2026-10-12T14:28:00"
     },
     {
       "classId": "chemistry",
@@ -4421,9 +4471,9 @@
       "letter": "A+",
       "percent": 99.96,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "Electron Dot still -/2",
       "source": "Canvas",
-      "as_of": "2026-10-11T21:10:00"
+      "as_of": "2026-10-12T14:28:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4445,9 +4495,9 @@
       "letter": "A",
       "percent": 95.17,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "Socratic Prep due tonight -/20",
       "source": "Canvas",
-      "as_of": "2026-10-11T21:10:00"
+      "as_of": "2026-10-12T14:28:00"
     },
     {
       "classId": "geometry",
@@ -4560,6 +4610,16 @@
         "chemistry": 99.96
       },
       "note": "After-school Sun 10/11: unchanged vs Sat 9pm"
+    },
+    {
+      "as_of": "2026-10-12T14:28:00",
+      "source": "Canvas",
+      "snapshot": {
+        "english-10": 95.17,
+        "web-design": 93.45,
+        "chemistry": 99.96
+      },
+      "note": "After-school 10/12 LIVE unchanged vs 10/11; NEW web 4.3"
     }
   ]
 }
