@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-12T14:28:00",
+  "as_of": "2026-10-12T20:52:00",
   "parenting": [
     {
       "who": "Mom",
@@ -3191,11 +3191,11 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Canvas LIVE after-school Mon 10/5: still 0/3. UNCHANGED. | 10/6: still 0/3. | Bedtime Thu 10/8: still 0/3. | After-school Fri 10/9: still 0/3. | After-school Sat 10/10: still 0/3. | Bedtime Sat 10/10 ~9pm: still 0/3. | Canvas LIVE Sun 10/11 after-school: still 0/3. | Bedtime Sun 10/11 ~9pm: still 0/3.",
+      "note": "Canvas LIVE after-school Mon 10/5: still 0/3. UNCHANGED. | 10/6: still 0/3. | Bedtime Thu 10/8: still 0/3. | After-school Fri 10/9: still 0/3. | After-school Sat 10/10: still 0/3. | Bedtime Sat 10/10 ~9pm: still 0/3. | Canvas LIVE Sun 10/11 after-school: still 0/3. | Bedtime Sun 10/11 ~9pm: still 0/3. | Bedtime Mon 10/12 ~8:52pm: still 0/3.",
       "canvas": {
         "status": "graded",
         "points": 3,
-        "score": 0,
+        "score": 0.0,
         "due": "2026-09-17T23:59:00",
         "as_of": "2026-10-11T14:15:00"
       },
@@ -3204,7 +3204,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-10-12T14:28:00",
+      "as_of": "2026-10-12T20:52:00",
       "classId": "chemistry",
       "graded_at": "2026-09-21T21:50:00"
     },
@@ -3883,8 +3883,8 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Pfeiff. Canvas LIVE 10/12: still -/2, no submission (due 10/5).",
-      "as_of": "2026-10-12T14:28:00",
+      "note": "Pfeiff. Canvas LIVE 10/12: still -/2, no submission (due 10/5). | Bedtime Mon 10/12 ~8:52pm: still not submitted -/2 (past due).",
+      "as_of": "2026-10-12T20:52:00",
       "canvas": {
         "status": "open",
         "points": 2,
@@ -3906,14 +3906,14 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Canvas LIVE 10/12: still -/4, no submission (due 10/6 9:20).",
+      "note": "Linn. Canvas LIVE 10/12: still -/4, no submission (due 10/6 9:20). | Bedtime Mon 10/12 ~8:52pm: still not submitted (past due).",
       "late": true,
       "submitted_at": null,
       "source": "canvas",
       "discrepancy": false,
       "student_status": null,
       "score": null,
-      "as_of": "2026-10-12T14:28:00",
+      "as_of": "2026-10-12T20:52:00",
       "canvas": {
         "status": "open",
         "points": 4,
@@ -3971,8 +3971,8 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Linn. Canvas LIVE 10/12: still -/19, no submission (due 10/7 9:20).",
-      "as_of": "2026-10-12T14:28:00",
+      "note": "Linn. Canvas LIVE 10/12: still -/19, no submission (due 10/7 9:20). | Bedtime Mon 10/12 ~8:52pm: still not submitted (past due).",
+      "as_of": "2026-10-12T20:52:00",
       "canvas": {
         "status": "open",
         "points": 19,
@@ -4000,8 +4000,8 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas LIVE 10/12 2:28pm: still -/20, no submission. DUE TONIGHT 11:59pm. Dad night.",
-      "as_of": "2026-10-12T14:28:00",
+      "note": "Goodson. Canvas LIVE 10/12 2:28pm: still -/20, no submission. DUE TONIGHT 11:59pm. Dad night. | Bedtime Mon 10/12 ~8:52pm: Canvas LIVE still -/20, not submitted. Due tonight 11:59pm. Dad night.",
+      "as_of": "2026-10-12T20:52:00",
       "canvas": {
         "status": "open",
         "points": 20,
@@ -4024,8 +4024,13 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-12T14:28:00",
-      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission."
+      "as_of": "2026-10-12T20:52:00",
+      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission. | Bedtime Mon 10/12 ~8:52pm: still open -/20 due Mon 10/19 9:20am.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      }
     }
   ],
   "notes": [
@@ -4424,6 +4429,11 @@
       "id": "after-school-2026-10-12T14:28:00",
       "as_of": "2026-10-12T14:28:00",
       "text": "After-school Mon 10/12 ~2:28pm CT FULL: Canvas LIVE UNCHANGED (Eng 95.17, Web 93.45, Chem 99.96). NEW Web 4.3 Embedding iframes due Mon 10/19 9:20 -/20. Still unsubmitted: Web 4.1 -/4, Web 4.2 -/19, Chem Electron Dot -/2; Copper 0/3. Socratic Prep -/20 DUE TONIGHT 11:59pm (Dad night; Bennett also left school ~2:30 for Mateo). No Canvas Instructure grade mail since 10/11. Gmail NEW: Fillingham Band Update 10/12 (NO early rehearse Tue/Wed 10/13-14; Fri 10/16 rehearse 1:00-3:30; Family Night pizza signup; KBA 10/31 call 6:30am perform 9:30 ANT-DAC; mattress sale 11/15); GroupCollect AutoPay $400 Orlando due Thu 10/15; district Class of 2028+ PSA/grad requirements; attendance confirmed 2:30p leave today. Hawk Weekly 10.11 already tracked. oeband/payments UNCHANGED ($350). English sheet: Conferences in PM 10/12-13; 10/14 half day. OE homepage: Q2 begins, conferences, Band Booster 6p + marching rehearse 6:30-8:30 tonight. ParentVUE LOGIN_WALL (both boxes empty, no Chrome autofill/saved password). Last live PV Fri 10/9 3:55pm. No Plaud said-done."
+    },
+    {
+      "id": "bedtime-2026-10-12T20:52:00",
+      "as_of": "2026-10-12T20:52:00",
+      "text": "Bedtime Mon 10/12 ~8:52pm CT: Canvas LIVE UNCHANGED vs after-school (Eng 95.17, Web 93.45, Chem 99.96). Still unsubmitted: Web 4.1 -/4, Web 4.2 -/19, Chem Electron Dot -/2; Copper 0/3; Socratic Prep -/20 due tonight 11:59pm. ParentVUE LOGIN_WALL (both boxes empty, no autofill; no other PV tab). Last live PV Fri 10/9 3:55pm. Gmail no NEW school/Instructure after after-school (Band Update / Orlando AutoPay / Class of 2028+ already tracked). No Bennett-said-done (Plaud notes empty). Dad night. week.json push."
     }
   ],
   "grades": [
@@ -4459,9 +4469,9 @@
       "letter": "A",
       "percent": 93.45,
       "missing": 0,
-      "detail": "NEW 4.3 iframes due 10/19",
+      "detail": "4.1/4.2 open; 4.3 due 10/19",
       "source": "Canvas",
-      "as_of": "2026-10-12T14:28:00"
+      "as_of": "2026-10-12T20:52:00"
     },
     {
       "classId": "chemistry",
@@ -4473,7 +4483,7 @@
       "missing": 0,
       "detail": "Electron Dot still -/2",
       "source": "Canvas",
-      "as_of": "2026-10-12T14:28:00"
+      "as_of": "2026-10-12T20:52:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4495,9 +4505,9 @@
       "letter": "A",
       "percent": 95.17,
       "missing": 0,
-      "detail": "Socratic Prep due tonight -/20",
+      "detail": "Socratic Prep still -/20",
       "source": "Canvas",
-      "as_of": "2026-10-12T14:28:00"
+      "as_of": "2026-10-12T20:52:00"
     },
     {
       "classId": "geometry",
@@ -4620,6 +4630,16 @@
         "chemistry": 99.96
       },
       "note": "After-school 10/12 LIVE unchanged vs 10/11; NEW web 4.3"
+    },
+    {
+      "as_of": "2026-10-12T20:52:00",
+      "source": "Canvas",
+      "grades": {
+        "english-10": 95.17,
+        "web-design": 93.45,
+        "chemistry": 99.96
+      },
+      "note": "Bedtime unchanged vs after-school; PV login wall"
     }
   ]
 }
