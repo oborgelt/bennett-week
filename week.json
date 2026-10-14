@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-13T15:33:00",
+  "as_of": "2026-10-13T21:00:00",
   "parenting": [
     {
       "who": "Mom",
@@ -3903,7 +3903,7 @@
       "student_status": null,
       "score": null,
       "followup": {
-        "due_by": "2026-10-08T23:59:00",
+        "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
@@ -3922,7 +3922,7 @@
       "title": "Web Design: 4.1 Getting Started: Advanced HTML and CSS",
       "classId": "web-design",
       "due": "2026-10-06T09:20:00",
-      "status": "open",
+      "status": "graded",
       "school_status": "graded",
       "points": 4,
       "followup": {
@@ -3981,7 +3981,7 @@
       "title": "Web Design: 4.2 Multi-file Websites",
       "classId": "web-design",
       "due": "2026-10-07T09:20:00",
-      "status": "open",
+      "status": "graded",
       "school_status": "graded",
       "points": 19,
       "late": true,
@@ -4013,7 +4013,7 @@
       "status": "open",
       "school_status": "open",
       "points": 20,
-      "late": false,
+      "late": true,
       "submitted_at": null,
       "source": "canvas",
       "discrepancy": false,
@@ -4058,6 +4058,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-20261013",
+      "as_of": "2026-10-13T21:00:00",
+      "text": "Bedtime Tue 10/13 ~9:00pm CT NARROW. Canvas LIVE UNCHANGED vs after-school: Eng 95.17 (276/290), Web 93.32 (370.5/397), Chem 99.96. Still open: Chem Electron Dot -/2 (due 10/5); Copper Cycle Reading 0/3; Eng Socratic Prep -/20 (due 10/12); Web 4.3 -/20 due Mon 10/19 9:20am. Nothing due tonight. ParentVUE LOGIN_WALL (crashed Attendance tab; fresh Grade Book tab → login; username+password empty, no autofill, no login click). Keep PV LIVE grades from Tue ~3:33pm (Band A+99 Soc A95 S&C A+100 Geo B+88; Missing 0). Gmail no NEW school/Instructure after after-school (only morning 4.1/4.2 graded notices already logged). No Bennett-said-done (Plaud today was work only). No new discrepancy. Dad night through Thu 10/15 4:30p."
+    },
     {
       "id": "parentvue-live-20261013",
       "as_of": "2026-10-13T15:33:00",
@@ -4503,9 +4508,9 @@
       "letter": "A",
       "percent": 93.32,
       "missing": 0,
-      "detail": "4.1 4/4; 4.2 17/19 today",
+      "detail": "4.1 4/4; 4.2 17/19; 4.3 open",
       "source": "Canvas",
-      "as_of": "2026-10-13T14:40:00"
+      "as_of": "2026-10-13T21:00:00"
     },
     {
       "classId": "chemistry",
@@ -4517,7 +4522,7 @@
       "missing": 0,
       "detail": "Electron Dot still -/2",
       "source": "Canvas",
-      "as_of": "2026-10-13T14:40:00"
+      "as_of": "2026-10-13T21:00:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4541,7 +4546,7 @@
       "missing": 0,
       "detail": "Socratic Prep still -/20",
       "source": "Canvas",
-      "as_of": "2026-10-13T14:40:00"
+      "as_of": "2026-10-13T21:00:00"
     },
     {
       "classId": "geometry",
@@ -4557,6 +4562,11 @@
     }
   ],
   "grade_history": [
+    {
+      "as_of": "2026-10-13T21:00:00",
+      "source": "Canvas",
+      "note": "Bedtime UNCHANGED: Eng 95.17 / Web 93.32 / Chem 99.96; PV LOGIN_WALL kept 3:33pm cards"
+    },
     {
       "as_of": "2026-10-10T14:10:00",
       "source": "Canvas",
