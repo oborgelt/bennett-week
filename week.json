@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-13T21:00:00",
+  "as_of": "2026-10-14T14:34:00",
   "parenting": [
     {
       "who": "Mom",
@@ -3221,7 +3221,7 @@
         "points": 3,
         "score": 0.0,
         "due": "2026-09-17T23:59:00",
-        "as_of": "2026-10-11T14:15:00"
+        "as_of": "2026-10-14T14:30:00"
       },
       "followup": {
         "due_by": null,
@@ -3914,7 +3914,7 @@
         "points": 2,
         "score": null,
         "due": "2026-10-05T23:59:00",
-        "as_of": "2026-10-11T14:15:00"
+        "as_of": "2026-10-14T14:30:00"
       }
     },
     {
@@ -4010,29 +4010,30 @@
       "title": "English 10: Socratic Seminar Prep",
       "classId": "english-10",
       "due": "2026-10-12T23:59:00",
-      "status": "open",
-      "school_status": "open",
-      "points": 20,
+      "status": "graded",
+      "school_status": "graded",
+      "points": 30,
       "late": true,
       "submitted_at": null,
       "source": "canvas",
       "discrepancy": false,
       "student_status": null,
-      "score": null,
+      "score": "23/30",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Goodson. Canvas LIVE 10/12 2:28pm: still -/20, no submission. DUE TONIGHT 11:59pm. Dad night. | Bedtime Mon 10/12 ~8:52pm: Canvas LIVE still -/20, not submitted. Due tonight 11:59pm. Dad night.",
+      "note": "Goodson. Canvas LIVE 10/12 2:28pm: still -/20, no submission. DUE TONIGHT 11:59pm. Dad night. | Bedtime Mon 10/12 ~8:52pm: Canvas LIVE still -/20, not submitted. Due tonight 11:59pm. Dad night. Graded Canvas/Gmail Wed 10/14 ~8:45am CT: 23/30 (pts were 30 not 20).",
       "as_of": "2026-10-13T14:40:00",
       "canvas": {
-        "status": "open",
-        "points": 20,
-        "score": null,
+        "status": "graded",
+        "points": 30,
+        "score": 23,
         "due": "2026-10-12T23:59:00",
-        "as_of": "2026-10-11T14:15:00"
-      }
+        "as_of": "2026-10-14T14:30:00"
+      },
+      "graded_at": "2026-10-14T08:45:00"
     },
     {
       "id": "web-43-embedding-iframes-1019",
@@ -4055,9 +4056,43 @@
         "email_draft": null,
         "email_sent": false
       }
+    },
+    {
+      "id": "eng-aab-socratic-seminar-1012",
+      "title": "English 10: AAB Socratic Seminar",
+      "classId": "english-10",
+      "due": "2026-10-12T23:59:00",
+      "status": "graded",
+      "points": 25,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "note": "Goodson/Carl. Graded Wed 10/14 10:03am CT via Canvas email: 25/25.",
+      "canvas": {
+        "status": "graded",
+        "points": 25,
+        "score": 25,
+        "due": "2026-10-12T23:59:00",
+        "as_of": "2026-10-14T14:30:00"
+      },
+      "school_status": "graded",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "score": "25/25",
+      "graded_at": "2026-10-14T10:03:00"
     }
   ],
   "notes": [
+    {
+      "id": "after-school-20261014",
+      "as_of": "2026-10-14T14:34:00",
+      "text": "After-school Wed 10/14 ~2:30pm CT FULL. Half day (ended 11:05) + PT conferences 4:30–8:30p. Canvas LIVE: Eng 95.17→93.91 (324/345) after Socratic Prep 23/30 + Seminar 25/25 graded today. Web 93.32 unchanged; 4.3 -/20 due Mon 10/19 9:20am. Chem 99.96 unchanged; Electron Dot -/2; Copper 0/3. Nothing due tonight. ParentVUE LOGIN_WALL (empty autofill). Gmail NEW: Instructure Socratic Prep + AAB Seminar graded. English sheet: Testing Day today; LOTF 10/19. oeband UNCHANGED. No said-done. Dad night through Thu 10/15 4:30p. No school Thu 10/15 (conferences) + Fri 10/16. Orlando AutoPay $400 due 10/15."
+    },
     {
       "id": "bedtime-20261013",
       "as_of": "2026-10-13T21:00:00",
@@ -4508,9 +4543,9 @@
       "letter": "A",
       "percent": 93.32,
       "missing": 0,
-      "detail": "4.1 4/4; 4.2 17/19; 4.3 open",
+      "detail": "4.3 open due 10/19",
       "source": "Canvas",
-      "as_of": "2026-10-13T21:00:00"
+      "as_of": "2026-10-14T14:30:00"
     },
     {
       "classId": "chemistry",
@@ -4522,7 +4557,7 @@
       "missing": 0,
       "detail": "Electron Dot still -/2",
       "source": "Canvas",
-      "as_of": "2026-10-13T21:00:00"
+      "as_of": "2026-10-14T14:30:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4542,11 +4577,11 @@
       "period": "P6",
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
-      "percent": 95.17,
+      "percent": 93.91,
       "missing": 0,
-      "detail": "Socratic Prep still -/20",
+      "detail": "Prep 23/30; Seminar 25/25",
       "source": "Canvas",
-      "as_of": "2026-10-13T21:00:00"
+      "as_of": "2026-10-14T14:30:00"
     },
     {
       "classId": "geometry",
@@ -4705,6 +4740,16 @@
         "english-10": 95.17
       },
       "note": "Live PV 3:33pm CT: Band/Soc/S&C/Geo unchanged vs 10/9; Missing 0; login wall cleared"
+    },
+    {
+      "as_of": "2026-10-14T14:30:00",
+      "source": "Canvas",
+      "note": "Eng 95.17→93.91 (Socratic Prep 23/30, Seminar 25/25). Web 93.32 unchanged (4.3 open). Chem 99.96 unchanged (Electron Dot -/2; Copper 0/3).",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 93.32,
+        "chemistry": 99.96
+      }
     }
   ]
 }
