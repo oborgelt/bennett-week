@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-14T21:00:00",
+  "as_of": "2026-10-15T14:15:00",
   "parenting": [
     {
       "who": "Mom",
@@ -729,7 +729,7 @@
     },
     {
       "id": "band-sat-1016",
-      "title": "Saturday Marching Band Rehearsal",
+      "title": "Band: Afternoon Marching Rehearsal",
       "start": "2026-10-16T13:00:00",
       "end": "2026-10-16T15:30:00",
       "kind": "calendar",
@@ -1835,12 +1835,12 @@
     },
     {
       "id": "band-orlando-autopay-1015",
-      "title": "Band Orlando AutoPay charge $400",
+      "title": "Band Orlando AutoPay paid $412",
       "start": "2026-10-15",
       "kind": "band",
       "classId": "band",
-      "note": "GroupCollect Bob Rogers Travel email 10/12 ~10:06am CT: AutoPay deposit $400 due Oct 15 for Bennett Orlando trip. Manage: https://bobrogerstravel.groupcollect.com/v2/user/49023/trips/22768",
-      "as_of": "2026-10-12T14:28:00"
+      "note": "Bob Rogers Travel receipt 10/15 11:09am CT: $400 + 3% fee $12 = $412 paid (Mastercard 6567). Receipt lists package Chaperone Double Occupancy.",
+      "as_of": "2026-10-15T14:15:00"
     },
     {
       "id": "eng-103-case-launch-1013",
@@ -1865,6 +1865,36 @@
       "kind": "calendar",
       "classId": "english-10",
       "note": "Sheet 10/19: Review Core Competency, Behavior Indicator, Analytical Tool; View Kid Nation."
+    },
+    {
+      "id": "eng-lotf-1020",
+      "title": "English: LOTF cover art + check out book",
+      "start": "2026-10-20",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 10/20: View cover art + discuss; Check out LOTF; Begin listening to CH1.",
+      "as_of": "2026-10-15T14:15:00",
+      "source": "english-sheet"
+    },
+    {
+      "id": "eng-lotf-1021",
+      "title": "English: LOTF Ch 1 + annotations",
+      "start": "2026-10-21",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 10/21-22: Finish CH 1; begin annotations; Assign 3DE team roles.",
+      "as_of": "2026-10-15T14:15:00",
+      "source": "english-sheet"
+    },
+    {
+      "id": "eng-lotf-1023",
+      "title": "English: LOTF vocab",
+      "start": "2026-10-23",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 10/23: Vocab Cultural Agility; Stakeholder.",
+      "as_of": "2026-10-15T14:15:00",
+      "source": "english-sheet"
     }
   ],
   "work": [
@@ -4089,6 +4119,11 @@
   ],
   "notes": [
     {
+      "id": "after-school-20261015",
+      "as_of": "2026-10-15T14:15:00",
+      "text": "After-school Thu 10/15 ~2:15pm CT FULL (no school: conferences; also no school Fri 10/16). Canvas LIVE UNCHANGED: Eng 93.91 (324/345), Web 93.32 (370.5/397), Chem 99.96. Still open: Web 4.3 -/20 due Mon 10/19 9:20am; Chem Copper Cycle Reading 0/3. Electron Dot not listed. Nothing due tonight; nothing new missing. No new course published. ParentVUE LOGIN_WALL (empty autofill, no login click); keep PV LIVE 10/13 3:33pm grades. Gmail NEW: Bob Rogers Travel Orlando AutoPay receipt $412 paid 10/15 (package listed Chaperone Double Occupancy). No new Instructure/teacher mail. English sheet: 10/20 cover art + check out LOTF; 10/21-22 Ch1 + annotations + 3DE roles; 10/23 vocab. oeband UNCHANGED. No said-done. Mom Thu 4:30p to Fri 4:30p; Dad Fri 4:30p to Thu 10/22 4:30p."
+    },
+    {
       "id": "bedtime-20261014",
       "as_of": "2026-10-14T21:00:00",
       "text": "Bedtime Wed 10/14 ~9:00pm CT NARROW. Canvas LIVE UNCHANGED vs after-school: Eng 93.91 (324/345), Web 93.32 (370.5/397), Chem 99.96. Still open: Web 4.3 -/20 due Mon 10/19 9:20am; Chem Copper Cycle Reading 0/3. Electron Dot Structures row not listed on Chem grades page tonight (may be unpublished/hidden; total unchanged). Nothing due tonight. To Do empty. ParentVUE LOGIN_WALL (existing tab on login; username+password empty, no autofill, no login click). Keep PV LIVE grades from Tue 10/13 ~3:33pm (Band A+99 Soc A95 S&C A+100 Geo B+88; Missing 0). Gmail no NEW school/Instructure after after-school (Socratic Prep + Seminar graded notices already logged). No Bennett-said-done (Plaud today work/empty notes only). No new discrepancy. Dad night through Thu 10/15 4:30p. No school Thu 10/15 (conferences) + Fri 10/16."
@@ -4550,7 +4585,7 @@
       "missing": 0,
       "detail": "4.3 open due 10/19",
       "source": "Canvas",
-      "as_of": "2026-10-14T21:00:00"
+      "as_of": "2026-10-15T14:15:00"
     },
     {
       "classId": "chemistry",
@@ -4562,7 +4597,7 @@
       "missing": 0,
       "detail": "Copper still 0/3",
       "source": "Canvas",
-      "as_of": "2026-10-14T21:00:00"
+      "as_of": "2026-10-15T14:15:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4584,9 +4619,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No new grades since 10/14",
       "source": "Canvas",
-      "as_of": "2026-10-14T21:00:00"
+      "as_of": "2026-10-15T14:15:00"
     },
     {
       "classId": "geometry",
@@ -4755,6 +4790,16 @@
       "as_of": "2026-10-14T14:30:00",
       "source": "Canvas",
       "note": "Eng 95.17→93.91 (Socratic Prep 23/30, Seminar 25/25). Web 93.32 unchanged (4.3 open). Chem 99.96 unchanged (Electron Dot -/2; Copper 0/3).",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 93.32,
+        "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-15T14:15:00",
+      "source": "Canvas",
+      "note": "No change vs 10/14 (no school 10/15).",
       "grades": {
         "english-10": 93.91,
         "web-design": 93.32,
