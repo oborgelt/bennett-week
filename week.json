@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-14T14:34:00",
+  "as_of": "2026-10-14T21:00:00",
   "parenting": [
     {
       "who": "Mom",
@@ -3907,7 +3907,7 @@
         "email_draft": null,
         "email_sent": false
       },
-      "note": "Pfeiff. Canvas LIVE 10/12: still -/2, no submission (due 10/5). | Bedtime Mon 10/12 ~8:52pm: still not submitted -/2 (past due).",
+      "note": "Pfeiff. Canvas LIVE 10/12: still -/2, no submission (due 10/5). | Bedtime Mon 10/12 ~8:52pm: still not submitted -/2 (past due). Bedtime 10/14 9pm: row not listed on Chem grades page (may be unpublished/hidden); Chem total still 99.96; not confirmed graded.",
       "as_of": "2026-10-13T14:40:00",
       "canvas": {
         "status": "open",
@@ -4088,6 +4088,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-20261014",
+      "as_of": "2026-10-14T21:00:00",
+      "text": "Bedtime Wed 10/14 ~9:00pm CT NARROW. Canvas LIVE UNCHANGED vs after-school: Eng 93.91 (324/345), Web 93.32 (370.5/397), Chem 99.96. Still open: Web 4.3 -/20 due Mon 10/19 9:20am; Chem Copper Cycle Reading 0/3. Electron Dot Structures row not listed on Chem grades page tonight (may be unpublished/hidden; total unchanged). Nothing due tonight. To Do empty. ParentVUE LOGIN_WALL (existing tab on login; username+password empty, no autofill, no login click). Keep PV LIVE grades from Tue 10/13 ~3:33pm (Band A+99 Soc A95 S&C A+100 Geo B+88; Missing 0). Gmail no NEW school/Instructure after after-school (Socratic Prep + Seminar graded notices already logged). No Bennett-said-done (Plaud today work/empty notes only). No new discrepancy. Dad night through Thu 10/15 4:30p. No school Thu 10/15 (conferences) + Fri 10/16."
+    },
     {
       "id": "after-school-20261014",
       "as_of": "2026-10-14T14:34:00",
@@ -4545,7 +4550,7 @@
       "missing": 0,
       "detail": "4.3 open due 10/19",
       "source": "Canvas",
-      "as_of": "2026-10-14T14:30:00"
+      "as_of": "2026-10-14T21:00:00"
     },
     {
       "classId": "chemistry",
@@ -4555,9 +4560,9 @@
       "letter": "A+",
       "percent": 99.96,
       "missing": 0,
-      "detail": "Electron Dot still -/2",
+      "detail": "Copper still 0/3",
       "source": "Canvas",
-      "as_of": "2026-10-14T14:30:00"
+      "as_of": "2026-10-14T21:00:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4579,9 +4584,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "Prep 23/30; Seminar 25/25",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-14T14:30:00"
+      "as_of": "2026-10-14T21:00:00"
     },
     {
       "classId": "geometry",
@@ -4597,6 +4602,11 @@
     }
   ],
   "grade_history": [
+    {
+      "as_of": "2026-10-14T21:00:00",
+      "source": "Canvas",
+      "summary": "Bedtime 9pm UNCHANGED Eng 93.91 Web 93.32 Chem 99.96; Electron Dot not listed; PV LOGIN_WALL"
+    },
     {
       "as_of": "2026-10-13T21:00:00",
       "source": "Canvas",
