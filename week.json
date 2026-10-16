@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-15T21:05:00",
+  "as_of": "2026-10-16T14:15:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1894,6 +1894,68 @@
       "classId": "english-10",
       "note": "Sheet 10/23: Vocab Cultural Agility; Stakeholder.",
       "as_of": "2026-10-15T14:15:00",
+      "source": "english-sheet"
+    },
+    {
+      "id": "fb-home-ge-1016",
+      "title": "Football vs Gardner Edgerton (band plays)",
+      "start": "2026-10-16T19:00:00",
+      "kind": "band",
+      "classId": "band",
+      "place": "CBAC",
+      "note": "oeband.com + OE homepage: home game 7pm at CBAC.",
+      "as_of": "2026-10-16T14:15:00",
+      "source": "oeband"
+    },
+    {
+      "id": "oe-act-1017",
+      "title": "OE: ACT Testing (school-wide)",
+      "start": "2026-10-17T07:45:00",
+      "end": "2026-10-17T16:00:00",
+      "kind": "calendar",
+      "place": "Olathe East",
+      "note": "OE homepage listing; not specific to Bennett.",
+      "as_of": "2026-10-16T14:15:00",
+      "source": "oe-homepage"
+    },
+    {
+      "id": "eng-lotf-1026",
+      "title": "English: LOTF vocab",
+      "start": "2026-10-26",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 10/26: Vocab Context; Anticipate.",
+      "as_of": "2026-10-16T14:15:00",
+      "source": "english-sheet"
+    },
+    {
+      "id": "eng-hearing-vision-1027",
+      "title": "English: hearing and vision checks",
+      "start": "2026-10-27",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 10/27: hearing and vision checks during English.",
+      "as_of": "2026-10-16T14:15:00",
+      "source": "english-sheet"
+    },
+    {
+      "id": "eng-act-practice-1028",
+      "title": "English: Q1 ACT practice test; rough draft idea due",
+      "start": "2026-10-28",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 10/28-29: Q1 ACT practice test; vocab Assess, Fulfill; rough draft idea due by end of hour.",
+      "as_of": "2026-10-16T14:15:00",
+      "source": "english-sheet"
+    },
+    {
+      "id": "eng-vocab-1030",
+      "title": "English: vocab",
+      "start": "2026-10-30",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 10/30: Vocab Delight; customer loyalty.",
+      "as_of": "2026-10-16T14:15:00",
       "source": "english-sheet"
     }
   ],
@@ -4079,8 +4141,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-15T21:05:00",
-      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission. | Bedtime Mon 10/12 ~8:52pm: still open -/20 due Mon 10/19 9:20am. | Bedtime Thu 10/15 ~9:05pm: still open -/20 due Mon 10/19 9:20am. Canvas LIVE UNCHANGED.",
+      "as_of": "2026-10-16T14:15:00",
+      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission. | Bedtime Mon 10/12 ~8:52pm: still open -/20 due Mon 10/19 9:20am. | Bedtime Thu 10/15 ~9:05pm: still open -/20 due Mon 10/19 9:20am. Canvas LIVE UNCHANGED. | After-school Fri 10/16 ~2:15pm: Canvas LIVE still open -/20 due Mon 10/19 9:20am (Dad weekend).",
       "followup": {
         "due_by": null,
         "email_draft": null,
@@ -4118,6 +4180,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "after-school-20261016",
+      "as_of": "2026-10-16T14:15:00",
+      "text": "After-school Fri 10/16 ~2:15pm CT FULL (no school: conferences). Canvas LIVE UNCHANGED: Eng 93.91 (324/345), Web 93.32 (370.5/397), Chem 99.96. Still open: Web 4.3 -/20 due Mon 10/19 9:20am; Chem Copper Cycle Reading 0/3. Electron Dot not listed. No new course, no announcements 10/14-10/16. ParentVUE LOGIN_WALL (empty autofill, no login click); keep PV LIVE 10/13 3:33pm grades. Gmail no NEW school/Instructure mail. English sheet unchanged; added 10/26-10/30 rows to events. oeband unchanged; tonight FB vs Gardner Edgerton 7pm CBAC (band). OE homepage: rehearsal listed 1-3pm (keeping Fillingham 1-3:30pm), Sat 10/17 ACT school-wide. No Bennett-said-done. Mom until 4:30p today, then Dad through Thu 10/22 4:30p; Web 4.3 is due Mon on Dad time."
+    },
     {
       "id": "bedtime-20261015",
       "as_of": "2026-10-15T21:05:00",
@@ -4588,9 +4655,9 @@
       "letter": "A",
       "percent": 93.32,
       "missing": 0,
-      "detail": "4.3 open due 10/19",
+      "detail": "4.3 open due Mon 10/19",
       "source": "Canvas",
-      "as_of": "2026-10-15T21:05:00"
+      "as_of": "2026-10-16T14:15:00"
     },
     {
       "classId": "chemistry",
@@ -4602,7 +4669,7 @@
       "missing": 0,
       "detail": "Copper still 0/3",
       "source": "Canvas",
-      "as_of": "2026-10-15T21:05:00"
+      "as_of": "2026-10-16T14:15:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4624,9 +4691,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change since 10/14",
       "source": "Canvas",
-      "as_of": "2026-10-15T21:05:00"
+      "as_of": "2026-10-16T14:15:00"
     },
     {
       "classId": "geometry",
@@ -4814,6 +4881,16 @@
       "as_of": "2026-10-15T14:15:00",
       "source": "Canvas",
       "note": "No change vs 10/14 (no school 10/15).",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 93.32,
+        "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-16T14:15:00",
+      "source": "Canvas",
+      "note": "No change vs 10/15 (no school 10/16).",
       "grades": {
         "english-10": 93.91,
         "web-design": 93.32,
