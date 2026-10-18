@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-17T14:14:00",
+  "as_of": "2026-10-17T20:55:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4147,6 +4147,9 @@
         "due_by": null,
         "email_draft": null,
         "email_sent": false
+      },
+      "canvas": {
+        "as_of": null
       }
     },
     {
@@ -4180,6 +4183,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-20261017",
+      "as_of": "2026-10-17T20:55:00",
+      "text": "Bedtime Sat 10/17 ~8:55pm CT NARROW. Canvas LIVE UNCHANGED vs after-school: Eng 93.91 (324/345), Web 93.32 (370.5/397), Chem 99.96. Still open: Web 4.3 Embedding iframes -/20 due Mon 10/19 9:20am (not submitted); Chem Copper Cycle Reading 0/3; Electron Dot not listed. To Do only Web 4.3. No new courses. ParentVUE LOGIN_WALL (existing tab on login page, empty autofill, no login click); keep PV LIVE 10/13 3:33pm grades. Gmail no NEW school/Instructure mail after after-school. No Plaud recordings today; no Bennett-said-done. No new discrepancy. Dad night. Stayed quiet."
+    },
     {
       "id": "after-school-20261017",
       "as_of": "2026-10-17T14:14:00",
@@ -4667,7 +4675,7 @@
       "missing": 0,
       "detail": "4.3 open due Mon 10/19",
       "source": "Canvas",
-      "as_of": "2026-10-17T14:14:00"
+      "as_of": "2026-10-17T20:55:00"
     },
     {
       "classId": "chemistry",
@@ -4679,7 +4687,7 @@
       "missing": 0,
       "detail": "Copper still 0/3",
       "source": "Canvas",
-      "as_of": "2026-10-17T14:14:00"
+      "as_of": "2026-10-17T20:55:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4701,9 +4709,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "No change since 10/14",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-17T14:14:00"
+      "as_of": "2026-10-17T20:55:00"
     },
     {
       "classId": "geometry",
