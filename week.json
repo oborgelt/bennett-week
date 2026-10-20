@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-19T20:58:00",
+  "as_of": "2026-10-20T14:27:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1787,6 +1787,17 @@
       "source": "english-sheet"
     },
     {
+      "id": "eng-makeup-socratic-1022",
+      "title": "English: Make-up Socratic Seminar (optional, Advisory)",
+      "start": "2026-10-22",
+      "kind": "calendar",
+      "classId": "english-10",
+      "place": "Olathe East",
+      "note": "Goodson ParentVUE msg Tue 10/20 2:10pm: optional make-up Socratic Seminar Thu 10/22 during Advisory. Needs online Flex pass before Thursday; bring prep doc. Only redo chance. Time not given.",
+      "as_of": "2026-10-20T14:20:00",
+      "source": "parentvue-inbox"
+    },
+    {
       "id": "band-am-1021",
       "title": "Marching band rehearsal",
       "start": "2026-10-21T07:00:00",
@@ -1797,12 +1808,12 @@
     },
     {
       "id": "eng-lotf-1023",
-      "title": "English: Q1 ACT practice test",
+      "title": "English: Ch 2 due; Q1 ACT practice test",
       "start": "2026-10-23",
       "kind": "calendar",
       "classId": "english-10",
-      "note": "Sheet 10/23 (updated 10/19): Q1 ACT practice test (moved up from 10/28-29).",
-      "as_of": "2026-10-19T14:20:00",
+      "note": "Sheet 10/23 (updated 10/20): Ch 2 due; Q1 ACT practice test.",
+      "as_of": "2026-10-20T14:20:00",
       "source": "english-sheet"
     },
     {
@@ -1822,17 +1833,28 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East High School",
-      "note": " Fillingham 10/12: Home game Middle School Night + Senior Night + Glow Show; call 5:00 leave 5:30; BRING GLOW GEAR; two flashlights for ankles.",
-      "as_of": "2026-10-12T14:28:00"
+      "note": "Fillingham 10/12 + 10/18: Home game Middle School Night + Senior Night + Glow Show; call 5:00 leave 5:30; BRING GLOW GEAR + two flashlights for ankles. Mom time (Thu 10/22 4:30p to Sun 10/25 6p).",
+      "as_of": "2026-10-20T14:20:00"
+    },
+    {
+      "id": "fb-home-1023",
+      "title": "Football home game (band plays, Glow Show)",
+      "start": "2026-10-23T19:00:00",
+      "kind": "band",
+      "classId": "band",
+      "place": "CBAC",
+      "note": "oeband.com: 7pm football @ CBAC Oct 23. Fillingham: call 5:00, leave 5:30. Mom time.",
+      "as_of": "2026-10-20T14:20:00",
+      "source": "oeband"
     },
     {
       "id": "eng-lotf-1026",
-      "title": "English: LOTF vocab",
+      "title": "English: Quiz #1; Ch 3 due; LOTF vocab",
       "start": "2026-10-26",
       "kind": "calendar",
       "classId": "english-10",
-      "note": "Sheet 10/26: Vocab Context; Anticipate.",
-      "as_of": "2026-10-16T14:15:00",
+      "note": "Sheet 10/26 (updated 10/20): Quiz #1; Ch 3 due; Vocab: Context; Anticipate.",
+      "as_of": "2026-10-20T14:20:00",
       "source": "english-sheet"
     },
     {
@@ -1874,12 +1896,12 @@
     },
     {
       "id": "eng-act-practice-1028",
-      "title": "English: LOTF vocab; rough draft idea due",
+      "title": "English: Ch 4 due; rough draft idea due",
       "start": "2026-10-28",
       "kind": "calendar",
       "classId": "english-10",
-      "note": "Sheet 10/28-29 (updated 10/19): Vocab Cultural Agility, Stakeholder, Assess, Fulfill; rough draft idea due by end of hour.",
-      "as_of": "2026-10-19T14:20:00",
+      "note": "Sheet 10/28-29 (updated 10/20): Ch 4 due; Vocab Cultural Agility, Stakeholder, Assess, Fulfill; rough draft idea due by end of hour.",
+      "as_of": "2026-10-20T14:20:00",
       "source": "english-sheet"
     },
     {
@@ -1920,6 +1942,36 @@
       "place": "ANT-DAC (Blue Valley District Activities Complex)",
       "note": "Fillingham Band Update 10/12: call 6:30 AM; prelims performance 9:30 AM at ANT-DAC. Folder linked in email.",
       "as_of": "2026-10-12T14:28:00"
+    },
+    {
+      "id": "oe-no-school-1102",
+      "title": "OE: No School (Professional Day)",
+      "start": "2026-11-02",
+      "kind": "calendar",
+      "place": "Olathe East",
+      "note": "Mon 11/2 No School - Professional Day (after-school 10/20 sync; Bennett-School-2026-27.ics also skips classes 11/2).",
+      "as_of": "2026-10-20T14:20:00",
+      "source": "school-calendar"
+    },
+    {
+      "id": "eng-lotf-1103",
+      "title": "English: Quiz #2; Ch 5 due",
+      "start": "2026-11-03",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 11/3 (seen 10/20): Quiz #2; Ch 5 due; Vocab: Analysis, Persona.",
+      "as_of": "2026-10-20T14:20:00",
+      "source": "english-sheet"
+    },
+    {
+      "id": "eng-lotf-1104",
+      "title": "English: Ch 6 due; idea explanation video due",
+      "start": "2026-11-04",
+      "kind": "calendar",
+      "classId": "english-10",
+      "note": "Sheet 11/4-5 (seen 10/20): Ch 6 due; idea explanation video due by end of hour.",
+      "as_of": "2026-10-20T14:20:00",
+      "source": "english-sheet"
     },
     {
       "id": "band-all-district-auditions-1107",
@@ -3311,7 +3363,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Canvas LIVE after-school Mon 10/5: still 0/3. UNCHANGED. | 10/6: still 0/3. | Bedtime Thu 10/8: still 0/3. | After-school Fri 10/9: still 0/3. | After-school Sat 10/10: still 0/3. | Bedtime Sat 10/10 ~9pm: still 0/3. | Canvas LIVE Sun 10/11 after-school: still 0/3. | Bedtime Sun 10/11 ~9pm: still 0/3. | Bedtime Mon 10/12 ~8:52pm: still 0/3. | Bedtime Thu 10/15 ~9:05pm: still 0/3. Canvas LIVE UNCHANGED.",
+      "note": "Canvas LIVE after-school Mon 10/5: still 0/3. UNCHANGED. | 10/6: still 0/3. | Bedtime Thu 10/8: still 0/3. | After-school Fri 10/9: still 0/3. | After-school Sat 10/10: still 0/3. | Bedtime Sat 10/10 ~9pm: still 0/3. | Canvas LIVE Sun 10/11 after-school: still 0/3. | Bedtime Sun 10/11 ~9pm: still 0/3. | Bedtime Mon 10/12 ~8:52pm: still 0/3. | Bedtime Thu 10/15 ~9:05pm: still 0/3. Canvas LIVE UNCHANGED. | After-school Tue 10/20: still 0/3.",
       "canvas": {
         "status": "graded",
         "points": 3,
@@ -4136,7 +4188,7 @@
       "title": "Web Design: 4.3 Embedding iframes",
       "classId": "web-design",
       "due": "2026-10-19T09:20:00",
-      "status": "open",
+      "status": "ungraded",
       "school_status": "ungraded on Canvas, no late/missing flag",
       "student_status": null,
       "score": null,
@@ -4145,16 +4197,17 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-19T20:58:00",
-      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission. | Bedtime Mon 10/12 ~8:52pm: still open -/20 due Mon 10/19 9:20am. | Bedtime Thu 10/15 ~9:05pm: still open -/20 due Mon 10/19 9:20am. Canvas LIVE UNCHANGED. | After-school Fri 10/16 ~2:15pm: Canvas LIVE still open -/20 due Mon 10/19 9:20am (Dad weekend). | After-school Sat 10/17 ~2:14pm: Canvas LIVE still -/20, not submitted; due Mon 10/19 9:20am (Dad weekend). | After-school Sun 10/18 ~2:14pm: Canvas LIVE still -/20, not submitted, not marked done; due Mon 10/19 9:20am. | After-school Mon 10/19 ~2:20pm: Canvas LIVE still -/20, no submission, Calendar \"Not completed\"; due passed 9:20am today. No late/missing flag yet. | Bedtime Mon 10/19 ~8:58pm: Canvas still -/20, no late/missing flag. Per Orin 10/19, Web is usually finished in class; ungraded past due is normal, not flagged.",
+      "as_of": "2026-10-20T14:20:00",
+      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission. | Bedtime Mon 10/12 ~8:52pm: still open -/20 due Mon 10/19 9:20am. | Bedtime Thu 10/15 ~9:05pm: still open -/20 due Mon 10/19 9:20am. Canvas LIVE UNCHANGED. | After-school Fri 10/16 ~2:15pm: Canvas LIVE still open -/20 due Mon 10/19 9:20am (Dad weekend). | After-school Sat 10/17 ~2:14pm: Canvas LIVE still -/20, not submitted; due Mon 10/19 9:20am (Dad weekend). | After-school Sun 10/18 ~2:14pm: Canvas LIVE still -/20, not submitted, not marked done; due Mon 10/19 9:20am. | After-school Mon 10/19 ~2:20pm: Canvas LIVE still -/20, no submission, Calendar \"Not completed\"; due passed 9:20am today. No late/missing flag yet. | Bedtime Mon 10/19 ~8:58pm: Canvas still -/20, no late/missing flag. Per Orin 10/19, Web is usually finished in class; ungraded past due is normal, not flagged. | After-school Tue 10/20 ~2:20pm: Canvas still -/20 ungraded, no Late/Missing flag. Normal per Orin (done in class); shown as calendar-only so Jungle Jam does not flag it.",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-19T14:20:00"
-      }
+        "as_of": "2026-10-20T14:20:00"
+      },
+      "kind": "event"
     },
     {
       "id": "eng-aab-socratic-seminar-1012",
@@ -4239,7 +4292,7 @@
       "id": "web-44-divs-1026",
       "title": "Web Design: 4.4 Divs",
       "classId": "web-design",
-      "due": "2026-10-26",
+      "due": "2026-10-26T09:20:00",
       "status": "open",
       "school_status": "open",
       "student_status": null,
@@ -4249,15 +4302,40 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-19T14:20:00",
-      "note": "Derek Linn. Seen on Canvas Calendar Mon 10/19 2:20pm pull, -/20, due 10/26 (time not shown).",
+      "as_of": "2026-10-20T14:20:00",
+      "note": "Derek Linn. Seen on Canvas Calendar Mon 10/19 2:20pm pull, -/20, due 10/26 (time not shown). | After-school Tue 10/20: Canvas -/20, due Mon 10/26 9:20am.",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-19T14:20:00"
+        "as_of": "2026-10-20T14:20:00"
+      }
+    },
+    {
+      "id": "web-45-spans-1026",
+      "title": "Web Design: 4.5 Spans",
+      "classId": "web-design",
+      "due": "2026-10-26T09:20:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 18,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-20T14:20:00",
+      "note": "Derek Linn. NEW on Canvas Tue 10/20 2:20pm pull: -/18 due Mon 10/26 9:20am.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "canvas": {
+        "as_of": "2026-10-20T14:20:00"
       }
     }
   ],
@@ -4737,6 +4815,11 @@
       "id": "bedtime-2026-10-19T20:58:00",
       "as_of": "2026-10-19T20:58:00",
       "text": "Bedtime Mon 10/19 ~8:58pm CT NARROW: Canvas LIVE UNCHANGED (Eng 93.91, Web 93.32, Chem 99.96). Web 4.3 ungraded, no late/missing flag (normal per Orin, done in class); 4.4 Divs due 10/26; Copper 0/3; Electron Dot not listed; nothing due 10/20-10/25. ParentVUE LIVE (autofill, one click): unchanged, 0 missing, inbox nothing newer than Fillingham 10/18. Gmail no new school/Instructure mail. Plaud work/vet only, no said-done. Dad night."
+    },
+    {
+      "id": "after-school-2026-10-20T14:20:00",
+      "as_of": "2026-10-20T14:20:00",
+      "text": "After-school Tue 10/20 ~2:20pm CT FULL: Canvas LIVE UNCHANGED (Eng 93.91 324/345, Web 93.32 370.5/397, Chem 99.96); nothing graded since Mon night; nothing due tonight or 10/21-10/25. Due Mon 10/26 9:20am: Web 4.4 Divs -/20 + NEW Web 4.5 Spans -/18. Web 4.3 ungraded, no flag (normal per Orin). Copper 0/3 (old). Nothing missing. ParentVUE LIVE (autofill, one click): unchanged, 0 missing; attendance not readable; PV calendar Sociology 8.1 & 8.2 Reading today (score -). PV inbox NEW: Goodson 10/20 2:10pm optional make-up Socratic Thu 10/22 during Advisory (online Flex pass before Thu; bring prep doc; only redo chance). English sheet: Ch 2 + Q1 ACT practice Fri 10/23; Quiz #1 + Ch 3 Mon 10/26; Ch 4 + rough draft idea 10/28-29; Quiz #2 + Ch 5 11/3. Mon 11/2 no school. oeband unchanged; Fri 10/23 band load out/in 4-9pm + 7pm home game (Mom time). Custody: Dad tonight + Wed; Mom Thu 10/22 4:30p to Sun 10/25 6p. No said-done."
     }
   ],
   "grades": [
@@ -4748,9 +4831,9 @@
       "letter": "A+",
       "percent": 99.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change since 10/19",
       "source": "ParentVUE",
-      "as_of": "2026-10-19T20:58:00"
+      "as_of": "2026-10-20T14:20:00"
     },
     {
       "classId": "sociology",
@@ -4760,9 +4843,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change since 10/19",
       "source": "ParentVUE",
-      "as_of": "2026-10-19T20:58:00"
+      "as_of": "2026-10-20T14:20:00"
     },
     {
       "classId": "web-design",
@@ -4772,9 +4855,9 @@
       "letter": "A",
       "percent": 93.32,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "4.4 + 4.5 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-19T20:58:00"
+      "as_of": "2026-10-20T14:20:00"
     },
     {
       "classId": "chemistry",
@@ -4784,9 +4867,9 @@
       "letter": "A+",
       "percent": 99.96,
       "missing": 0,
-      "detail": "Copper still 0/3",
+      "detail": "Copper Reading still 0/3",
       "source": "Canvas",
-      "as_of": "2026-10-19T20:58:00"
+      "as_of": "2026-10-20T14:20:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4796,9 +4879,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change since 10/19",
       "source": "ParentVUE",
-      "as_of": "2026-10-19T20:58:00"
+      "as_of": "2026-10-20T14:20:00"
     },
     {
       "classId": "english-10",
@@ -4808,9 +4891,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "Makeup Socratic Thu 10/22 (optional)",
       "source": "Canvas",
-      "as_of": "2026-10-19T20:58:00"
+      "as_of": "2026-10-20T14:20:00"
     },
     {
       "classId": "geometry",
@@ -4820,9 +4903,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change since 10/19",
       "source": "ParentVUE",
-      "as_of": "2026-10-19T20:58:00"
+      "as_of": "2026-10-20T14:20:00"
     }
   ],
   "grade_history": [
@@ -5124,6 +5207,30 @@
       "as_of": "2026-10-19T20:58:00",
       "source": "Canvas",
       "note": "Mon 9pm Canvas LIVE: no change.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 93.32,
+        "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-20T14:20:00",
+      "source": "ParentVUE",
+      "note": "Tue 2:20pm PV LIVE: no change vs 10/19; 0 missing.",
+      "grades": {
+        "band": 99.0,
+        "sociology": 90.0,
+        "web-design": 93.0,
+        "chemistry": 100.0,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-20T14:20:00",
+      "source": "Canvas",
+      "note": "Tue 2:20pm Canvas LIVE: no change; nothing graded since Mon night.",
       "grades": {
         "english-10": 93.91,
         "web-design": 93.32,
