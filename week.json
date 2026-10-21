@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-20T20:58:00-05:00",
+  "as_of": "2026-10-21T14:22:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1833,8 +1833,8 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East High School",
-      "note": "Fillingham 10/12 + 10/18: Home game Middle School Night + Senior Night + Glow Show; call 5:00 leave 5:30; BRING GLOW GEAR + two flashlights for ankles. Mom time (Thu 10/22 4:30p to Sun 10/25 6p).",
-      "as_of": "2026-10-20T14:20:00"
+      "note": "Fillingham 10/12 + 10/18: Home game Middle School Night + Senior Night + Glow Show; call 5:00 leave 5:30; BRING GLOW GEAR + two flashlights for ankles. Mom time (Thu 10/22 4:30p to Sun 10/25 6p). | Boosters 10/21 12:36pm: Senior Night + Glow Show after game. Black pants, black long-sleeve shirt/hoodie, black socks, marching shoes; 2 small flashlights taped at ankles (check batteries); $5 if possible for glow sticks; scissors/extra glow sticks optional. Parents help tape glow sticks 3rd quarter.",
+      "as_of": "2026-10-21T14:15:00"
     },
     {
       "id": "fb-home-1023",
@@ -3363,7 +3363,7 @@
       "late": true,
       "submitted_at": null,
       "source": "canvas",
-      "note": "Canvas LIVE after-school Mon 10/5: still 0/3. UNCHANGED. | 10/6: still 0/3. | Bedtime Thu 10/8: still 0/3. | After-school Fri 10/9: still 0/3. | After-school Sat 10/10: still 0/3. | Bedtime Sat 10/10 ~9pm: still 0/3. | Canvas LIVE Sun 10/11 after-school: still 0/3. | Bedtime Sun 10/11 ~9pm: still 0/3. | Bedtime Mon 10/12 ~8:52pm: still 0/3. | Bedtime Thu 10/15 ~9:05pm: still 0/3. Canvas LIVE UNCHANGED. | After-school Tue 10/20: still 0/3.",
+      "note": "Canvas LIVE after-school Mon 10/5: still 0/3. UNCHANGED. | 10/6: still 0/3. | Bedtime Thu 10/8: still 0/3. | After-school Fri 10/9: still 0/3. | After-school Sat 10/10: still 0/3. | Bedtime Sat 10/10 ~9pm: still 0/3. | Canvas LIVE Sun 10/11 after-school: still 0/3. | Bedtime Sun 10/11 ~9pm: still 0/3. | Bedtime Mon 10/12 ~8:52pm: still 0/3. | Bedtime Thu 10/15 ~9:05pm: still 0/3. Canvas LIVE UNCHANGED. | After-school Tue 10/20: still 0/3. | After-school Wed 10/21: still 0/3.",
       "canvas": {
         "status": "graded",
         "points": 3,
@@ -4188,24 +4188,24 @@
       "title": "Web Design: 4.3 Embedding iframes",
       "classId": "web-design",
       "due": "2026-10-19T09:20:00",
-      "status": "ungraded",
-      "school_status": "ungraded on Canvas, no late/missing flag",
+      "status": "graded",
+      "school_status": "graded 17/20 on Canvas",
       "student_status": null,
-      "score": null,
+      "score": 17,
       "points": 20,
       "late": false,
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-20T14:20:00",
-      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission. | Bedtime Mon 10/12 ~8:52pm: still open -/20 due Mon 10/19 9:20am. | Bedtime Thu 10/15 ~9:05pm: still open -/20 due Mon 10/19 9:20am. Canvas LIVE UNCHANGED. | After-school Fri 10/16 ~2:15pm: Canvas LIVE still open -/20 due Mon 10/19 9:20am (Dad weekend). | After-school Sat 10/17 ~2:14pm: Canvas LIVE still -/20, not submitted; due Mon 10/19 9:20am (Dad weekend). | After-school Sun 10/18 ~2:14pm: Canvas LIVE still -/20, not submitted, not marked done; due Mon 10/19 9:20am. | After-school Mon 10/19 ~2:20pm: Canvas LIVE still -/20, no submission, Calendar \"Not completed\"; due passed 9:20am today. No late/missing flag yet. | Bedtime Mon 10/19 ~8:58pm: Canvas still -/20, no late/missing flag. Per Orin 10/19, Web is usually finished in class; ungraded past due is normal, not flagged. | After-school Tue 10/20 ~2:20pm: Canvas still -/20 ungraded, no Late/Missing flag. Normal per Orin (done in class); shown as calendar-only so Jungle Jam does not flag it.",
+      "as_of": "2026-10-21T14:15:00",
+      "note": "Derek Linn. NEW on Canvas as of Mon 10/12 2:28pm pull (not in 10/11 bedtime list). Due Mon 10/19 9:20am. -/20 no submission. | Bedtime Mon 10/12 ~8:52pm: still open -/20 due Mon 10/19 9:20am. | Bedtime Thu 10/15 ~9:05pm: still open -/20 due Mon 10/19 9:20am. Canvas LIVE UNCHANGED. | After-school Fri 10/16 ~2:15pm: Canvas LIVE still open -/20 due Mon 10/19 9:20am (Dad weekend). | After-school Sat 10/17 ~2:14pm: Canvas LIVE still -/20, not submitted; due Mon 10/19 9:20am (Dad weekend). | After-school Sun 10/18 ~2:14pm: Canvas LIVE still -/20, not submitted, not marked done; due Mon 10/19 9:20am. | After-school Mon 10/19 ~2:20pm: Canvas LIVE still -/20, no submission, Calendar \"Not completed\"; due passed 9:20am today. No late/missing flag yet. | Bedtime Mon 10/19 ~8:58pm: Canvas still -/20, no late/missing flag. Per Orin 10/19, Web is usually finished in class; ungraded past due is normal, not flagged. | After-school Tue 10/20 ~2:20pm: Canvas still -/20 ungraded, no Late/Missing flag. Normal per Orin (done in class); shown as calendar-only so Jungle Jam does not flag it. | After-school Wed 10/21 ~2:15pm: GRADED 17/20 (Canvas Graded email 12:00pm CT; graded ~11am). No late/missing flag.",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-20T14:20:00"
+        "as_of": "2026-10-21T14:15:00"
       },
       "kind": "event"
     },
@@ -4875,6 +4875,11 @@
       "id": "bedtime-2026-10-20T20:56:00",
       "as_of": "2026-10-20T20:56:00",
       "text": "Bedtime Tue 10/20 ~8:56pm CT NARROW: Canvas LIVE UNCHANGED (Eng 93.91, Web 93.32, Chem 99.96); nothing graded/submitted/missing since 2:20pm. Canvas English rows now listed: LOTF Quiz #1 Ch 1-2 -/10 due Mon 10/26 11:59pm; Choice Book Check-In #1 -/5 due Tue 10/27 11:59pm. Web 4.4 + 4.5 due 10/26 9:20am. Copper 0/3. ParentVUE LIVE (autofill, one click) unchanged, 0 missing; inbox/alerts nothing new. Gmail: no new school/Canvas mail; SchoolCafe lunch autopay failed ~6:17pm, card swapped ~6:25pm. No said-done. Dad night."
+    },
+    {
+      "id": "after-school-2026-10-21T14:15:00",
+      "as_of": "2026-10-21T14:15:00",
+      "text": "After-school Wed 10/21 ~2:15pm CT FULL: Canvas LIVE: Web 4.3 iframes graded 17/20 (~11am; Graded email 12:00pm); Web 93.32 to 92.93. Eng 93.91, Chem 99.96 unchanged. Nothing due tonight or 10/22-10/25; no Missing flags. Due Mon 10/26: Web 4.4 + 4.5 (9:20am), LOTF Quiz #1 (11:59pm); Check-In #1 10/27. ParentVUE LIVE (autofill, one click): Band 99.0 to 98.8 (98 entry 10/21); others unchanged, 0 missing; inbox/alerts nothing new. Gmail: Boosters Glow Show list for Fri 10/23 (black clothes, 2 ankle flashlights, $5 for glow sticks); SchoolCafe low balance $18.40 at 6:30am, autopay may not be re-set after card swap. English sheet: 10/27 Choice Book Check-In #1 added; 11/6 Q2 ACT practice; 11/20 Check-In #2. oeband/OE/district unchanged. Custody: Dad tonight; Mom Thu 10/22 4:30p to Sun 10/25 6p. No said-done."
     }
   ],
   "grades": [
@@ -4884,11 +4889,11 @@
       "period": "P1",
       "teacher": "Rebecca Fillingham",
       "letter": "A+",
-      "percent": 99.0,
+      "percent": 98.8,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "Band 98 posted 10/21",
       "source": "ParentVUE",
-      "as_of": "2026-10-20T20:56:00"
+      "as_of": "2026-10-21T14:15:00"
     },
     {
       "classId": "sociology",
@@ -4898,9 +4903,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change since 10/20",
       "source": "ParentVUE",
-      "as_of": "2026-10-20T20:56:00"
+      "as_of": "2026-10-21T14:15:00"
     },
     {
       "classId": "web-design",
@@ -4908,11 +4913,11 @@
       "period": "P3",
       "teacher": "Derek Linn",
       "letter": "A",
-      "percent": 93.32,
+      "percent": 92.93,
       "missing": 0,
-      "detail": "4.4 + 4.5 due Mon 10/26",
+      "detail": "4.3 iframes graded 17/20",
       "source": "Canvas",
-      "as_of": "2026-10-20T20:56:00"
+      "as_of": "2026-10-21T14:15:00"
     },
     {
       "classId": "chemistry",
@@ -4924,7 +4929,7 @@
       "missing": 0,
       "detail": "Copper Reading still 0/3",
       "source": "Canvas",
-      "as_of": "2026-10-20T20:56:00"
+      "as_of": "2026-10-21T14:15:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4934,9 +4939,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change since 10/20",
       "source": "ParentVUE",
-      "as_of": "2026-10-20T20:56:00"
+      "as_of": "2026-10-21T14:15:00"
     },
     {
       "classId": "english-10",
@@ -4948,7 +4953,7 @@
       "missing": 0,
       "detail": "LOTF Quiz #1 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-20T20:56:00"
+      "as_of": "2026-10-21T14:15:00"
     },
     {
       "classId": "geometry",
@@ -4958,9 +4963,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change since 10/20",
       "source": "ParentVUE",
-      "as_of": "2026-10-20T20:56:00"
+      "as_of": "2026-10-21T14:15:00"
     }
   ],
   "grade_history": [
@@ -5314,6 +5319,30 @@
         "strength-conditioning": 100.0,
         "english-10": 93.91,
         "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-21T14:15:00",
+      "source": "ParentVUE",
+      "note": "Wed 2:15pm PV LIVE: Band 99.0 to 98.8 (98 entry 10/21); Web upd 10/21; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 90.0,
+        "web-design": 93.0,
+        "chemistry": 100.0,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-21T14:15:00",
+      "source": "Canvas",
+      "note": "Wed 2:15pm Canvas LIVE: Web 93.32 to 92.93 (4.3 graded 17/20 ~11am).",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 92.93,
+        "chemistry": 99.96
       }
     }
   ]
