@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-20T14:27:00-05:00",
+  "as_of": "2026-10-20T20:58:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4337,6 +4337,56 @@
       "canvas": {
         "as_of": "2026-10-20T14:20:00"
       }
+    },
+    {
+      "id": "eng-lotf-quiz1-1026",
+      "title": "English: LOTF Quiz #1 - Ch 1-2",
+      "classId": "english-10",
+      "due": "2026-10-26T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 10,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-20T20:56:00",
+      "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/10 due Mon 10/26 11:59pm.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "canvas": {
+        "as_of": "2026-10-20T20:56:00"
+      }
+    },
+    {
+      "id": "eng-choicebook-checkin1-1027",
+      "title": "English: Choice Book Check-In #1",
+      "classId": "english-10",
+      "due": "2026-10-27T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 5,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-20T20:56:00",
+      "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/5 due Tue 10/27 11:59pm.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "canvas": {
+        "as_of": "2026-10-20T20:56:00"
+      }
     }
   ],
   "notes": [
@@ -4820,6 +4870,11 @@
       "id": "after-school-2026-10-20T14:20:00",
       "as_of": "2026-10-20T14:20:00",
       "text": "After-school Tue 10/20 ~2:20pm CT FULL: Canvas LIVE UNCHANGED (Eng 93.91 324/345, Web 93.32 370.5/397, Chem 99.96); nothing graded since Mon night; nothing due tonight or 10/21-10/25. Due Mon 10/26 9:20am: Web 4.4 Divs -/20 + NEW Web 4.5 Spans -/18. Web 4.3 ungraded, no flag (normal per Orin). Copper 0/3 (old). Nothing missing. ParentVUE LIVE (autofill, one click): unchanged, 0 missing; attendance not readable; PV calendar Sociology 8.1 & 8.2 Reading today (score -). PV inbox NEW: Goodson 10/20 2:10pm optional make-up Socratic Thu 10/22 during Advisory (online Flex pass before Thu; bring prep doc; only redo chance). English sheet: Ch 2 + Q1 ACT practice Fri 10/23; Quiz #1 + Ch 3 Mon 10/26; Ch 4 + rough draft idea 10/28-29; Quiz #2 + Ch 5 11/3. Mon 11/2 no school. oeband unchanged; Fri 10/23 band load out/in 4-9pm + 7pm home game (Mom time). Custody: Dad tonight + Wed; Mom Thu 10/22 4:30p to Sun 10/25 6p. No said-done."
+    },
+    {
+      "id": "bedtime-2026-10-20T20:56:00",
+      "as_of": "2026-10-20T20:56:00",
+      "text": "Bedtime Tue 10/20 ~8:56pm CT NARROW: Canvas LIVE UNCHANGED (Eng 93.91, Web 93.32, Chem 99.96); nothing graded/submitted/missing since 2:20pm. Canvas English rows now listed: LOTF Quiz #1 Ch 1-2 -/10 due Mon 10/26 11:59pm; Choice Book Check-In #1 -/5 due Tue 10/27 11:59pm. Web 4.4 + 4.5 due 10/26 9:20am. Copper 0/3. ParentVUE LIVE (autofill, one click) unchanged, 0 missing; inbox/alerts nothing new. Gmail: no new school/Canvas mail; SchoolCafe lunch autopay failed ~6:17pm, card swapped ~6:25pm. No said-done. Dad night."
     }
   ],
   "grades": [
@@ -4831,9 +4886,9 @@
       "letter": "A+",
       "percent": 99.0,
       "missing": 0,
-      "detail": "No change since 10/19",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-20T14:20:00"
+      "as_of": "2026-10-20T20:56:00"
     },
     {
       "classId": "sociology",
@@ -4843,9 +4898,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "No change since 10/19",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-20T14:20:00"
+      "as_of": "2026-10-20T20:56:00"
     },
     {
       "classId": "web-design",
@@ -4857,7 +4912,7 @@
       "missing": 0,
       "detail": "4.4 + 4.5 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-20T14:20:00"
+      "as_of": "2026-10-20T20:56:00"
     },
     {
       "classId": "chemistry",
@@ -4869,7 +4924,7 @@
       "missing": 0,
       "detail": "Copper Reading still 0/3",
       "source": "Canvas",
-      "as_of": "2026-10-20T14:20:00"
+      "as_of": "2026-10-20T20:56:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4879,9 +4934,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change since 10/19",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-20T14:20:00"
+      "as_of": "2026-10-20T20:56:00"
     },
     {
       "classId": "english-10",
@@ -4891,9 +4946,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "Makeup Socratic Thu 10/22 (optional)",
+      "detail": "LOTF Quiz #1 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-20T14:20:00"
+      "as_of": "2026-10-20T20:56:00"
     },
     {
       "classId": "geometry",
@@ -4903,9 +4958,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change since 10/19",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-20T14:20:00"
+      "as_of": "2026-10-20T20:56:00"
     }
   ],
   "grade_history": [
@@ -5235,6 +5290,30 @@
         "english-10": 93.91,
         "web-design": 93.32,
         "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-20T20:56:00",
+      "source": "Canvas",
+      "note": "Tue 9pm Canvas LIVE: no change.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 93.32,
+        "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-20T20:56:00",
+      "source": "ParentVUE",
+      "note": "Tue 9pm PV LIVE: no change; 0 missing.",
+      "grades": {
+        "band": 99.0,
+        "sociology": 90.0,
+        "web-design": 93.0,
+        "chemistry": 100.0,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
       }
     }
   ]
