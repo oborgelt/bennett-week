@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-21T14:22:00-05:00",
+  "as_of": "2026-10-21T20:58:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4387,6 +4387,106 @@
       "canvas": {
         "as_of": "2026-10-20T20:56:00"
       }
+    },
+    {
+      "id": "eng-mask-project-1030",
+      "title": "English: Mask Project",
+      "classId": "english-10",
+      "due": "2026-10-30T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 30,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-21T20:56:00",
+      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/30. Due time not confirmed.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "canvas": {
+        "as_of": "2026-10-21T20:56:00"
+      }
+    },
+    {
+      "id": "eng-lotf-quiz2-1103",
+      "title": "English: LOTF Quiz #2 - Ch 3-5",
+      "classId": "english-10",
+      "due": "2026-11-03T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 10,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-21T20:56:00",
+      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "canvas": {
+        "as_of": "2026-10-21T20:56:00"
+      }
+    },
+    {
+      "id": "eng-lotf-quiz3-1109",
+      "title": "English: LOTF Quiz #3 - Ch 6-7",
+      "classId": "english-10",
+      "due": "2026-11-09T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 10,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-21T20:56:00",
+      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "canvas": {
+        "as_of": "2026-10-21T20:56:00"
+      }
+    },
+    {
+      "id": "eng-lotf-quiz4-1113",
+      "title": "English: LOTF Quiz #4 - Ch 8-10",
+      "classId": "english-10",
+      "due": "2026-11-13T23:59:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 10,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-21T20:56:00",
+      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "canvas": {
+        "as_of": "2026-10-21T20:56:00"
+      }
     }
   ],
   "notes": [
@@ -4880,6 +4980,11 @@
       "id": "after-school-2026-10-21T14:15:00",
       "as_of": "2026-10-21T14:15:00",
       "text": "After-school Wed 10/21 ~2:15pm CT FULL: Canvas LIVE: Web 4.3 iframes graded 17/20 (~11am; Graded email 12:00pm); Web 93.32 to 92.93. Eng 93.91, Chem 99.96 unchanged. Nothing due tonight or 10/22-10/25; no Missing flags. Due Mon 10/26: Web 4.4 + 4.5 (9:20am), LOTF Quiz #1 (11:59pm); Check-In #1 10/27. ParentVUE LIVE (autofill, one click): Band 99.0 to 98.8 (98 entry 10/21); others unchanged, 0 missing; inbox/alerts nothing new. Gmail: Boosters Glow Show list for Fri 10/23 (black clothes, 2 ankle flashlights, $5 for glow sticks); SchoolCafe low balance $18.40 at 6:30am, autopay may not be re-set after card swap. English sheet: 10/27 Choice Book Check-In #1 added; 11/6 Q2 ACT practice; 11/20 Check-In #2. oeband/OE/district unchanged. Custody: Dad tonight; Mom Thu 10/22 4:30p to Sun 10/25 6p. No said-done."
+    },
+    {
+      "id": "bedtime-2026-10-21T20:56:00",
+      "as_of": "2026-10-21T20:56:00",
+      "text": "Bedtime Wed 10/21 ~8:56pm CT NARROW: Canvas LIVE UNCHANGED (Eng 93.91, Web 92.93, Chem 99.96); nothing graded/submitted/missing since 2:15pm; nothing due 10/21-10/25. Canvas To Do also lists later English: Mask Project 30 pts due Fri 10/30, LOTF Quizzes #2 (11/3), #3 (11/9), #4 (11/13), added to work. ParentVUE LIVE (autofill, one click) unchanged, 0 missing; inbox/alerts nothing new. Gmail: only Jostens picture-order promo since 2:15. No said-done. Dad night."
     }
   ],
   "grades": [
@@ -4891,9 +4996,9 @@
       "letter": "A+",
       "percent": 98.8,
       "missing": 0,
-      "detail": "Band 98 posted 10/21",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-21T14:15:00"
+      "as_of": "2026-10-21T20:56:00"
     },
     {
       "classId": "sociology",
@@ -4903,9 +5008,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "No change since 10/20",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-21T14:15:00"
+      "as_of": "2026-10-21T20:56:00"
     },
     {
       "classId": "web-design",
@@ -4915,9 +5020,9 @@
       "letter": "A",
       "percent": 92.93,
       "missing": 0,
-      "detail": "4.3 iframes graded 17/20",
+      "detail": "4.4 + 4.5 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-21T14:15:00"
+      "as_of": "2026-10-21T20:56:00"
     },
     {
       "classId": "chemistry",
@@ -4927,9 +5032,9 @@
       "letter": "A+",
       "percent": 99.96,
       "missing": 0,
-      "detail": "Copper Reading still 0/3",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-21T14:15:00"
+      "as_of": "2026-10-21T20:56:00"
     },
     {
       "classId": "strength-conditioning",
@@ -4939,9 +5044,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change since 10/20",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-21T14:15:00"
+      "as_of": "2026-10-21T20:56:00"
     },
     {
       "classId": "english-10",
@@ -4953,7 +5058,7 @@
       "missing": 0,
       "detail": "LOTF Quiz #1 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-21T14:15:00"
+      "as_of": "2026-10-21T20:56:00"
     },
     {
       "classId": "geometry",
@@ -4963,9 +5068,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change since 10/20",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-21T14:15:00"
+      "as_of": "2026-10-21T20:56:00"
     }
   ],
   "grade_history": [
@@ -5343,6 +5448,30 @@
         "english-10": 93.91,
         "web-design": 92.93,
         "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-21T20:56:00",
+      "source": "Canvas",
+      "note": "Wed 9pm Canvas LIVE: no change.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 92.93,
+        "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-21T20:56:00",
+      "source": "ParentVUE",
+      "note": "Wed 9pm PV LIVE: no change; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 90.0,
+        "web-design": 93.0,
+        "chemistry": 100.0,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
       }
     }
   ]
