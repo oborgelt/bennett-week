@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-23T14:30:00-05:00",
+  "as_of": "2026-10-23T20:58:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -1950,8 +1950,8 @@
       "kind": "calendar",
       "classId": "band",
       "place": "ANT-DAC (Blue Valley District Activities Complex)",
-      "note": "Fillingham Band Update 10/12: call 6:30 AM; prelims performance 9:30 AM at ANT-DAC. Folder linked in email.",
-      "as_of": "2026-10-12T14:28:00"
+      "note": "Fillingham KBA Info 10/23 3:29pm: arrive OEHS 6:30am in DRIFIT uniform, leave 6:45, prelims 9:30am at ANT-DAC, back at OE 10:30am, return to stadium 1:30pm, prelims awards 3pm. No finals: dinner then home after ~3:30pm. Finals: finals awards 10pm, arrive OEHS ~10:30pm. Dad day.",
+      "as_of": "2026-10-23T20:55:00"
     },
     {
       "id": "oe-no-school-1102",
@@ -5121,6 +5121,11 @@
       "id": "after-school-2026-10-23T14:20:00",
       "as_of": "2026-10-23T14:20:00",
       "text": "After-school Fri 10/23 ~2:20pm CT FULL: Canvas LIVE unchanged (Eng 93.91, Web 92.93, Chem 99.96); nothing graded, no Missing, no announcements today. Nothing due tonight or this weekend; Mon 10/26 Web 4.4/4.5/4.6 9:20am and LOTF Quiz #1 11:59pm. Later English Canvas items logged: Check-In #2 11/20, Choice Book Project and Q2 Journal 12/11. ParentVUE LIVE (autofill, one click) unchanged %, 0 missing; Sociology and S&C updated 10/23 (Soc 8.1 & 8.2 Reading scored '-', CSI 1 100; S&C week of 10/19 100). PV inbox nothing new beyond Glow reminder; Attendance and Alerts not readable this run. Gmail NEW: district Two-Year Academies open house Thu 11/5 5:30-7:30pm (Mom time); apps open 11/6-12/4. English sheet, oeband, OE, district unchanged. Glow Show tonight in Mom time. No said-done."
+    },
+    {
+      "id": "bedtime-2026-10-23T20:55:00",
+      "as_of": "2026-10-23T20:55:00",
+      "text": "Bedtime Fri 10/23 ~8:55pm CT NARROW: Canvas LIVE UNCHANGED (Eng 93.91, Web 92.93, Chem 99.96); nothing graded/submitted/missing since 2:20pm; nothing due Sat-Sun; no new courses. ParentVUE LIVE (autofill, one click) unchanged, 0 missing; Alerts not readable. NEW mail (Gmail + PV inbox): Fillingham 'Buddies!' 2:48pm (buddy list link, see you tonight) and 'KBA Info!' 3:29pm (Sat 10/31 itinerary; finals would mean ~10:30pm return to OEHS). No Instructure mail. No said-done (Plaud work only). Mom time; Glow show tonight."
     }
   ],
   "grades": [
@@ -5132,9 +5137,9 @@
       "letter": "A+",
       "percent": 98.8,
       "missing": 0,
-      "detail": "No change since 10/21",
+      "detail": "KBA itinerary emailed 10/23",
       "source": "ParentVUE",
-      "as_of": "2026-10-23T14:20:00"
+      "as_of": "2026-10-23T20:55:00"
     },
     {
       "classId": "sociology",
@@ -5144,9 +5149,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "Updated 10/23, still 90%",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-23T14:20:00"
+      "as_of": "2026-10-23T20:55:00"
     },
     {
       "classId": "web-design",
@@ -5158,7 +5163,7 @@
       "missing": 0,
       "detail": "4.4-4.6 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-23T14:20:00"
+      "as_of": "2026-10-23T20:55:00"
     },
     {
       "classId": "chemistry",
@@ -5168,9 +5173,9 @@
       "letter": "A+",
       "percent": 99.96,
       "missing": 0,
-      "detail": "Copper Reading still 0/3",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-23T14:20:00"
+      "as_of": "2026-10-23T20:55:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5180,9 +5185,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "Week of 10/19 scored 100",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-23T14:20:00"
+      "as_of": "2026-10-23T20:55:00"
     },
     {
       "classId": "english-10",
@@ -5194,7 +5199,7 @@
       "missing": 0,
       "detail": "LOTF Quiz #1 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-23T14:20:00"
+      "as_of": "2026-10-23T20:55:00"
     },
     {
       "classId": "geometry",
@@ -5204,9 +5209,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change since 10/14",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-23T14:20:00"
+      "as_of": "2026-10-23T20:55:00"
     }
   ],
   "grade_history": [
@@ -5680,6 +5685,30 @@
         "english-10": 93.91,
         "web-design": 92.93,
         "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-23T20:55:00",
+      "source": "Canvas",
+      "note": "Fri 9pm Canvas LIVE: no change.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 92.93,
+        "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-23T20:55:00",
+      "source": "ParentVUE",
+      "note": "Fri 9pm PV LIVE: no change; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 90.0,
+        "web-design": 93.0,
+        "chemistry": 100.0,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
       }
     }
   ]
