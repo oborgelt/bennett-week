@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-24T14:20:00-05:00",
+  "as_of": "2026-10-24T20:57:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -5131,6 +5131,11 @@
       "id": "after-school-2026-10-24T14:16:00",
       "as_of": "2026-10-24T14:16:00",
       "text": "After-school Sat 10/24 ~2:16pm CT FULL: Canvas LIVE unchanged (Eng 93.91, Web 92.93, Chem 99.96); nothing graded/submitted/missing; no new courses; nothing due Sat-Sun. Mon 10/26: Web 4.4/4.5/4.6 9:20am, LOTF Quiz #1 11:59pm; Tue 10/27 Choice Book Check-In #1. ParentVUE LIVE (autofill, one click) unchanged, 0 missing; inbox nothing new; Attendance/Calendar/Alerts not readable. Gmail NEW: SchoolCafe low balance 10/24 4:39am, Bennett $5.90 (threshold $25; was $18.40 on 10/21); Canvas weekly digest (no new items). English sheet, oeband, district unchanged; OE homepage only athletics rotation. No new Plaud, no said-done. Mom time through Sun 6p."
+    },
+    {
+      "id": "bedtime-2026-10-24T20:57:00",
+      "as_of": "2026-10-24T20:57:00",
+      "text": "Bedtime Sat 10/24 ~8:57pm CT NARROW: Canvas LIVE UNCHANGED (Eng 93.91, Web 92.93, Chem 99.96); nothing graded/submitted/missing/late since 2:16pm; nothing due Sat-Sun; no new courses. ParentVUE LIVE (autofill, one click) unchanged, 0 missing; inbox newest still Fillingham KBA Info 10/23; Alerts not read. Gmail: no new school/teacher/Instructure mail; SchoolCafe autopay set up 5:11pm and $104 payment 5:12pm (resolves the low-balance alert). No Plaud said-done. Mom time to Sun 6p."
     }
   ],
   "grades": [
@@ -5144,7 +5149,7 @@
       "missing": 0,
       "detail": "KBA Sat 10/31, 6:30am call",
       "source": "ParentVUE",
-      "as_of": "2026-10-24T14:16:00"
+      "as_of": "2026-10-24T20:57:00"
     },
     {
       "classId": "sociology",
@@ -5154,9 +5159,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "No change Sat check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-24T14:16:00"
+      "as_of": "2026-10-24T20:57:00"
     },
     {
       "classId": "web-design",
@@ -5168,7 +5173,7 @@
       "missing": 0,
       "detail": "4.4-4.6 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-24T14:16:00"
+      "as_of": "2026-10-24T20:57:00"
     },
     {
       "classId": "chemistry",
@@ -5178,9 +5183,9 @@
       "letter": "A+",
       "percent": 99.96,
       "missing": 0,
-      "detail": "No change Sat check",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-24T14:16:00"
+      "as_of": "2026-10-24T20:57:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5190,9 +5195,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change Sat check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-24T14:16:00"
+      "as_of": "2026-10-24T20:57:00"
     },
     {
       "classId": "english-10",
@@ -5204,7 +5209,7 @@
       "missing": 0,
       "detail": "LOTF Quiz #1 due Mon 10/26",
       "source": "Canvas",
-      "as_of": "2026-10-24T14:16:00"
+      "as_of": "2026-10-24T20:57:00"
     },
     {
       "classId": "geometry",
@@ -5214,9 +5219,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change Sat check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-24T14:16:00"
+      "as_of": "2026-10-24T20:57:00"
     }
   ],
   "grade_history": [
@@ -5730,6 +5735,30 @@
       "as_of": "2026-10-24T14:16:00",
       "source": "ParentVUE",
       "note": "Sat 2:16pm PV LIVE: no change; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 90.0,
+        "web-design": 93.0,
+        "chemistry": 100.0,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-24T20:57:00",
+      "source": "Canvas",
+      "note": "Sat 9pm Canvas LIVE: no change.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 92.93,
+        "chemistry": 99.96
+      }
+    },
+    {
+      "as_of": "2026-10-24T20:57:00",
+      "source": "ParentVUE",
+      "note": "Sat 9pm PV LIVE: no change; 0 missing.",
       "grades": {
         "band": 98.8,
         "sociology": 90.0,
