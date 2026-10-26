@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-25T20:52:00-05:00",
+  "as_of": "2026-10-26T14:18:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -2034,6 +2034,16 @@
       "classId": "band",
       "note": "Fillingham 10/12: proceeds to individual students (Orlando trip or next-year fees). Flyer linked in Band Update.",
       "as_of": "2026-10-12T14:28:00"
+    },
+    {
+      "id": "bennett-early-leave-1026",
+      "title": "Bennett leaves school 2:30pm (appointment)",
+      "start": "2026-10-26T14:30:00",
+      "end": "2026-10-26T15:00:00",
+      "kind": "personal",
+      "classId": null,
+      "note": "Orin excused via OE Attendance; pass issued 10/26 11:07am (Shackelford).",
+      "as_of": "2026-10-26T14:18:00"
     }
   ],
   "work": [
@@ -4323,7 +4333,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-20T14:20:00",
+      "as_of": "2026-10-26T14:18:00",
       "note": "Derek Linn. Seen on Canvas Calendar Mon 10/19 2:20pm pull, -/20, due 10/26 (time not shown). | After-school Tue 10/20: Canvas -/20, due Mon 10/26 9:20am.",
       "followup": {
         "due_by": null,
@@ -4331,7 +4341,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-20T14:20:00"
+        "as_of": "2026-10-26T14:18:00"
       }
     },
     {
@@ -4348,7 +4358,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-20T14:20:00",
+      "as_of": "2026-10-26T14:18:00",
       "note": "Derek Linn. NEW on Canvas Tue 10/20 2:20pm pull: -/18 due Mon 10/26 9:20am.",
       "followup": {
         "due_by": null,
@@ -4356,7 +4366,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-20T14:20:00"
+        "as_of": "2026-10-26T14:18:00"
       }
     },
     {
@@ -4373,7 +4383,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-22T14:20:00",
+      "as_of": "2026-10-26T14:18:00",
       "note": "Linn. New on Canvas, seen after-school Thu 10/22: -/35 due Mon 10/26 9:20am CT.",
       "followup": {
         "due_by": null,
@@ -4381,7 +4391,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-22T14:20:00"
+        "as_of": "2026-10-26T14:18:00"
       }
     },
     {
@@ -4398,7 +4408,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-20T20:56:00",
+      "as_of": "2026-10-26T14:18:00",
       "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/10 due Mon 10/26 11:59pm.",
       "followup": {
         "due_by": null,
@@ -4406,7 +4416,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-20T20:56:00"
+        "as_of": "2026-10-26T14:18:00"
       }
     },
     {
@@ -4423,7 +4433,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-20T20:56:00",
+      "as_of": "2026-10-26T14:18:00",
       "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/5 due Tue 10/27 11:59pm.",
       "followup": {
         "due_by": null,
@@ -4431,7 +4441,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-20T20:56:00"
+        "as_of": "2026-10-26T14:18:00"
       }
     },
     {
@@ -4448,7 +4458,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-22T14:20:00",
+      "as_of": "2026-10-26T14:18:00",
       "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/30. Due time not confirmed. | Sheet 10/22: begin face mask project 10/28-29 block; mask project due at end of hour 10/30.",
       "followup": {
         "due_by": null,
@@ -4456,7 +4466,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-21T20:56:00"
+        "as_of": "2026-10-26T14:18:00"
       }
     },
     {
@@ -4473,7 +4483,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-21T20:56:00",
+      "as_of": "2026-10-26T14:18:00",
       "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed.",
       "followup": {
         "due_by": null,
@@ -4481,7 +4491,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-21T20:56:00"
+        "as_of": "2026-10-26T14:18:00"
       }
     },
     {
@@ -4498,7 +4508,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-21T20:56:00",
+      "as_of": "2026-10-26T14:18:00",
       "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed.",
       "followup": {
         "due_by": null,
@@ -4506,7 +4516,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-21T20:56:00"
+        "as_of": "2026-10-26T14:18:00"
       }
     },
     {
@@ -4607,6 +4617,31 @@
       },
       "canvas": {
         "as_of": "2026-10-23T14:20:00"
+      }
+    },
+    {
+      "id": "web-47-css-selectors-1103",
+      "title": "Web Design: 4.7 Combining CSS Selectors",
+      "classId": "web-design",
+      "due": "2026-11-03T09:20:00",
+      "status": "open",
+      "school_status": "open",
+      "student_status": null,
+      "score": null,
+      "points": 19,
+      "late": false,
+      "discrepancy": false,
+      "source": "canvas",
+      "submitted_at": null,
+      "as_of": "2026-10-26T14:18:00",
+      "note": "Linn. New on Canvas, seen after-school Mon 10/26: -/19 due Tue 11/3 9:20am CT.",
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "canvas": {
+        "as_of": "2026-10-26T14:18:00"
       }
     }
   ],
@@ -5146,6 +5181,11 @@
       "id": "bedtime-2026-10-25T20:52:00",
       "as_of": "2026-10-25T20:52:00",
       "text": "Bedtime Sun 10/25 ~8:52pm CT NARROW: Canvas LIVE UNCHANGED (Eng 93.91, Web 92.93, Chem 99.96); nothing graded/submitted/missing; Mon 10/26 Web 4.4-4.6 9:20am + LOTF Quiz #1 11:59pm; Tue Check-In #1. ParentVUE LIVE (autofill, one click) unchanged, 0 missing (Geometry row not read). NEW Fillingham Band Update 10/25 4:32pm (PV + Gmail): last Mon night rehearsal 10/26 6:30-8:30pm, 100% attendance asked this week; KBA Sat 10/31 6:30am call, prelims 9:30am ANT-DAC; KMEA All-District auditions Sat 11/7 at SMN ($18 fee ASAP if signed up); in-class playing test 11/9-11 sets next-semester chairs; mattress sale fundraiser 11/15 10a-5p for Orlando/band fees. Gmail also: Hawk Weekly 10.25 (link only); Livingston Counseling reminder for Bennett's Mon 10/26 appt. No Plaud said-done. Dad time from Sun 6p."
+    },
+    {
+      "id": "after-school-2026-10-26T14:18:00",
+      "as_of": "2026-10-26T14:18:00",
+      "text": "After-school Mon 10/26 ~2:18pm CT FULL: Canvas LIVE: Chem 99.96 to 99.49 (Instructure: Unit 1: Lab Skills graded 10:31am; score not visible on Canvas list; Copper Cycle still 0/3). Eng 93.91, Web 92.93 unchanged. Web 4.4-4.6 due 9:20am, not graded yet, not Missing. LOTF Quiz #1 due tonight 11:59pm; Check-In #1 Tue 11:59pm; Mask Project Fri; NEW Web 4.7 Combining CSS Selectors -/19 due Tue 11/3 9:20am. ParentVUE LIVE (autofill, one click): Chem 99.5 updated 10/26, others unchanged, 0 missing; inbox nothing new; Attendance/Alerts/2-wk Calendar not readable. Gmail: Orin's 2:30p early-leave note for 3p appointment, pass issued 11:07am; Chem graded email; Jostens promo. oeband/district unchanged; OE homepage now lists Picture Retake Thu 10/29 7:40a-2:40p (already on file) and 10th-grade hearing/vision Tue 10/27. English sheet: 12/1 Helzberg culminating event marked 'Probably AM only'. No Plaud said-done. Tonight: band rehearsal 6:30-8:30p (Dad night)."
     }
   ],
   "grades": [
@@ -5157,9 +5197,9 @@
       "letter": "A+",
       "percent": 98.8,
       "missing": 0,
-      "detail": "Last Mon rehearsal 10/26 6:30-8:30p",
+      "detail": "Last Mon rehearsal tonight 6:30-8:30p",
       "source": "ParentVUE",
-      "as_of": "2026-10-25T20:52:00"
+      "as_of": "2026-10-26T14:18:00"
     },
     {
       "classId": "sociology",
@@ -5169,9 +5209,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change at 2pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-25T20:52:00"
+      "as_of": "2026-10-26T14:18:00"
     },
     {
       "classId": "web-design",
@@ -5181,9 +5221,9 @@
       "letter": "A",
       "percent": 92.93,
       "missing": 0,
-      "detail": "4.4-4.6 due Mon 10/26",
+      "detail": "4.4-4.6 due today, not graded yet",
       "source": "Canvas",
-      "as_of": "2026-10-25T20:52:00"
+      "as_of": "2026-10-26T14:18:00"
     },
     {
       "classId": "chemistry",
@@ -5191,11 +5231,11 @@
       "period": "P4",
       "teacher": "Justin Pfeiff",
       "letter": "A+",
-      "percent": 99.96,
+      "percent": 99.49,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "Lab Skills graded today; 99.49%",
       "source": "Canvas",
-      "as_of": "2026-10-25T20:52:00"
+      "as_of": "2026-10-26T14:18:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5205,9 +5245,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change at 2pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-25T20:52:00"
+      "as_of": "2026-10-26T14:18:00"
     },
     {
       "classId": "english-10",
@@ -5217,9 +5257,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "LOTF Quiz #1 due Mon 10/26",
+      "detail": "LOTF Quiz #1 due tonight 11:59p",
       "source": "Canvas",
-      "as_of": "2026-10-25T20:52:00"
+      "as_of": "2026-10-26T14:18:00"
     },
     {
       "classId": "geometry",
@@ -5229,9 +5269,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change at 2pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-25T14:20:00"
+      "as_of": "2026-10-26T14:18:00"
     }
   ],
   "grade_history": [
@@ -5824,6 +5864,30 @@
         "chemistry": 100.0,
         "strength-conditioning": 100.0,
         "english-10": 93.91
+      }
+    },
+    {
+      "as_of": "2026-10-26T14:18:00",
+      "source": "Canvas",
+      "note": "Mon 2pm Canvas LIVE: Chem 99.96 to 99.49 (Unit 1: Lab Skills graded 10/26 10:31am per Instructure email; score not shown). Eng, Web unchanged.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 92.93,
+        "chemistry": 99.49
+      }
+    },
+    {
+      "as_of": "2026-10-26T14:18:00",
+      "source": "ParentVUE",
+      "note": "Mon 2pm PV LIVE: Chem 100 to 99.5 (updated 10/26); others unchanged; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 90.0,
+        "web-design": 93.0,
+        "chemistry": 99.5,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
       }
     }
   ]
