@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-26T20:53:00-05:00",
+  "as_of": "2026-10-27T14:25:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -154,6 +154,17 @@
     }
   ],
   "events": [
+    {
+      "id": "band-loadout-kba-1031",
+      "title": "Band: Load Out / In for KBA Marching Invitational",
+      "start": "2026-10-31T06:30:00",
+      "end": "2026-10-31T23:00:00",
+      "kind": "calendar",
+      "classId": "band",
+      "place": "ANT-DAC (Blue Valley District Activities Complex)",
+      "note": "Fillingham KBA Info 10/23 3:29pm: arrive OEHS 6:30am in DRIFIT uniform, leave 6:45, prelims 9:30am at ANT-DAC, back at OE 10:30am, return to stadium 1:30pm, prelims awards 3pm. No finals: dinner then home after ~3:30pm. Finals: finals awards 10pm, arrive OEHS ~10:30pm. Dad day.",
+      "as_of": "2026-10-27T14:25:00"
+    },
     {
       "date": "2026-09-28",
       "title": "English: AAB Pg. 204–246 due (reading check)",
@@ -1919,8 +1930,8 @@
       "start": "2026-10-29",
       "kind": "calendar",
       "place": "Olathe East",
-      "note": "Wolgast email 10/22 10:43am: retakes Thu 10/29 for students who missed August Picture Day or want a retake; called by alpha group over intercom to Teacher's Lounge, all-call at end of day. No times given.",
-      "as_of": "2026-10-22T14:20:00",
+      "note": "Wolgast email 10/22 10:43am: retakes Thu 10/29 for students who missed August Picture Day or want a retake; called by alpha group over intercom to Teacher's Lounge, all-call at end of day. No times given. Reminder email again 10/27 12:28pm (Wolgast), same details.",
+      "as_of": "2026-10-27T14:25:00",
       "source": "gmail"
     },
     {
@@ -1941,17 +1952,6 @@
       "kind": "calendar",
       "classId": "band",
       "place": "Olathe East"
-    },
-    {
-      "id": "band-loadout-kba-1031",
-      "title": "Band: Load Out / In for KBA Marching Invitational",
-      "start": "2026-10-31T06:30:00",
-      "end": "2026-10-31T23:00:00",
-      "kind": "calendar",
-      "classId": "band",
-      "place": "ANT-DAC (Blue Valley District Activities Complex)",
-      "note": "Fillingham KBA Info 10/23 3:29pm: arrive OEHS 6:30am in DRIFIT uniform, leave 6:45, prelims 9:30am at ANT-DAC, back at OE 10:30am, return to stadium 1:30pm, prelims awards 3pm. No finals: dinner then home after ~3:30pm. Finals: finals awards 10pm, arrive OEHS ~10:30pm. Dad day.",
-      "as_of": "2026-10-23T20:55:00"
     },
     {
       "id": "oe-no-school-1102",
@@ -4333,7 +4333,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T20:53:00",
+      "as_of": "2026-10-27T14:25:00",
       "note": "Derek Linn. Seen on Canvas Calendar Mon 10/19 2:20pm pull, -/20, due 10/26 (time not shown). | After-school Tue 10/20: Canvas -/20, due Mon 10/26 9:20am.",
       "followup": {
         "due_by": null,
@@ -4341,7 +4341,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T20:53:00"
+        "as_of": "2026-10-27T14:25:00"
       }
     },
     {
@@ -4358,7 +4358,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T20:53:00",
+      "as_of": "2026-10-27T14:25:00",
       "note": "Derek Linn. NEW on Canvas Tue 10/20 2:20pm pull: -/18 due Mon 10/26 9:20am.",
       "followup": {
         "due_by": null,
@@ -4366,7 +4366,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T20:53:00"
+        "as_of": "2026-10-27T14:25:00"
       }
     },
     {
@@ -4383,7 +4383,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T20:53:00",
+      "as_of": "2026-10-27T14:25:00",
       "note": "Linn. New on Canvas, seen after-school Thu 10/22: -/35 due Mon 10/26 9:20am CT.",
       "followup": {
         "due_by": null,
@@ -4391,7 +4391,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T20:53:00"
+        "as_of": "2026-10-27T14:25:00"
       }
     },
     {
@@ -4400,7 +4400,7 @@
       "classId": "english-10",
       "due": "2026-10-26T23:59:00",
       "status": "open",
-      "school_status": "open",
+      "school_status": "not submitted",
       "student_status": null,
       "score": null,
       "points": 10,
@@ -4408,15 +4408,16 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T20:53:00",
-      "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/10 due Mon 10/26 11:59pm.",
+      "as_of": "2026-10-27T14:25:00",
+      "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/10 due Mon 10/26 11:59pm. | 10/27 2:20pm Canvas: still -/10, no submission, not flagged Missing or Late; past due 10/26 11:59pm.",
       "followup": {
-        "due_by": null,
+        "due_by": "2026-10-27T21:00:00",
         "email_draft": null,
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T20:53:00"
+        "as_of": "2026-10-27T14:25:00",
+        "status": "unsubmitted"
       }
     },
     {
@@ -4424,24 +4425,26 @@
       "title": "English: Choice Book Check-In #1",
       "classId": "english-10",
       "due": "2026-10-27T23:59:00",
-      "status": "open",
-      "school_status": "open",
+      "status": "submitted",
+      "school_status": "submitted",
       "student_status": null,
       "score": null,
       "points": 5,
       "late": false,
       "discrepancy": false,
       "source": "canvas",
-      "submitted_at": null,
-      "as_of": "2026-10-26T20:53:00",
-      "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/5 due Tue 10/27 11:59pm.",
+      "submitted_at": "2026-10-27T13:30:00",
+      "as_of": "2026-10-27T14:25:00",
+      "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/5 due Tue 10/27 11:59pm. | Canvas 10/27: submitted 1:30pm (text entry), not scored yet.",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T20:53:00"
+        "as_of": "2026-10-27T14:25:00",
+        "status": "submitted",
+        "submitted_at": "2026-10-27T13:30:00"
       }
     },
     {
@@ -4458,15 +4461,15 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
-      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/30. Due time not confirmed. | Sheet 10/22: begin face mask project 10/28-29 block; mask project due at end of hour 10/30.",
+      "as_of": "2026-10-27T14:25:00",
+      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/30. Due time not confirmed. | Sheet 10/22: begin face mask project 10/28-29 block; mask project due at end of hour 10/30. | Sheet 10/27 changed: 10/28-29 now chapter annotations; 10/30 \"Begin mask project\"; 11/3 mask project work time. Canvas still shows due Fri 10/30 11:59pm (-/30).",
       "followup": {
         "due_by": null,
         "email_draft": null,
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-27T14:25:00"
       }
     },
     {
@@ -4483,7 +4486,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
+      "as_of": "2026-10-27T14:25:00",
       "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed.",
       "followup": {
         "due_by": null,
@@ -4491,7 +4494,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-27T14:25:00"
       }
     },
     {
@@ -4508,7 +4511,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
+      "as_of": "2026-10-27T14:25:00",
       "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed.",
       "followup": {
         "due_by": null,
@@ -4516,7 +4519,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-27T14:25:00"
       }
     },
     {
@@ -4633,7 +4636,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T20:53:00",
+      "as_of": "2026-10-27T14:25:00",
       "note": "Linn. New on Canvas, seen after-school Mon 10/26: -/19 due Tue 11/3 9:20am CT.",
       "followup": {
         "due_by": null,
@@ -4641,11 +4644,16 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T20:53:00"
+        "as_of": "2026-10-27T14:25:00"
       }
     }
   ],
   "notes": [
+    {
+      "id": "band-watch-kba-1031",
+      "as_of": "2026-10-27T14:25:00",
+      "text": "BAND WATCH through KBA Sat 10/31: 6:30am call at OEHS in Dri-Fit, prelims 9:30am at ANT-DAC, prelims awards 3pm; if finals, awards ~10pm and back at OE ~10:30pm (Dad day). Checked 10/27 2:25pm: oeband.com, Fillingham email, ParentVUE inbox, Canvas Band: nothing new, no schedule change. Remaining rehearsals: Wed 10/28 7:00-9:15am, Fri 10/30 7:00-8:40am."
+    },
     {
       "id": "after-school-20261018",
       "as_of": "2026-10-18T14:14:00",
@@ -5191,6 +5199,11 @@
       "id": "bedtime-2026-10-26T20:53:00",
       "as_of": "2026-10-26T20:53:00",
       "text": "Bedtime Mon 10/26 ~8:53pm CT NARROW + BAND WATCH: Canvas LIVE UNCHANGED (Eng 93.91, Web 92.93, Chem 99.49); Chem Unit 1: Lab Skills now shows 9/9, Copper Cycle Reading still 0/3, no Missing/Late anywhere. Web 4.4-4.6 still ungraded (normal). LOTF Quiz #1 not yet submitted at 8:53pm, due 11:59pm tonight; Check-In #1 Tue. ParentVUE LIVE (autofill, one click) unchanged, 0 missing, inbox nothing newer than 10/25 4:32pm Band Update. BAND: oeband.com shows nothing new for KBA 10/31 (calendar embed not readable); no new Fillingham mail; KBA itinerary unchanged (6:30am call OE, prelims 9:30am ANT-DAC, finals return ~10:30pm). Gmail: no new school mail since 2:18pm. No Plaud said-done."
+    },
+    {
+      "id": "after-school-2026-10-27T14:25:00",
+      "as_of": "2026-10-27T14:25:00",
+      "text": "After-school Tue 10/27 ~2:25pm CT FULL: Canvas LIVE: Eng 93.91, Web 92.93, Chem 99.49 unchanged; nothing graded. LOTF Quiz #1 (due Mon 11:59pm) still -/10 with no submission, not flagged Missing. Choice Book Check-In #1 submitted today 1:30pm (not scored). Web 4.4-4.6 ungraded (normal). Mask Project Canvas due Fri 10/30, but the English sheet now says mask project begins Fri with work time 11/3. No new assignments; no Canvas announcements; Soc/S&C still unpublished. ParentVUE LIVE: Sociology 90 to 91 (10/27), others unchanged, 0 missing; inbox nothing new since 10/25 Band Update; Attendance/Alerts/Calendar not readable. Gmail: picture retake reminder Thu 10/29 (already on file). oeband/district unchanged; OE home lists hearing/vision today. No Plaud said-done. Dad night tonight (Mom Thu 4:30p-Fri 4:30p)."
     }
   ],
   "grades": [
@@ -5204,7 +5217,7 @@
       "missing": 0,
       "detail": "KBA Sat 10/31 6:30am call, no change",
       "source": "ParentVUE",
-      "as_of": "2026-10-26T20:53:00"
+      "as_of": "2026-10-27T14:25:00"
     },
     {
       "classId": "sociology",
@@ -5212,11 +5225,11 @@
       "period": "P2",
       "teacher": "Todd Keach",
       "letter": "A-",
-      "percent": 90.0,
+      "percent": 91.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "Up to 91% (updated 10/27)",
       "source": "ParentVUE",
-      "as_of": "2026-10-26T20:53:00"
+      "as_of": "2026-10-27T14:25:00"
     },
     {
       "classId": "web-design",
@@ -5226,9 +5239,9 @@
       "letter": "A",
       "percent": 92.93,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change at 2pm check",
       "source": "Canvas",
-      "as_of": "2026-10-26T20:53:00"
+      "as_of": "2026-10-27T14:25:00"
     },
     {
       "classId": "chemistry",
@@ -5238,9 +5251,9 @@
       "letter": "A+",
       "percent": 99.49,
       "missing": 0,
-      "detail": "Lab Skills 9/9; 99.49%",
+      "detail": "No change at 2pm check",
       "source": "Canvas",
-      "as_of": "2026-10-26T20:53:00"
+      "as_of": "2026-10-27T14:25:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5250,9 +5263,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change at 2pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-26T20:53:00"
+      "as_of": "2026-10-27T14:25:00"
     },
     {
       "classId": "english-10",
@@ -5262,9 +5275,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "LOTF Quiz #1 due tonight 11:59p",
+      "detail": "LOTF Quiz #1 not submitted yet",
       "source": "Canvas",
-      "as_of": "2026-10-26T20:53:00"
+      "as_of": "2026-10-27T14:25:00"
     },
     {
       "classId": "geometry",
@@ -5274,9 +5287,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "No change at 2pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-26T14:18:00"
+      "as_of": "2026-10-27T14:25:00"
     }
   ],
   "grade_history": [
@@ -5916,6 +5929,30 @@
         "chemistry": 99.5,
         "strength-conditioning": 100.0,
         "english-10": 93.91
+      }
+    },
+    {
+      "as_of": "2026-10-27T14:25:00",
+      "source": "Canvas",
+      "note": "Tue 2pm Canvas LIVE unchanged.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 92.93,
+        "chemistry": 99.49
+      }
+    },
+    {
+      "as_of": "2026-10-27T14:25:00",
+      "source": "ParentVUE",
+      "note": "Tue 2pm PV LIVE (autofill, one click): Sociology 90 to 91 (updated 10/27); others unchanged; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 91.0,
+        "web-design": 93.0,
+        "chemistry": 99.5,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
       }
     }
   ]
