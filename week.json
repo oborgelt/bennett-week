@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-26T14:18:00-05:00",
+  "as_of": "2026-10-26T20:53:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4333,7 +4333,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
+      "as_of": "2026-10-26T20:53:00",
       "note": "Derek Linn. Seen on Canvas Calendar Mon 10/19 2:20pm pull, -/20, due 10/26 (time not shown). | After-school Tue 10/20: Canvas -/20, due Mon 10/26 9:20am.",
       "followup": {
         "due_by": null,
@@ -4341,7 +4341,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-26T20:53:00"
       }
     },
     {
@@ -4358,7 +4358,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
+      "as_of": "2026-10-26T20:53:00",
       "note": "Derek Linn. NEW on Canvas Tue 10/20 2:20pm pull: -/18 due Mon 10/26 9:20am.",
       "followup": {
         "due_by": null,
@@ -4366,7 +4366,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-26T20:53:00"
       }
     },
     {
@@ -4383,7 +4383,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
+      "as_of": "2026-10-26T20:53:00",
       "note": "Linn. New on Canvas, seen after-school Thu 10/22: -/35 due Mon 10/26 9:20am CT.",
       "followup": {
         "due_by": null,
@@ -4391,7 +4391,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-26T20:53:00"
       }
     },
     {
@@ -4408,7 +4408,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
+      "as_of": "2026-10-26T20:53:00",
       "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/10 due Mon 10/26 11:59pm.",
       "followup": {
         "due_by": null,
@@ -4416,7 +4416,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-26T20:53:00"
       }
     },
     {
@@ -4433,7 +4433,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
+      "as_of": "2026-10-26T20:53:00",
       "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/5 due Tue 10/27 11:59pm.",
       "followup": {
         "due_by": null,
@@ -4441,7 +4441,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-26T20:53:00"
       }
     },
     {
@@ -4633,7 +4633,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-26T14:18:00",
+      "as_of": "2026-10-26T20:53:00",
       "note": "Linn. New on Canvas, seen after-school Mon 10/26: -/19 due Tue 11/3 9:20am CT.",
       "followup": {
         "due_by": null,
@@ -4641,7 +4641,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-10-26T14:18:00"
+        "as_of": "2026-10-26T20:53:00"
       }
     }
   ],
@@ -5186,6 +5186,11 @@
       "id": "after-school-2026-10-26T14:18:00",
       "as_of": "2026-10-26T14:18:00",
       "text": "After-school Mon 10/26 ~2:18pm CT FULL: Canvas LIVE: Chem 99.96 to 99.49 (Instructure: Unit 1: Lab Skills graded 10:31am; score not visible on Canvas list; Copper Cycle still 0/3). Eng 93.91, Web 92.93 unchanged. Web 4.4-4.6 due 9:20am, not graded yet, not Missing. LOTF Quiz #1 due tonight 11:59pm; Check-In #1 Tue 11:59pm; Mask Project Fri; NEW Web 4.7 Combining CSS Selectors -/19 due Tue 11/3 9:20am. ParentVUE LIVE (autofill, one click): Chem 99.5 updated 10/26, others unchanged, 0 missing; inbox nothing new; Attendance/Alerts/2-wk Calendar not readable. Gmail: Orin's 2:30p early-leave note for 3p appointment, pass issued 11:07am; Chem graded email; Jostens promo. oeband/district unchanged; OE homepage now lists Picture Retake Thu 10/29 7:40a-2:40p (already on file) and 10th-grade hearing/vision Tue 10/27. English sheet: 12/1 Helzberg culminating event marked 'Probably AM only'. No Plaud said-done. Tonight: band rehearsal 6:30-8:30p (Dad night)."
+    },
+    {
+      "id": "bedtime-2026-10-26T20:53:00",
+      "as_of": "2026-10-26T20:53:00",
+      "text": "Bedtime Mon 10/26 ~8:53pm CT NARROW + BAND WATCH: Canvas LIVE UNCHANGED (Eng 93.91, Web 92.93, Chem 99.49); Chem Unit 1: Lab Skills now shows 9/9, Copper Cycle Reading still 0/3, no Missing/Late anywhere. Web 4.4-4.6 still ungraded (normal). LOTF Quiz #1 not yet submitted at 8:53pm, due 11:59pm tonight; Check-In #1 Tue. ParentVUE LIVE (autofill, one click) unchanged, 0 missing, inbox nothing newer than 10/25 4:32pm Band Update. BAND: oeband.com shows nothing new for KBA 10/31 (calendar embed not readable); no new Fillingham mail; KBA itinerary unchanged (6:30am call OE, prelims 9:30am ANT-DAC, finals return ~10:30pm). Gmail: no new school mail since 2:18pm. No Plaud said-done."
     }
   ],
   "grades": [
@@ -5197,9 +5202,9 @@
       "letter": "A+",
       "percent": 98.8,
       "missing": 0,
-      "detail": "Last Mon rehearsal tonight 6:30-8:30p",
+      "detail": "KBA Sat 10/31 6:30am call, no change",
       "source": "ParentVUE",
-      "as_of": "2026-10-26T14:18:00"
+      "as_of": "2026-10-26T20:53:00"
     },
     {
       "classId": "sociology",
@@ -5209,9 +5214,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-26T14:18:00"
+      "as_of": "2026-10-26T20:53:00"
     },
     {
       "classId": "web-design",
@@ -5221,9 +5226,9 @@
       "letter": "A",
       "percent": 92.93,
       "missing": 0,
-      "detail": "4.4-4.6 due today, not graded yet",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-26T14:18:00"
+      "as_of": "2026-10-26T20:53:00"
     },
     {
       "classId": "chemistry",
@@ -5233,9 +5238,9 @@
       "letter": "A+",
       "percent": 99.49,
       "missing": 0,
-      "detail": "Lab Skills graded today; 99.49%",
+      "detail": "Lab Skills 9/9; 99.49%",
       "source": "Canvas",
-      "as_of": "2026-10-26T14:18:00"
+      "as_of": "2026-10-26T20:53:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5245,9 +5250,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-26T14:18:00"
+      "as_of": "2026-10-26T20:53:00"
     },
     {
       "classId": "english-10",
@@ -5259,7 +5264,7 @@
       "missing": 0,
       "detail": "LOTF Quiz #1 due tonight 11:59p",
       "source": "Canvas",
-      "as_of": "2026-10-26T14:18:00"
+      "as_of": "2026-10-26T20:53:00"
     },
     {
       "classId": "geometry",
@@ -5269,7 +5274,7 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
       "as_of": "2026-10-26T14:18:00"
     }
@@ -5888,6 +5893,29 @@
         "strength-conditioning": 100.0,
         "english-10": 93.91,
         "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-26T20:53:00",
+      "source": "Canvas",
+      "note": "Mon 9pm Canvas LIVE: no change (Lab Skills now shows 9/9).",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 92.93,
+        "chemistry": 99.49
+      }
+    },
+    {
+      "as_of": "2026-10-26T20:53:00",
+      "source": "ParentVUE",
+      "note": "Mon 9pm PV LIVE: no change; 0 missing (Geometry row not read).",
+      "grades": {
+        "band": 98.8,
+        "sociology": 90.0,
+        "web-design": 93.0,
+        "chemistry": 99.5,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91
       }
     }
   ]
