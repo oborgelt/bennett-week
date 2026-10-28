@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-27T14:25:00-05:00",
+  "as_of": "2026-10-27T20:58:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -5204,6 +5204,11 @@
       "id": "after-school-2026-10-27T14:25:00",
       "as_of": "2026-10-27T14:25:00",
       "text": "After-school Tue 10/27 ~2:25pm CT FULL: Canvas LIVE: Eng 93.91, Web 92.93, Chem 99.49 unchanged; nothing graded. LOTF Quiz #1 (due Mon 11:59pm) still -/10 with no submission, not flagged Missing. Choice Book Check-In #1 submitted today 1:30pm (not scored). Web 4.4-4.6 ungraded (normal). Mask Project Canvas due Fri 10/30, but the English sheet now says mask project begins Fri with work time 11/3. No new assignments; no Canvas announcements; Soc/S&C still unpublished. ParentVUE LIVE: Sociology 90 to 91 (10/27), others unchanged, 0 missing; inbox nothing new since 10/25 Band Update; Attendance/Alerts/Calendar not readable. Gmail: picture retake reminder Thu 10/29 (already on file). oeband/district unchanged; OE home lists hearing/vision today. No Plaud said-done. Dad night tonight (Mom Thu 4:30p-Fri 4:30p)."
+    },
+    {
+      "id": "bedtime-2026-10-27T20:58:00",
+      "as_of": "2026-10-27T20:58:00",
+      "text": "Bedtime Tue 10/27 ~8:58pm CT NARROW + BAND WATCH: Canvas LIVE UNCHANGED (Eng 93.91, Web 92.93, Chem 99.49); nothing newly graded, nothing Missing. LOTF Quiz #1 (due 10/26) still -/10 with no submission, not flagged Missing. Choice Book Check-In #1 submitted 1:30pm, not graded yet. Web 4.4-4.6 ungraded (normal). ParentVUE LIVE (autofill, one click) unchanged, 0 missing, inbox nothing newer than 10/25 Band Update. BAND: oeband.com no change; no new Fillingham mail; KBA 10/31 itinerary unchanged. Gmail: no new school mail since 2:25pm. No Plaud said-done."
     }
   ],
   "grades": [
@@ -5217,7 +5222,7 @@
       "missing": 0,
       "detail": "KBA Sat 10/31 6:30am call, no change",
       "source": "ParentVUE",
-      "as_of": "2026-10-27T14:25:00"
+      "as_of": "2026-10-27T20:58:00"
     },
     {
       "classId": "sociology",
@@ -5227,9 +5232,9 @@
       "letter": "A-",
       "percent": 91.0,
       "missing": 0,
-      "detail": "Up to 91% (updated 10/27)",
+      "detail": "91% (updated 10/27), no change",
       "source": "ParentVUE",
-      "as_of": "2026-10-27T14:25:00"
+      "as_of": "2026-10-27T20:58:00"
     },
     {
       "classId": "web-design",
@@ -5239,9 +5244,9 @@
       "letter": "A",
       "percent": 92.93,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-27T14:25:00"
+      "as_of": "2026-10-27T20:58:00"
     },
     {
       "classId": "chemistry",
@@ -5251,9 +5256,9 @@
       "letter": "A+",
       "percent": 99.49,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-27T14:25:00"
+      "as_of": "2026-10-27T20:58:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5263,9 +5268,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-27T14:25:00"
+      "as_of": "2026-10-27T20:58:00"
     },
     {
       "classId": "english-10",
@@ -5275,9 +5280,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "LOTF Quiz #1 not submitted yet",
+      "detail": "LOTF Quiz #1 still not submitted",
       "source": "Canvas",
-      "as_of": "2026-10-27T14:25:00"
+      "as_of": "2026-10-27T20:58:00"
     },
     {
       "classId": "geometry",
@@ -5287,9 +5292,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-27T14:25:00"
+      "as_of": "2026-10-27T20:58:00"
     }
   ],
   "grade_history": [
@@ -5945,6 +5950,30 @@
       "as_of": "2026-10-27T14:25:00",
       "source": "ParentVUE",
       "note": "Tue 2pm PV LIVE (autofill, one click): Sociology 90 to 91 (updated 10/27); others unchanged; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 91.0,
+        "web-design": 93.0,
+        "chemistry": 99.5,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-27T20:58:00",
+      "source": "Canvas",
+      "note": "Tue 9pm Canvas LIVE: no change.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 92.93,
+        "chemistry": 99.49
+      }
+    },
+    {
+      "as_of": "2026-10-27T20:58:00",
+      "source": "ParentVUE",
+      "note": "Tue 9pm PV LIVE: no change; 0 missing.",
       "grades": {
         "band": 98.8,
         "sociology": 91.0,
