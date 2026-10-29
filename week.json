@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-28T20:55:00-05:00",
+  "as_of": "2026-10-29T14:25:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4705,8 +4705,8 @@
   "notes": [
     {
       "id": "band-watch-kba-1031",
-      "as_of": "2026-10-28T14:35:00",
-      "text": "BAND WATCH through KBA Sat 10/31: 6:30am call at OEHS in Dri-Fit, prelims 9:30am at ANT-DAC, prelims awards 3pm; if finals, awards ~10pm and back at OE ~10:30pm (Dad day). Checked 10/28 2:30pm: oeband.com (home + payments), Fillingham email, ParentVUE inbox, Canvas Band: nothing new, no schedule change. Remaining rehearsal: Fri 10/30 7:00-8:40am."
+      "as_of": "2026-10-29T14:25:00",
+      "text": "BAND WATCH through KBA Sat 10/31: 6:30am call at OEHS in Dri-Fit, prelims 9:30am at ANT-DAC, prelims awards 3pm; if finals, awards ~10pm and back at OE ~10:30pm (Dad day). Checked Thu 10/29 2:20pm: oeband.com (home now lists Oct 31 9:30am prelims at ANT-DAC, 16200 Antioch Rd; payments unchanged), no new Fillingham email, Canvas Band no announcements: no schedule change. ParentVUE inbox not read (login wall). Remaining rehearsal: Fri 10/30 7:00-8:40am."
     },
     {
       "id": "after-school-20261018",
@@ -5273,6 +5273,11 @@
       "id": "bedtime-2026-10-28T20:55:00",
       "as_of": "2026-10-28T20:55:00",
       "text": "Bedtime Wed 10/28 ~8:55pm CT NARROW + BAND WATCH: Canvas LIVE Chem 99.49 to 100.2 (Pfeiff graded Naming Ionic and Molecular Compounds 7:22pm, Natural and Lab-Grown Gemstones 7:31pm, Crystals and Gemstones 7:41pm per Canvas emails; Canvas shows Naming 2/2). Eng 93.91, Web 93.78 unchanged; nothing Missing/Late. LOTF Quiz #1 (due 10/26) still -/10 unsubmitted, not flagged Missing. Check-In #1 still ungraded. Copper Cycle Reading still 0/3. Due Fri 10/30: Eng 10.3 Idea Rough Draft, Mask Project. ParentVUE LIVE (autofill, one click) Chem 100.2, others unchanged, 0 missing; inbox nothing newer than Ann Book 1:02pm; Alerts not readable. BAND: oeband no change; no new Fillingham mail; KBA 10/31 unchanged. Gmail: Canvas Chem graded x3, Jostens photo promo. No Plaud said-done."
+    },
+    {
+      "id": "after-school-2026-10-29T14:25:00",
+      "as_of": "2026-10-29T14:25:00",
+      "text": "After-school Thu 10/29 ~2:25pm CT FULL + BAND WATCH: Canvas LIVE unchanged (Eng 93.91, Web 93.78, Chem 100.2), nothing Missing; old Late flags only. Due Fri 10/30 11:59pm: Eng 10.3 Idea Rough Draft (-/10, not submitted) and Mask Project (-/30). LOTF Quiz #1 (due 10/26) still -/10 unsubmitted, not flagged Missing. Next: LOTF Quiz #2 + Web 4.7/4.8 Tue 11/3. Gmail: Chem Investigate Covalent Bonds Summary graded 10/28 8:07pm; nothing new from school 10/29. ParentVUE LOGIN WALL (autofill gave no password), Grade Book/Attendance/Inbox/Alerts not read. oeband, OE homepage, district calendar, English sheet: no meaningful change. Tonight is a Mom night (Thu). No Plaud said-done."
     }
   ],
   "grades": [
@@ -5296,7 +5301,7 @@
       "letter": "A-",
       "percent": 91.0,
       "missing": 0,
-      "detail": "91% (updated 10/28), no change",
+      "detail": "Refresh pending",
       "source": "ParentVUE",
       "as_of": "2026-10-28T20:55:00"
     },
@@ -5308,9 +5313,9 @@
       "letter": "A",
       "percent": 93.78,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "93.78%, nothing new today",
       "source": "Canvas",
-      "as_of": "2026-10-28T20:55:00"
+      "as_of": "2026-10-29T14:25:00"
     },
     {
       "classId": "chemistry",
@@ -5320,9 +5325,9 @@
       "letter": "A+",
       "percent": 100.2,
       "missing": 0,
-      "detail": "Up to 100.2%: 3 graded tonight",
+      "detail": "100.2%: Covalent Bonds graded 10/28",
       "source": "Canvas",
-      "as_of": "2026-10-28T20:55:00"
+      "as_of": "2026-10-29T14:25:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5332,7 +5337,7 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "Refresh pending",
       "source": "ParentVUE",
       "as_of": "2026-10-28T20:55:00"
     },
@@ -5344,9 +5349,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "LOTF Quiz #1 still not submitted",
+      "detail": "Rough Draft + Mask due Fri 10/30",
       "source": "Canvas",
-      "as_of": "2026-10-28T20:55:00"
+      "as_of": "2026-10-29T14:25:00"
     },
     {
       "classId": "geometry",
@@ -5356,7 +5361,7 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "Refresh pending",
       "source": "ParentVUE",
       "as_of": "2026-10-28T20:55:00"
     }
@@ -6094,6 +6099,16 @@
         "strength-conditioning": 100.0,
         "english-10": 93.91,
         "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-29T14:25:00",
+      "source": "Canvas",
+      "note": "Thu 2:10pm Canvas LIVE: Eng 93.91, Web 93.78, Chem 100.2 unchanged; 0 Missing. Gmail: Chem Investigate Covalent Bonds Summary graded 10/28 8:07pm. ParentVUE login wall, not read.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 93.78,
+        "chemistry": 100.2
       }
     }
   ]
