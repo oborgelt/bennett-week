@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-28T14:35:00-05:00",
+  "as_of": "2026-10-28T20:55:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -5268,6 +5268,11 @@
       "id": "after-school-2026-10-28T14:35:00",
       "as_of": "2026-10-28T14:35:00",
       "text": "After-school Wed 10/28 ~2:35pm CT FULL: Canvas LIVE: Web 92.93 to 93.78 (4.4 Divs 19/20, 4.5 Spans 18/18, 4.6 Semantic Tags 35/35, graded 10:05-10:11am per Canvas emails); Eng 93.91, Chem 99.49 unchanged. NEW on Canvas: English 10.3 Idea Rough Draft -/10 due Fri 10/30 11:59pm; Web 4.8 Don't Repeat Yourself -/20 due Tue 11/3 9:20am. Nothing due tonight or Thu. LOTF Quiz #1 (due 10/26) still -/10 unsubmitted, not flagged Missing. Mask Project still due Fri 10/30. No announcements; Soc/S&C/AI unpublished. ParentVUE LIVE: Web 93 to 94 (10/28), others unchanged, 0 missing; inbox only Ann Book Two-Year Academies 10/27 + 10/28 correction (open house Thu 11/5 5:30-6:30pm); Attendance/Calendar events/Alerts not readable. Gmail: Web graded x3 + Ann Book x2. English sheet: Annotation Check #1 11/4-5, #2 11/11-12. oeband/district unchanged. No Plaud said-done. Mom Thu 4:30p-Fri 4:30p; Dad tonight."
+    },
+    {
+      "id": "bedtime-2026-10-28T20:55:00",
+      "as_of": "2026-10-28T20:55:00",
+      "text": "Bedtime Wed 10/28 ~8:55pm CT NARROW + BAND WATCH: Canvas LIVE Chem 99.49 to 100.2 (Pfeiff graded Naming Ionic and Molecular Compounds 7:22pm, Natural and Lab-Grown Gemstones 7:31pm, Crystals and Gemstones 7:41pm per Canvas emails; Canvas shows Naming 2/2). Eng 93.91, Web 93.78 unchanged; nothing Missing/Late. LOTF Quiz #1 (due 10/26) still -/10 unsubmitted, not flagged Missing. Check-In #1 still ungraded. Copper Cycle Reading still 0/3. Due Fri 10/30: Eng 10.3 Idea Rough Draft, Mask Project. ParentVUE LIVE (autofill, one click) Chem 100.2, others unchanged, 0 missing; inbox nothing newer than Ann Book 1:02pm; Alerts not readable. BAND: oeband no change; no new Fillingham mail; KBA 10/31 unchanged. Gmail: Canvas Chem graded x3, Jostens photo promo. No Plaud said-done."
     }
   ],
   "grades": [
@@ -5281,7 +5286,7 @@
       "missing": 0,
       "detail": "KBA Sat 10/31 6:30am call, no change",
       "source": "ParentVUE",
-      "as_of": "2026-10-28T14:35:00"
+      "as_of": "2026-10-28T20:55:00"
     },
     {
       "classId": "sociology",
@@ -5293,7 +5298,7 @@
       "missing": 0,
       "detail": "91% (updated 10/28), no change",
       "source": "ParentVUE",
-      "as_of": "2026-10-28T14:35:00"
+      "as_of": "2026-10-28T20:55:00"
     },
     {
       "classId": "web-design",
@@ -5303,9 +5308,9 @@
       "letter": "A",
       "percent": 93.78,
       "missing": 0,
-      "detail": "Up to 93.78%: 4.4-4.6 graded",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-10-28T14:35:00"
+      "as_of": "2026-10-28T20:55:00"
     },
     {
       "classId": "chemistry",
@@ -5313,11 +5318,11 @@
       "period": "P4",
       "teacher": "Justin Pfeiff",
       "letter": "A+",
-      "percent": 99.49,
+      "percent": 100.2,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "Up to 100.2%: 3 graded tonight",
       "source": "Canvas",
-      "as_of": "2026-10-28T14:35:00"
+      "as_of": "2026-10-28T20:55:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5327,9 +5332,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-28T14:35:00"
+      "as_of": "2026-10-28T20:55:00"
     },
     {
       "classId": "english-10",
@@ -5341,7 +5346,7 @@
       "missing": 0,
       "detail": "LOTF Quiz #1 still not submitted",
       "source": "Canvas",
-      "as_of": "2026-10-28T14:35:00"
+      "as_of": "2026-10-28T20:55:00"
     },
     {
       "classId": "geometry",
@@ -5351,9 +5356,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 2pm check",
+      "detail": "No change at 9pm check",
       "source": "ParentVUE",
-      "as_of": "2026-10-28T14:35:00"
+      "as_of": "2026-10-28T20:55:00"
     }
   ],
   "grade_history": [
@@ -6062,6 +6067,30 @@
         "sociology": 91.0,
         "web-design": 94.0,
         "chemistry": 99.5,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-28T20:55:00",
+      "source": "Canvas",
+      "note": "Wed 9pm Canvas LIVE: Chem 99.49 to 100.2 (Naming Ionic and Molecular Compounds 2/2; Gmail also shows Natural and Lab-Grown Gemstones and Crystals and Gemstones graded 7:31-7:41pm). Eng, Web unchanged.",
+      "grades": {
+        "english-10": 93.91,
+        "web-design": 93.78,
+        "chemistry": 100.2
+      }
+    },
+    {
+      "as_of": "2026-10-28T20:55:00",
+      "source": "ParentVUE",
+      "note": "Wed 9pm PV LIVE: Chem 99.5 to 100.2; others unchanged; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 91.0,
+        "web-design": 94.0,
+        "chemistry": 100.2,
         "strength-conditioning": 100.0,
         "english-10": 93.91,
         "geometry": 88.0
