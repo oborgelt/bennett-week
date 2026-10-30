@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-29T20:55:00-05:00",
+  "as_of": "2026-10-30T14:20:00-05:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4705,8 +4705,8 @@
   "notes": [
     {
       "id": "band-watch-kba-1031",
-      "as_of": "2026-10-29T20:55:00",
-      "text": "BAND WATCH through KBA Sat 10/31: 6:30am call at OEHS in Dri-Fit, prelims 9:30am at ANT-DAC, prelims awards 3pm; if finals, awards ~10pm and back at OE ~10:30pm (Dad day). Checked Thu 10/29 ~8:55pm: oeband.com unchanged since 2:20pm, no new Fillingham email, Canvas Band newest update 10/12, ParentVUE inbox no band mail: no schedule change. Remaining rehearsal: Fri 10/30 7:00-8:40am."
+      "as_of": "2026-10-30T14:20:00",
+      "text": "BAND WATCH through KBA Sat 10/31: 6:30am call at OEHS in Dri-Fit, prelims 9:30am at ANT-DAC (16200 Antioch Rd), prelims awards 3pm; if finals, awards ~10pm and back at OE ~10:30pm (Dad day). OE site lists Band Load Out/In 7am-11pm. Checked Fri 10/30 2:20pm: oeband.com and payments unchanged, no new Fillingham email, ParentVUE inbox newest Fillingham still Band Update 10/25, Canvas Band nothing new: no schedule change."
     },
     {
       "id": "after-school-20261018",
@@ -5283,6 +5283,11 @@
       "id": "bedtime-2026-10-29T20:55:00",
       "as_of": "2026-10-29T20:55:00",
       "text": "Bedtime Thu 10/29 ~8:55pm CT NARROW + BAND WATCH: Canvas LIVE unchanged (Eng 93.91, Web 93.78, Chem 100.2), nothing graded today, 0 Missing. Due Fri 10/30: Eng 10.3 Idea Rough Draft (-/10) and Mask Project (-/30), not yet submitted. LOTF Quiz #1 (due 10/26) still -/10 unsubmitted, not flagged Missing. ParentVUE LIVE (autofill, one click), all classes unchanged, 0 missing; inbox nothing newer than Ann Book 10/28 1:02pm. BAND: no change for KBA 10/31. Gmail: no new school mail since 2pm. Mom night. No Plaud said-done."
+    },
+    {
+      "id": "after-school-2026-10-30T14:20:00",
+      "as_of": "2026-10-30T14:20:00",
+      "text": "After-school Fri 10/30 ~2:20pm CT FULL + BAND WATCH: Canvas Eng 93.91 to 94.0 (Choice Book Check-In #1 graded 12:33pm), Web 93.78, Chem 100.2; 0 Missing. Due TONIGHT 11:59pm: Eng 10.3 Idea Rough Draft (-/10) and Mask Project (-/30), neither submitted at 2:15pm. LOTF Quiz #1 (due 10/26) still unsubmitted, not Missing. Next: Mon 11/2 no school (Professional Day); Tue 11/3 LOTF Quiz #2 (Ch 3-5), Web 4.7 + 4.8. ParentVUE LIVE (autofill, one click): 0 Missing; Geometry Unit 4 Test on 10/30 calendar, unscored; inbox nothing new. Gmail: Two-Year Academies open house invite (Thu 11/5, already noted). Handoff to Dad 4:30pm today; work due tonight lands on the handoff night before the 6:30am KBA call. No Plaud said-done."
     }
   ],
   "grades": [
@@ -5294,9 +5299,9 @@
       "letter": "A+",
       "percent": 98.8,
       "missing": 0,
-      "detail": "KBA Sat 10/31 6:30am call, no change",
+      "detail": "98.8%; KBA Sat 6:30am call, no change",
       "source": "ParentVUE",
-      "as_of": "2026-10-29T20:55:00"
+      "as_of": "2026-10-30T14:20:00"
     },
     {
       "classId": "sociology",
@@ -5306,9 +5311,9 @@
       "letter": "A-",
       "percent": 91.0,
       "missing": 0,
-      "detail": "91%, no change",
+      "detail": "91%, CSI 2 (8.2) not scored yet",
       "source": "ParentVUE",
-      "as_of": "2026-10-29T20:55:00"
+      "as_of": "2026-10-30T14:20:00"
     },
     {
       "classId": "web-design",
@@ -5318,9 +5323,9 @@
       "letter": "A",
       "percent": 93.78,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "93.78%, nothing new today",
       "source": "Canvas",
-      "as_of": "2026-10-29T20:55:00"
+      "as_of": "2026-10-30T14:20:00"
     },
     {
       "classId": "chemistry",
@@ -5330,9 +5335,9 @@
       "letter": "A+",
       "percent": 100.2,
       "missing": 0,
-      "detail": "100.2%, no change at 9pm",
+      "detail": "100.2%, nothing new today",
       "source": "Canvas",
-      "as_of": "2026-10-29T20:55:00"
+      "as_of": "2026-10-30T14:20:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5342,9 +5347,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "100%, no change",
+      "detail": "100%, updated 10/30",
       "source": "ParentVUE",
-      "as_of": "2026-10-29T20:55:00"
+      "as_of": "2026-10-30T14:20:00"
     },
     {
       "classId": "english-10",
@@ -5354,9 +5359,9 @@
       "letter": "A",
       "percent": 93.91,
       "missing": 0,
-      "detail": "Rough Draft + Mask due Fri 10/30",
+      "detail": "94.0%: Choice Book Check-In #1 graded",
       "source": "Canvas",
-      "as_of": "2026-10-29T20:55:00"
+      "as_of": "2026-10-30T14:20:00"
     },
     {
       "classId": "geometry",
@@ -5366,7 +5371,7 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "88%, no change",
+      "detail": "Unit 4 Test on PV calendar 10/30",
       "source": "ParentVUE",
       "as_of": "2026-10-29T20:55:00"
     }
@@ -6138,6 +6143,16 @@
         "strength-conditioning": 100.0,
         "english-10": 93.91,
         "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-10-30T14:20:00",
+      "source": "Canvas",
+      "note": "Fri 2:10pm: Canvas Eng 93.91 to 94.0 (Gmail: Choice Book Check-In #1 graded 10/30 12:33pm), Web 93.78, Chem 100.2; 0 Missing. ParentVUE LIVE: Band 98.8, Soc 91, Web 94, Chem 100.2, S&C 100; 0 Missing.",
+      "grades": {
+        "english-10": 94.0,
+        "web-design": 93.78,
+        "chemistry": 100.2
       }
     }
   ]
