@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-10-31T20:56:00-05:00",
+  "as_of": "2026-11-01T14:20:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4420,8 +4420,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-31T14:25:00",
-      "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/10 due Mon 10/26 11:59pm. | 10/27 2:20pm Canvas: still -/10, no submission, not flagged Missing or Late; past due 10/26 11:59pm. | 10/28 2:30pm Canvas: still -/10, no submission, not flagged Missing. | 10/31 2:15pm Canvas: still -/10, not flagged Missing. | 10/31 9pm: row not seen in Canvas read; recheck at next full pull.",
+      "as_of": "2026-11-01T14:20:00",
+      "note": "Goodson. On Canvas (seen 9pm Tue 10/20): -/10 due Mon 10/26 11:59pm. | 10/27 2:20pm Canvas: still -/10, no submission, not flagged Missing or Late; past due 10/26 11:59pm. | 10/28 2:30pm Canvas: still -/10, no submission, not flagged Missing. | 10/31 2:15pm Canvas: still -/10, not flagged Missing. | 10/31 9pm: row not seen in Canvas read; recheck at next full pull. | Sun 11/1 2:10: row present (Canvas spells it LOFT Quiz #1), still -/10, no Missing flag.",
       "followup": {
         "due_by": "2026-10-27T21:00:00",
         "email_draft": null,
@@ -4473,8 +4473,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-31T20:56:00",
-      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/30. Due time not confirmed. | Sheet 10/22: begin face mask project 10/28-29 block; mask project due at end of hour 10/30. | Sheet 10/27 changed: 10/28-29 now chapter annotations; 10/30 \"Begin mask project\"; 11/3 mask project work time. Canvas still shows due Fri 10/30 11:59pm (-/30). | Sat 10/31 2:15pm Canvas: still -/30, not submitted, no Missing badge yet (dashboard lists it under Friday missing). Sheet: 11/3 mask project work time. | Sat 10/31 9pm Canvas: still not submitted.",
+      "as_of": "2026-11-01T14:20:00",
+      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/30. Due time not confirmed. | Sheet 10/22: begin face mask project 10/28-29 block; mask project due at end of hour 10/30. | Sheet 10/27 changed: 10/28-29 now chapter annotations; 10/30 \"Begin mask project\"; 11/3 mask project work time. Canvas still shows due Fri 10/30 11:59pm (-/30). | Sat 10/31 2:15pm Canvas: still -/30, not submitted, no Missing badge yet (dashboard lists it under Friday missing). Sheet: 11/3 mask project work time. | Sat 10/31 9pm Canvas: still not submitted. | Sun 11/1 2:10 Canvas: still not submitted.",
       "followup": {
         "due_by": "2026-11-03T13:05:00",
         "email_draft": null,
@@ -4673,13 +4673,13 @@
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-10-31T20:56:00",
+      "as_of": "2026-11-01T14:20:00",
       "id": "eng-103-idea-rough-draft-1030",
       "title": "English: 10.3 Idea Rough Draft",
       "classId": "english-10",
       "due": "2026-10-30T23:59:00",
       "points": 10,
-      "note": "Goodson/Carl. 3DE. Canvas -/10 due Fri 10/30 11:59pm. English sheet: \"10.3 Idea Rough Draft (due Friday pm)\". New, seen 10/28. | Sat 10/31 2:15pm Canvas: NOT submitted, now marked MISSING (-/10). | Sat 10/31 9pm Canvas: still not submitted.",
+      "note": "Goodson/Carl. 3DE. Canvas -/10 due Fri 10/30 11:59pm. English sheet: \"10.3 Idea Rough Draft (due Friday pm)\". New, seen 10/28. | Sat 10/31 2:15pm Canvas: NOT submitted, now marked MISSING (-/10). | Sat 10/31 9pm Canvas: still not submitted. | Sun 11/1 2:10 Canvas: still not submitted.",
       "score": "-/10",
       "canvas": {
         "status": "missing",
@@ -4711,8 +4711,8 @@
   "notes": [
     {
       "id": "band-watch-kba-1031",
-      "as_of": "2026-10-31T20:56:00",
-      "text": "BAND WATCH KBA Sat 10/31: 6:30am call at OEHS (eat breakfast; Dri-Fit, shorts or athletic pants, long black socks, neat hair). Prelims 9:30am at ANT-DAC, prelims awards 3pm; if finals, awards ~10pm, back at OE ~10:30pm (Dad day). NEW Fillingham email Fri 3:13pm: rain possible, please lend a canopy tent if you have one (name on every part, send with student). Pack show shirt, full change of clothes, rain gear, layers, sunscreen, blanket + pillow, phone charger; can't go home for forgotten items. School-appropriate costume OK only after finals; no visiting other bands or trick-or-treating. Sat 2:15pm check: oeband, Gmail, PV inbox, Canvas Band all unchanged; no schedule change. If they make finals, awards ~10pm, back at OE ~10:30pm. Sat 9pm check: oeband, Gmail, PV inbox unchanged; no schedule change."
+      "as_of": "2026-11-01T14:20:00",
+      "text": "BAND WATCH KBA Sat 10/31: 6:30am call at OEHS (eat breakfast; Dri-Fit, shorts or athletic pants, long black socks, neat hair). Prelims 9:30am at ANT-DAC, prelims awards 3pm; if finals, awards ~10pm, back at OE ~10:30pm (Dad day). NEW Fillingham email Fri 3:13pm: rain possible, please lend a canopy tent if you have one (name on every part, send with student). Pack show shirt, full change of clothes, rain gear, layers, sunscreen, blanket + pillow, phone charger; can't go home for forgotten items. School-appropriate costume OK only after finals; no visiting other bands or trick-or-treating. Sat 2:15pm check: oeband, Gmail, PV inbox, Canvas Band all unchanged; no schedule change. If they make finals, awards ~10pm, back at OE ~10:30pm. Sat 9pm check: oeband, Gmail, PV inbox unchanged; no schedule change. Band Watch closed Sun 11/1 after KBA; back to normal band checks. No new band mail or oeband items."
     },
     {
       "id": "after-school-20261018",
@@ -5309,6 +5309,11 @@
       "id": "bedtime-2026-10-31T20:56:00",
       "as_of": "2026-10-31T20:56:00",
       "text": "Bedtime Sat 10/31 ~8:55pm CT NARROW + BAND WATCH: Canvas LIVE unchanged (Eng 94.0, Web 93.78, Chem 100.2); Eng 10.3 Idea Rough Draft (Missing since 2:15pm) and Mask Project still not submitted. ParentVUE LIVE (autofill) unchanged, 0 missing; inbox nothing new. Gmail: no new school mail. oeband unchanged; no KBA schedule change. No Plaud said-done, no discrepancy. Band Watch ends after tonight."
+    },
+    {
+      "id": "after-school-2026-11-01T14:20:00",
+      "as_of": "2026-11-01T14:20:00",
+      "text": "After-school Sun 11/1 ~2:20pm CT FULL: Canvas LIVE unchanged (Eng 94.0, Web 93.78, Chem 100.2). Eng 10.3 Idea Rough Draft still Missing; Mask Project and LOTF Quiz #1 still unsubmitted (no Missing flag). Due Tue 11/3: LOTF Quiz #2, Web 4.7 + 4.8. Mon 11/2 no school (Professional Day). ParentVUE LIVE: Sociology 91 to 90 (11/1), others unchanged, 0 missing; inbox nothing since Fillingham Fri 3:13pm. Gmail: no new school mail. oeband, OE homepage, district calendar, English sheet unchanged. Band Watch closed after KBA. No Plaud said-done."
     }
   ],
   "grades": [
@@ -5320,9 +5325,9 @@
       "letter": "A+",
       "percent": 98.8,
       "missing": 0,
-      "detail": "KBA day; no schedule change",
+      "detail": "98.8%, KBA done; no new band mail",
       "source": "ParentVUE",
-      "as_of": "2026-10-31T20:56:00"
+      "as_of": "2026-11-01T14:20:00"
     },
     {
       "classId": "sociology",
@@ -5330,11 +5335,11 @@
       "period": "P2",
       "teacher": "Todd Keach",
       "letter": "A-",
-      "percent": 91.0,
+      "percent": 90.0,
       "missing": 0,
-      "detail": "91%, no change",
+      "detail": "Dipped 91 to 90% on 11/1",
       "source": "ParentVUE",
-      "as_of": "2026-10-31T20:56:00"
+      "as_of": "2026-11-01T14:20:00"
     },
     {
       "classId": "web-design",
@@ -5344,9 +5349,9 @@
       "letter": "A",
       "percent": 93.78,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "4.7 + 4.8 due Tue 11/3",
       "source": "Canvas",
-      "as_of": "2026-10-31T20:56:00"
+      "as_of": "2026-11-01T14:20:00"
     },
     {
       "classId": "chemistry",
@@ -5356,9 +5361,9 @@
       "letter": "A+",
       "percent": 100.2,
       "missing": 0,
-      "detail": "100.2%, no change at 9pm",
+      "detail": "100.2%, no change",
       "source": "Canvas",
-      "as_of": "2026-10-31T20:56:00"
+      "as_of": "2026-11-01T14:20:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5370,7 +5375,7 @@
       "missing": 0,
       "detail": "100%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-10-31T20:56:00"
+      "as_of": "2026-11-01T14:20:00"
     },
     {
       "classId": "english-10",
@@ -5378,11 +5383,11 @@
       "period": "P6",
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
-      "percent": 93.91,
+      "percent": 94.0,
       "missing": 0,
-      "detail": "Rough Draft + Mask not submitted",
+      "detail": "Rough Draft Missing; Mask not in",
       "source": "Canvas",
-      "as_of": "2026-10-31T20:56:00"
+      "as_of": "2026-11-01T14:20:00"
     },
     {
       "classId": "geometry",
@@ -5394,7 +5399,7 @@
       "missing": 0,
       "detail": "88%, Unit 4 Test not posted",
       "source": "ParentVUE",
-      "as_of": "2026-10-31T14:25:00"
+      "as_of": "2026-11-01T14:20:00"
     }
   ],
   "grade_history": [
@@ -6244,6 +6249,30 @@
         "web-design": 94.0,
         "chemistry": 100.2,
         "strength-conditioning": 100.0
+      }
+    },
+    {
+      "as_of": "2026-11-01T14:20:00",
+      "source": "Canvas",
+      "note": "Sun 2:10 Canvas LIVE: unchanged (Eng 94.0, Web 93.78, Chem 100.2). Only Missing: Eng 10.3 Idea Rough Draft. Mask Project -/30 and LOTF Quiz #1 -/10 unsubmitted, no Missing flag.",
+      "grades": {
+        "english-10": 94.0,
+        "web-design": 93.78,
+        "chemistry": 100.2
+      }
+    },
+    {
+      "as_of": "2026-11-01T14:20:00",
+      "source": "ParentVUE",
+      "note": "Sun 2:10 PV LIVE (autofill): Soc 91 to 90 (dated 11/1); Band 98.8, Web 94, Chem 100.2, S&C 100, Eng 93.91, Geo 88; 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 90.0,
+        "web-design": 94.0,
+        "chemistry": 100.2,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
       }
     }
   ]
