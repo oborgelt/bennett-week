@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-03T14:20:00-06:00",
+  "as_of": "2026-11-03T20:51:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4539,8 +4539,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-03T14:20:00",
-      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/30. Due time not confirmed. | Sheet 10/22: begin face mask project 10/28-29 block; mask project due at end of hour 10/30. | Sheet 10/27 changed: 10/28-29 now chapter annotations; 10/30 \"Begin mask project\"; 11/3 mask project work time. Canvas still shows due Fri 10/30 11:59pm (-/30). | Sat 10/31 2:15pm Canvas: still -/30, not submitted, no Missing badge yet (dashboard lists it under Friday missing). Sheet: 11/3 mask project work time. | Sat 10/31 9pm Canvas: still not submitted. | Sun 11/1 2:10 Canvas: still not submitted. | Sun 11/1 9pm Canvas: still not submitted. | Mon 11/2 2:10 Canvas: still not submitted, no Missing flag. | Mon 11/2 9pm Canvas: still not submitted. | Tue 11/3 2:10 Canvas: still not submitted, no Missing flag; sheet shows mask project work time 11/3 and 11/4-5.",
+      "as_of": "2026-11-03T20:51:00",
+      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/30. Due time not confirmed. | Sheet 10/22: begin face mask project 10/28-29 block; mask project due at end of hour 10/30. | Sheet 10/27 changed: 10/28-29 now chapter annotations; 10/30 \"Begin mask project\"; 11/3 mask project work time. Canvas still shows due Fri 10/30 11:59pm (-/30). | Sat 10/31 2:15pm Canvas: still -/30, not submitted, no Missing badge yet (dashboard lists it under Friday missing). Sheet: 11/3 mask project work time. | Sat 10/31 9pm Canvas: still not submitted. | Sun 11/1 2:10 Canvas: still not submitted. | Sun 11/1 9pm Canvas: still not submitted. | Mon 11/2 2:10 Canvas: still not submitted, no Missing flag. | Mon 11/2 9pm Canvas: still not submitted. | Tue 11/3 2:10 Canvas: still not submitted, no Missing flag; sheet shows mask project work time 11/3 and 11/4-5. | Tue 11/3 8:50pm Canvas: still not submitted.",
       "followup": {
         "due_by": "2026-11-03T13:05:00",
         "email_draft": null,
@@ -4565,8 +4565,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-03T14:20:00",
-      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed. | 10/31 Canvas: due Tue 11/3 11:59pm, not submitted. | Mon 11/2 2:10 Canvas: open, due Tue 11/3. | Tue 11/3 2:10 Canvas: not submitted yet, due tonight 11:59pm.",
+      "as_of": "2026-11-03T20:51:00",
+      "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed. | 10/31 Canvas: due Tue 11/3 11:59pm, not submitted. | Mon 11/2 2:10 Canvas: open, due Tue 11/3. | Tue 11/3 2:10 Canvas: not submitted yet, due tonight 11:59pm. | Tue 11/3 8:50pm Canvas: still not submitted.",
       "followup": {
         "due_by": null,
         "email_draft": null,
@@ -4739,13 +4739,13 @@
         "email_draft": null,
         "email_sent": false
       },
-      "as_of": "2026-11-03T14:20:00",
+      "as_of": "2026-11-03T20:51:00",
       "id": "eng-103-idea-rough-draft-1030",
       "title": "English: 10.3 Idea Rough Draft",
       "classId": "english-10",
       "due": "2026-11-03T23:59:00",
       "points": 10,
-      "note": "Goodson/Carl. 3DE. Canvas -/10 due Fri 10/30 11:59pm. English sheet: \"10.3 Idea Rough Draft (due Friday pm)\". New, seen 10/28. | Sat 10/31 2:15pm Canvas: NOT submitted, now marked MISSING (-/10). | Sat 10/31 9pm Canvas: still not submitted. | Sun 11/1 2:10 Canvas: still not submitted. | Sun 11/1 9pm Canvas: still not submitted. | Mon 11/2 2:10 Canvas: due moved to Tue 11/3 11:59pm, Missing flag cleared, still not submitted. Sheet 11/3: Submit 10.3 Idea Rough Draft. | Mon 11/2 9pm Canvas: still not submitted. | Tue 11/3 2:10 Canvas: not submitted yet, due tonight 11:59pm.",
+      "note": "Goodson/Carl. 3DE. Canvas -/10 due Fri 10/30 11:59pm. English sheet: \"10.3 Idea Rough Draft (due Friday pm)\". New, seen 10/28. | Sat 10/31 2:15pm Canvas: NOT submitted, now marked MISSING (-/10). | Sat 10/31 9pm Canvas: still not submitted. | Sun 11/1 2:10 Canvas: still not submitted. | Sun 11/1 9pm Canvas: still not submitted. | Mon 11/2 2:10 Canvas: due moved to Tue 11/3 11:59pm, Missing flag cleared, still not submitted. Sheet 11/3: Submit 10.3 Idea Rough Draft. | Mon 11/2 9pm Canvas: still not submitted. | Tue 11/3 2:10 Canvas: not submitted yet, due tonight 11:59pm. | Tue 11/3 8:50pm Canvas: still not submitted.",
       "score": "-/10",
       "canvas": {
         "status": "unsubmitted",
@@ -5401,6 +5401,11 @@
       "id": "after-school-2026-11-03T14:20:00",
       "as_of": "2026-11-03T14:20:00",
       "text": "After-school Tue 11/3 ~2:20pm CT FULL: LOFT Quiz #1 now graded 9/10 (English 93.89). Due tonight 11:59pm and not yet submitted: 10.3 Idea Rough Draft and LOTF Quiz #2 (Ch 3-5). Mask Project (due 10/30) still unsubmitted, no Missing flag; class work time on it 11/3 and 11/4-5. Web 4.7/4.8 open, normal. 0 missing in ParentVUE; grades otherwise unchanged. New: counselor Ann Book (Gmail + PV inbox) on 2-Year Academies: optional 11/11 OATC/OPSIC tour needs a permission form to Counseling by Wed 11/4; 10th-grade info session Thu 11/5 Advisory; apps open Fri 11/6, close Fri 12/4 11:59pm. English homework: finish Ch 6 by block day, Ch 7 by Fri, Ch 8 by Mon. oeband and district calendar unchanged. PV Alerts and Attendance tabs would not load. No Plaud said-done."
+    },
+    {
+      "id": "bedtime-2026-11-03T20:51:00",
+      "as_of": "2026-11-03T20:51:00",
+      "text": "Bedtime Tue 11/3 ~9pm CT NARROW: Canvas and ParentVUE LIVE unchanged vs 2:20. Rough Draft and LOTF Quiz #2 still unsubmitted at 8:50pm (due 11:59pm tonight). Mask Project still unsubmitted, no Missing flag. 0 missing in PV. Gmail: no new school mail since 2:20. No Plaud said-done, no discrepancy."
     }
   ],
   "grades": [
@@ -5412,9 +5417,9 @@
       "letter": "A+",
       "percent": 98.8,
       "missing": 0,
-      "detail": "98.8%, no change",
+      "detail": "98.8%, no change at 9pm",
       "source": "ParentVUE",
-      "as_of": "2026-11-03T14:20:00"
+      "as_of": "2026-11-03T20:51:00"
     },
     {
       "classId": "sociology",
@@ -5424,9 +5429,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "90%, no change",
+      "detail": "90%, no change at 9pm",
       "source": "ParentVUE",
-      "as_of": "2026-11-03T14:20:00"
+      "as_of": "2026-11-03T20:51:00"
     },
     {
       "classId": "web-design",
@@ -5438,7 +5443,7 @@
       "missing": 0,
       "detail": "4.7 + 4.8 open; normal for Web",
       "source": "Canvas",
-      "as_of": "2026-11-03T14:20:00"
+      "as_of": "2026-11-03T20:51:00"
     },
     {
       "classId": "chemistry",
@@ -5448,9 +5453,9 @@
       "letter": "A+",
       "percent": 100.2,
       "missing": 0,
-      "detail": "100.2%, no change",
+      "detail": "100.2%, no change at 9pm",
       "source": "Canvas",
-      "as_of": "2026-11-03T14:20:00"
+      "as_of": "2026-11-03T20:51:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5460,9 +5465,9 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "100%, no change",
+      "detail": "100%, no change at 9pm",
       "source": "ParentVUE",
-      "as_of": "2026-11-03T14:20:00"
+      "as_of": "2026-11-03T20:51:00"
     },
     {
       "classId": "english-10",
@@ -5472,9 +5477,9 @@
       "letter": "A",
       "percent": 94.0,
       "missing": 0,
-      "detail": "LOFT Quiz #1 graded 9/10; 93.89%",
+      "detail": "Rough Draft + Quiz #2 due 11:59pm",
       "source": "Canvas",
-      "as_of": "2026-11-03T14:20:00"
+      "as_of": "2026-11-03T20:51:00"
     },
     {
       "classId": "geometry",
@@ -5484,9 +5489,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "88%, no change",
+      "detail": "88%, no change at 9pm",
       "source": "ParentVUE",
-      "as_of": "2026-11-03T14:20:00"
+      "as_of": "2026-11-03T20:51:00"
     }
   ],
   "grade_history": [
@@ -6448,6 +6453,30 @@
       "as_of": "2026-11-03T14:20:00",
       "source": "ParentVUE",
       "note": "Tue 11/3 2:10 PV LIVE (autofill): Band 98.8, Soc 90, Web 94, Chem 100.2, S&C 100, Eng 93.91, Geo 88 (updated 11/3, unchanged); 0 missing.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 90.0,
+        "web-design": 94.0,
+        "chemistry": 100.2,
+        "strength-conditioning": 100.0,
+        "english-10": 93.91,
+        "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-11-03T20:51:00",
+      "source": "Canvas",
+      "note": "Tue 9pm Canvas LIVE: unchanged (Eng 93.89, Web 93.78, Chem 100.2). No new Missing/Late/graded. 10.3 Idea Rough Draft and LOTF Quiz #2 still unsubmitted at 8:50pm (due 11:59pm). Mask Project still unsubmitted, no Missing flag. Web 4.7/4.8 open, normal.",
+      "grades": {
+        "english-10": 93.89,
+        "web-design": 93.78,
+        "chemistry": 100.2
+      }
+    },
+    {
+      "as_of": "2026-11-03T20:51:00",
+      "source": "ParentVUE",
+      "note": "Tue 9pm PV LIVE (autofill): unchanged. Band 98.8, Soc 90, Web 94, Chem 100.2, S&C 100, Eng 93.91, Geo 88; 0 missing; inbox nothing new after Ann Book 12:22pm. Alerts unreadable (404).",
       "grades": {
         "band": 98.8,
         "sociology": 90.0,
