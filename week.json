@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-04T14:25:00-06:00",
+  "as_of": "2026-11-04T21:00:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4716,7 +4716,7 @@
       "status": "graded",
       "school_status": "graded",
       "student_status": null,
-      "score": null,
+      "score": "19/19",
       "points": 19,
       "late": false,
       "discrepancy": false,
@@ -4781,7 +4781,8 @@
       "due": "2026-11-03T09:20:00",
       "points": 20,
       "note": "Linn. Canvas -/20 due Tue 11/3 9:20am. New, seen 10/28. | Mon 11/2 2:10 Canvas: open, due Tue 11/3. | Tue 11/3 2:10 Canvas: not submitted/ungraded, no Missing flag (normal for Web). | Wed 11/4: graded (Canvas email 8:4xam); score not read.",
-      "graded_at": "2026-11-04T08:46:00"
+      "graded_at": "2026-11-04T08:46:00",
+      "score": "20/20"
     },
     {
       "status": "open",
@@ -4836,6 +4837,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-2026-11-04T21:00:00",
+      "as_of": "2026-11-04T21:00:00",
+      "text": "Bedtime Wed 11/4 ~9pm CT NARROW: Canvas LIVE unchanged vs 2:20 (Eng 93.89, Web 94.23, Chem 100.2). Rough Draft still submitted ungraded; LOTF Quiz #2 not taken (no Missing); Mask Project unsubmitted (no Missing); Annotation Check 1-6 due Thu 11/5 11:59pm still open. ParentVUE LOGIN_WALL (kept PV LIVE 2:25 grades). Gmail: no NEW school/Instructure mail after 2:20 (Helzberg + Web 4.7/4.8 notices were earlier). No Plaud said-done, no discrepancy. Band Watch closed."
+    },
     {
       "id": "band-watch-kba-1031",
       "as_of": "2026-11-01T14:20:00",
@@ -5494,7 +5500,7 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "90%, no change",
+      "detail": "90.0%, no change",
       "source": "ParentVUE",
       "as_of": "2026-11-04T14:25:00"
     },
@@ -5504,11 +5510,11 @@
       "period": "P3",
       "teacher": "Derek Linn",
       "letter": "A",
-      "percent": 93.78,
+      "percent": 94.23,
       "missing": 0,
-      "detail": "4.7 + 4.8 graded; 94.23%",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-11-04T14:25:00"
+      "as_of": "2026-11-04T21:00:00"
     },
     {
       "classId": "chemistry",
@@ -5518,9 +5524,9 @@
       "letter": "A+",
       "percent": 100.2,
       "missing": 0,
-      "detail": "100.2%, no change",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-11-04T14:25:00"
+      "as_of": "2026-11-04T21:00:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5530,7 +5536,7 @@
       "letter": "A+",
       "percent": 100.0,
       "missing": 0,
-      "detail": "100%, no change",
+      "detail": "100.0%, no change",
       "source": "ParentVUE",
       "as_of": "2026-11-04T14:25:00"
     },
@@ -5540,11 +5546,11 @@
       "period": "P6",
       "teacher": "Amanda Goodson / Carl",
       "letter": "A",
-      "percent": 94.0,
+      "percent": 93.89,
       "missing": 0,
-      "detail": "LOTF Quiz #2 not taken; 93.89%",
+      "detail": "No change at 9pm check",
       "source": "Canvas",
-      "as_of": "2026-11-04T14:25:00"
+      "as_of": "2026-11-04T21:00:00"
     },
     {
       "classId": "geometry",
@@ -5554,12 +5560,22 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "88%, no change",
+      "detail": "88.0%, no change",
       "source": "ParentVUE",
       "as_of": "2026-11-04T14:25:00"
     }
   ],
   "grade_history": [
+    {
+      "as_of": "2026-11-04T21:00:00",
+      "source": "Canvas",
+      "note": "Bedtime NARROW: Eng/Web/Chem unchanged; PV LOGIN_WALL",
+      "grades": {
+        "english-10": 93.89,
+        "web-design": 94.23,
+        "chemistry": 100.2
+      }
+    },
     {
       "as_of": "2026-10-15T21:05:00",
       "source": "Canvas",
