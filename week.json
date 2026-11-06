@@ -1,6 +1,6 @@
 {
  "timezone": "America/Chicago",
- "as_of": "2026-11-05T21:05:00-06:00",
+ "as_of": "2026-11-06T14:20:00-06:00",
  "parenting": [
   {
    "who": "Mom",
@@ -154,6 +154,69 @@
   }
  ],
  "events": [
+  {
+   "id": "oe-3de-culminating-1118",
+   "title": "3DE Culminating Event",
+   "start": "2026-11-18T09:00:00",
+   "end": "2026-11-18T10:00:00",
+   "kind": "calendar",
+   "source": "east.olatheschools.org",
+   "as_of": "2026-11-06T14:20:00-06:00"
+  },
+  {
+   "id": "oe-sr-grad-order-1117",
+   "title": "Senior Graduation Announcement Order Day",
+   "start": "2026-11-17T11:00:00",
+   "end": "2026-11-17T13:00:00",
+   "kind": "calendar",
+   "source": "east.olatheschools.org",
+   "as_of": "2026-11-06T14:20:00-06:00"
+  },
+  {
+   "id": "oe-sr-grad-announce-1110",
+   "title": "Sr. Graduation Announcement Meeting",
+   "start": "2026-11-10T10:15:00",
+   "end": "2026-11-10T10:55:00",
+   "kind": "calendar",
+   "source": "east.olatheschools.org",
+   "as_of": "2026-11-06T14:20:00-06:00"
+  },
+  {
+   "id": "oe-nhs-induction-1110",
+   "title": "NHS Induction Ceremony",
+   "start": "2026-11-10T19:00:00",
+   "end": "2026-11-10T20:00:00",
+   "kind": "calendar",
+   "source": "east.olatheschools.org",
+   "as_of": "2026-11-06T14:20:00-06:00"
+  },
+  {
+   "id": "eng-agenda-1106",
+   "title": "English sheet 11/6: Ch 7 due; Submit Mask Project; Q2 ACT practice; 3DE",
+   "date": "2026-11-06",
+   "kind": "calendar",
+   "classId": "english-10",
+   "source": "english-agenda",
+   "note": "CLASS WORK: Ch 7 due; Submit Mask Project; Q2 English ACT practice; 3DE work time. HW: Finish chapter 7 by Friday.",
+   "as_of": "2026-11-06T14:20:00-06:00"
+  },
+  {
+   "id": "oe-makeup-picture-photos-1106",
+   "title": "Make-up Picture Day photos available (Jostens)",
+   "date": "2026-11-06",
+   "kind": "calendar",
+   "source": "Gmail Wolgast + Jostens",
+   "note": "Wolgast 12:03pm CT: make-up day photos ready. shop.jostenspix.com Event Code FE208226, OLATHE EAST; Synergy Student ID needed. Jostens also emailed 'Photos of Bennett are ready'.",
+   "as_of": "2026-11-06T14:20:00-06:00"
+  },
+  {
+   "id": "bennett-sick-1106",
+   "title": "Bennett out sick day 2 (Dad emailed OE Attendance 7:22am)",
+   "date": "2026-11-06",
+   "kind": "note",
+   "note": "Jennifer Shackelford confirmed ~9:29am. Second consecutive sick day (also 11/5).",
+   "as_of": "2026-11-06T14:20:00-06:00"
+  },
   {
    "id": "oe-club-picture-day-1112",
    "title": "Club & Group Picture Day",
@@ -2073,11 +2136,13 @@
   {
    "id": "academy-apply-window-1106",
    "title": "2-Year Academy applications open (close Fri 12/4 11:59pm)",
-   "kind": "deadline",
+   "kind": "calendar",
    "start": "2026-11-06T00:00:00",
    "all_day": true,
-   "source": "Ann Book email 11/3",
-   "as_of": "2026-11-03T14:20:00"
+   "source": "Gmail OPS communications + district calendar",
+   "as_of": "2026-11-06T14:20:00-06:00",
+   "date": "2026-11-06",
+   "note": "District email Fri 11/6: applications open at olatheschools.org/careerpathways; close Dec 4. Counselor for questions. Four-Year Academy link also went live 7am per district calendar."
   },
   {
    "id": "academy-fieldtrip-oatc-opsic-1111",
@@ -4542,20 +4607,23 @@
    "student_status": null,
    "score": null,
    "points": 30,
-   "late": true,
+   "late": false,
    "discrepancy": false,
    "source": "canvas",
    "submitted_at": null,
-   "as_of": "2026-11-04T14:25:00",
-   "note": "Canvas -/30, due moved to Fri 11/6 11:59pm (seen 11/5). Not submitted yet, no Missing flag. Sheet 11/6: Submit Mask Project.",
+   "as_of": "2026-11-06T14:20:00-06:00",
+   "note": "Canvas -/30 due Fri 11/6 11:59pm. Not submitted; no Missing flag. English sheet 11/6: Submit Mask Project. Bennett out sick 11/5 and 11/6; with Mom through Sun 6pm.",
    "followup": {
-    "due_by": "2026-11-03T13:05:00",
+    "due_by": "2026-11-06T23:59:00",
     "email_draft": null,
-    "email_sent": false
+    "email_sent": false,
+    "reason": "Due tonight; Bennett sick — check with Mom whether he can still submit"
    },
    "canvas": {
     "status": "unsubmitted",
-    "as_of": "2026-10-31T14:25:00"
+    "points": 30,
+    "due": "2026-11-06T23:59:00",
+    "as_of": "2026-11-06T14:20:00-06:00"
    }
   },
   {
@@ -4572,14 +4640,19 @@
    "discrepancy": false,
    "source": "canvas",
    "submitted_at": null,
-   "as_of": "2026-11-04T14:25:00",
-   "note": "Canvas -/10, not taken as of Thu 11/5 2:20pm; no Missing or Late label. Bennett out sick 11/5.",
+   "as_of": "2026-11-06T14:20:00-06:00",
+   "note": "Canvas -/10, not taken as of Fri 11/6 2:20pm; no Missing or Late label. Past due 11/3. Bennett out sick 11/5–11/6.",
    "followup": {
-    "due_by": "2026-11-05",
-    "reason": "Ask Bennett if he can still take LOTF Quiz #2"
+    "due_by": "2026-11-07",
+    "reason": "Ask when he can make up LOTF Quiz #2 after sick days",
+    "email_draft": null,
+    "email_sent": false
    },
    "canvas": {
-    "as_of": "2026-10-28T14:35:00"
+    "status": "unsubmitted",
+    "points": 10,
+    "due": "2026-11-03T23:59:00",
+    "as_of": "2026-11-06T14:20:00-06:00"
    }
   },
   {
@@ -4596,15 +4669,15 @@
    "discrepancy": false,
    "source": "canvas",
    "submitted_at": null,
-   "as_of": "2026-11-04T14:25:00",
-   "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed. | Wed 11/4 Canvas to-do: due Mon 11/9 11:59pm.",
+   "as_of": "2026-11-06T14:20:00-06:00",
+   "note": "Canvas To Do: due Mon 11/9 11:59pm, 10 pts. Confirmed live 11/6.",
    "followup": {
     "due_by": null,
     "email_draft": null,
     "email_sent": false
    },
    "canvas": {
-    "as_of": "2026-10-28T14:35:00"
+    "as_of": "2026-11-06T14:20:00-06:00"
    }
   },
   {
@@ -4621,15 +4694,15 @@
    "discrepancy": false,
    "source": "canvas",
    "submitted_at": null,
-   "as_of": "2026-10-21T20:56:00",
-   "note": "Goodson. On Canvas To Do (seen 9pm Wed 10/21): -/10. Due time not confirmed.",
+   "as_of": "2026-11-06T14:20:00-06:00",
+   "note": "Canvas: due Fri 11/13 11:59pm, 10 pts. Confirmed live 11/6.",
    "followup": {
     "due_by": null,
     "email_draft": null,
     "email_sent": false
    },
    "canvas": {
-    "as_of": "2026-10-21T20:56:00"
+    "as_of": "2026-11-06T14:20:00-06:00"
    }
   },
   {
@@ -4792,14 +4865,14 @@
    "student_status": null,
    "discrepancy": false,
    "followup": null,
-   "as_of": "2026-11-04T14:25:00",
+   "as_of": "2026-11-06T14:20:00-06:00",
    "id": "eng-annotation-check1-1105",
    "title": "English: Annotation Check 1-6",
    "classId": "english-10",
    "due": "2026-11-05T23:59:00",
    "points": 12,
    "source": "Canvas",
-   "note": "Due tonight 11:59pm, 12 pts. Canvas shows 0/12, no submission, no Missing label (may be placeholder). Bennett out sick 11/5; Mom handoff 4:30p. Canvas live 9pm: graded 0/12 (Gmail: graded Nov 5 1:36pm). Bennett was out sick 11/5.",
+   "note": "Graded 0/12 Nov 5 1:36pm (Canvas + Gmail). Unchanged Fri 11/6. Bennett was out sick 11/5.",
    "score": "0/12",
    "graded_at": "2026-11-05T13:36:00"
   },
@@ -4811,14 +4884,14 @@
    "student_status": null,
    "discrepancy": false,
    "followup": null,
-   "as_of": "2026-11-04T14:25:00",
+   "as_of": "2026-11-06T14:20:00-06:00",
    "id": "web-49-special-selectors-1109",
    "title": "Web Design: 4.9 Special Selectors",
    "classId": "web-design",
    "due": "2026-11-09T09:20:00",
    "points": 26,
    "source": "Canvas",
-   "note": "New 11/4."
+   "note": "Due Mon 11/9 9:20am. Unsubmitted/ungraded, no Missing (normal for Web — do not nudge)."
   },
   {
    "status": "open",
@@ -4828,14 +4901,14 @@
    "student_status": null,
    "discrepancy": false,
    "followup": null,
-   "as_of": "2026-11-04T14:25:00",
+   "as_of": "2026-11-06T14:20:00-06:00",
    "id": "web-410-visibility-1109",
    "title": "Web Design: 4.10 Visibility",
    "classId": "web-design",
    "due": "2026-11-09T09:20:00",
    "points": 15,
    "source": "Canvas",
-   "note": "New 11/4."
+   "note": "Due Mon 11/9 9:20am. Unsubmitted/ungraded, no Missing (normal for Web — do not nudge)."
   },
   {
    "id": "eng-helzberg-judging-1119",
@@ -4879,6 +4952,11 @@
   }
  ],
  "notes": [
+  {
+   "id": "after-school-2026-11-06T14:20:00",
+   "as_of": "2026-11-06T14:20:00-06:00",
+   "text": "After-school Fri 11/6 ~2:20pm CT FULL. Bennett out sick day 2 (Dad emailed attendance 7:22am; Shackelford confirmed). Canvas LIVE: Eng 91.1 (348/382) unchanged — Mask Project -/30 due TONIGHT 11:59pm unsubmitted (no Missing); LOTF Quiz #2 still -/10 no Missing; Annot Check 0/12; Rough Draft 10/10. Web 94.23 (4.9/4.10 due Mon 9:20am, normal ungraded). Chem 100.2. ParentVUE LIVE: S&C 100→99.64 A+ (updated 11/6); Eng 94.05; others unchanged; 0 missing; inbox nothing newer than Fillingham 11/5. Gmail NEW: Make-up Picture Day photos ready (Wolgast + Jostens FE208226); Two-Year Academies apps OPEN (close 12/4). oeband unchanged (still shows Oct 31 KBA). OE home: Club Picture Day 11/12, Mattress Sale 11/15, Cavalcade/NHS 11/10. English sheet 11/6: Submit Mask Project + Ch 7. No Plaud said-done, no discrepancy. Band Watch closed. Mom through Sun 6pm. All-District auditions Sat 11/7 SM North (he is sick)."
+  },
   {
    "id": "bedtime-2026-11-05T21:00:00",
    "as_of": "2026-11-05T21:05:00-06:00",
@@ -5540,9 +5618,9 @@
    "letter": "A+",
    "percent": 98.8,
    "missing": 0,
-   "detail": "No change at 9pm check",
+   "detail": "No change at 2:20",
    "source": "ParentVUE",
-   "as_of": "2026-11-05T21:05:00-06:00"
+   "as_of": "2026-11-06T14:20:00-06:00"
   },
   {
    "classId": "sociology",
@@ -5552,9 +5630,9 @@
    "letter": "A-",
    "percent": 90.0,
    "missing": 0,
-   "detail": "No change at 9pm check",
+   "detail": "No change at 2:20",
    "source": "ParentVUE",
-   "as_of": "2026-11-05T21:05:00-06:00"
+   "as_of": "2026-11-06T14:20:00-06:00"
   },
   {
    "classId": "web-design",
@@ -5564,9 +5642,9 @@
    "letter": "A",
    "percent": 94.23,
    "missing": 0,
-   "detail": "No change at 9pm check",
+   "detail": "94.23%, 4.9/4.10 open Mon",
    "source": "Canvas",
-   "as_of": "2026-11-05T21:05:00-06:00"
+   "as_of": "2026-11-06T14:20:00-06:00"
   },
   {
    "classId": "chemistry",
@@ -5576,9 +5654,9 @@
    "letter": "A+",
    "percent": 100.2,
    "missing": 0,
-   "detail": "No change at 9pm check",
+   "detail": "No change at 2:20",
    "source": "Canvas",
-   "as_of": "2026-11-05T21:05:00-06:00"
+   "as_of": "2026-11-06T14:20:00-06:00"
   },
   {
    "classId": "strength-conditioning",
@@ -5586,11 +5664,11 @@
    "period": "P5",
    "teacher": "Pauly",
    "letter": "A+",
-   "percent": 100.0,
+   "percent": 99.64,
    "missing": 0,
-   "detail": "No change at 9pm check",
+   "detail": "99.64% (was 100)",
    "source": "ParentVUE",
-   "as_of": "2026-11-05T21:05:00-06:00"
+   "as_of": "2026-11-06T14:20:00-06:00"
   },
   {
    "classId": "english-10",
@@ -5600,9 +5678,9 @@
    "letter": null,
    "percent": 91.1,
    "missing": 0,
-   "detail": "91.1%, Annot. 0/12 graded",
+   "detail": "91.1%, Mask due tonight",
    "source": "Canvas",
-   "as_of": "2026-11-05T21:05:00-06:00"
+   "as_of": "2026-11-06T14:20:00-06:00"
   },
   {
    "classId": "geometry",
@@ -5612,12 +5690,19 @@
    "letter": "B+",
    "percent": 88.0,
    "missing": 0,
-   "detail": "No change at 9pm check",
+   "detail": "No change at 2:20",
    "source": "ParentVUE",
-   "as_of": "2026-11-05T21:05:00-06:00"
+   "as_of": "2026-11-06T14:20:00-06:00"
   }
  ],
  "grade_history": [
+  {
+   "classId": "strength-conditioning",
+   "as_of": "2026-11-06T14:20:00-06:00",
+   "from_percent": 100.0,
+   "to_percent": 99.64,
+   "note": "ParentVUE MT2 last update 11/6; A+ 99.64 (was 100)."
+  },
   {
    "as_of": "2026-11-05T21:05:00-06:00",
    "source": "Canvas+ParentVUE",
