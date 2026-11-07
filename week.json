@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-06T21:00:00-06:00",
+  "as_of": "2026-11-07T14:20:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4607,12 +4607,12 @@
       "student_status": null,
       "score": null,
       "points": 30,
-      "late": false,
+      "late": true,
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-06T21:00:00-06:00",
-      "note": "Canvas -/30 due Fri 11/6 11:59pm. Not submitted; no Missing flag. English sheet 11/6: Submit Mask Project. Bennett out sick 11/5 and 11/6; with Mom through Sun 6pm. | Fri 11/6 9pm Canvas: still -/30, unsubmitted, no Missing label.",
+      "as_of": "2026-11-07T14:20:00-06:00",
+      "note": "Canvas -/30 due Fri 11/6 11:59pm. Not submitted; no Missing flag. English sheet 11/6: Submit Mask Project. Bennett out sick 11/5 and 11/6; with Mom through Sun 6pm. | Fri 11/6 9pm Canvas: still -/30, unsubmitted, no Missing label. | Sat 11/7 Canvas: still -/30, no submission, no Missing label (past due Fri 11:59pm).",
       "followup": {
         "due_by": "2026-11-06T23:59:00",
         "email_draft": null,
@@ -4949,6 +4949,23 @@
         "email_draft": null,
         "email_sent": false
       }
+    },
+    {
+      "id": "eng-lotf-ch8-1109",
+      "title": "English: Finish LOTF chapter 8 (reading)",
+      "classId": "english-10",
+      "due": "2026-11-09T13:05:00",
+      "points": null,
+      "source": "English Daily Agendas sheet",
+      "note": "Agenda 11/6 homework: finish chapter 8 by Monday; Quiz #3 Mon.",
+      "status": "open",
+      "late": false,
+      "submitted_at": null,
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": null,
+      "as_of": "2026-11-07T14:20:00-06:00"
     }
   ],
   "notes": [
@@ -5612,6 +5629,11 @@
       "id": "after-school-2026-11-04T14:25:00",
       "as_of": "2026-11-04T14:25:00",
       "text": "After-school Wed 11/4 ~2:20pm CT FULL: 10.3 Idea Rough Draft submitted Tue 9:38pm, on time. LOTF Quiz #2 (due Tue 11:59pm) was not taken; no Missing flag yet. Mask Project still not submitted, no Missing flag. Web 4.7/4.8 graded this morning, Web up to 94.23%. Nothing due tonight. Next: Annotation Check 1-6 Thu 11/5 11:59pm (Mom handoff Thu 4:30p), Web 4.9/4.10 Mon 11/9 9:20am, LOTF Quiz #3 Mon 11/9 11:59pm. New: Helzberg coaching Tue 11/10, leave 2nd hour 8:40am for the cafeteria. ParentVUE 0 missing, inbox nothing new. oeband and district calendar unchanged; OE home now lists NHS Induction and Unified Bowling 11/10. No Plaud said-done."
+    },
+    {
+      "id": "after-school-2026-11-07T14:20:00",
+      "as_of": "2026-11-07T14:20:00-06:00",
+      "text": "After-school Sat 11/7 ~2:20pm CT FULL: nothing new. Canvas LIVE unchanged (Eng 91.1, Web 94.23, Chem 100.2); Mask Project still unsubmitted, no Missing label. ParentVUE LIVE unchanged, 0 missing, inbox nothing new after Fillingham Thu. Gmail only the weekly Canvas digest (recap). oeband and district calendar unchanged; OE home adds only an awards news post and senior/unified items. Agenda: finish LOTF ch 8 by Mon; Mon 11/9 Quiz #3 and Web 4.9/4.10. Bennett with Mom through Sun 6pm. No Plaud said-done. Stayed quiet (weekend)."
     }
   ],
   "grades": [
@@ -5623,9 +5645,9 @@
       "letter": "A+",
       "percent": 98.8,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "98.8%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-06T21:00:00-06:00"
+      "as_of": "2026-11-07T14:20:00-06:00"
     },
     {
       "classId": "sociology",
@@ -5635,9 +5657,9 @@
       "letter": "A-",
       "percent": 90.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "90%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-06T21:00:00-06:00"
+      "as_of": "2026-11-07T14:20:00-06:00"
     },
     {
       "classId": "web-design",
@@ -5647,9 +5669,9 @@
       "letter": "A",
       "percent": 94.23,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "94.23%, no change",
       "source": "Canvas",
-      "as_of": "2026-11-06T21:00:00-06:00"
+      "as_of": "2026-11-07T14:20:00-06:00"
     },
     {
       "classId": "chemistry",
@@ -5659,9 +5681,9 @@
       "letter": "A+",
       "percent": 100.2,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "100.2%, no change",
       "source": "Canvas",
-      "as_of": "2026-11-06T21:00:00-06:00"
+      "as_of": "2026-11-07T14:20:00-06:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5671,9 +5693,9 @@
       "letter": "A+",
       "percent": 99.64,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "99.64%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-06T21:00:00-06:00"
+      "as_of": "2026-11-07T14:20:00-06:00"
     },
     {
       "classId": "english-10",
@@ -5683,9 +5705,9 @@
       "letter": null,
       "percent": 91.1,
       "missing": 0,
-      "detail": "91.1%, Mask unsubmitted at 9pm",
+      "detail": "91.1%, Mask still unsubmitted",
       "source": "Canvas",
-      "as_of": "2026-11-06T21:00:00-06:00"
+      "as_of": "2026-11-07T14:20:00-06:00"
     },
     {
       "classId": "geometry",
@@ -5695,9 +5717,9 @@
       "letter": "B+",
       "percent": 88.0,
       "missing": 0,
-      "detail": "No change at 9pm check",
+      "detail": "88%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-06T21:00:00-06:00"
+      "as_of": "2026-11-07T14:20:00-06:00"
     }
   ],
   "grade_history": [
@@ -6754,6 +6776,18 @@
         "strength-conditioning": 100.0,
         "english-10": 93.89,
         "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-11-07T14:20:00-06:00",
+      "source": "Canvas+ParentVUE",
+      "note": "Sat 11/7 2:10 FULL: all grades unchanged vs Fri 9pm. Canvas Eng 91.1 (348/382); Mask Project -/30 (due 11/6) unsubmitted, no Missing label; LOTF Quiz #2 -/10; PV 0 missing.",
+      "grades": {
+        "english-10": 91.1,
+        "web-design": 94.23,
+        "chemistry": 100.2,
+        "pv-english-10": 94.05,
+        "strength-conditioning": 99.64
       }
     }
   ]
