@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-07T14:20:00-06:00",
+  "as_of": "2026-11-07T21:00:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -4611,8 +4611,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-07T14:20:00-06:00",
-      "note": "Canvas -/30 due Fri 11/6 11:59pm. Not submitted; no Missing flag. English sheet 11/6: Submit Mask Project. Bennett out sick 11/5 and 11/6; with Mom through Sun 6pm. | Fri 11/6 9pm Canvas: still -/30, unsubmitted, no Missing label. | Sat 11/7 Canvas: still -/30, no submission, no Missing label (past due Fri 11:59pm).",
+      "as_of": "2026-11-07T21:00:00-06:00",
+      "note": "Canvas -/30 due Fri 11/6 11:59pm. Not submitted; no Missing flag. English sheet 11/6: Submit Mask Project. Bennett out sick 11/5 and 11/6; with Mom through Sun 6pm. | Fri 11/6 9pm Canvas: still -/30, unsubmitted, no Missing label. | Sat 11/7 Canvas: still -/30, no submission, no Missing label (past due Fri 11:59pm). | Sat 11/7 9pm Canvas: still -/30, unsubmitted, no Missing label.",
       "followup": {
         "due_by": "2026-11-06T23:59:00",
         "email_draft": null,
@@ -4623,7 +4623,7 @@
         "status": "unsubmitted",
         "points": 30,
         "due": "2026-11-06T23:59:00",
-        "as_of": "2026-11-06T14:20:00-06:00"
+        "as_of": "2026-11-07T21:00:00-06:00"
       }
     },
     {
@@ -4640,8 +4640,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-06T21:00:00-06:00",
-      "note": "Canvas -/10, not taken as of Fri 11/6 2:20pm; no Missing or Late label. Past due 11/3. Bennett out sick 11/5–11/6. | Fri 11/6 9pm Canvas: still -/10, unsubmitted, no Missing label.",
+      "as_of": "2026-11-07T21:00:00-06:00",
+      "note": "Canvas -/10, not taken as of Fri 11/6 2:20pm; no Missing or Late label. Past due 11/3. Bennett out sick 11/5–11/6. | Fri 11/6 9pm Canvas: still -/10, unsubmitted, no Missing label. | Sat 11/7 9pm Canvas: still -/10, unsubmitted, no Missing label.",
       "followup": {
         "due_by": "2026-11-07",
         "reason": "Ask when he can make up LOTF Quiz #2 after sick days",
@@ -4652,7 +4652,7 @@
         "status": "unsubmitted",
         "points": 10,
         "due": "2026-11-03T23:59:00",
-        "as_of": "2026-11-06T14:20:00-06:00"
+        "as_of": "2026-11-07T21:00:00-06:00"
       }
     },
     {
@@ -4669,7 +4669,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-06T14:20:00-06:00",
+      "as_of": "2026-11-07T21:00:00-06:00",
       "note": "Canvas To Do: due Mon 11/9 11:59pm, 10 pts. Confirmed live 11/6.",
       "followup": {
         "due_by": null,
@@ -4677,7 +4677,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-11-06T14:20:00-06:00"
+        "as_of": "2026-11-07T21:00:00-06:00"
       }
     },
     {
@@ -4694,7 +4694,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-06T14:20:00-06:00",
+      "as_of": "2026-11-07T21:00:00-06:00",
       "note": "Canvas: due Fri 11/13 11:59pm, 10 pts. Confirmed live 11/6.",
       "followup": {
         "due_by": null,
@@ -4702,7 +4702,7 @@
         "email_sent": false
       },
       "canvas": {
-        "as_of": "2026-11-06T14:20:00-06:00"
+        "as_of": "2026-11-07T21:00:00-06:00"
       }
     },
     {
@@ -4884,7 +4884,7 @@
       "student_status": null,
       "discrepancy": false,
       "followup": null,
-      "as_of": "2026-11-06T14:20:00-06:00",
+      "as_of": "2026-11-07T21:00:00-06:00",
       "id": "web-49-special-selectors-1109",
       "title": "Web Design: 4.9 Special Selectors",
       "classId": "web-design",
@@ -4901,7 +4901,7 @@
       "student_status": null,
       "discrepancy": false,
       "followup": null,
-      "as_of": "2026-11-06T14:20:00-06:00",
+      "as_of": "2026-11-07T21:00:00-06:00",
       "id": "web-410-visibility-1109",
       "title": "Web Design: 4.10 Visibility",
       "classId": "web-design",
@@ -4969,6 +4969,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-2026-11-07T21:00:00",
+      "as_of": "2026-11-07T21:00:00-06:00",
+      "text": "Bedtime Sat 11/7 ~9pm CT NARROW: Canvas LIVE unchanged vs 2:20 (Eng 91.1 = 348/382, Web 94.23, Chem 100.2); Mask Project -/30 (due Fri 11/6 11:59pm) still unsubmitted, LOTF Quiz #2 -/10 not taken, Annotation Check 0/12; no Missing labels; no new grades or submissions. ParentVUE LIVE unchanged (Eng 94.05, S&C 99.64), 0 missing, inbox nothing new after Fillingham 11/5, Alerts only July 1 notice. Gmail: no new school or Canvas mail after 2:20 (weekly digest already in the afternoon check). No said-done from Bennett, no discrepancy. Bennett with Mom through Sun 6pm. Stayed quiet (weekend)."
+    },
     {
       "id": "bedtime-2026-11-06T21:00:00",
       "as_of": "2026-11-06T21:00:00-06:00",
@@ -5647,7 +5652,7 @@
       "missing": 0,
       "detail": "98.8%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-07T14:20:00-06:00"
+      "as_of": "2026-11-07T21:00:00-06:00"
     },
     {
       "classId": "sociology",
@@ -5659,7 +5664,7 @@
       "missing": 0,
       "detail": "90%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-07T14:20:00-06:00"
+      "as_of": "2026-11-07T21:00:00-06:00"
     },
     {
       "classId": "web-design",
@@ -5671,7 +5676,7 @@
       "missing": 0,
       "detail": "94.23%, no change",
       "source": "Canvas",
-      "as_of": "2026-11-07T14:20:00-06:00"
+      "as_of": "2026-11-07T21:00:00-06:00"
     },
     {
       "classId": "chemistry",
@@ -5683,7 +5688,7 @@
       "missing": 0,
       "detail": "100.2%, no change",
       "source": "Canvas",
-      "as_of": "2026-11-07T14:20:00-06:00"
+      "as_of": "2026-11-07T21:00:00-06:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5695,7 +5700,7 @@
       "missing": 0,
       "detail": "99.64%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-07T14:20:00-06:00"
+      "as_of": "2026-11-07T21:00:00-06:00"
     },
     {
       "classId": "english-10",
@@ -5707,7 +5712,7 @@
       "missing": 0,
       "detail": "91.1%, Mask still unsubmitted",
       "source": "Canvas",
-      "as_of": "2026-11-07T14:20:00-06:00"
+      "as_of": "2026-11-07T21:00:00-06:00"
     },
     {
       "classId": "geometry",
@@ -5719,7 +5724,7 @@
       "missing": 0,
       "detail": "88%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-07T14:20:00-06:00"
+      "as_of": "2026-11-07T21:00:00-06:00"
     }
   ],
   "grade_history": [
