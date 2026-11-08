@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-07T21:00:00-06:00",
+  "as_of": "2026-11-08T14:25:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -224,7 +224,8 @@
       "end": "2026-11-12T14:40:00",
       "kind": "calendar",
       "source": "east.olatheschools.org",
-      "as_of": "2026-11-05T14:20:00"
+      "as_of": "2026-11-08T14:25:00-06:00",
+      "note": "English sheet 11/11-11/12 homework: Club photos for yearbook."
     },
     {
       "id": "bennett-sick-1105",
@@ -2091,10 +2092,10 @@
       "end": "2026-11-15T17:00:00",
       "kind": "band",
       "classId": "band",
-      "place": "TBD",
-      "note": "Fillingham 10/4: Nov 15 10am–5pm; proceeds to individual students (Orlando trip or next-year fees). Flyer linked in email.",
-      "as_of": "2026-10-04T14:16:00",
-      "source": "gmail-fillingham-2026-10-04"
+      "place": "Olathe East",
+      "note": "Fillingham Band Update 11/8 1:11pm CT: Mattress Fundraiser at OE Nov 15, 10:00 AM-5:00 PM. Proceeds go directly to individual students for the Orlando trip or next-year band fees. Flyer linked in the 11/8 email. Earlier Fillingham 10/4 and 11/5 messages first announced this sale.",
+      "as_of": "2026-11-08T14:25:00-06:00",
+      "source": "gmail-fillingham-2026-11-08"
     },
     {
       "id": "bennett-early-leave-1026",
@@ -2179,6 +2180,143 @@
       "source": "Canvas announcement + Gmail 11/4 12:48pm",
       "as_of": "2026-11-04T14:25:00",
       "note": " Geometry (Foster) also emailed same coaching notice Thu 4:45pm."
+    },
+    {
+      "id": "band-playing-test-1109",
+      "title": "Band: Full Band playing test (in class)",
+      "start": "2026-11-09",
+      "end": "2026-11-11",
+      "kind": "band",
+      "classId": "band",
+      "place": "Olathe East band room (in class)",
+      "note": "Fillingham Band Update 11/8 1:11pm CT: Full Band playing tests Nov 9-11 in class; they start Monday. Music is on Canvas and hard copies were available in the band room. No time of day beyond class.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pt-pep-assembly-1120",
+      "title": "Band: PT Pep Assembly performance (optional)",
+      "start": "2026-11-20",
+      "kind": "band",
+      "classId": "band",
+      "place": "Prairie Trail",
+      "note": "Fillingham Band Update 11/8: Band performs at PT Pep Assembly (optional). No time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-heavy-metal-christmas-1203",
+      "title": "Band: Heavy Metal Christmas @ MNU",
+      "start": "2026-12-03T09:00:00",
+      "end": "2026-12-03T11:00:00",
+      "kind": "band",
+      "classId": "band",
+      "place": "MidAmerica Nazarene University",
+      "note": "Fillingham Band Update 11/8 calendar at a glance: Dec 3 Heavy Metal Christmas @MNU 9:00 AM-11:00 AM.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-district-clinic-1204",
+      "title": "Band: District Band Clinic and concerts",
+      "start": "2026-12-04",
+      "end": "2026-12-05",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham Band Update 11/8: Dec 4-5 District Band Clinic and concerts. The 11/5 All-District audition note called Fri/Sat 12/4-12/5 Honor Band rehearsals; results were expected at eckmea.org by Wed 11/11.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-winter-concert-1207",
+      "title": "Band: Winter Band Concert",
+      "start": "2026-12-07T19:30:00",
+      "kind": "band",
+      "classId": "band",
+      "place": "Olathe East Auditorium",
+      "note": "Fillingham Band Update 11/8: Winter Band Concert Dec 7, 7:30 PM in OE Auditorium. No end time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pep-1210",
+      "title": "Band: Pep band game (optional)",
+      "start": "2026-12-10",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham Band Update 11/8: All band students welcome; pep band is separate from class. Sign-ups are in the band room; they will do a couple of classtime rehearsals. No call time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pep-0101",
+      "title": "Band: Pep band game (optional)",
+      "start": "2027-01-01",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham Band Update 11/8: All band students welcome; pep band is separate from class. Sign-ups are in the band room; they will do a couple of classtime rehearsals. No call time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pep-0108",
+      "title": "Band: Pep band game (optional)",
+      "start": "2027-01-08",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham Band Update 11/8: All band students welcome; pep band is separate from class. Sign-ups are in the band room; they will do a couple of classtime rehearsals. No call time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pep-0115",
+      "title": "Band: Pep band game (optional)",
+      "start": "2027-01-15",
+      "kind": "band",
+      "classId": "band",
+      "note": "Middle school night. Fillingham Band Update 11/8: All band students welcome; pep band is separate from class. Sign-ups are in the band room; they will do a couple of classtime rehearsals. No call time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pep-0126",
+      "title": "Band: Pep band game (optional)",
+      "start": "2027-01-26",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham Band Update 11/8: All band students welcome; pep band is separate from class. Sign-ups are in the band room; they will do a couple of classtime rehearsals. No call time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pep-0202",
+      "title": "Band: Pep band game (optional)",
+      "start": "2027-02-02",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham Band Update 11/8: All band students welcome; pep band is separate from class. Sign-ups are in the band room; they will do a couple of classtime rehearsals. No call time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pep-0216",
+      "title": "Band: Pep band game (optional)",
+      "start": "2027-02-16",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham Band Update 11/8: All band students welcome; pep band is separate from class. Sign-ups are in the band room; they will do a couple of classtime rehearsals. No call time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "band-pep-0226",
+      "title": "Band: Pep band game (optional)",
+      "start": "2027-02-26",
+      "kind": "band",
+      "classId": "band",
+      "note": "Fillingham Band Update 11/8: All band students welcome; pep band is separate from class. Sign-ups are in the band room; they will do a couple of classtime rehearsals. No call time given.",
+      "source": "gmail-fillingham-2026-11-08",
+      "as_of": "2026-11-08T14:25:00-06:00"
     }
   ],
   "work": [
@@ -4611,8 +4749,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-07T21:00:00-06:00",
-      "note": "Canvas -/30 due Fri 11/6 11:59pm. Not submitted; no Missing flag. English sheet 11/6: Submit Mask Project. Bennett out sick 11/5 and 11/6; with Mom through Sun 6pm. | Fri 11/6 9pm Canvas: still -/30, unsubmitted, no Missing label. | Sat 11/7 Canvas: still -/30, no submission, no Missing label (past due Fri 11:59pm). | Sat 11/7 9pm Canvas: still -/30, unsubmitted, no Missing label.",
+      "as_of": "2026-11-08T14:25:00-06:00",
+      "note": "Canvas -/30 due Fri 11/6 11:59pm. Not submitted; no Missing flag. English sheet 11/6: Submit Mask Project. Bennett out sick 11/5 and 11/6; with Mom through Sun 6pm. | Fri 11/6 9pm Canvas: still -/30, unsubmitted, no Missing label. | Sat 11/7 Canvas: still -/30, no submission, no Missing label (past due Fri 11:59pm). | Sat 11/7 9pm Canvas: still -/30, unsubmitted, no Missing label. | Sun 11/8 2:25pm Canvas: still -/30 unsubmitted, no Missing label.",
       "followup": {
         "due_by": "2026-11-06T23:59:00",
         "email_draft": null,
@@ -4640,8 +4778,8 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-07T21:00:00-06:00",
-      "note": "Canvas -/10, not taken as of Fri 11/6 2:20pm; no Missing or Late label. Past due 11/3. Bennett out sick 11/5–11/6. | Fri 11/6 9pm Canvas: still -/10, unsubmitted, no Missing label. | Sat 11/7 9pm Canvas: still -/10, unsubmitted, no Missing label.",
+      "as_of": "2026-11-08T14:25:00-06:00",
+      "note": "Canvas -/10, not taken as of Fri 11/6 2:20pm; no Missing or Late label. Past due 11/3. Bennett out sick 11/5–11/6. | Fri 11/6 9pm Canvas: still -/10, unsubmitted, no Missing label. | Sat 11/7 9pm Canvas: still -/10, unsubmitted, no Missing label. | Sun 11/8 2:25pm Canvas: still -/10 not taken, no Missing label.",
       "followup": {
         "due_by": "2026-11-07",
         "reason": "Ask when he can make up LOTF Quiz #2 after sick days",
@@ -4669,7 +4807,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-07T21:00:00-06:00",
+      "as_of": "2026-11-08T14:25:00-06:00",
       "note": "Canvas To Do: due Mon 11/9 11:59pm, 10 pts. Confirmed live 11/6.",
       "followup": {
         "due_by": null,
@@ -4694,7 +4832,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-11-07T21:00:00-06:00",
+      "as_of": "2026-11-08T14:25:00-06:00",
       "note": "Canvas: due Fri 11/13 11:59pm, 10 pts. Confirmed live 11/6.",
       "followup": {
         "due_by": null,
@@ -4719,7 +4857,7 @@
       "discrepancy": false,
       "source": "canvas",
       "submitted_at": null,
-      "as_of": "2026-10-23T14:20:00",
+      "as_of": "2026-11-08T14:25:00-06:00",
       "note": "Goodson. On Canvas, logged after-school Fri 10/23: -/5 due 11/20 11:59pm CT.",
       "followup": {
         "due_by": null,
@@ -4884,7 +5022,7 @@
       "student_status": null,
       "discrepancy": false,
       "followup": null,
-      "as_of": "2026-11-07T21:00:00-06:00",
+      "as_of": "2026-11-08T14:25:00-06:00",
       "id": "web-49-special-selectors-1109",
       "title": "Web Design: 4.9 Special Selectors",
       "classId": "web-design",
@@ -4901,7 +5039,7 @@
       "student_status": null,
       "discrepancy": false,
       "followup": null,
-      "as_of": "2026-11-07T21:00:00-06:00",
+      "as_of": "2026-11-08T14:25:00-06:00",
       "id": "web-410-visibility-1109",
       "title": "Web Design: 4.10 Visibility",
       "classId": "web-design",
@@ -4928,7 +5066,8 @@
         "due_by": null,
         "email_draft": null,
         "email_sent": false
-      }
+      },
+      "as_of": "2026-11-08T14:25:00-06:00"
     },
     {
       "id": "eng-helzberg-slides-1119",
@@ -4948,7 +5087,8 @@
         "due_by": null,
         "email_draft": null,
         "email_sent": false
-      }
+      },
+      "as_of": "2026-11-08T14:25:00-06:00"
     },
     {
       "id": "eng-lotf-ch8-1109",
@@ -4965,7 +5105,63 @@
       "student_status": null,
       "discrepancy": false,
       "followup": null,
-      "as_of": "2026-11-07T14:20:00-06:00"
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "soc-csi3-81-82-1106",
+      "title": "Sociology: CSI 3 (8.1 or 8.2)",
+      "classId": "sociology",
+      "due": "2026-11-06",
+      "status": "missing",
+      "school_status": "missing",
+      "student_status": null,
+      "score": "0/30",
+      "points": 30,
+      "late": false,
+      "discrepancy": false,
+      "source": "ParentVUE",
+      "submitted_at": null,
+      "as_of": "2026-11-08T14:25:00-06:00",
+      "note": "ParentVUE Missing filter: CSI 3 (8.1 or 8.2), due 11/6/2026, 0/30, not turned in. Class last update 11/8; grade 90 to 87. Only missing item (1 of 23). Bennett was out sick 11/5-11/6. No said-done.",
+      "followup": {
+        "due_by": "2026-11-09T21:00:00",
+        "email_draft": null,
+        "email_sent": false
+      }
+    },
+    {
+      "id": "eng-lotf-ch9-1112",
+      "title": "English: Finish LOTF chapter 9 (reading)",
+      "classId": "english-10",
+      "due": "2026-11-12T13:05:00",
+      "points": null,
+      "source": "English Daily Agendas sheet",
+      "note": "Agenda 11/9 homework: finish chapter 9 by block day (11/11-11/12).",
+      "status": "open",
+      "late": false,
+      "submitted_at": null,
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": null,
+      "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "eng-annotation-check2-1112",
+      "title": "English: Annotation Check #2",
+      "classId": "english-10",
+      "due": "2026-11-12",
+      "points": null,
+      "source": "English Daily Agendas sheet",
+      "note": "Sheet 11/11-11/12 class work: Discuss chapter 9; lit analysis mini-lesson; Annotation check #2. Homework that block: Club photos for yearbook.",
+      "status": "open",
+      "late": false,
+      "submitted_at": null,
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": null,
+      "as_of": "2026-11-08T14:25:00-06:00"
     }
   ],
   "notes": [
@@ -5639,6 +5835,11 @@
       "id": "after-school-2026-11-07T14:20:00",
       "as_of": "2026-11-07T14:20:00-06:00",
       "text": "After-school Sat 11/7 ~2:20pm CT FULL: nothing new. Canvas LIVE unchanged (Eng 91.1, Web 94.23, Chem 100.2); Mask Project still unsubmitted, no Missing label. ParentVUE LIVE unchanged, 0 missing, inbox nothing new after Fillingham Thu. Gmail only the weekly Canvas digest (recap). oeband and district calendar unchanged; OE home adds only an awards news post and senior/unified items. Agenda: finish LOTF ch 8 by Mon; Mon 11/9 Quiz #3 and Web 4.9/4.10. Bennett with Mom through Sun 6pm. No Plaud said-done. Stayed quiet (weekend)."
+    },
+    {
+      "id": "after-school-2026-11-08T14:25:00",
+      "as_of": "2026-11-08T14:25:00-06:00",
+      "text": "After-school Sun 11/8 ~2:25pm CT FULL: Fillingham Band Update (Gmail + ParentVUE inbox 1:11pm CT) — Full Band playing tests Nov 9-11 in class (starts Mon; music on Canvas and hard copies in the band room); mattress sale at OE Nov 15 10am-5pm (proceeds to each student's Orlando trip or next-year fees); optional PT Pep Assembly Nov 20; Heavy Metal Christmas @MNU Dec 3 9-11am; District Band Clinic Dec 4-5; Winter Concert Dec 7 7:30pm OE Auditorium; optional pep band (sign-ups in the band room) Dec 10, Jan 1, Jan 8, Jan 15, Jan 26, Feb 2, Feb 16, Feb 26. oeband.com updates page still tops out at 10-25-26; payments page unchanged. Canvas LIVE unchanged (Eng 91.1 = 348/382, Web 94.23, Chem 100.2); Mask Project -/30 and LOTF Quiz #2 -/10 still unsubmitted, no Missing labels; LOTF Quiz #3 -/10 due Mon 11/9 11:59pm. ParentVUE LIVE: Sociology 90 to 87 B (updated 11/8), 1 missing: CSI 3 (8.1 or 8.2) due 11/6, 0/30, not turned in (Bennett out sick 11/5-11/6). Other PV grades unchanged (Band 98.8, Web 94, Chem 100.2, S&C 99.64, Eng 94.05, Geo 88). Inbox new: Fillingham Band Update 11/8. Attendance nothing new after 11/5-11/6 sick days. English sheet: finish ch 8 by Mon (already logged); Quiz #3 Mon; finish ch 9 by block day 11/11-12; Annotation check #2 on 11/11-12. Gmail: no new Canvas notifications after Saturday's weekly digest. No said-done, no discrepancy. Handoff to Dad today 6pm CT."
     }
   ],
   "grades": [
@@ -5652,19 +5853,19 @@
       "missing": 0,
       "detail": "98.8%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-07T21:00:00-06:00"
+      "as_of": "2026-11-08T14:25:00-06:00"
     },
     {
       "classId": "sociology",
       "class": "Sociology",
       "period": "P2",
       "teacher": "Todd Keach",
-      "letter": "A-",
-      "percent": 90.0,
-      "missing": 0,
-      "detail": "90%, no change",
+      "letter": "B",
+      "percent": 87.0,
+      "missing": 1,
+      "detail": "87% B, CSI 3 missing 0/30",
       "source": "ParentVUE",
-      "as_of": "2026-11-07T21:00:00-06:00"
+      "as_of": "2026-11-08T14:25:00-06:00"
     },
     {
       "classId": "web-design",
@@ -5676,7 +5877,7 @@
       "missing": 0,
       "detail": "94.23%, no change",
       "source": "Canvas",
-      "as_of": "2026-11-07T21:00:00-06:00"
+      "as_of": "2026-11-08T14:25:00-06:00"
     },
     {
       "classId": "chemistry",
@@ -5688,7 +5889,7 @@
       "missing": 0,
       "detail": "100.2%, no change",
       "source": "Canvas",
-      "as_of": "2026-11-07T21:00:00-06:00"
+      "as_of": "2026-11-08T14:25:00-06:00"
     },
     {
       "classId": "strength-conditioning",
@@ -5700,7 +5901,7 @@
       "missing": 0,
       "detail": "99.64%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-07T21:00:00-06:00"
+      "as_of": "2026-11-08T14:25:00-06:00"
     },
     {
       "classId": "english-10",
@@ -5712,7 +5913,7 @@
       "missing": 0,
       "detail": "91.1%, Mask still unsubmitted",
       "source": "Canvas",
-      "as_of": "2026-11-07T21:00:00-06:00"
+      "as_of": "2026-11-08T14:25:00-06:00"
     },
     {
       "classId": "geometry",
@@ -5724,7 +5925,7 @@
       "missing": 0,
       "detail": "88%, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-07T21:00:00-06:00"
+      "as_of": "2026-11-08T14:25:00-06:00"
     }
   ],
   "grade_history": [
@@ -6793,6 +6994,21 @@
         "chemistry": 100.2,
         "pv-english-10": 94.05,
         "strength-conditioning": 99.64
+      }
+    },
+    {
+      "as_of": "2026-11-08T14:25:00-06:00",
+      "source": "Canvas+ParentVUE",
+      "note": "Sun 11/8 2:10 FULL: Canvas unchanged Eng 91.1 (348/382), Web 94.23, Chem 100.2; Mask Project and LOTF Quiz #2 still unsubmitted, no Missing. PV Sociology 90 to 87 B, 1 missing: CSI 3 (8.1 or 8.2) due 11/6, 0/30. Other PV grades unchanged. Fillingham Band Update 1:11pm.",
+      "grades": {
+        "band": 98.8,
+        "sociology": 87.0,
+        "web-design": 94.23,
+        "chemistry": 100.2,
+        "strength-conditioning": 99.64,
+        "english-10": 91.1,
+        "pv-english-10": 94.05,
+        "geometry": 88.0
       }
     }
   ]
