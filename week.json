@@ -1,6 +1,6 @@
 {
  "timezone": "America/Chicago",
- "as_of": "2026-11-09T14:20:00-06:00",
+ "as_of": "2026-11-09T21:05:00-06:00",
  "parenting": [
   {
    "who": "Mom",
@@ -5907,9 +5907,9 @@
    "letter": "A",
    "percent": 94.23,
    "missing": 0,
-   "detail": "No change at 2pm check",
+   "detail": "No change at 9pm check",
    "source": "Canvas",
-   "as_of": "2026-11-09T14:20:00-06:00"
+   "as_of": "2026-11-09T21:05:00-06:00"
   },
   {
    "classId": "chemistry",
@@ -5919,9 +5919,9 @@
    "letter": "A+",
    "percent": 100.2,
    "missing": 0,
-   "detail": "No change at 2pm check",
+   "detail": "No change at 9pm check",
    "source": "Canvas",
-   "as_of": "2026-11-09T14:20:00-06:00"
+   "as_of": "2026-11-09T21:05:00-06:00"
   },
   {
    "classId": "strength-conditioning",
@@ -5941,11 +5941,11 @@
    "period": "P6",
    "teacher": "Amanda Goodson / Carl",
    "letter": null,
-   "percent": 91.1,
+   "percent": 83.89,
    "missing": 0,
-   "detail": "No change at 2pm check",
+   "detail": "Mask 0/30, LOTF Q2 6/10 graded",
    "source": "Canvas",
-   "as_of": "2026-11-09T14:20:00-06:00"
+   "as_of": "2026-11-09T21:05:00-06:00"
   },
   {
    "classId": "geometry",
@@ -7042,6 +7042,10 @@
     "pv-english-10": 94.05,
     "geometry": 88.0
    }
+  },
+  {
+   "as_of": "2026-11-09T21:05:00-06:00",
+   "note": "English 91.1 to 83.89 Canvas: Mask Project graded 0/30 (7:53pm), LOTF Quiz #2 graded 6/10 (7:45pm). ParentVUE not read, login needed."
   }
  ]
 }
