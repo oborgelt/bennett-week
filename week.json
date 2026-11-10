@@ -1,6 +1,6 @@
 {
  "timezone": "America/Chicago",
- "as_of": "2026-11-09T21:05:00-06:00",
+ "as_of": "2026-11-10T14:20:00-06:00",
  "parenting": [
   {
    "who": "Mom",
@@ -2344,6 +2344,59 @@
    "kind": "calendar",
    "source": "east.olatheschools.org",
    "as_of": "2026-11-09T14:20:00-06:00"
+  },
+  {
+   "id": "oe-nhs-cavalcade-1110",
+   "title": "East Area Cavalcade of Strings",
+   "start": "2026-11-10T19:00:00",
+   "end": "2026-11-10T21:00:00",
+   "kind": "calendar",
+   "source": "east.olatheschools.org",
+   "as_of": "2026-11-10T14:20:00-06:00"
+  },
+  {
+   "id": "oe-fall-break-1123",
+   "title": "Fall Break, no school Nov 23-27",
+   "start": "2026-11-23T00:00:00",
+   "end": "2026-11-27T23:59:00",
+   "kind": "calendar",
+   "source": "district calendar",
+   "as_of": "2026-11-10T14:20:00-06:00"
+  },
+  {
+   "id": "oe-2yr-academy-1111",
+   "title": "Two-Year Academy student tour (apply by Dec 4)",
+   "date": "2026-11-11",
+   "kind": "calendar",
+   "source": "ParentVUE Ann Book 11/10",
+   "as_of": "2026-11-10T14:20:00-06:00"
+  },
+  {
+   "id": "oe-esports-1111",
+   "title": "E-Sports parent open house (optional)",
+   "date": "2026-11-11",
+   "kind": "calendar",
+   "source": "Gmail kjlane",
+   "as_of": "2026-11-10T14:20:00-06:00"
+  },
+  {
+   "id": "band-mattress-1115",
+   "title": "Band mattress sale 10am-5pm OE",
+   "start": "2026-11-15T10:00:00",
+   "end": "2026-11-15T17:00:00",
+   "kind": "calendar",
+   "classId": "band",
+   "source": "oeband",
+   "as_of": "2026-11-10T14:20:00-06:00"
+  },
+  {
+   "id": "eng-lotf-q4-1113",
+   "title": "English: Ch 10 due, LOTF Quiz #4 due 11:59pm",
+   "date": "2026-11-13",
+   "kind": "calendar",
+   "classId": "english-10",
+   "source": "Canvas / agenda",
+   "as_of": "2026-11-10T14:20:00-06:00"
   }
  ],
  "work": [
@@ -5193,6 +5246,11 @@
  ],
  "notes": [
   {
+   "id": "after-school-2026-11-10T14:20:00",
+   "as_of": "2026-11-10T14:20:00-06:00",
+   "text": "After-school Tue 11/10 ~2:20pm CT: Canvas pages would not render (grades read from ParentVUE). ParentVUE: Chem 98.7 (graded Balancing Quiz 9:49am, Balancing Equations 12:04pm per Gmail), Geometry 88 to 83 with 1 missing (item not shown), Eng 83.89, Soc 87 (CSI 3), Web 94, Band 99. Nothing due tonight on Canvas; English Ch 9 by block day, Ch 10 and Quiz #4 by 11/13. Inbox: Ann Book Two-Year Academy (tour 11/11, apply by Dec 4). Bennett with Dad until Thu 4:30pm. Nothing from Bennett on done work."
+  },
+  {
    "id": "bedtime-2026-11-07T21:00:00",
    "as_of": "2026-11-07T21:00:00-06:00",
    "text": "Bedtime Sat 11/7 ~9pm CT NARROW: Canvas LIVE unchanged vs 2:20 (Eng 91.1 = 348/382, Web 94.23, Chem 100.2); Mask Project -/30 (due Fri 11/6 11:59pm) still unsubmitted, LOTF Quiz #2 -/10 not taken, Annotation Check 0/12; no Missing labels; no new grades or submissions. ParentVUE LIVE unchanged (Eng 94.05, S&C 99.64), 0 missing, inbox nothing new after Fillingham 11/5, Alerts only July 1 notice. Gmail: no new school or Canvas mail after 2:20 (weekly digest already in the afternoon check). No said-done from Bennett, no discrepancy. Bennett with Mom through Sun 6pm. Stayed quiet (weekend)."
@@ -5881,11 +5939,11 @@
    "period": "P1",
    "teacher": "Rebecca Fillingham",
    "letter": "A+",
-   "percent": 98.8,
+   "percent": 99.0,
    "missing": 0,
-   "detail": "No change at 9pm check",
+   "detail": "Playing tests Nov 9-11",
    "source": "ParentVUE",
-   "as_of": "2026-11-08T21:05:00-06:00"
+   "as_of": "2026-11-10T14:20:00-06:00"
   },
   {
    "classId": "sociology",
@@ -5895,9 +5953,9 @@
    "letter": "B",
    "percent": 87.0,
    "missing": 1,
-   "detail": "87% B, CSI 3 missing 0/30",
+   "detail": "87% B, CSI 3 still missing",
    "source": "ParentVUE",
-   "as_of": "2026-11-08T21:05:00-06:00"
+   "as_of": "2026-11-10T14:20:00-06:00"
   },
   {
    "classId": "web-design",
@@ -5905,11 +5963,11 @@
    "period": "P3",
    "teacher": "Derek Linn",
    "letter": "A",
-   "percent": 94.23,
+   "percent": 94.0,
    "missing": 0,
-   "detail": "No change at 9pm check",
-   "source": "Canvas",
-   "as_of": "2026-11-09T21:05:00-06:00"
+   "detail": "No change",
+   "source": "ParentVUE",
+   "as_of": "2026-11-10T14:20:00-06:00"
   },
   {
    "classId": "chemistry",
@@ -5917,11 +5975,11 @@
    "period": "P4",
    "teacher": "Justin Pfeiff",
    "letter": "A+",
-   "percent": 100.2,
+   "percent": 98.7,
    "missing": 0,
-   "detail": "No change at 9pm check",
-   "source": "Canvas",
-   "as_of": "2026-11-09T21:05:00-06:00"
+   "detail": "Balancing Quiz, Equations graded",
+   "source": "ParentVUE",
+   "as_of": "2026-11-10T14:20:00-06:00"
   },
   {
    "classId": "strength-conditioning",
@@ -5931,9 +5989,9 @@
    "letter": "A+",
    "percent": 99.64,
    "missing": 0,
-   "detail": "No change at 9pm check",
+   "detail": "No change",
    "source": "ParentVUE",
-   "as_of": "2026-11-08T21:05:00-06:00"
+   "as_of": "2026-11-10T14:20:00-06:00"
   },
   {
    "classId": "english-10",
@@ -5943,9 +6001,9 @@
    "letter": null,
    "percent": 83.89,
    "missing": 0,
-   "detail": "Mask 0/30, LOTF Q2 6/10 graded",
-   "source": "Canvas",
-   "as_of": "2026-11-09T21:05:00-06:00"
+   "detail": "No change since Mask/LOTF Q2",
+   "source": "ParentVUE",
+   "as_of": "2026-11-10T14:20:00-06:00"
   },
   {
    "classId": "geometry",
@@ -5953,11 +6011,11 @@
    "period": "P7",
    "teacher": "K Foster",
    "letter": "B+",
-   "percent": 88.0,
-   "missing": 0,
-   "detail": "No change at 9pm check",
+   "percent": 83.0,
+   "missing": 1,
+   "detail": "83%, 1 missing (item not shown)",
    "source": "ParentVUE",
-   "as_of": "2026-11-08T21:05:00-06:00"
+   "as_of": "2026-11-10T14:20:00-06:00"
   }
  ],
  "grade_history": [
