@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-15T21:00:00-06:00",
+  "as_of": "2026-11-16T14:20:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -154,6 +154,25 @@
     }
   ],
   "events": [
+    {
+      "id": "band-boosters-outfit-sizing-1120",
+      "title": "Band Boosters: volunteers to size concert outfits (Fri AM)",
+      "date": "2026-11-20",
+      "kind": "calendar",
+      "source": "Gmail Band Boosters",
+      "note": "Optional parent help; reply to Staci Acheson.",
+      "as_of": "2026-11-16T14:20:00-06:00"
+    },
+    {
+      "id": "eng-lotf-quizzes-1120",
+      "title": "English: late/missing LOTF quizzes due Fri 11/20",
+      "date": "2026-11-20",
+      "kind": "calendar",
+      "classId": "english-10",
+      "source": "Gmail Goodson",
+      "note": "Finish Ch 11 by Tue 11/17 (read aloud in class). No LOTF quizzes after fall break.",
+      "as_of": "2026-11-16T14:20:00-06:00"
+    },
     {
       "id": "oe-3de-culminating-1118",
       "title": "3DE Culminating Event",
@@ -5288,6 +5307,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "after-school-2026-11-16T14:10:00",
+      "as_of": "2026-11-16T14:20:00-06:00",
+      "text": "After-school Mon 11/16 ~2:20pm CT (Gmail only; Canvas, ParentVUE, oeband not read live this run, grade rows unchanged). Goodson 9:06am CT (Canvas + district msg): finish LOTF Ch 11 before Tue 11/17 (final chapter read aloud in class; not caught up = can't participate); all late/missing LOTF quizzes due Fri 11/20, none allowed after fall break. Band Boosters 11/16 12:35pm: volunteers needed Fri 11/20 morning to size concert-band outfits (reply to Staci Acheson if helping). Hawk Weekly 11/15 (not read). No new Canvas graded mail. Nothing from Bennett."
+    },
     {
       "id": "after-school-2026-11-12T14:10:00",
       "as_of": "2026-11-12T14:15:00-06:00",
