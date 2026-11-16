@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-16T14:20:00-06:00",
+  "as_of": "2026-11-16T17:20:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -6019,21 +6019,21 @@
       "letter": "A+",
       "percent": 99.0,
       "missing": 0,
-      "detail": "99 A+ live 11/12",
+      "detail": "99 A+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-12T14:20:00-06:00"
+      "as_of": "2026-11-16T17:20:00-06:00"
     },
     {
       "classId": "sociology",
       "class": "Sociology",
       "period": "P2",
       "teacher": "Todd Keach",
-      "letter": "B",
-      "percent": 85.0,
+      "letter": "A-",
+      "percent": 90.0,
       "missing": 1,
-      "detail": "85 B, 1 missing (likely CSI 3)",
+      "detail": "90 A-, CSI 3 made up, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-12T14:20:00-06:00"
+      "as_of": "2026-11-16T17:20:00-06:00"
     },
     {
       "classId": "web-design",
@@ -6043,9 +6043,9 @@
       "letter": "A",
       "percent": 94.0,
       "missing": 0,
-      "detail": "94 A live 11/12",
+      "detail": "94 A, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-12T14:20:00-06:00"
+      "as_of": "2026-11-16T17:20:00-06:00"
     },
     {
       "classId": "chemistry",
@@ -6055,9 +6055,9 @@
       "letter": "A+",
       "percent": 98.7,
       "missing": 0,
-      "detail": "98.7 A+ live 11/12",
+      "detail": "98.7 A+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-12T14:20:00-06:00"
+      "as_of": "2026-11-16T17:20:00-06:00"
     },
     {
       "classId": "strength-conditioning",
@@ -6065,11 +6065,11 @@
       "period": "P5",
       "teacher": "Pauly",
       "letter": "A+",
-      "percent": 99.64,
+      "percent": 99.67,
       "missing": 0,
-      "detail": "99.64 A+ live 11/12",
+      "detail": "99.67 A+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-12T14:20:00-06:00"
+      "as_of": "2026-11-16T17:20:00-06:00"
     },
     {
       "classId": "english-10",
@@ -6077,23 +6077,23 @@
       "period": "P6",
       "teacher": "Amanda Goodson / Carl",
       "letter": "A-",
-      "percent": 90.52,
+      "percent": 90.28,
       "missing": 0,
-      "detail": "90.52 A- after Mask regrade",
+      "detail": "90.28 A-, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-12T14:20:00-06:00"
+      "as_of": "2026-11-16T17:20:00-06:00"
     },
     {
       "classId": "geometry",
       "class": "Geometry",
       "period": "P7",
       "teacher": "K Foster",
-      "letter": "B",
-      "percent": 83.0,
+      "letter": "B+",
+      "percent": 88.0,
       "missing": 1,
-      "detail": "83 B, 1 missing (not named)",
+      "detail": "88 B+, missing item cleared",
       "source": "ParentVUE",
-      "as_of": "2026-11-12T14:20:00-06:00"
+      "as_of": "2026-11-16T17:20:00-06:00"
     }
   ],
   "grade_history": [
