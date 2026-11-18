@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-17T20:50:00-06:00",
+  "as_of": "2026-11-18T14:30:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -154,6 +154,14 @@
     }
   ],
   "events": [
+    {
+      "id": "eng-helzberg-due-1119",
+      "title": "English due Thu 11:59pm: 10.3 Team Responsibilities, Helzberg Internal Judging, Helzberg Slide Deck",
+      "date": "2026-11-19",
+      "kind": "due",
+      "source": "Canvas",
+      "as_of": "2026-11-18T14:30:00-06:00"
+    },
     {
       "id": "band-talons-preview-1118",
       "title": "Band: Talons Drill Team preview, gym 7:15 AM (arrive 7:10, optional)",
@@ -5324,6 +5332,7 @@
     }
   ],
   "notes": [
+    "Wed 11/18 2:10 FULL: ParentVUE live (autofill): Soc 85->90 and Geo 83->88, 0 missing each; Web 95. Canvas live: nothing posted today. Due Thu 11/19 11:59pm English: 10.3 Team Responsibilities, Helzberg Internal Judging (20), Helzberg Slide Deck (20). Fri 11/20 Choice Book Check-In #2; LOTF late quizzes due Fri 11/20 (Quiz #4 still blank). Web 4.11-4.13 graded 11:31-11:35am. oeband calendar/announcements unreadable; Fillingham 11/17 only. Alerts folder not opened.",
     "9pm 11/17 PARTIAL check: Gmail only (no browser). Grades unchanged from last live read. New Fillingham email 2:57pm.",
     {
       "id": "after-school-2026-11-16T14:10:00",
@@ -6039,7 +6048,7 @@
       "missing": 0,
       "detail": "99 A+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-16T17:20:00-06:00"
+      "as_of": "2026-11-18T14:30:00-06:00"
     },
     {
       "classId": "sociology",
@@ -6048,10 +6057,10 @@
       "teacher": "Todd Keach",
       "letter": "A-",
       "percent": 90.0,
-      "missing": 1,
-      "detail": "90 A-, CSI 3 made up, 0 missing",
+      "missing": 0,
+      "detail": "90 A-, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-16T17:20:00-06:00"
+      "as_of": "2026-11-18T14:30:00-06:00"
     },
     {
       "classId": "web-design",
@@ -6059,11 +6068,11 @@
       "period": "P3",
       "teacher": "Derek Linn",
       "letter": "A",
-      "percent": 94.0,
+      "percent": 95.0,
       "missing": 0,
-      "detail": "94 A, 0 missing",
+      "detail": "95 A, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-16T17:20:00-06:00"
+      "as_of": "2026-11-18T14:30:00-06:00"
     },
     {
       "classId": "chemistry",
@@ -6075,7 +6084,7 @@
       "missing": 0,
       "detail": "98.7 A+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-16T17:20:00-06:00"
+      "as_of": "2026-11-18T14:30:00-06:00"
     },
     {
       "classId": "strength-conditioning",
@@ -6087,7 +6096,7 @@
       "missing": 0,
       "detail": "99.67 A+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-16T17:20:00-06:00"
+      "as_of": "2026-11-18T14:30:00-06:00"
     },
     {
       "classId": "english-10",
@@ -6099,7 +6108,7 @@
       "missing": 0,
       "detail": "90.28 A-, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-16T17:20:00-06:00"
+      "as_of": "2026-11-18T14:30:00-06:00"
     },
     {
       "classId": "geometry",
@@ -6108,10 +6117,10 @@
       "teacher": "K Foster",
       "letter": "B+",
       "percent": 88.0,
-      "missing": 1,
-      "detail": "88 B+, missing item cleared",
+      "missing": 0,
+      "detail": "88 B+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-16T17:20:00-06:00"
+      "as_of": "2026-11-18T14:30:00-06:00"
     }
   ],
   "grade_history": [
@@ -7200,6 +7209,20 @@
     {
       "as_of": "2026-11-09T21:05:00-06:00",
       "note": "English 91.1 to 83.89 Canvas: Mask Project graded 0/30 (7:53pm), LOTF Quiz #2 graded 6/10 (7:45pm). ParentVUE not read, login needed."
+    },
+    {
+      "as_of": "2026-11-18T14:30:00-06:00",
+      "source": "ParentVUE",
+      "note": "11/18 live",
+      "grades": {
+        "band": 99.0,
+        "sociology": 90.0,
+        "web-design": 95.0,
+        "chemistry": 98.7,
+        "strength-conditioning": 99.67,
+        "english-10": 90.28,
+        "geometry": 88.0
+      }
     }
   ]
 }
