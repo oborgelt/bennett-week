@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-24T21:00:00-06:00",
+  "as_of": "2026-11-25T14:15:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -2500,6 +2500,14 @@
       "kind": "calendar",
       "source": "district calendar",
       "as_of": "2026-11-12T14:15:00-06:00"
+    },
+    {
+      "id": "eng-choicebook-break",
+      "title": "English: finish reading choice book by end of Fall Break (Daily Agenda)",
+      "date": "2026-11-29",
+      "kind": "homework",
+      "source": "English Daily Agendas sheet",
+      "as_of": "2026-11-25T14:15:00-06:00"
     }
   ],
   "work": [
@@ -5345,9 +5353,122 @@
       "discrepancy": false,
       "followup": null,
       "as_of": "2026-11-08T14:25:00-06:00"
+    },
+    {
+      "id": "web-4-14-1130",
+      "title": "Web Design: 4.14 Image Manipulation",
+      "due": "2026-11-30T09:20:00",
+      "status": "open",
+      "points": 41,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "note": "Linn. Due first day back; usually finished in class.",
+      "canvas": {
+        "status": "open",
+        "points": 41,
+        "score": null,
+        "submitted_at": null
+      },
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "score": null,
+      "graded_at": null
+    },
+    {
+      "id": "web-4-15-1130",
+      "title": "Web Design: 4.15 Animation",
+      "due": "2026-11-30T09:20:00",
+      "status": "open",
+      "points": 19,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "note": "Linn. Due first day back; usually finished in class.",
+      "canvas": {
+        "status": "open",
+        "points": 19,
+        "score": null,
+        "submitted_at": null
+      },
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "score": null,
+      "graded_at": null
+    },
+    {
+      "id": "web-4-16-1130",
+      "title": "Web Design: 4.16 Interaction",
+      "due": "2026-11-30T09:20:00",
+      "status": "open",
+      "points": 27,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "note": "Linn. Due first day back; usually finished in class.",
+      "canvas": {
+        "status": "open",
+        "points": 27,
+        "score": null,
+        "submitted_at": null
+      },
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "score": null,
+      "graded_at": null
+    },
+    {
+      "id": "web-4-17-1130",
+      "title": "Web Design: 4.17 Advanced HTML and CSS Quiz",
+      "due": "2026-11-30T09:20:00",
+      "status": "open",
+      "points": 12,
+      "late": false,
+      "submitted_at": null,
+      "source": "canvas",
+      "note": "Linn. Due first day back; usually finished in class.",
+      "canvas": {
+        "status": "open",
+        "points": 12,
+        "score": null,
+        "submitted_at": null
+      },
+      "school_status": "open",
+      "student_status": null,
+      "discrepancy": false,
+      "followup": {
+        "due_by": null,
+        "email_draft": null,
+        "email_sent": false
+      },
+      "score": null,
+      "graded_at": null
     }
   ],
   "notes": [
+    {
+      "id": "after-school-2026-11-25T14:10:00",
+      "as_of": "2026-11-25T14:15:00-06:00",
+      "text": "Wed 11/25 ~2:15pm CT FULL (Fall Break): ParentVUE live (autofill): Soc 90->91 A-, Geo 88->87 B, S&C 99.69, others unchanged, 0 missing. Canvas live: Chem 98.67, Web 94.64, Eng 90.54; Web 4.14-4.17 due Mon 11/30 9:20am. Agenda: finish choice book by end of break. PV inbox/alerts nothing new; Gmail nothing school-new; oeband unchanged. 1 unread Canvas inbox msg not opened."
+    },
     {
       "id": "bedtime-2026-11-24T21:00:00",
       "as_of": "2026-11-24T21:00:00-06:00",
@@ -6074,7 +6195,7 @@
       "missing": 0,
       "detail": "99 A+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-18T14:30:00-06:00"
+      "as_of": "2026-11-25T14:15:00-06:00"
     },
     {
       "classId": "sociology",
@@ -6082,11 +6203,11 @@
       "period": "P2",
       "teacher": "Todd Keach",
       "letter": "A-",
-      "percent": 90.0,
+      "percent": 91.0,
       "missing": 0,
-      "detail": "90 A-, 0 missing",
+      "detail": "91 A-, 0 missing (was 90)",
       "source": "ParentVUE",
-      "as_of": "2026-11-18T14:30:00-06:00"
+      "as_of": "2026-11-25T14:15:00-06:00"
     },
     {
       "classId": "web-design",
@@ -6098,7 +6219,7 @@
       "missing": 0,
       "detail": "95 A, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-18T14:30:00-06:00"
+      "as_of": "2026-11-25T14:15:00-06:00"
     },
     {
       "classId": "chemistry",
@@ -6110,7 +6231,7 @@
       "missing": 0,
       "detail": "98.7 A+, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-18T14:30:00-06:00"
+      "as_of": "2026-11-25T14:15:00-06:00"
     },
     {
       "classId": "strength-conditioning",
@@ -6118,11 +6239,11 @@
       "period": "P5",
       "teacher": "Pauly",
       "letter": "A+",
-      "percent": 99.67,
+      "percent": 99.69,
       "missing": 0,
-      "detail": "99.67 A+, 0 missing",
+      "detail": "99.69 A+, 0 missing (was 99.67)",
       "source": "ParentVUE",
-      "as_of": "2026-11-18T14:30:00-06:00"
+      "as_of": "2026-11-25T14:15:00-06:00"
     },
     {
       "classId": "english-10",
@@ -6134,19 +6255,19 @@
       "missing": 0,
       "detail": "90.28 A-, 0 missing",
       "source": "ParentVUE",
-      "as_of": "2026-11-18T14:30:00-06:00"
+      "as_of": "2026-11-25T14:15:00-06:00"
     },
     {
       "classId": "geometry",
       "class": "Geometry",
       "period": "P7",
       "teacher": "K Foster",
-      "letter": "B+",
-      "percent": 88.0,
+      "letter": "B",
+      "percent": 87.0,
       "missing": 0,
-      "detail": "88 B+, 0 missing",
+      "detail": "87 B, 0 missing (was 88)",
       "source": "ParentVUE",
-      "as_of": "2026-11-18T14:30:00-06:00"
+      "as_of": "2026-11-25T14:15:00-06:00"
     }
   ],
   "grade_history": [
@@ -7248,6 +7369,20 @@
         "strength-conditioning": 99.67,
         "english-10": 90.28,
         "geometry": 88.0
+      }
+    },
+    {
+      "as_of": "2026-11-25T14:15:00-06:00",
+      "source": "ParentVUE",
+      "note": "11/25 live (Canvas: Chem 98.67, Web 94.64, Eng 90.54)",
+      "grades": {
+        "band": 99.0,
+        "sociology": 91.0,
+        "web-design": 95.0,
+        "chemistry": 98.7,
+        "strength-conditioning": 99.69,
+        "english-10": 90.28,
+        "geometry": 87.0
       }
     }
   ]
