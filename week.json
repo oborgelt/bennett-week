@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-25T21:00:00-06:00",
+  "as_of": "2026-11-26T14:20:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -5465,6 +5465,11 @@
   ],
   "notes": [
     {
+      "id": "after-school-2026-11-26T14:10:00",
+      "as_of": "2026-11-26T14:20:00-06:00",
+      "text": "Thu 11/26 ~2:20pm CT FULL (Thanksgiving, Fall Break): ParentVUE live (Chrome autofill; vault refs unavailable in run) all unchanged, 0 missing, inbox nothing new. Canvas live Chem 98.67, Web 94.64, Eng 90.54 unchanged; Web 4.14-4.17 due Mon 11/30 9:20am; Eng Q2 Journal + Choice Book Project due 12/11. Gmail only photo promos (dropped). District: no school 11/26-27; 4-Yr Academy apps close 12/4. oeband calendar/announcements widgets did not render; English agenda sheet did not render (unchecked)."
+    },
+    {
       "id": "bedtime-2026-11-25T21:00:00",
       "as_of": "2026-11-25T21:00:00-06:00",
       "text": "Wed 11/25 ~9pm CT PARTIAL (Fall Break): Gmail + Plaud only; Canvas/ParentVUE not read live, grade rows unchanged (last live ParentVUE/Canvas 11/25 2:15pm). Nothing school-new after 2:15 (Jostens photo promo dropped). No said-done discrepancy."
@@ -6198,9 +6203,9 @@
       "letter": "A+",
       "percent": 99.0,
       "missing": 0,
-      "detail": "99 A+, 0 missing",
+      "detail": "99 A+, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-25T14:15:00-06:00"
+      "as_of": "2026-11-26T14:20:00-06:00"
     },
     {
       "classId": "sociology",
@@ -6210,9 +6215,9 @@
       "letter": "A-",
       "percent": 91.0,
       "missing": 0,
-      "detail": "91 A-, 0 missing (was 90)",
+      "detail": "91 A-, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-25T14:15:00-06:00"
+      "as_of": "2026-11-26T14:20:00-06:00"
     },
     {
       "classId": "web-design",
@@ -6222,9 +6227,9 @@
       "letter": "A",
       "percent": 95.0,
       "missing": 0,
-      "detail": "95 A, 0 missing",
+      "detail": "95 A, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-25T14:15:00-06:00"
+      "as_of": "2026-11-26T14:20:00-06:00"
     },
     {
       "classId": "chemistry",
@@ -6234,9 +6239,9 @@
       "letter": "A+",
       "percent": 98.7,
       "missing": 0,
-      "detail": "98.7 A+, 0 missing",
+      "detail": "98.7 A+, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-25T14:15:00-06:00"
+      "as_of": "2026-11-26T14:20:00-06:00"
     },
     {
       "classId": "strength-conditioning",
@@ -6246,9 +6251,9 @@
       "letter": "A+",
       "percent": 99.69,
       "missing": 0,
-      "detail": "99.69 A+, 0 missing (was 99.67)",
+      "detail": "99.69 A+, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-25T14:15:00-06:00"
+      "as_of": "2026-11-26T14:20:00-06:00"
     },
     {
       "classId": "english-10",
@@ -6258,9 +6263,9 @@
       "letter": "A-",
       "percent": 90.28,
       "missing": 0,
-      "detail": "90.28 A-, 0 missing",
+      "detail": "90.28 A-, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-25T14:15:00-06:00"
+      "as_of": "2026-11-26T14:20:00-06:00"
     },
     {
       "classId": "geometry",
@@ -6270,9 +6275,9 @@
       "letter": "B",
       "percent": 87.0,
       "missing": 0,
-      "detail": "87 B, 0 missing (was 88)",
+      "detail": "87 B, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-25T14:15:00-06:00"
+      "as_of": "2026-11-26T14:20:00-06:00"
     }
   ],
   "grade_history": [
