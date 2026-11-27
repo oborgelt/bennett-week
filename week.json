@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-26T21:00:00-06:00",
+  "as_of": "2026-11-27T14:20:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -5465,6 +5465,11 @@
   ],
   "notes": [
     {
+      "id": "after-school-2026-11-27T14:20:00",
+      "as_of": "2026-11-27T14:20:00-06:00",
+      "text": "Fri 11/27 ~2:20pm CT FULL (Fall Break): ParentVUE live (Chrome autofill, 1st try) all unchanged, 0 missing; inbox newest still Ann Book 2-Year Academy (known), Fillingham 11/17. Canvas live Chem 98.67, Web 94.64, Eng 90.54 unchanged; Web 4.14-4.16 due Mon 11/30 9:20am; Eng 2 items due 12/11. Gmail only photo promos (dropped). oeband payments unchanged; oeband widgets, English agenda sheet, OE/district calendars did not render (unchecked)."
+    },
+    {
       "id": "bedtime-2026-11-26T21:00:00",
       "as_of": "2026-11-26T21:00:00-06:00",
       "text": "Thu 11/26 ~9pm CT PARTIAL (Thanksgiving, Fall Break): Gmail + Plaud only; Canvas/ParentVUE not read live, grade rows unchanged (last live read 11/26 2:20pm). Nothing school-new after 2:20 (Lifetouch photo promo dropped); no Plaud recordings today. No said-done discrepancy."
@@ -6210,7 +6215,7 @@
       "missing": 0,
       "detail": "99 A+, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-26T14:20:00-06:00"
+      "as_of": "2026-11-27T14:20:00-06:00"
     },
     {
       "classId": "sociology",
@@ -6222,7 +6227,7 @@
       "missing": 0,
       "detail": "91 A-, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-26T14:20:00-06:00"
+      "as_of": "2026-11-27T14:20:00-06:00"
     },
     {
       "classId": "web-design",
@@ -6234,7 +6239,7 @@
       "missing": 0,
       "detail": "95 A, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-26T14:20:00-06:00"
+      "as_of": "2026-11-27T14:20:00-06:00"
     },
     {
       "classId": "chemistry",
@@ -6246,7 +6251,7 @@
       "missing": 0,
       "detail": "98.7 A+, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-26T14:20:00-06:00"
+      "as_of": "2026-11-27T14:20:00-06:00"
     },
     {
       "classId": "strength-conditioning",
@@ -6258,7 +6263,7 @@
       "missing": 0,
       "detail": "99.69 A+, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-26T14:20:00-06:00"
+      "as_of": "2026-11-27T14:20:00-06:00"
     },
     {
       "classId": "english-10",
@@ -6270,7 +6275,7 @@
       "missing": 0,
       "detail": "90.28 A-, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-26T14:20:00-06:00"
+      "as_of": "2026-11-27T14:20:00-06:00"
     },
     {
       "classId": "geometry",
@@ -6282,7 +6287,7 @@
       "missing": 0,
       "detail": "87 B, 0 missing, no change",
       "source": "ParentVUE",
-      "as_of": "2026-11-26T14:20:00-06:00"
+      "as_of": "2026-11-27T14:20:00-06:00"
     }
   ],
   "grade_history": [
