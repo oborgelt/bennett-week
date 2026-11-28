@@ -1,6 +1,6 @@
 {
   "timezone": "America/Chicago",
-  "as_of": "2026-11-27T14:20:00-06:00",
+  "as_of": "2026-11-27T20:50:00-06:00",
   "parenting": [
     {
       "who": "Mom",
@@ -5464,6 +5464,11 @@
     }
   ],
   "notes": [
+    {
+      "id": "bedtime-2026-11-27T21:00:00",
+      "as_of": "2026-11-27T20:50:00-06:00",
+      "text": "Fri 11/27 ~9pm CT PARTIAL (Fall Break): Canvas LIVE unchanged (Chem 98.67, Web 94.64, Eng 90.54); To Do: Web 4.14-4.17 due Mon 11/30 9:20am; Eng item 12/11; no Missing/Late labels seen. ParentVUE not read (login page, autofill did not fill; no attempt made), PV grade rows left at 11/27 2:20pm live read. Gmail nothing school-new after 2:20 (Lifetouch promo dropped). No Plaud recordings today; no said-done discrepancy."
+    },
     {
       "id": "after-school-2026-11-27T14:20:00",
       "as_of": "2026-11-27T14:20:00-06:00",
